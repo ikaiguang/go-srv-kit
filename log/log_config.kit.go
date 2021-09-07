@@ -44,8 +44,8 @@ type ConfigFile struct {
 	RotateSize int64
 
 	// 存储：n个 或 有效期StorageAge(默认：30天)
-	// StorageSize n个
-	StorageSize uint
+	// StorageCounter n个
+	StorageCounter uint
 	// StorageAge 存储n久(默认：30天)
 	StorageAge time.Duration
 }

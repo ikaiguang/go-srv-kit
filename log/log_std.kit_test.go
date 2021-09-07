@@ -5,13 +5,14 @@ import (
 	"testing"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // go test -v ./log/ -count=1 -test.run=TestNewStdLogger
 func TestNewStdLogger(t *testing.T) {
-	logImpl, err := NewStdLogger(&ConfigStd{Enable: true, Level: log.LevelDebug})
-	assert.Nil(t, err)
+	cfg := &ConfigStd{Enable: true, Level: log.LevelDebug}
+	logImpl, err := NewStdLogger(cfg)
+	require.Nil(t, err)
 
 	logHandler := log.NewHelper(logImpl)
 

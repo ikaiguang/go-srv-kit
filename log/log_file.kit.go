@@ -15,9 +15,9 @@ import (
 
 // 轮转日志参数
 const (
-	_defaultRotationMaxAge         = time.Hour * 24 * 30 // 30天
-	_defaultRotationSize           = 50 << 20            // 50M
-	_defaultRotationFilenameSuffix = "_%Y%m%d%H%M%S.log" // 文件名后缀
+	_defaultRotationMaxAge         = time.Hour * 24 * 30     // 30天
+	_defaultRotationSize           = 50 << 20                // 50M
+	_defaultRotationFilenameSuffix = "_app.%Y%m%d%H%M%S.log" // 文件名后缀
 )
 
 // file 输出到文件
@@ -50,7 +50,7 @@ func (s *file) Log(level log.Level, keyvals ...interface{}) (err error) {
 		data = append(data, zap.Any(fmt.Sprint(keyvals[i]), fmt.Sprint(keyvals[i+1])))
 	}
 
-	logPrefix := "\n"
+	logPrefix := ""
 	switch level {
 	case log.LevelDebug:
 		s.loggerHandler.Debug(logPrefix, data...)
@@ -70,12 +70,12 @@ func (s *file) Log(level log.Level, keyvals ...interface{}) (err error) {
 func (s *file) InitLogger(conf *ConfigFile) (err error) {
 	// 参考 zap.NewProductionEncoderConfig()
 	encoderConf := zapcore.EncoderConfig{
-		MessageKey:    "msg",
+		MessageKey:    "xxx",
 		LevelKey:      "level",
-		TimeKey:       "ts",
+		TimeKey:       "time",
 		NameKey:       "logger",
 		CallerKey:     "caller",
-		FunctionKey:   "fn",
+		FunctionKey:   "func",
 		StacktraceKey: "stacktrace",
 		LineEnding:    zapcore.DefaultLineEnding,
 		EncodeLevel:   zapcore.CapitalLevelEncoder,
@@ -127,8 +127,8 @@ func (s *file) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
 
 	// 存储 n个 或 n久
 	switch {
-	case cfg.StorageSize > 0:
-		opts = append(opts, rotatelogs.WithRotationCount(cfg.StorageSize))
+	case cfg.StorageCounter > 0:
+		opts = append(opts, rotatelogs.WithRotationCount(cfg.StorageCounter))
 	case cfg.StorageAge > 0:
 		opts = append(opts, rotatelogs.WithMaxAge(cfg.StorageAge))
 	default:
@@ -137,7 +137,8 @@ func (s *file) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
 
 	// 写
 	writer, err = rotatelogs.New(
-		filepath.Join(cfg.Dir, cfg.Filename+"_app.%Y%m%d.log"),
+		filepath.Join(cfg.Dir, cfg.Filename+_defaultRotationFilenameSuffix),
+		opts...,
 	)
 	if err != nil {
 		err = errors.WithStack(err)
