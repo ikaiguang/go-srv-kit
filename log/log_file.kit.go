@@ -50,7 +50,7 @@ func (s *file) Log(level log.Level, keyvals ...interface{}) (err error) {
 		data = append(data, zap.Any(fmt.Sprint(keyvals[i]), fmt.Sprint(keyvals[i+1])))
 	}
 
-	logPrefix := ""
+	logPrefix := "\n"
 	switch level {
 	case log.LevelDebug:
 		s.loggerHandler.Debug(logPrefix, data...)
@@ -82,9 +82,9 @@ func (s *file) InitLogger(conf *ConfigFile) (err error) {
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendString(t.Format("2006-01-02T15:04:05.999"))
 		},
-		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeDuration: zapcore.StringDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
-		//EncodeCaller:   zapcore.FullCallerEncoder,
+		//EncodeCaller: zapcore.FullCallerEncoder,
 	}
 
 	// writer
@@ -95,7 +95,11 @@ func (s *file) InitLogger(conf *ConfigFile) (err error) {
 	}
 
 	encoder := zapcore.NewJSONEncoder(encoderConf)
-	zapCore := zapcore.NewCore(encoder, zapcore.AddSync(writer), zap.NewAtomicLevelAt(ToZapLevel(conf.Level)))
+	zapCore := zapcore.NewCore(
+		encoder,
+		zapcore.AddSync(writer),
+		zap.NewAtomicLevelAt(ToZapLevel(conf.Level)),
+	)
 
 	// logger
 	callerSkip := _defaultCallerSkipFile
@@ -104,6 +108,7 @@ func (s *file) InitLogger(conf *ConfigFile) (err error) {
 	}
 	stacktraceLevel := zapcore.DPanicLevel
 	s.loggerHandler = zap.New(zapCore,
+		zap.WithCaller(true),
 		zap.AddCallerSkip(callerSkip),
 		zap.AddStacktrace(stacktraceLevel),
 	)

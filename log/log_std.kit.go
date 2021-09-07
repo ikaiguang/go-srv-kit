@@ -62,10 +62,10 @@ func (s *std) InitLogger(conf *ConfigStd) (err error) {
 	encoderConf := zapcore.EncoderConfig{
 		MessageKey:    "msg",
 		LevelKey:      "level",
-		TimeKey:       "ts",
+		TimeKey:       "time",
 		NameKey:       "logger",
 		CallerKey:     "caller",
-		FunctionKey:   "fn",
+		FunctionKey:   "func",
 		StacktraceKey: "stacktrace",
 		LineEnding:    zapcore.DefaultLineEnding,
 		EncodeLevel:   zapcore.CapitalColorLevelEncoder,
