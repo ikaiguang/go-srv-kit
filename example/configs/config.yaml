@@ -1,0 +1,51 @@
+app:
+  id: id
+  name: name
+  version: 1.0.0
+  endpoint:
+    - https://uufff.com
+  metadata:
+    id: id
+trace:
+  enable: false
+  endpoint: http://127.0.0.1:14268/api/traces
+server:
+  http:
+    network:
+    addr: 0.0.0.0:8000
+    timeout: 1s
+  grpc:
+    network:
+    addr: 0.0.0.0:9000
+    timeout: 1s
+log:
+  std:
+    enable: true
+    level: DEBUG # 日志级别：DEBUG、INFO、WARN、ERROR、FATAL
+  file:
+    enable: true
+    level: DEBUG # 日志级别：DEBUG、INFO、WARN、ERROR、FATAL
+    filename: logs
+    filename_suffix: _%Y%m%d%H%M%S.log
+    rotate_time: 0s # 轮询：n久 或 文件大小RotateSize(默认：52428800 # 50<<20 = 50M)
+    rotate_size: 52428800 # 轮询：n久 或 文件大小RotateSize(默认：52428800 # 50<<20 = 50M)
+    storage_size: 0 # 存储：n个 或 有效期MaxAge(默认：7天)
+    storage_age: 604800s # 存储：n个 或 有效期MaxAge(默认：7天)
+data:
+  database:
+    driver: mysql
+    source: root:Mysql.123456@tcp(127.0.0.1:3306)/muses_user?parseTime=True
+    table_prefix: ms_
+    slow_threshold: 0.2s
+    logger_level: 4 # 1:Silent,2:Error,3:Warn,4:Info
+    logger_colorful: true
+  redis:
+    network:
+    addr: 127.0.0.1:6379
+    password:
+    db: 0
+    dial_timeout: 1s
+    read_timeout: 0.4s
+    write_timeout: 0.6s
+
+

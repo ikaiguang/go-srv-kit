@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package greeter.internal.conf;
+
+option go_package = "tmp/kratos-greeter/internal/conf;conf";
+
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  App app = 1;
+  Trace  trace = 2;
+  Server server = 3;
+  Log log = 4;
+  Data data = 5;
+}
+
+message App {
+  string id = 1;
+  string name = 2;
+  string version = 3;
+  repeated string endpoint = 4;
+  map<string, string> metadata = 5;
+}
+
+message Trace {
+  bool enable = 1;
+  string endpoint = 2;
+}
+
+message Server {
+  message HTTP {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  message GRPC {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  HTTP http = 1;
+  GRPC grpc = 2;
+}
+
+message Log {
+  message Std {
+    bool enable = 1;
+  }
+  message File {
+    bool enable = 1;
+    string level = 2;
+    string filename = 3;
+    string filename_suffix = 4;
+    // rotate_time 轮询：n久 或 文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    google.protobuf.Duration rotate_time = 5;
+    // rotate_size 轮询：n久 或 文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    int64 rotate_size = 6;
+    // storage_size 存储：n个 或 有效期storage_age(默认：7天)
+    int32 storage_size = 7;
+    // storage_age 存储：n个 或 有效期storage_age(默认：7天)
+    google.protobuf.Duration storage_age = 8;
+  }
+  Std std = 1;
+  File file = 2;
+}
+
+message Data {
+  message Database {
+    string driver = 1;
+    string source = 2;
+    google.protobuf.Duration slow_threshold = 3;
+    int32 logger_level = 4;
+    bool logger_colorful = 5;
+  }
+  message Redis {
+    string network = 1;
+    string addr = 2;
+    string password = 3;
+    int32 db = 4;
+    google.protobuf.Duration dial_timeout = 5;
+    google.protobuf.Duration read_timeout = 6;
+    google.protobuf.Duration write_timeout = 7;
+  }
+  Database database = 1;
+  Redis redis = 2;
+}
