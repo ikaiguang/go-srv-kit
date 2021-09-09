@@ -6,20 +6,17 @@ import (
 )
 
 // New returns an error object for the code, message.
-// @param code == http.Code
 func New(code int, reason, message string) error {
 	return pkgerrors.WithStack(errors.New(code, reason, message))
 }
 
 // Error returns an error object for the code, message.
-// @param code == http.Code
 func Error(code int, reason, message string) error {
 	return pkgerrors.WithStack(errors.New(code, reason, message))
 }
 
 // NewWithMetadata returns an error object for the code, message.
 // with an MD formed by the mapping of key, value.
-// @param code == http.Code
 func NewWithMetadata(code int, reason, message string, md map[string]string) error {
 	err := errors.New(code, reason, message)
 	err.Metadata = md
