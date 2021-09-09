@@ -73,8 +73,8 @@ func (s *std) InitLogger(conf *ConfigStd) (err error) {
 			enc.AppendString(t.Format("2006-01-02T15:04:05.999"))
 		},
 		EncodeDuration: zapcore.StringDurationEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
-		//EncodeCaller:   zapcore.FullCallerEncoder,
+		//EncodeCaller:   zapcore.ShortCallerEncoder,
+		EncodeCaller:   zapcore.FullCallerEncoder,
 	}
 	// 参考 zap.NewDevelopmentConfig()
 	loggerConf := &zap.Config{
