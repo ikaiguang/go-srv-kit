@@ -1,9 +1,23 @@
 package errorutil
 
 import (
+	"net/http"
+
 	"github.com/go-kratos/kratos/v2/errors"
 	pkgerrors "github.com/pkg/errors"
 )
+
+// Error returns an error object for the code, message.
+func Error(reason, message string) error {
+	return pkgerrors.WithStack(errors.New(http.StatusOK, reason, message))
+}
+
+// ErrorWithMetadata returns an error object for the code, message.
+func ErrorWithMetadata(reason, message string, md map[string]string) error {
+	err := errors.New(http.StatusOK, reason, message)
+	err.Metadata = md
+	return pkgerrors.WithStack(err)
+}
 
 // New returns an error object for the code, message.
 func New(code int, reason, message string) error {
