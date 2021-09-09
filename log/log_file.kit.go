@@ -15,8 +15,8 @@ import (
 
 // 轮转日志参数
 const (
-	_defaultRotationMaxAge         = time.Hour * 24 * 30     // 30天
-	_defaultRotationSize           = 50 << 20                // 50M
+	DefaultRotationStorageAge      = time.Hour * 24 * 30     // 30天
+	DefaultRotationSize            = 50 << 20                // 50M
 	_defaultRotationFilenameSuffix = "_app.%Y%m%d%H%M%S.log" // 文件名后缀
 )
 
@@ -127,7 +127,7 @@ func (s *file) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
 	case cfg.RotateSize > 0:
 		opts = append(opts, rotatelogs.WithRotationSize(cfg.RotateSize))
 	default:
-		opts = append(opts, rotatelogs.WithRotationSize(_defaultRotationSize))
+		opts = append(opts, rotatelogs.WithRotationSize(DefaultRotationSize))
 	}
 
 	// 存储 n个 或 n久
@@ -137,7 +137,7 @@ func (s *file) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
 	case cfg.StorageAge > 0:
 		opts = append(opts, rotatelogs.WithMaxAge(cfg.StorageAge))
 	default:
-		opts = append(opts, rotatelogs.WithMaxAge(_defaultRotationMaxAge))
+		opts = append(opts, rotatelogs.WithMaxAge(DefaultRotationStorageAge))
 	}
 
 	// 写
