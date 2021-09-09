@@ -3,7 +3,6 @@ package errorutil
 import (
 	"fmt"
 	"runtime"
-	"strconv"
 
 	pkgerrors "github.com/pkg/errors"
 )
@@ -22,14 +21,9 @@ type stackTracer interface {
 func Caller(err error) (callers []string) {
 	trace, ok := err.(stackTracer)
 	if !ok {
-		pc, file, line, _ := runtime.Caller(1)
-		fn := runtime.FuncForPC(pc)
-		funcName := "unknown"
-		if fn != nil {
-			funcName = fn.Name()
-		}
+		pc, _, _, _ := runtime.Caller(1)
 		callers = []string{
-			funcName + "\n" + file + ":" + strconv.Itoa(line),
+			fmt.Sprintf("%+v", pkgerrors.Frame(pc)),
 		}
 		return callers
 	}
