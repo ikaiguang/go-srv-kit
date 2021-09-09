@@ -35,7 +35,8 @@ func TestNewFileLogger(t *testing.T) {
 	logHandler.Info("a", "b")
 	logHandler.Info("a", "b", "c")
 	logHandler.Infof("%s%s", "a", "b")
-	//Infof("%s%s", "a", "b", "c") // [build failed]
+	// [build failed] Infof call needs 2 args but has 3 args
+	//Infof("%s%s", "a", "b", "c")
 	logHandler.Infow("key", "value")
 	logHandler.Infow("key", "value", "remain")
 }

@@ -1,7 +1,6 @@
 package logutil
 
 import (
-	"os"
 	"testing"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -23,7 +22,8 @@ func TestNewStdLogger(t *testing.T) {
 	logHandler.Info("a", "b")
 	logHandler.Info("a", "b", "c")
 	logHandler.Infof("%s%s", "a", "b")
-	//Infof("%s%s", "a", "b", "c") // [build failed]
+	// [build failed] Infof call needs 2 args but has 3 args
+	//Infof("%s%s", "a", "b", "c")
 	logHandler.Infow("key", "value")
 	logHandler.Infow("key", "value", "remain")
 	/*
@@ -49,30 +49,31 @@ func TestNewStdLogger(t *testing.T) {
 }
 
 // go test -v ./log/ -count=1 -test.run=TestKratos_NewStdLogger
-func TestKratos_NewStdLogger(t *testing.T) {
-	logImpl := log.NewStdLogger(os.Stderr)
-
-	logHandler := log.NewHelper(logImpl)
-
-	logHandler.Error("log level error")
-	logHandler.Debug("log level debug")
-	logHandler.Info("log level info")
-	logHandler.Error("log level error")
-	logHandler.Info("a", "b")
-	logHandler.Info("a", "b", "c")
-	logHandler.Infof("%s%s", "a", "b")
-	// Infof("%s%s", "a", "b", "c") // [build failed]
-	logHandler.Infow("key", "value")
-	logHandler.Infow("key", "value", "remain")
-	/*
-		ERROR msg=log level error
-		DEBUG msg=log level debug
-		INFO msg=log level info
-		ERROR msg=log level error
-		INFO msg=ab
-		INFO msg=abc
-		INFO msg=ab
-		INFO key=value
-		INFO key=value remain=KEYVALS UNPAIRED
-	*/
-}
+//func TestKratos_NewStdLogger(t *testing.T) {
+//	logImpl := log.NewStdLogger(os.Stderr)
+//
+//	logHandler := log.NewHelper(logImpl)
+//
+//	logHandler.Error("log level error")
+//	logHandler.Debug("log level debug")
+//	logHandler.Info("log level info")
+//	logHandler.Error("log level error")
+//	logHandler.Info("a", "b")
+//	logHandler.Info("a", "b", "c")
+//	logHandler.Infof("%s%s", "a", "b")
+//	// [build failed] Infof call needs 2 args but has 3 args
+//	//Infof("%s%s", "a", "b", "c")
+//	logHandler.Infow("key", "value")
+//	logHandler.Infow("key", "value", "remain")
+//	/*
+//		ERROR msg=log level error
+//		DEBUG msg=log level debug
+//		INFO msg=log level info
+//		ERROR msg=log level error
+//		INFO msg=ab
+//		INFO msg=abc
+//		INFO msg=ab
+//		INFO key=value
+//		INFO key=value remain=KEYVALS UNPAIRED
+//	*/
+//}
