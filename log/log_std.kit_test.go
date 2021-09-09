@@ -9,12 +9,14 @@ import (
 
 // go test -v ./log/ -count=1 -test.run=TestNewStdLogger
 func TestNewStdLogger(t *testing.T) {
-	cfg := &ConfigStd{Enable: true, Level: log.LevelDebug}
+	cfg := &ConfigStd{
+		Level:      log.LevelDebug,
+		CallerSkip: DefaultCallerSkip,
+	}
 	logImpl, err := NewStdLogger(cfg)
 	require.Nil(t, err)
 
 	logHandler := log.NewHelper(logImpl)
-
 	logHandler.Error("log level error")
 	logHandler.Debug("log level debug")
 	logHandler.Info("log level info")

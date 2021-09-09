@@ -9,28 +9,33 @@ import (
 
 // logger config
 const (
-	_defaultCallerSkipStd  = 3
-	_defaultCallerSkipFile = 3
+	// DefaultCallerSkip 日志 runtime caller skip
+	DefaultCallerSkip = 3
 )
 
-// Config 配置¬
-type Config struct {
-	Std  ConfigStd
-	File ConfigFile
+// NewMultiLogger wraps multi logger.
+func NewMultiLogger(logs ...log.Logger) log.Logger {
+	return log.MultiLogger(logs...)
 }
 
 // ConfigStd 标准输出
 type ConfigStd struct {
-	Enable     bool      // 是否启用
-	Level      log.Level // 日志级别
-	CallerSkip int       // 日志 runtime caller skips(默认：_defaultCallerSkipStd)
+	// Level 日志级别
+	Level log.Level
+	// 日志 runtime caller skips
+	// log.NewHelper callerSkip = DefaultCallerSkip
+	// log.MultiLogger callerSkip = DefaultCallerSkip + 1
+	CallerSkip int
 }
 
 // ConfigFile 输出到文件
 type ConfigFile struct {
-	Enable     bool      // 是否启用
-	Level      log.Level // 日志级别
-	CallerSkip int       // 日志 runtime caller skips(默认：_defaultCallerSkipFile)
+	// Level 日志级别
+	Level log.Level
+	// CallerSkip 日志 runtime caller skips
+	// log.NewHelper callerSkip = DefaultCallerSkip
+	// log.MultiLogger callerSkip = DefaultCallerSkip + 1
+	CallerSkip int
 
 	// 存储位置
 	// Dir 文件夹

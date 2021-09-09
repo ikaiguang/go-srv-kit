@@ -10,9 +10,8 @@ import (
 // go test -v ./log/ -count=1 -test.run=TestNewFileLogger
 func TestNewFileLogger(t *testing.T) {
 	cfg := &ConfigFile{
-		Enable:     true,
 		Level:      log.LevelDebug,
-		CallerSkip: 0,
+		CallerSkip: DefaultCallerSkip,
 
 		Dir:      "./../bin/",
 		Filename: "rotation",
@@ -27,7 +26,6 @@ func TestNewFileLogger(t *testing.T) {
 	require.Nil(t, err)
 
 	logHandler := log.NewHelper(logImpl)
-
 	logHandler.Error("log level error")
 	logHandler.Debug("log level debug")
 	logHandler.Info("log level info")

@@ -102,7 +102,7 @@ func (s *file) InitLogger(conf *ConfigFile) (err error) {
 	)
 
 	// logger
-	callerSkip := _defaultCallerSkipFile
+	callerSkip := DefaultCallerSkip
 	if conf.CallerSkip > 0 {
 		callerSkip = conf.CallerSkip
 	}

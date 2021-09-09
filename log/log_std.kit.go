@@ -20,7 +20,7 @@ func NewStdLogger(conf *ConfigStd) (log.Logger, error) {
 	handler := &std{}
 	if err := handler.InitLogger(conf); err != nil {
 		err = errors.WithStack(err)
-		return nil, err
+		return handler, err
 	}
 	return handler, nil
 }
@@ -88,7 +88,7 @@ func (s *std) InitLogger(conf *ConfigStd) (err error) {
 	}
 
 	// logger
-	callerSkip := _defaultCallerSkipStd
+	callerSkip := DefaultCallerSkip
 	if conf.CallerSkip > 0 {
 		callerSkip = conf.CallerSkip
 	}

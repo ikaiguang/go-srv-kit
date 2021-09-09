@@ -10,11 +10,6 @@ func New(code int, reason, message string) error {
 	return pkgerrors.WithStack(errors.New(code, reason, message))
 }
 
-// Error returns an error object for the code, message.
-func Error(code int, reason, message string) error {
-	return pkgerrors.WithStack(errors.New(code, reason, message))
-}
-
 // NewWithMetadata returns an error object for the code, message.
 // with an MD formed by the mapping of key, value.
 func NewWithMetadata(code int, reason, message string, md map[string]string) error {
