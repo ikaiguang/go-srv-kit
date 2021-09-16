@@ -15,6 +15,11 @@ func Printf(format string, a ...interface{}) {
 	handler.Debugf(format, a...)
 }
 
+// Printw .
+func Printw(keyvals ...interface{}) {
+	handler.Fatalw(keyvals...)
+}
+
 // Debug .
 func Debug(msg interface{}) {
 	handler.Debug(msg)
