@@ -13,6 +13,6 @@ func NewDummyLogger() (log.Logger, error) {
 }
 
 // Log .
-func (s *dummy) Log(level log.Level, keyvals ...interface{}) (err error) {
-	return err
+func (s *dummy) Log(level log.Level, keyvals ...interface{}) error {
+	return nil
 }
