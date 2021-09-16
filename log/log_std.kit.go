@@ -35,23 +35,25 @@ func (s *std) Log(level log.Level, keyvals ...interface{}) (err error) {
 	}
 
 	// field
-	var data []zap.Field
+	var (
+		msg = "\n"
+	)
 	for i := 0; i < len(keyvals); i += 2 {
-		data = append(data, zap.Any(fmt.Sprint(keyvals[i]), fmt.Sprint(keyvals[i+1])))
+		msg += "*** | " + fmt.Sprint(keyvals[i]) + "\n"
+		msg += "\t" + fmt.Sprint(keyvals[i+1]) + "\n"
 	}
 
-	logPrefix := "\n"
 	switch level {
 	case log.LevelDebug:
-		s.loggerHandler.Debug(logPrefix, data...)
+		s.loggerHandler.Debug(msg)
 	case log.LevelInfo:
-		s.loggerHandler.Info(logPrefix, data...)
+		s.loggerHandler.Info(msg)
 	case log.LevelWarn:
-		s.loggerHandler.Warn(logPrefix, data...)
+		s.loggerHandler.Warn(msg)
 	case log.LevelError:
-		s.loggerHandler.Error(logPrefix, data...)
+		s.loggerHandler.Error(msg)
 	case log.LevelFatal:
-		s.loggerHandler.Fatal(logPrefix, data...)
+		s.loggerHandler.Fatal(msg)
 	}
 	return err
 }
@@ -60,7 +62,7 @@ func (s *std) Log(level log.Level, keyvals ...interface{}) (err error) {
 func (s *std) InitLogger(conf *ConfigStd) (err error) {
 	// 参考 zap.NewDevelopmentEncoderConfig()
 	encoderConf := zapcore.EncoderConfig{
-		MessageKey:    "msg",
+		MessageKey:    "xxx",
 		LevelKey:      "level",
 		TimeKey:       "time",
 		NameKey:       "logger",
@@ -74,7 +76,7 @@ func (s *std) InitLogger(conf *ConfigStd) (err error) {
 		},
 		EncodeDuration: zapcore.StringDurationEncoder,
 		//EncodeCaller:   zapcore.ShortCallerEncoder,
-		EncodeCaller:   zapcore.FullCallerEncoder,
+		EncodeCaller: zapcore.FullCallerEncoder,
 	}
 	// 参考 zap.NewDevelopmentConfig()
 	loggerConf := &zap.Config{
