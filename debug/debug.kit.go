@@ -10,6 +10,11 @@ func Println(msg interface{}) {
 	handler.Debug(msg)
 }
 
+// Printf .
+func Printf(format string, a ...interface{}) {
+	handler.Debugf(format, a...)
+}
+
 // Debug .
 func Debug(msg interface{}) {
 	handler.Debug(msg)
