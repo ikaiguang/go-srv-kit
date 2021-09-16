@@ -1,4 +1,4 @@
-package debuguitl
+package debugutil
 
 // Print .
 func Print(msg interface{}) {
