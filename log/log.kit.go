@@ -7,10 +7,32 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// logger config
 const (
 	// DefaultCallerSkip 日志 runtime caller skip
+	// 使用 单个Logger 		ConfigStd.CallerSkip = DefaultCallerSkip
+	// 使用 log.MultiLogger	ConfigStd.CallerSkip = DefaultCallerSkip + 1
+	//
+	// 使用 logutil.Setup 单个Logger 			ConfigStd.CallerSkip = DefaultCallerSkip + 1
+	// 使用 logutil.Setup + log.With 		ConfigStd.CallerSkip = DefaultCallerSkip + 2
+	// 使用 logutil.Setup log.MultiLogger 	ConfigStd.CallerSkip = DefaultCallerSkip + 2
+	// log.With 会把 单个Logger 转换为 MultiLogger
 	DefaultCallerSkip = 3
+
+	// DefaultCallerValuer log.With 之 log.Caller
+	//
+	// 使用 单个Logger 		CallerValuer = DefaultCallerValuer
+	// 使用 log.MultiLogger 	CallerValuer = DefaultCallerValuer
+	// 使用 logutil.Setup 	CallerValuer = DefaultCallerValuer + 2
+	DefaultCallerValuer = 4
+
+	// zapcore.EncoderConfig keys
+	ZapMessageKey    = "z_Msg"
+	ZapLevelKey      = "z_Lv"
+	ZapTimeKey       = "z_Time"
+	ZapNameKey       = "z_Name"
+	ZapCallerKey     = "z_Caller"
+	ZapFunctionKey   = "z_Fn"
+	ZapStacktraceKey = "z_ST"
 )
 
 // NewMultiLogger wraps multi logger.
@@ -22,9 +44,7 @@ func NewMultiLogger(logs ...log.Logger) log.Logger {
 type ConfigStd struct {
 	// Level 日志级别
 	Level log.Level
-	// 日志 runtime caller skips
-	// log.NewHelper callerSkip = DefaultCallerSkip
-	// log.MultiLogger callerSkip = DefaultCallerSkip + 1
+	// CallerSkip 日志 runtime caller skips
 	CallerSkip int
 }
 
@@ -33,8 +53,6 @@ type ConfigFile struct {
 	// Level 日志级别
 	Level log.Level
 	// CallerSkip 日志 runtime caller skips
-	// log.NewHelper callerSkip = DefaultCallerSkip
-	// log.MultiLogger callerSkip = DefaultCallerSkip + 1
 	CallerSkip int
 
 	// 存储位置

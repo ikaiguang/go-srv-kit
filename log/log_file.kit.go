@@ -72,15 +72,16 @@ func (s *file) Log(level log.Level, keyvals ...interface{}) (err error) {
 func (s *file) InitLogger(conf *ConfigFile) (err error) {
 	// 参考 zap.NewProductionEncoderConfig()
 	encoderConf := zapcore.EncoderConfig{
-		MessageKey:    "xxx",
-		LevelKey:      "level",
-		TimeKey:       "time",
-		NameKey:       "logger",
-		CallerKey:     "caller",
-		FunctionKey:   "func",
-		StacktraceKey: "stacktrace",
-		LineEnding:    zapcore.DefaultLineEnding,
-		EncodeLevel:   zapcore.CapitalLevelEncoder,
+		MessageKey:    ZapMessageKey,
+		LevelKey:      ZapLevelKey,
+		TimeKey:       ZapTimeKey,
+		NameKey:       ZapNameKey,
+		CallerKey:     ZapCallerKey,
+		FunctionKey:   ZapFunctionKey,
+		StacktraceKey: ZapStacktraceKey,
+
+		LineEnding:  zapcore.DefaultLineEnding,
+		EncodeLevel: zapcore.CapitalLevelEncoder,
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendString(t.Format("2006-01-02T15:04:05.999"))
 		},

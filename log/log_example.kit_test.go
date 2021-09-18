@@ -5,6 +5,7 @@ import (
 )
 
 func ExampleNewMultiLogger() {
+	// 查看 TestNewMultiLogger(nil)
 	// std logger
 	stdLoggerConfig := &ConfigStd{
 		Level:      log.LevelDebug,
@@ -31,6 +32,7 @@ func ExampleNewMultiLogger() {
 }
 
 func ExampleNewFileLogger() {
+	// 查看 TestNewFileLogger(nil)
 	// file logger
 	fileLoggerConfig := &ConfigFile{
 		Level: log.LevelDebug,
@@ -56,6 +58,7 @@ func ExampleNewFileLogger() {
 }
 
 func ExampleNewStdLogger() {
+	// 查看 TestNewStdLogger(nil)
 	// std logger
 	stdLoggerConfig := &ConfigStd{
 		Level: log.LevelDebug,

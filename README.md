@@ -2,6 +2,8 @@
 
 kratos helper
 
+base on [kratos@v2](https://github.com/go-kratos/kratos)
+
 文档地址
 
 - [kratos-github](https://github.com/go-kratos/kratos)
