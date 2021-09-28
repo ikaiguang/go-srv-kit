@@ -1,7 +1,9 @@
-package configutil
+package setuphandler
 
 import (
 	"flag"
+
+	pkgerrors "github.com/pkg/errors"
 
 	"github.com/go-kratos/kratos/v2/config"
 )
@@ -19,11 +21,13 @@ func init() {
 	flag.StringVar(&_configFilepath, "conf", "./configs", "config path, eg: -conf config.yaml")
 }
 
-// Setup .
-func Setup(opts ...config.Option) {
-	if _configFilepath == "" {
-		_configFilepath = _defaultConfigFilepath
-	}
+// getConfigHandler 获取配置手柄
+func (s *setup) getConfigHandler() (handler config.Config, err error) {
+	handler = config.New()
 
-	//handler := config.New(opts...)
+	if err = handler.Load(); err != nil {
+		err = pkgerrors.WithStack(err)
+		return
+	}
+	return
 }

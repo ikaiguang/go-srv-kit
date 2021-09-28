@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package conf.v1;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/api/conf/v1;v1";
+option java_multiple_files = true;
+option java_package = "com.github.srv.kit.conf.v1";
+option objc_class_prefix = "ConfV1";
+
+import "github.com/ikaiguang/go-srv-kit/api/env/v1/env.proto";
+import "google/protobuf/duration.proto";
+
+// Bootstrap 配置引导
+message Bootstrap {
+  // app application
+  App app = 1;
+  // log 日志
+  Log log = 2;
+}
+
+// App application
+message App {
+  // env app 环境
+  env.v1.Env env = 1;
+  // name app名字
+  string name = 2;
+  // version app版本
+  string version = 3;
+  // endpoints app站点
+  repeated string endpoints = 4;
+  // metadata 元数据
+  map<string, string> metadata = 5;
+}
+
+// Log 日志
+message Log {
+  // Console 输出到控制台
+  message Console {
+    // enable 是否启用
+    bool enable = 1;
+    // level 日志级别；DEBUG、INFO、WARN、ERROR、FATAL
+    string level = 2;
+  }
+  // File 输出到文件
+  message File {
+    // enable 是否启用
+    bool enable = 1;
+    // level 日志级别；DEBUG、INFO、WARN、ERROR、FATAL
+    string level = 2;
+
+    // dir 存储目录
+    string dir = 3;
+    // filename 文件名(默认：${filename}_app.%Y%m%d%H%M%S.log)
+    string filename = 4;
+
+    // rotate_time 轮询规则：n久 或 文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    google.protobuf.Duration rotate_time = 5;
+    // rotate_size 轮询规则：按文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    int64 rotate_size = 6;
+
+    // storage_counter 存储：n个 或 有效期storage_age(默认：30天)
+    uint32 storage_counter = 7;
+    // storage_age 存储n久(默认：30天)
+    google.protobuf.Duration storage_age = 8;
+  }
+
+  // console 输出到控制台
+  Console console = 1;
+  // file 输出到文件
+  File file = 2;
+}

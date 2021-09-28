@@ -61,14 +61,12 @@ type ConfigFile struct {
 	// Filename 文件名(默认：${filename}_app.%Y%m%d.log)
 	Filename string
 
-	// 轮询：n久 或 文件大小RotateSize(默认：52428800 # 50<<20 = 50M)
-	// RotateTime n久
+	// RotateTime 轮询规则：n久 或 文件大小RotateSize(默认：52428800 # 50<<20 = 50M)
 	RotateTime time.Duration
-	// RotateSize 文件大小RotateSize(默认：52428800 # 50<<20 = 50M)
+	// RotateSize 轮询规则：按文件大小RotateSize(默认：52428800 # 50<<20 = 50M)
 	RotateSize int64
 
-	// 存储：n个 或 有效期StorageAge(默认：30天)
-	// StorageCounter n个
+	// StorageCounter 存储：n个 或 有效期StorageAge(默认：30天)
 	StorageCounter uint
 	// StorageAge 存储n久(默认：30天)
 	StorageAge time.Duration
