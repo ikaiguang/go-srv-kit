@@ -1,13 +1,15 @@
-package logutil
+package loghelper
 
 import (
 	"testing"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ikaiguang/go-srv-kit/log"
 )
 
-// go test -v ./log/ -count=1 -test.run=TestSetup_Xxx
+// go test -v ./log/helper/ -count=1 -test.run=TestSetup_Xxx
 func TestSetup_Xxx(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -48,11 +50,11 @@ func TestSetup_Xxx(t *testing.T) {
 
 	var (
 		oneLoggerFn = func(addSkip int) (log.Logger, error) {
-			stdLoggerConfig := &ConfigStd{
+			stdLoggerConfig := &logutil.ConfigStd{
 				Level:      log.LevelDebug,
-				CallerSkip: DefaultCallerSkip + addSkip,
+				CallerSkip: logutil.DefaultCallerSkip + addSkip,
 			}
-			return NewStdLogger(stdLoggerConfig)
+			return logutil.NewStdLogger(stdLoggerConfig)
 		}
 		multiLoggerFn = func(addSkip int) (log.Logger, error) {
 			logger1, err := oneLoggerFn(addSkip)
@@ -79,7 +81,7 @@ func TestSetup_Xxx(t *testing.T) {
 			}
 			require.Nil(t, err)
 			if tt.hasWith {
-				logger = log.With(logger, "caller", log.Caller(DefaultCallerValuer+tt.callerSkip))
+				logger = log.With(logger, "caller", log.Caller(logutil.DefaultCallerValuer+tt.callerSkip))
 			}
 
 			Setup(logger)
@@ -89,13 +91,13 @@ func TestSetup_Xxx(t *testing.T) {
 	}
 }
 
-// go test -v ./log/ -count=1 -test.run=TestSetup_OneLogger_Xxx
+// go test -v ./log/helper/ -count=1 -test.run=TestSetup_OneLogger_Xxx
 func TestSetup_OneLogger_Xxx(t *testing.T) {
-	stdLoggerConfig := &ConfigStd{
+	stdLoggerConfig := &logutil.ConfigStd{
 		Level:      log.LevelDebug,
-		CallerSkip: DefaultCallerSkip + 1,
+		CallerSkip: logutil.DefaultCallerSkip + 1,
 	}
-	stdLogger, err := NewStdLogger(stdLoggerConfig)
+	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
 
 	// CallerSkip: DefaultCallerSkip + 2,
@@ -106,42 +108,42 @@ func TestSetup_OneLogger_Xxx(t *testing.T) {
 	Debug("TestSetup_OneLogger Then Debug")
 }
 
-// go test -v ./log/ -count=1 -test.run=TestSetup_OneLogger_With
+// go test -v ./log/helper/ -count=1 -test.run=TestSetup_OneLogger_With
 func TestSetup_OneLogger_With(t *testing.T) {
-	stdLoggerConfig := &ConfigStd{
+	stdLoggerConfig := &logutil.ConfigStd{
 		Level:      log.LevelDebug,
-		CallerSkip: DefaultCallerSkip + 2,
+		CallerSkip: logutil.DefaultCallerSkip + 2,
 	}
-	stdLogger, err := NewStdLogger(stdLoggerConfig)
+	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
 
 	// CallerSkip: DefaultCallerSkip + 2,
-	stdLogger = log.With(stdLogger, "caller", log.Caller(DefaultCallerValuer+2))
+	stdLogger = log.With(stdLogger, "caller", log.Caller(logutil.DefaultCallerValuer+2))
 
 	Setup(stdLogger)
 
 	Debug("TestSetup_OneLogger_With Then Debug")
 }
 
-// go test -v ./log/ -count=1 -test.run=TestSetup_MultiLogger
+// go test -v ./log/helper/ -count=1 -test.run=TestSetup_MultiLogger
 func TestSetup_MultiLogger(t *testing.T) {
-	stdLoggerConfig := &ConfigStd{
+	stdLoggerConfig := &logutil.ConfigStd{
 		Level:      log.LevelDebug,
-		CallerSkip: DefaultCallerSkip + 2, // +2
+		CallerSkip: logutil.DefaultCallerSkip + 2, // +2
 	}
-	stdLogger, err := NewStdLogger(stdLoggerConfig)
+	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
 
 	// two
-	stdLoggerConfig2 := &ConfigStd{
+	stdLoggerConfig2 := &logutil.ConfigStd{
 		Level:      log.LevelDebug,
-		CallerSkip: DefaultCallerSkip + 2, // +2
+		CallerSkip: logutil.DefaultCallerSkip + 2, // +2
 	}
-	stdLogger2, err := NewStdLogger(stdLoggerConfig2)
+	stdLogger2, err := logutil.NewStdLogger(stdLoggerConfig2)
 	require.Nil(t, err)
 
 	multiLogger := log.MultiLogger(stdLogger, stdLogger2)
-	multiLogger = log.With(multiLogger, "caller", log.Caller(DefaultCallerValuer+2))
+	multiLogger = log.With(multiLogger, "caller", log.Caller(logutil.DefaultCallerValuer+2))
 
 	Setup(multiLogger)
 

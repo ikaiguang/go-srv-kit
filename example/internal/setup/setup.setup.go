@@ -9,8 +9,9 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
-	setupconfig "github.com/ikaiguang/go-srv-kit/example/internal/setup/config"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
+	"github.com/ikaiguang/go-srv-kit/log/helper"
+	setuputil "github.com/ikaiguang/go-srv-kit/setup"
 )
 
 const (
@@ -51,7 +52,7 @@ func Setup() (err error) {
 
 // up 启动手柄
 type up struct {
-	config setupconfig.ConfigHandler
+	config setuputil.Config
 }
 
 // initialization 初始化
@@ -64,7 +65,7 @@ func (s *up) initialization() (err error) {
 }
 
 // getConfigHandler 配置手柄
-func (s *up) getConfigHandler() (setupconfig.ConfigHandler, error) {
+func (s *up) getConfigHandler() (setuputil.Config, error) {
 	// 配置路径
 	confPath := _configFilepath
 	if confPath == "" {
@@ -76,7 +77,7 @@ func (s *up) getConfigHandler() (setupconfig.ConfigHandler, error) {
 	opts = append(opts, config.WithSource(
 		file.NewSource(confPath),
 	))
-	return setupconfig.NewConfiguration(opts...)
+	return setuputil.NewConfiguration(opts...)
 }
 
 // setupDebugUtil 设置调试工具
@@ -147,6 +148,6 @@ func (s *up) setupLogUtil() (err error) {
 		return err
 	}
 	multiLogger := log.MultiLogger(loggers...)
-	logutil.Setup(multiLogger)
+	loghelper.Setup(multiLogger)
 	return err
 }

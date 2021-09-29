@@ -1,12 +1,12 @@
-package setupconfig
+package setuputil
 
 import (
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
 )
 
-// ConfigHandler .
-type ConfigHandler interface {
+// Config 配置
+type Config interface {
 	// Env app环境
 	Env() envv1.Env
 	// IsDebugMode 是否启用 调试模式

@@ -1,9 +1,11 @@
-package logutil
+package loghelper
 
 import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
+
+	"github.com/ikaiguang/go-srv-kit/log"
 )
 
 // debug
@@ -23,7 +25,7 @@ func Setup(logger log.Logger) {
 
 // defaultHandler .
 func defaultHandler() *log.Helper {
-	logger, _ := NewDummyLogger()
+	logger, _ := logutil.NewDummyLogger()
 
 	return log.NewHelper(logger)
 }

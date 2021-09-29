@@ -1,4 +1,4 @@
-package setupconfig
+package setuputil
 
 import (
 	"testing"
@@ -7,9 +7,9 @@ import (
 	"github.com/go-kratos/kratos/v2/config/file"
 )
 
-// go test -v ./example/internal/setup/config -count=1 -test.run=TestNewConfiguration
+// go test -v ./setup/ -count=1 -test.run=TestNewConfiguration
 func TestNewConfiguration(t *testing.T) {
-	confPath := "./../../../configs"
+	confPath := "./../example/configs"
 	var opts []config.Option
 	opts = append(opts, config.WithSource(
 		file.NewSource(confPath),

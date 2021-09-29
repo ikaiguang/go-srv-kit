@@ -1,4 +1,4 @@
-package setupconfig
+package setuputil
 
 import (
 	"strings"
@@ -29,7 +29,7 @@ type configuration struct {
 }
 
 // NewConfiguration 配置处理手柄
-func NewConfiguration(opts ...config.Option) (ConfigHandler, error) {
+func NewConfiguration(opts ...config.Option) (Config, error) {
 	handler := &configuration{}
 	if err := handler.New(opts...); err != nil {
 		return nil, err

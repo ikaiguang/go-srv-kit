@@ -3,11 +3,16 @@ package setuphandler
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	loghelper "github.com/ikaiguang/go-srv-kit/log/helper"
 )
 
-// go test -v ./example/internal/setup/ -count=1 -test.run=TestSetup
+// go test -v ./example/internal/setup/ -count=1 -test.run=TestSetup -conf=./../../configs
 func TestSetup(t *testing.T) {
 	err := Setup()
-	require.Nil(t, err)
+	if err != nil {
+		t.Errorf("%+v\n", err)
+		t.FailNow()
+	}
+
+	loghelper.Info("*** | ==> Info")
 }
