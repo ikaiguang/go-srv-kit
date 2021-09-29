@@ -20,4 +20,10 @@ type Config interface {
 	AppConfig() *confv1.App
 	// LoggerConfig 日志配置
 	LoggerConfig() *confv1.Log
+	// DataConfig 数据配置
+	DataConfig() *confv1.Data
+	// MySQLConfig mysql配置
+	MySQLConfig() *confv1.Data_MySQL
+	// RedisConfig redis配置
+	RedisConfig() *confv1.Data_Redis
 }

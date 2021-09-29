@@ -13,4 +13,6 @@ require (
 	go.uber.org/zap v1.18.1
 	google.golang.org/genproto v0.0.0-20210927142257-433400c27d05 // indirect
 	google.golang.org/protobuf v1.27.1
+	gorm.io/driver/mysql v1.1.2 // indirect
+	gorm.io/gorm v1.21.15 // indirect
 )

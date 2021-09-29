@@ -15,6 +15,8 @@ message Bootstrap {
   App app = 1;
   // log 日志
   Log log = 2;
+  // data 数据
+  Data data = 3;
 }
 
 // App application
@@ -67,4 +69,44 @@ message Log {
   Console console = 1;
   // file 输出到文件
   File file = 2;
+}
+
+// Data 数据
+message Data {
+  // MySQL MySQL
+  message MySQL {
+    string dsn = 1;
+    bool logger_enable = 3;
+    // logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    string logger_level = 4;
+    // conn_max_idle 连接池中空闲连接的最大数量
+    uint32  conn_max_idle = 5;
+    // conn_max_idle_time 设置连接空闲的最长时间
+    google.protobuf.Duration  conn_max_idle_time = 8;
+    // conn_max_active 连接可复用的最大时间
+    uint32  conn_max_active = 6;
+    // conn_max_lifetime 可复用的最大时间
+    google.protobuf.Duration  conn_max_lifetime = 7;
+  }
+  // Redis redis
+  message Redis {
+    string addr = 1;
+    string password = 2;
+    uint32 db = 3;
+    google.protobuf.Duration dial_timeout = 4;
+    google.protobuf.Duration read_timeout = 5;
+    google.protobuf.Duration write_timeout = 6;
+    // conn_max_idle 连接池中空闲连接的最大数量
+    uint32  conn_max_idle = 7;
+    // conn_max_idle_time 设置连接空闲的最长时间
+    google.protobuf.Duration  conn_max_idle_time = 8;
+    // conn_max_active 连接的最大数量
+    uint32  conn_max_active = 9;
+    // conn_max_lifetime 连接可复用的最大时间
+    google.protobuf.Duration  conn_max_lifetime = 10;
+    // conn_active_wait 达到最大连接池限制后等待
+    bool  conn_active_wait = 11;
+  }
+  MySQL mysql = 1;
+  Redis redis = 2;
 }

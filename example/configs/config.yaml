@@ -43,20 +43,37 @@ log:
 
 # data 数据
 data:
-  database:
-    driver: mysql
-    source: root:Mysql.123456@tcp(127.0.0.1:3306)/muses_user?parseTime=True
-    table_prefix: ms_
-    slow_threshold: 0.2s
-    logger_level: 4 # 1:Silent,2:Error,3:Warn,4:Info
-    logger_colorful: true
+  # mysql MySQL
+  mysql:
+    dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True
+    logger_enable: true
+    # logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    logger_level: DEBUG
+    # conn_max_idle 连接池中空闲连接的最大数量
+    conn_max_idle: 10
+    # conn_max_idle_time 设置连接空闲的最长时间
+    conn_max_idle_time: 3600s
+    # conn_max_active 连接的最大数量
+    conn_max_active: 100
+    # conn_max_lifetime 连接可复用的最大时间
+    conn_max_lifetime: 1800s
+  # redis
   redis:
-    network:
     addr: 127.0.0.1:6379
     password:
     db: 0
     dial_timeout: 1s
-    read_timeout: 0.4s
-    write_timeout: 0.6s
+    read_timeout: 1s
+    write_timeout: 1s
+    # conn_max_idle 连接池中空闲连接的最大数量
+    conn_max_idle: 10
+    # conn_max_active 连接的最大数量
+    conn_max_active: 100
+    # conn_max_lifetime 连接可复用的最大时间
+    conn_max_lifetime: 1800s
+    # conn_active_wait 达到最大连接池限制后等待
+    conn_active_wait: true
+
+
 
 

@@ -140,3 +140,24 @@ func (s *configuration) AppConfig() *confv1.App {
 func (s *configuration) LoggerConfig() *confv1.Log {
 	return s.conf.Log
 }
+
+// DataConfig 数据配置
+func (s *configuration) DataConfig() *confv1.Data {
+	return s.conf.Data
+}
+
+// MySQLConfig mysql配置
+func (s *configuration) MySQLConfig() *confv1.Data_MySQL {
+	if s.conf.Data == nil {
+		return nil
+	}
+	return s.conf.Data.Mysql
+}
+
+// RedisConfig redis配置
+func (s *configuration) RedisConfig() *confv1.Data_Redis {
+	if s.conf.Data == nil {
+		return nil
+	}
+	return s.conf.Data.Redis
+}
