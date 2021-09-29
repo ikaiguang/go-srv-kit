@@ -7,7 +7,6 @@ option java_multiple_files = true;
 option java_package = "com.github.srv.kit.conf.v1";
 option objc_class_prefix = "ConfV1";
 
-import "github.com/ikaiguang/go-srv-kit/api/env/v1/env.proto";
 import "google/protobuf/duration.proto";
 
 // Bootstrap 配置引导
@@ -21,7 +20,7 @@ message Bootstrap {
 // App application
 message App {
   // env app 环境
-  env.v1.Env env = 1;
+  string env = 1;
   // name app名字
   string name = 2;
   // version app版本
@@ -58,9 +57,9 @@ message Log {
     // rotate_size 轮询规则：按文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
     int64 rotate_size = 6;
 
-    // storage_counter 存储：n个 或 有效期storage_age(默认：30天)
+    // storage_counter 存储：n个 或 有效期storage_age(默认：2592000s = 30天)
     uint32 storage_counter = 7;
-    // storage_age 存储n久(默认：30天)
+    // storage_age 存储n久(默认：2592000s = 30天)
     google.protobuf.Duration storage_age = 8;
   }
 

@@ -1,0 +1,142 @@
+package setupconfig
+
+import (
+	"strings"
+
+	"github.com/go-kratos/kratos/v2/config"
+	pkgerrors "github.com/pkg/errors"
+
+	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
+	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
+)
+
+// configuration 实现ConfigInterface
+type configuration struct {
+	// handler 配置处理手柄
+	handler config.Config
+	// conf 配置引导文件
+	conf *confv1.Bootstrap
+
+	// env app环境
+	env envv1.Env
+
+	// enableDebug 是否启用 调试模式
+	enableDebug bool
+	// enableLoggingConsole 是否启用 日志输出到控制台
+	enableLoggingConsole bool
+	// enableLoggingFile 是否启用 日志输出到文件
+	enableLoggingFile bool
+}
+
+// NewConfiguration 配置处理手柄
+func NewConfiguration(opts ...config.Option) (ConfigHandler, error) {
+	handler := &configuration{}
+	if err := handler.New(opts...); err != nil {
+		return nil, err
+	}
+	return handler, nil
+}
+
+// New 配置处理手柄
+func (s *configuration) New(opts ...config.Option) (err error) {
+	// 处理手柄
+	s.handler = config.New(opts...)
+
+	// 加载配置
+	if err = s.handler.Load(); err != nil {
+		err = pkgerrors.WithStack(err)
+		return
+	}
+
+	// 读取配置文件
+	s.conf = &confv1.Bootstrap{}
+	if err = s.handler.Scan(s.conf); err != nil {
+		err = pkgerrors.WithStack(err)
+		return
+	}
+
+	// 初始化
+	s.initialization()
+
+	return
+}
+
+// initialization 初始化
+func (s *configuration) initialization() {
+	// app环境
+	s.env = envv1.Env_PRODUCTION
+	if s.conf.App != nil {
+		// app环境
+		s.env = s.ParseEnv(s.conf.App.Env)
+		// enableDebug 是否启用 调试模式
+		s.enableDebug = s.IsEnvDebug(s.env)
+	}
+
+	// 日志
+	if s.conf.Log != nil {
+		// // enableLogConsole 是否启用 日志输出到文件
+		if s.conf.Log.Console != nil {
+			s.enableLoggingConsole = s.conf.Log.Console.Enable
+		}
+		// enableLogFile 是否启用 日志输出到文件
+		if s.conf.Log.File != nil {
+			s.enableLoggingFile = s.conf.Log.File.Enable
+		}
+	}
+}
+
+// ParseEnv 解析环境
+func (s *configuration) ParseEnv(appEnv string) envv1.Env {
+	switch strings.ToUpper(appEnv) {
+	case envv1.Env_DEVELOP.String():
+		return envv1.Env_DEVELOP
+	case envv1.Env_TESTING.String():
+		return envv1.Env_TESTING
+	case envv1.Env_PREVIEW.String():
+		return envv1.Env_PREVIEW
+	case envv1.Env_PRODUCTION.String():
+		return envv1.Env_PRODUCTION
+	default:
+		return envv1.Env_PRODUCTION
+	}
+}
+
+// IsEnvDebug 是否调试模式
+func (s *configuration) IsEnvDebug(appEnv envv1.Env) bool {
+	switch appEnv {
+	case envv1.Env_DEVELOP, envv1.Env_TESTING:
+		return true
+	default:
+		return false
+	}
+}
+
+// Env app环境
+func (s *configuration) Env() envv1.Env {
+	return s.env
+}
+
+// IsDebugMode 是否启用 调试模式
+func (s *configuration) IsDebugMode() bool {
+	return s.enableDebug
+}
+
+// EnableLoggingConsole 是否启用 日志输出到控制台
+func (s *configuration) EnableLoggingConsole() bool {
+	return s.enableLoggingConsole
+}
+
+// EnableLoggingFile 是否启用 日志输出到文件
+func (s *configuration) EnableLoggingFile() bool {
+	return s.enableLoggingFile
+}
+
+// AppConfig APP配置
+func (s *configuration) AppConfig() *confv1.App {
+	return s.conf.App
+}
+
+// LoggerConfig 日志配置
+func (s *configuration) LoggerConfig() *confv1.Log {
+	return s.conf.Log
+}

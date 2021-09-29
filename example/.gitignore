@@ -28,6 +28,8 @@ Thumbs.db
 *.key
 *.log
 bin/
+!runtime/README.md
+runtime/
 
 # Develop tools
 .vscode/

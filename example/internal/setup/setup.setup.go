@@ -2,105 +2,151 @@ package setuphandler
 
 import (
 	"flag"
+	stdlog "log"
 
-	pkgerrors "github.com/pkg/errors"
-	"google.golang.org/protobuf/proto"
+	"github.com/go-kratos/kratos/v2/config"
+	"github.com/go-kratos/kratos/v2/config/file"
+	"github.com/go-kratos/kratos/v2/log"
 
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
-	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
+	debugutil "github.com/ikaiguang/go-srv-kit/debug"
+	setupconfig "github.com/ikaiguang/go-srv-kit/example/internal/setup/config"
+	logutil "github.com/ikaiguang/go-srv-kit/log"
 )
+
+const (
+	_defaultConfigFilepath = "./configs"
+)
+
+var (
+	// 配置文件 所在的目录
+	_configFilepath string
+)
+
+func init() {
+	flag.StringVar(&_configFilepath, "conf", "./configs", "config path, eg: -conf config.yaml")
+}
 
 // Setup 启动与配置
 func Setup() (err error) {
 	// parses the command-line flags
 	flag.Parse()
 
-	// setup
-	handler := &setup{}
-
-	return handler.Setup()
-}
-
-// setup .
-type setup struct {
-	// isInit 是否 初始化了
-	isInit bool
-	// conf 配置引导文件
-	conf *confv1.Bootstrap
-
-	// enableDebug 是否启用 调试模式
-	enableDebug bool
-	// enableLogConsole 是否启用 日志输出到控制台
-	enableLogConsole bool
-	// enableLogFile 是否启用 日志输出到文件
-	enableLogFile bool
-}
-
-// Setup 配置
-func (s *setup) Setup() (err error) {
-	// 配置手柄
-	configHandler, err := s.getConfigHandler()
-	if err != nil {
+	// 启动手柄
+	handler := &up{}
+	if err = handler.initialization(); err != nil {
 		return err
 	}
 
-	// 加载配置
-	conf := &confv1.Bootstrap{}
-	if err = configHandler.Scan(s.conf); err != nil {
-		err = pkgerrors.WithStack(err)
-		return
-	}
-
-	// 初始化
-	s.Init(conf)
-
-	// 调试工具
-	if err = s.setupDebugUtil(); err != nil {
+	// 设置调试工具
+	if err = handler.setupDebugUtil(); err != nil {
 		return err
 	}
 
-	// 日志工具
-	if err = s.setupLogUtil(); err != nil {
+	// 设置日志工具
+	if err = handler.setupLogUtil(); err != nil {
 		return err
 	}
 	return err
 }
 
-// IsDebugMode 是否调试模式
-func (s *setup) IsDebugMode() bool {
-	return s.enableDebug
+// up 启动手柄
+type up struct {
+	config setupconfig.ConfigHandler
 }
 
-// Init 初始化
-func (s *setup) Init(conf *confv1.Bootstrap) {
-	// 初始化
-	s.isInit = true
+// initialization 初始化
+func (s *up) initialization() (err error) {
+	s.config, err = s.getConfigHandler()
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+// getConfigHandler 配置手柄
+func (s *up) getConfigHandler() (setupconfig.ConfigHandler, error) {
+	// 配置路径
+	confPath := _configFilepath
+	if confPath == "" {
+		confPath = _defaultConfigFilepath
+	}
+	stdlog.Println("*** | 配置文件路径：", confPath)
+
+	var opts []config.Option
+	opts = append(opts, config.WithSource(
+		file.NewSource(confPath),
+	))
+	return setupconfig.NewConfiguration(opts...)
+}
+
+// setupDebugUtil 设置调试工具
+func (s *up) setupDebugUtil() error {
+	stdlog.Println("*** | 加载调试工具：", s.config.IsDebugMode())
+	if !s.config.IsDebugMode() {
+		return nil
+	}
+	return debugutil.Setup()
+}
+
+// setupLogUtil 设置日志工具
+func (s *up) setupLogUtil() (err error) {
+	// loggers
+	var loggers []log.Logger
+	defer func() {
+		if len(loggers) == 0 {
+			stdlog.Println("*** | 未加载日志工具：", s.config.IsDebugMode())
+		}
+	}()
+
 	// 配置
-	s.conf = proto.Clone(conf).(*confv1.Bootstrap)
-	// enableDebug 是否启用 调试模式
-	if s.conf.App != nil {
-		s.enableDebug = s.IsEnvDebug(s.conf.App.Env)
+	loggerConfig := s.config.LoggerConfig()
+	if loggerConfig == nil {
+		return err
 	}
 
-	// 日志
-	if s.conf.Log != nil {
-		// // enableLogConsole 是否启用 日志输出到文件
-		if s.conf.Log.Console != nil {
-			s.enableLogConsole = s.conf.Log.Console.Enable
+	// 日志 输出到控制台
+	if s.config.EnableLoggingConsole() && loggerConfig.Console != nil {
+		stdlog.Println("*** | 加载日志工具：日志输出到控制台")
+		stdLoggerConfig := &logutil.ConfigStd{
+			Level:      logutil.ParseLevel(loggerConfig.Console.Level),
+			CallerSkip: logutil.DefaultCallerSkip + 2,
 		}
-		// enableLogFile 是否启用 日志输出到文件
-		if s.conf.Log.File != nil {
-			s.enableLogFile = s.conf.Log.File.Enable
+		stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
+		if err != nil {
+			return err
 		}
+		loggers = append(loggers, stdLogger)
 	}
-}
 
-// IsEnvDebug 是否调试模式
-func (s *setup) IsEnvDebug(appEnv envv1.Env) bool {
-	switch appEnv {
-	case envv1.Env_DEVELOP, envv1.Env_TESTING:
-		return true
-	default:
-		return false
+	// 日志 输出到文件
+	if s.config.EnableLoggingFile() && loggerConfig.File != nil {
+		stdlog.Println("*** | 加载日志工具：日志输出到文件")
+		// file logger
+		fileLoggerConfig := &logutil.ConfigFile{
+			Level:      logutil.ParseLevel(loggerConfig.File.Level),
+			CallerSkip: logutil.DefaultCallerSkip + 2,
+
+			Dir:      loggerConfig.File.Dir,
+			Filename: loggerConfig.File.Filename + "_util",
+
+			RotateTime: loggerConfig.File.RotateTime.AsDuration(),
+			RotateSize: loggerConfig.File.RotateSize,
+
+			StorageCounter: uint(loggerConfig.File.StorageCounter),
+			StorageAge:     loggerConfig.File.StorageAge.AsDuration(),
+		}
+		fileLogger, err := logutil.NewFileLogger(fileLoggerConfig)
+		if err != nil {
+			panic(err)
+		}
+		loggers = append(loggers, fileLogger)
 	}
+
+	// 日志工具
+	if len(loggers) == 0 {
+		return err
+	}
+	multiLogger := log.MultiLogger(loggers...)
+	logutil.Setup(multiLogger)
+	return err
 }
