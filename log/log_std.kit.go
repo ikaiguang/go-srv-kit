@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	timeutil "github.com/ikaiguang/go-srv-kit/time"
 )
 
 // std 标准输出
@@ -73,7 +75,7 @@ func (s *std) InitLogger(conf *ConfigStd) (err error) {
 		LineEnding:  zapcore.DefaultLineEnding,
 		EncodeLevel: zapcore.CapitalColorLevelEncoder,
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendString(t.Format("2006-01-02T15:04:05.999"))
+			enc.AppendString(t.Format(timeutil.YmdHmsMLogger))
 		},
 		EncodeDuration: zapcore.StringDurationEncoder,
 		//EncodeCaller:   zapcore.ShortCallerEncoder,

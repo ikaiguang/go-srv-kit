@@ -55,13 +55,13 @@ func TestNewDB_WithWriters(t *testing.T) {
 		Dir:      ".",
 		Filename: "test",
 
-		RotateTime:     time.Second,
+		RotateTime:     time.Hour,
 		StorageCounter: 10,
 	}
 	fileWriter, err := writerutil.NewRotateFile(writerConfig)
 	require.Nil(t, err)
 
-	opt := WithWriters(NewStdWriter(), NewWriter(fileWriter))
+	opt := WithWriters(NewStdWriter(), NewJSONWriter(fileWriter))
 	db, err := NewDB(conf, opt)
 	require.Nil(t, err)
 
