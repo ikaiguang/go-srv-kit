@@ -1,7 +1,7 @@
 package mysqlutil
 
 import (
-	"time"
+	"strings"
 
 	pkgerrors "github.com/pkg/errors"
 	"gorm.io/driver/mysql"
@@ -13,6 +13,15 @@ import (
 
 // NewDB .
 func NewDB(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error) {
+	handler := &mySQL{}
+	return handler.New(conf, opts...)
+}
+
+// mySQL
+type mySQL struct{}
+
+// init 初始化
+func (s *mySQL) New(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error) {
 	// 可选项
 	options := options{
 		writers: nil,
@@ -25,19 +34,14 @@ func NewDB(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error) {
 	dialect := mysql.Open(conf.Dsn)
 
 	// 日志
-	loggerConfig := &logger.Config{
-		SlowThreshold:             200 * time.Millisecond,
-		LogLevel:                  logger.Info,
-		IgnoreRecordNotFoundError: false,
-		Colorful:                  true,
-	}
-	loggerHandler := NewLogger(loggerConfig, options.writers...)
+	loggerHandler := s.newLogger(conf, &options)
 
 	// 选项
 	opt := &gorm.Config{
-		SkipDefaultTransaction: true,
-		PrepareStmt:            true,
-		Logger:                 loggerHandler,
+		PrepareStmt:                              true,
+		SkipDefaultTransaction:                   true,
+		DisableForeignKeyConstraintWhenMigrating: true,
+		Logger:                                   loggerHandler,
 	}
 
 	// 数据库链接
@@ -69,5 +73,40 @@ func NewDB(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error) {
 	if conf.ConnMaxLifetime.GetSeconds() > 0 {
 		connPool.SetConnMaxLifetime(conf.ConnMaxLifetime.AsDuration())
 	}
-	return
+	return db, err
+}
+
+// mysqlLogger 日志
+func (s *mySQL) newLogger(conf *confv1.Data_MySQL, opt *options) logger.Interface {
+	loggerConfig := &logger.Config{
+		LogLevel:                  s.parseLevel(conf.LoggerLevel),
+		SlowThreshold:             conf.SlowThreshold.AsDuration(),
+		Colorful:                  false,
+		IgnoreRecordNotFoundError: false,
+	}
+	if !conf.LoggerEnable {
+		return logger.New(&discard{}, *loggerConfig)
+	}
+	if len(opt.writers) == 0 {
+		return logger.New(NewStdWriter(), *loggerConfig)
+	}
+	return NewLogger(loggerConfig, opt.writers...)
+}
+
+// mysqlLogger 日志
+func (s *mySQL) parseLevel(lv string) logger.LogLevel {
+	switch strings.ToUpper(lv) {
+	case "DEBUG":
+		return logger.Info
+	case "INFO":
+		return logger.Info
+	case "WARN":
+		return logger.Warn
+	case "ERROR":
+		return logger.Error
+	case "FATAL":
+		return logger.Info
+	default:
+		return logger.Info
+	}
 }

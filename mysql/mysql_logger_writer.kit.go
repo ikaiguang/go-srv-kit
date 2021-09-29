@@ -13,11 +13,6 @@ import (
 	timeutil "github.com/ikaiguang/go-srv-kit/time"
 )
 
-// NewWriter .
-func NewWriter(w io.Writer) logger.Writer {
-	return &writer{w: w}
-}
-
 // NewStdWriter
 func NewStdWriter() logger.Writer {
 	return stdlog.New(os.Stderr, "\r\n", stdlog.LstdFlags)
@@ -26,6 +21,12 @@ func NewStdWriter() logger.Writer {
 // NewJSONWriter .
 func NewJSONWriter(w io.Writer) logger.Writer {
 	return &jsonWriter{w: w}
+}
+
+// NewWriter .
+func NewWriter(w io.Writer) logger.Writer {
+	return &writer{w: w}
+	//return stdlog.New(w, "\r\n", stdlog.LstdFlags)
 }
 
 // writer 实现 logger.Writer
@@ -72,3 +73,9 @@ func (w *jsonWriter) Printf(format string, args ...interface{}) {
 	bodyBytes = append(bodyBytes, '\n')
 	_, _ = w.w.Write(bodyBytes)
 }
+
+// discard 实现 logger.Writer
+type discard struct{}
+
+// Printf 输出
+func (w *discard) Printf(string, ...interface{}) {}

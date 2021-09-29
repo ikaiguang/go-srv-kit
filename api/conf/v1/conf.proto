@@ -76,17 +76,19 @@ message Data {
   // MySQL MySQL
   message MySQL {
     string dsn = 1;
+    // conn_max_idle_time 设置连接空闲的最长时间
+    google.protobuf.Duration  slow_threshold = 2;
     bool logger_enable = 3;
     // logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
     string logger_level = 4;
     // conn_max_idle 连接池中空闲连接的最大数量
     uint32  conn_max_idle = 5;
     // conn_max_idle_time 设置连接空闲的最长时间
-    google.protobuf.Duration  conn_max_idle_time = 8;
+    google.protobuf.Duration  conn_max_idle_time = 6;
     // conn_max_active 连接可复用的最大时间
-    uint32  conn_max_active = 6;
+    uint32  conn_max_active = 7;
     // conn_max_lifetime 可复用的最大时间
-    google.protobuf.Duration  conn_max_lifetime = 7;
+    google.protobuf.Duration  conn_max_lifetime = 8;
   }
   // Redis redis
   message Redis {

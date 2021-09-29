@@ -16,6 +16,7 @@ import (
 var (
 	conf = &confv1.Data_MySQL{
 		Dsn:             "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True",
+		SlowThreshold:   durationpb.New(time.Millisecond * 100),
 		LoggerEnable:    true,
 		LoggerLevel:     "INFO",
 		ConnMaxIdle:     10,
@@ -61,6 +62,7 @@ func TestNewDB_WithWriters(t *testing.T) {
 	fileWriter, err := writerutil.NewRotateFile(writerConfig)
 	require.Nil(t, err)
 
+	//opt := WithWriters(NewStdWriter(), NewWriter(fileWriter), NewJSONWriter(fileWriter))
 	opt := WithWriters(NewStdWriter(), NewJSONWriter(fileWriter))
 	db, err := NewDB(conf, opt)
 	require.Nil(t, err)
