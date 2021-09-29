@@ -1,6 +1,8 @@
 package mysqlutil
 
 import (
+	"time"
+
 	pkgerrors "github.com/pkg/errors"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,12 +12,26 @@ import (
 )
 
 // NewDB .
-func NewDB(conf *confv1.Data_MySQL) (db *gorm.DB, err error) {
+func NewDB(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error) {
+	// 可选项
+	options := options{
+		writers: nil,
+	}
+	for _, o := range opts {
+		o(&options)
+	}
+
 	// 拨号
 	dialect := mysql.Open(conf.Dsn)
 
 	// 日志
-	loggerHandler := logger.Default
+	loggerConfig := &logger.Config{
+		SlowThreshold:             200 * time.Millisecond,
+		LogLevel:                  logger.Info,
+		IgnoreRecordNotFoundError: false,
+		Colorful:                  true,
+	}
+	loggerHandler := NewLogger(loggerConfig, options.writers...)
 
 	// 选项
 	opt := &gorm.Config{

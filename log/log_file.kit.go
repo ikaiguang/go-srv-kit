@@ -3,14 +3,14 @@ package logutil
 import (
 	"fmt"
 	"io"
-	"path/filepath"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	writerutil "github.com/ikaiguang/go-srv-kit/writer"
 )
 
 // 轮转日志参数
@@ -26,9 +26,9 @@ type file struct {
 }
 
 // NewFileLogger 输出到文件
-func NewFileLogger(conf *ConfigFile) (log.Logger, error) {
+func NewFileLogger(conf *ConfigFile, opts ...Option) (log.Logger, error) {
 	handler := &file{}
-	if err := handler.InitLogger(conf); err != nil {
+	if err := handler.InitLogger(conf, opts...); err != nil {
 		err = errors.WithStack(err)
 		return handler, err
 	}
@@ -69,7 +69,15 @@ func (s *file) Log(level log.Level, keyvals ...interface{}) (err error) {
 }
 
 // InitLogger .
-func (s *file) InitLogger(conf *ConfigFile) (err error) {
+func (s *file) InitLogger(conf *ConfigFile, opts ...Option) (err error) {
+	// 可选项
+	options := options{
+		writer: nil,
+	}
+	for _, o := range opts {
+		o(&options)
+	}
+
 	// 参考 zap.NewProductionEncoderConfig()
 	encoderConf := zapcore.EncoderConfig{
 		MessageKey:    ZapMessageKey,
@@ -91,16 +99,18 @@ func (s *file) InitLogger(conf *ConfigFile) (err error) {
 	}
 
 	// writer
-	writer, err := s.getWriter(conf)
-	if err != nil {
-		err = errors.WithStack(err)
-		return err
+	if options.writer == nil {
+		options.writer, err = s.getWriter(conf)
+		if err != nil {
+			err = errors.WithStack(err)
+			return err
+		}
 	}
 
 	encoder := zapcore.NewJSONEncoder(encoderConf)
 	zapCore := zapcore.NewCore(
 		encoder,
-		zapcore.AddSync(writer),
+		zapcore.AddSync(options.writer),
 		zap.NewAtomicLevelAt(ToZapLevel(conf.Level)),
 	)
 
@@ -120,37 +130,13 @@ func (s *file) InitLogger(conf *ConfigFile) (err error) {
 
 // getWriter log writer
 func (s *file) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
-
-	var opts []rotatelogs.Option
-
-	// 轮询 时间 或 文件大小
-	switch {
-	case cfg.RotateTime > 0:
-		opts = append(opts, rotatelogs.WithRotationTime(cfg.RotateTime))
-	case cfg.RotateSize > 0:
-		opts = append(opts, rotatelogs.WithRotationSize(cfg.RotateSize))
-	default:
-		opts = append(opts, rotatelogs.WithRotationSize(DefaultRotationSize))
+	writerConfig := &writerutil.ConfigRotate{
+		Dir:            cfg.Dir,
+		Filename:       cfg.Filename,
+		RotateTime:     cfg.RotateTime,
+		RotateSize:     cfg.RotateSize,
+		StorageCounter: cfg.StorageCounter,
+		StorageAge:     cfg.StorageAge,
 	}
-
-	// 存储 n个 或 n久
-	switch {
-	case cfg.StorageCounter > 0:
-		opts = append(opts, rotatelogs.WithRotationCount(cfg.StorageCounter))
-	case cfg.StorageAge > 0:
-		opts = append(opts, rotatelogs.WithMaxAge(cfg.StorageAge))
-	default:
-		opts = append(opts, rotatelogs.WithMaxAge(DefaultRotationStorageAge))
-	}
-
-	// 写
-	writer, err = rotatelogs.New(
-		filepath.Join(cfg.Dir, cfg.Filename+_defaultRotationFilenameSuffix),
-		opts...,
-	)
-	if err != nil {
-		err = errors.WithStack(err)
-		return
-	}
-	return
+	return writerutil.NewRotateFile(writerConfig)
 }
