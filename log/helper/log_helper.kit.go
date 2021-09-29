@@ -17,7 +17,7 @@ var (
 // Setup 启动
 // @Param loggers 请注意 ConfigStd.CallerSkip 的值
 // @Param loggers 请注意 ConfigFile.CallerSkip 的值
-// 
+//
 // 此处 CallerSkip = logutil.DefaultCallerSkip + 2
 func Setup(logger log.Logger) {
 	helper = log.NewHelper(logger)
