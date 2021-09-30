@@ -11,8 +11,8 @@ import (
 	pkgerrors "github.com/pkg/errors"
 )
 
-// EncryptCbc 加密
-func EncryptCbc(rawData, key []byte) (res string, err error) {
+// EncryptCBC CBC模式加密
+func EncryptCBC(rawData, key []byte) (res string, err error) {
 	// block
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -42,8 +42,8 @@ func EncryptCbc(rawData, key []byte) (res string, err error) {
 	return
 }
 
-// DecryptCbc 解密
-func DecryptCbc(rawData string, key []byte) (res string, err error) {
+// DecryptCBC CBC模式解密
+func DecryptCBC(rawData string, key []byte) (res string, err error) {
 	// base64
 	encryptData, err := base64.URLEncoding.DecodeString(rawData)
 	if err != nil {

@@ -24,7 +24,7 @@ const (
 	ContentTypePB       = "application/x-protobuf"
 )
 
-// NewPostRequest .
+// NewPostRequest Post请求
 func NewPostRequest(httpURL string, body io.Reader) (req *http.Request, err error) {
 	// http
 	httpReq, err := http.NewRequest(http.MethodPost, httpURL, body)
@@ -35,7 +35,7 @@ func NewPostRequest(httpURL string, body io.Reader) (req *http.Request, err erro
 	return httpReq, err
 }
 
-// NewGetRequest .
+// NewGetRequest Get请求
 func NewGetRequest(httpURL string, body io.Reader) (req *http.Request, err error) {
 	// http
 	httpReq, err := http.NewRequest(http.MethodGet, httpURL, body)
@@ -46,11 +46,13 @@ func NewGetRequest(httpURL string, body io.Reader) (req *http.Request, err error
 	return httpReq, err
 }
 
-// RequestParam .
+// RequestParam 请求参数
 type RequestParam struct {
+	// Timeout 请求超时；默认 DefaultTimeout = 1分钟
 	Timeout time.Duration
 }
 
+// Do 执行请求
 func Do(httpReq *http.Request, requestParam *RequestParam) (httpCode int, bodyBytes []byte, err error) {
 	// client
 	tr := &http.Transport{
@@ -66,6 +68,7 @@ func Do(httpReq *http.Request, requestParam *RequestParam) (httpCode int, bodyBy
 	httpClient.Timeout = requestParam.Timeout
 	httpResp, err := httpClient.Do(httpReq)
 	if err != nil {
+		err = pkgerrors.WithStack(err)
 		return
 	}
 	defer func() { _ = httpResp.Body.Close() }()
