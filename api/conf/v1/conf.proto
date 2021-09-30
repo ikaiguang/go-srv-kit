@@ -81,33 +81,32 @@ message Data {
     bool logger_enable = 3;
     // logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
     string logger_level = 4;
-    // conn_max_idle 连接池中空闲连接的最大数量
-    uint32  conn_max_idle = 5;
-    // conn_max_idle_time 设置连接空闲的最长时间
-    google.protobuf.Duration  conn_max_idle_time = 6;
     // conn_max_active 连接可复用的最大时间
-    uint32  conn_max_active = 7;
+    uint32  conn_max_active = 5;
     // conn_max_lifetime 可复用的最大时间
-    google.protobuf.Duration  conn_max_lifetime = 8;
-  }
-  // Redis redis
-  message Redis {
-    string addr = 1;
-    string password = 2;
-    uint32 db = 3;
-    google.protobuf.Duration dial_timeout = 4;
-    google.protobuf.Duration read_timeout = 5;
-    google.protobuf.Duration write_timeout = 6;
+    google.protobuf.Duration  conn_max_lifetime = 6;
     // conn_max_idle 连接池中空闲连接的最大数量
     uint32  conn_max_idle = 7;
     // conn_max_idle_time 设置连接空闲的最长时间
     google.protobuf.Duration  conn_max_idle_time = 8;
+  }
+  // Redis redis
+  message Redis {
+    string addr = 1;
+    string username = 2;
+    string password = 3;
+    uint32 db = 4;
+    google.protobuf.Duration dial_timeout = 5;
+    google.protobuf.Duration read_timeout = 6;
+    google.protobuf.Duration write_timeout = 7;
     // conn_max_active 连接的最大数量
-    uint32  conn_max_active = 9;
+    uint32  conn_max_active = 8;
     // conn_max_lifetime 连接可复用的最大时间
-    google.protobuf.Duration  conn_max_lifetime = 10;
-    // conn_active_wait 达到最大连接池限制后等待
-    bool  conn_active_wait = 11;
+    google.protobuf.Duration  conn_max_lifetime = 9;
+    // conn_max_idle 连接池中空闲连接的最大数量
+    uint32  conn_max_idle = 10;
+    // conn_max_idle_time 设置连接空闲的最长时间
+    google.protobuf.Duration  conn_max_idle_time = 11;
   }
   MySQL mysql = 1;
   Redis redis = 2;

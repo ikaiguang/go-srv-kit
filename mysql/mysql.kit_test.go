@@ -14,21 +14,21 @@ import (
 )
 
 var (
-	conf = &confv1.Data_MySQL{
+	mysqlConfig = &confv1.Data_MySQL{
 		Dsn:             "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True",
 		SlowThreshold:   durationpb.New(time.Millisecond * 100),
 		LoggerEnable:    true,
 		LoggerLevel:     "INFO",
-		ConnMaxIdle:     10,
-		ConnMaxIdleTime: durationpb.New(time.Hour),
 		ConnMaxActive:   100,
 		ConnMaxLifetime: durationpb.New(time.Minute * 30),
+		ConnMaxIdle:     10,
+		ConnMaxIdleTime: durationpb.New(time.Hour),
 	}
 )
 
 // go test -v ./mysql/ -count=1 -test.run=TestNewDB_Xxx
 func TestNewDB_Xxx(t *testing.T) {
-	db, err := NewDB(conf)
+	db, err := NewDB(mysqlConfig)
 	require.Nil(t, err)
 
 	// res
@@ -64,7 +64,7 @@ func TestNewDB_WithWriters(t *testing.T) {
 
 	//opt := WithWriters(NewStdWriter(), NewWriter(fileWriter), NewJSONWriter(fileWriter))
 	opt := WithWriters(NewStdWriter(), NewJSONWriter(fileWriter))
-	db, err := NewDB(conf, opt)
+	db, err := NewDB(mysqlConfig, opt)
 	require.Nil(t, err)
 
 	// res

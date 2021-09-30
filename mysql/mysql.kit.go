@@ -57,14 +57,6 @@ func (s *mySQL) New(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err e
 		err = pkgerrors.WithStack(err)
 		return
 	}
-	// 连接池中空闲连接的最大数量
-	if conf.ConnMaxIdle > 0 {
-		connPool.SetMaxIdleConns(int(conf.ConnMaxIdle))
-	}
-	// 设置连接空闲的最长时间
-	if conf.ConnMaxIdleTime.GetSeconds() > 0 {
-		connPool.SetConnMaxIdleTime(conf.ConnMaxLifetime.AsDuration())
-	}
 	//  连接的最大数量
 	if conf.ConnMaxActive > 0 {
 		connPool.SetMaxOpenConns(int(conf.ConnMaxActive))
@@ -72,6 +64,14 @@ func (s *mySQL) New(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err e
 	// 连接可复用的最大时间
 	if conf.ConnMaxLifetime.GetSeconds() > 0 {
 		connPool.SetConnMaxLifetime(conf.ConnMaxLifetime.AsDuration())
+	}
+	// 连接池中空闲连接的最大数量
+	if conf.ConnMaxIdle > 0 {
+		connPool.SetMaxIdleConns(int(conf.ConnMaxIdle))
+	}
+	// 设置连接空闲的最长时间
+	if conf.ConnMaxIdleTime.GetSeconds() > 0 {
+		connPool.SetConnMaxIdleTime(conf.ConnMaxIdleTime.AsDuration())
 	}
 	return db, err
 }
