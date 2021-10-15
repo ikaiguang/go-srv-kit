@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package ping.v1;
+
+import "google/api/annotations.proto";
+
+// 多语言特定包名，用于源代码引用
+option go_package = "github.com/ikaiguang/go-srv-kit/api/ping/v1;v1";
+option java_multiple_files = true;
+option java_package = "com.github.srv.kit.ping.v1";
+option objc_class_prefix = "PingV1";
+
+// PingReq ping请求
+//
+// ping请求
+message PingReq {
+  // 请求消息
+  string message = 1;
+}
+
+// PingResp ping响应
+//
+// ping响应
+message PingResp {
+  // 响应消息
+  string message = 1;
+}
+
+// SrvPing ping服务
+service SrvPing {
+
+  // Ping ping
+  //
+  // 测试PingV1
+  rpc Ping (PingReq) returns (PingResp) {
+    option (google.api.http) = {
+      get: "/v1/ping/{message}"
+    };
+  }
+
+}

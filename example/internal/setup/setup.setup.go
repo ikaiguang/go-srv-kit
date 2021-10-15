@@ -32,6 +32,10 @@ func Setup() (err error) {
 	// parses the command-line flags
 	flag.Parse()
 
+	// 开始配置
+	stdlog.Println("|==================== 配置程序 开始 ====================|")
+	defer stdlog.Println("|==================== 配置程序 结束 ====================|")
+
 	// 启动手柄
 	handler := &up{}
 	if err = handler.initialization(); err != nil {
@@ -71,7 +75,7 @@ func (s *up) getConfigHandler() (setuputil.Config, error) {
 	if confPath == "" {
 		confPath = _defaultConfigFilepath
 	}
-	stdlog.Println("*** | 配置文件路径：", confPath)
+	stdlog.Printf("|*** 配置文件路径：%s\n", confPath)
 
 	var opts []config.Option
 	opts = append(opts, config.WithSource(
@@ -82,7 +86,7 @@ func (s *up) getConfigHandler() (setuputil.Config, error) {
 
 // setupDebugUtil 设置调试工具
 func (s *up) setupDebugUtil() error {
-	stdlog.Println("*** | 加载调试工具：", s.config.IsDebugMode())
+	stdlog.Printf("|*** 加载调试工具：%v\n", s.config.IsDebugMode())
 	if !s.config.IsDebugMode() {
 		return nil
 	}
@@ -95,7 +99,7 @@ func (s *up) setupLogUtil() (err error) {
 	var loggers []log.Logger
 	defer func() {
 		if len(loggers) == 0 {
-			stdlog.Println("*** | 未加载日志工具：", s.config.IsDebugMode())
+			stdlog.Println("|*** 未加载日志工具：", s.config.IsDebugMode())
 		}
 	}()
 
@@ -107,7 +111,7 @@ func (s *up) setupLogUtil() (err error) {
 
 	// 日志 输出到控制台
 	if s.config.EnableLoggingConsole() && loggerConfig.Console != nil {
-		stdlog.Println("*** | 加载日志工具：日志输出到控制台")
+		stdlog.Println("|*** 加载日志工具：日志输出到控制台")
 		stdLoggerConfig := &logutil.ConfigStd{
 			Level:      logutil.ParseLevel(loggerConfig.Console.Level),
 			CallerSkip: logutil.DefaultCallerSkip + 2,
@@ -121,7 +125,7 @@ func (s *up) setupLogUtil() (err error) {
 
 	// 日志 输出到文件
 	if s.config.EnableLoggingFile() && loggerConfig.File != nil {
-		stdlog.Println("*** | 加载日志工具：日志输出到文件")
+		stdlog.Println("|*** 加载日志工具：日志输出到文件")
 		// file logger
 		fileLoggerConfig := &logutil.ConfigFile{
 			Level:      logutil.ParseLevel(loggerConfig.File.Level),
