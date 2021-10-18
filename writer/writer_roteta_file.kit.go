@@ -70,3 +70,16 @@ func NewRotateFile(cfg *ConfigRotate) (writer io.Writer, err error) {
 	}
 	return
 }
+
+// dummy .
+type dummy struct{}
+
+// Write .
+func (d *dummy) Write(p []byte) (int, error) {
+	return 0, nil
+}
+
+// NewDummyWriter 假的
+func NewDummyWriter() (io.Writer, error) {
+	return &dummy{}, nil
+}

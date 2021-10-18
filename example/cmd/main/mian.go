@@ -1,35 +1,24 @@
 package main
 
 import (
-	"flag"
-	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-	"net/http"
-)
+	stdlog "log"
+	"os"
 
-// go build -ldflags "-X main.Version=x.y.z"
-var (
-	// Name is the name of the compiled software.
-	Name string
-	// Version is the version of the compiled software.
-	Version string
+	setup "github.com/ikaiguang/go-srv-kit/example/internal/setup"
 )
 
 func main() {
-	flag.Parse()
-}
+	var err error
+	defer func() {
+		if err != nil {
+			stdlog.Printf("%+v\n", err)
+		}
+	}()
 
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server) *kratos.App {
-	return kratos.New(
-		kratos.ID(id),
-		kratos.Name(Name),
-		kratos.Version(Version),
-		kratos.Metadata(map[string]string{}),
-		kratos.Logger(logger),
-		kratos.Server(
-			hs,
-			gs,
-		),
-	)
+	// 初始化
+	err = setup.Setup()
+	if err != nil {
+		stdlog.Println()
+		os.Exit(1)
+	}
 }

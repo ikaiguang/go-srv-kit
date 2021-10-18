@@ -29,6 +29,11 @@ func NewWriter(w io.Writer) logger.Writer {
 	//return stdlog.New(w, "\r\n", stdlog.LstdFlags)
 }
 
+// NewDummyWriter .
+func NewDummyWriter() logger.Writer {
+	return &dummy{}
+}
+
 // writer 实现 logger.Writer
 type writer struct {
 	w io.Writer
@@ -74,8 +79,8 @@ func (w *jsonWriter) Printf(format string, args ...interface{}) {
 	_, _ = w.w.Write(bodyBytes)
 }
 
-// discard 实现 logger.Writer
-type discard struct{}
+// dummy 实现 logger.Writer
+type dummy struct{}
 
 // Printf 输出
-func (w *discard) Printf(string, ...interface{}) {}
+func (w *dummy) Printf(string, ...interface{}) {}

@@ -28,7 +28,7 @@ var (
 
 // go test -v ./mysql/ -count=1 -test.run=TestNewDB_Xxx
 func TestNewDB_Xxx(t *testing.T) {
-	db, err := NewDB(mysqlConfig)
+	db, err := NewMysqlDB(mysqlConfig)
 	require.Nil(t, err)
 
 	// res
@@ -64,7 +64,7 @@ func TestNewDB_WithWriters(t *testing.T) {
 
 	//opt := WithWriters(NewStdWriter(), NewWriter(fileWriter), NewJSONWriter(fileWriter))
 	opt := WithWriters(NewStdWriter(), NewJSONWriter(fileWriter))
-	db, err := NewDB(mysqlConfig, opt)
+	db, err := NewMysqlDB(mysqlConfig, opt)
 	require.Nil(t, err)
 
 	// res

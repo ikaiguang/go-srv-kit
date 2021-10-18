@@ -11,8 +11,8 @@ import (
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 )
 
-// NewDB .
-func NewDB(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error) {
+// NewMysqlDB .
+func NewMysqlDB(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error) {
 	handler := &mySQL{}
 	return handler.New(conf, opts...)
 }
@@ -85,7 +85,7 @@ func (s *mySQL) newLogger(conf *confv1.Data_MySQL, opt *options) logger.Interfac
 		IgnoreRecordNotFoundError: false,
 	}
 	if !conf.LoggerEnable {
-		return logger.New(&discard{}, *loggerConfig)
+		return logger.New(NewDummyWriter(), *loggerConfig)
 	}
 	if len(opt.writers) == 0 {
 		return logger.New(NewStdWriter(), *loggerConfig)
