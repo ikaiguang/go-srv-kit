@@ -81,7 +81,7 @@ func (s *mySQL) newLogger(conf *confv1.Data_MySQL, opt *options) logger.Interfac
 	loggerConfig := &logger.Config{
 		LogLevel:                  s.parseLevel(conf.LoggerLevel),
 		SlowThreshold:             conf.SlowThreshold.AsDuration(),
-		Colorful:                  false,
+		Colorful:                  conf.LoggerColorful,
 		IgnoreRecordNotFoundError: false,
 	}
 	if !conf.LoggerEnable {

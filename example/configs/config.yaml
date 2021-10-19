@@ -49,6 +49,7 @@ data:
     # slow_threshold 慢查询时间
     slow_threshold: 0.1s
     logger_enable: true
+    logger_colorful: true
     # logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR
     logger_level: DEBUG
     # conn_max_active 连接的最大数量

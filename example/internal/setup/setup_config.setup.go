@@ -12,8 +12,6 @@ import (
 
 // configuration 实现ConfigInterface
 type configuration struct {
-	UnimplementedConfig
-
 	// handler 配置处理手柄
 	handler config.Config
 	// conf 配置引导文件

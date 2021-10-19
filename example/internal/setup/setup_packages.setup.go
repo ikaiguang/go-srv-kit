@@ -21,7 +21,7 @@ import (
 
 // up 启动手柄
 type up struct {
-	UnimplementedPackages
+	Args
 
 	// config 配置
 	config Config
@@ -46,6 +46,7 @@ type up struct {
 // NewUpPackages .
 func NewUpPackages(conf Config) Packages {
 	return &up{
+		Args:   conf,
 		config: conf,
 	}
 }

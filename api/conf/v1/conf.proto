@@ -79,16 +79,17 @@ message Data {
     // conn_max_idle_time 设置连接空闲的最长时间
     google.protobuf.Duration  slow_threshold = 2;
     bool logger_enable = 3;
+    bool logger_colorful = 4;
     // logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
-    string logger_level = 4;
+    string logger_level = 5;
     // conn_max_active 连接可复用的最大时间
-    uint32  conn_max_active = 5;
+    uint32  conn_max_active = 6;
     // conn_max_lifetime 可复用的最大时间
-    google.protobuf.Duration  conn_max_lifetime = 6;
+    google.protobuf.Duration  conn_max_lifetime = 7;
     // conn_max_idle 连接池中空闲连接的最大数量
-    uint32  conn_max_idle = 7;
+    uint32  conn_max_idle = 8;
     // conn_max_idle_time 设置连接空闲的最长时间
-    google.protobuf.Duration  conn_max_idle_time = 8;
+    google.protobuf.Duration  conn_max_idle_time = 9;
   }
   // Redis redis
   message Redis {

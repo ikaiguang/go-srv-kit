@@ -23,4 +23,6 @@ func TestGetPackages(t *testing.T) {
 
 	// 日志
 	loghelper.Info("*** | ==> log helper info")
+
+	loghelper.Infof("env = %v\n", packages.Env())
 }

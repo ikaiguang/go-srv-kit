@@ -38,6 +38,7 @@ func Setup() (packages Packages, err error) {
 
 	// 启动手柄
 	upHandler := &up{
+		Args:   configHandler,
 		config: configHandler,
 	}
 
