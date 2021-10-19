@@ -155,7 +155,7 @@ func (s *up) setupLogUtil() (err error) {
 // setupLoggerFileWriter 启动日志文件写手柄
 func (s *up) setupLoggerFileWriter() (io.Writer, error) {
 	loggerConfig := s.config.LoggerConfig()
-	if s.config.EnableLoggingFile() || loggerConfig.File == nil {
+	if !s.config.EnableLoggingFile() || loggerConfig.File == nil {
 		return writerutil.NewDummyWriter()
 	}
 	rotateConfig := &writerutil.ConfigRotate{
@@ -213,7 +213,7 @@ func (s *up) setupLogger() (logger log.Logger, err error) {
 		}
 		writer, err := s.LoggerFileWriter()
 		if err != nil {
-
+			return logger, err
 		}
 		fileLogger, err := logutil.NewFileLogger(
 			fileLoggerConfig,
@@ -252,7 +252,7 @@ func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
 		if err != nil {
 			return nil, err
 		}
-		writers = append(writers, mysqlutil.NewWriter(writer))
+		writers = append(writers, mysqlutil.NewJSONWriter(writer))
 	}
 	if len(writers) > 0 {
 		opts = append(opts, mysqlutil.WithWriters(writers...))
