@@ -45,6 +45,11 @@ type up struct {
 
 // NewUpPackages .
 func NewUpPackages(conf Config) Packages {
+	return newUpHandler(conf)
+}
+
+// newUpHandler .
+func newUpHandler(conf Config) *up {
 	return &up{
 		Args:   conf,
 		config: conf,

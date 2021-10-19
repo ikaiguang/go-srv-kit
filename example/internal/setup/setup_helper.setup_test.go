@@ -18,11 +18,12 @@ func TestGetPackages(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, packages)
 
+	// env
+	loghelper.Infof("env = %v", packages.Env())
+
 	// debug
 	debugutil.Println("*** | ==> debug util print")
 
 	// 日志
 	loghelper.Info("*** | ==> log helper info")
-
-	loghelper.Infof("env = %v\n", packages.Env())
 }

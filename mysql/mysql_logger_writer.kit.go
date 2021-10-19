@@ -86,7 +86,7 @@ type jsonStruct struct {
 // Printf 输出
 func (w *jsonWriter) Printf(format string, args ...interface{}) {
 	bodyBytes, _ := json.Marshal(&jsonStruct{
-		Name:      "mysql",
+		Name:      "GORM",
 		Time:      time.Now().Format(timeutil.YmdHmsMLogger),
 		RequestID: uuid.New().String(),
 		Msg:       fmt.Sprintf(format, args...),

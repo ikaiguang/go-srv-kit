@@ -37,10 +37,7 @@ func Setup() (packages Packages, err error) {
 	}
 
 	// 启动手柄
-	upHandler := &up{
-		Args:   configHandler,
-		config: configHandler,
-	}
+	upHandler := newUpHandler(configHandler)
 
 	// 设置调试工具
 	if err = upHandler.setupDebugUtil(); err != nil {

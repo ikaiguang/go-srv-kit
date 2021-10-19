@@ -19,6 +19,9 @@ func TestSetup(t *testing.T) {
 	}
 	ctx := context.Background()
 
+	// env
+	loghelper.Infof("env = %v", packages.Env())
+
 	// debug
 	debugutil.Println("*** | ==> debug util print")
 
