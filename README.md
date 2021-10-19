@@ -9,6 +9,14 @@ base on [kratos@v2](https://github.com/go-kratos/kratos)
 - [kratos-github](https://github.com/go-kratos/kratos)
 - [kratos-docs](https://go-kratos.dev/docs/)
 
+## 运行Example
+
+运行Example
+
+```shell
+go run ./example/cmd/main/... -conf=./example/configs
+```
+
 ## Go Package names
 
 > 参考链接 https://blog.golang.org/package-names
