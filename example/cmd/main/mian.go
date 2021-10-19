@@ -22,14 +22,22 @@ func newApp(packages setup.Packages) (app *kratos.App, err error) {
 		return app, err
 	}
 
-	// http
+	// 服务
 	hs, err := servers.NewHTTPServer(packages)
 	if err != nil {
 		return app, err
 	}
-
-	// grpc
 	gs, err := servers.NewGRPCServer(packages)
+	if err != nil {
+		return app, err
+	}
+
+	// 路由
+	err = servers.RegisterHTTPRoute(packages, hs)
+	if err != nil {
+		return app, err
+	}
+	err = servers.RegisterGRPCRoute(packages, gs)
 	if err != nil {
 		return app, err
 	}

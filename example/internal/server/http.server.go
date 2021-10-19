@@ -41,3 +41,9 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 
 	return srv, err
 }
+
+// RegisterHTTPRoute 注册路由
+func RegisterHTTPRoute(packages setup.Packages, srv *http.Server) (err error) {
+	stdlog.Println("|*** 注册HTTP路由：...")
+	return err
+}

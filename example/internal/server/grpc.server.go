@@ -41,3 +41,9 @@ func NewGRPCServer(packages setup.Packages) (srv *grpc.Server, err error) {
 
 	return srv, err
 }
+
+// RegisterGRPCRoute 注册路由
+func RegisterGRPCRoute(packages setup.Packages, srv *grpc.Server) (err error) {
+	stdlog.Println("|*** 注册GRPC路由：...")
+	return err
+}

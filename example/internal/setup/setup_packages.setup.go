@@ -241,7 +241,7 @@ func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
 		stdlog.Println("|*** 加载MySQL-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
-	stdlog.Println("|*** 加载MySQL-GORM：成功")
+	stdlog.Println("|*** 加载MySQL-GORM：...")
 
 	// logger writer
 	var (
@@ -270,7 +270,7 @@ func (s *up) setupRedisClient() (*redis.Client, error) {
 		stdlog.Println("|*** 加载Redis客户端：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
-	stdlog.Println("|*** 加载Redis客户端：成功")
+	stdlog.Println("|*** 加载Redis客户端：...")
 
 	return redisutil.NewDB(s.Config.RedisConfig())
 }
