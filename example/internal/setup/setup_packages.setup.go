@@ -156,6 +156,7 @@ func (s *up) setupLogUtil() (err error) {
 func (s *up) setupLoggerFileWriter() (io.Writer, error) {
 	loggerConfig := s.config.LoggerConfig()
 	if !s.config.EnableLoggingFile() || loggerConfig.File == nil {
+		stdlog.Println("|*** 加载日志工具：虚拟的文件写手柄")
 		return writerutil.NewDummyWriter()
 	}
 	rotateConfig := &writerutil.ConfigRotate{
@@ -235,9 +236,10 @@ func (s *up) setupLogger() (logger log.Logger, err error) {
 // setupMysqlGormDB mysql gorm 数据库
 func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
 	if s.config.MySQLConfig() == nil {
+		stdlog.Println("|*** 加载MySQL-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
-	stdlog.Println("|*** 加载MySQL-GORM")
+	stdlog.Println("|*** 加载MySQL-GORM：成功")
 
 	// logger writer
 	var (
@@ -263,9 +265,10 @@ func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
 // setupRedisClient redis 客户端
 func (s *up) setupRedisClient() (*redis.Client, error) {
 	if s.config.RedisConfig() == nil {
+		stdlog.Println("|*** 加载Redis客户端：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
-	stdlog.Println("|*** 加载Redis")
+	stdlog.Println("|*** 加载Redis客户端：成功")
 
 	return redisutil.NewDB(s.config.RedisConfig())
 }
