@@ -21,10 +21,7 @@ import (
 
 // up 启动手柄
 type up struct {
-	Args
-
-	// config 配置
-	config Config
+	Config
 
 	// loggerFileWriterMutex 日志文件写手柄
 	loggerFileWriterMutex sync.Once
@@ -51,8 +48,7 @@ func NewUpPackages(conf Config) Packages {
 // newUpHandler .
 func newUpHandler(conf Config) *up {
 	return &up{
-		Args:   conf,
-		config: conf,
+		Config: conf,
 	}
 }
 
@@ -136,8 +132,8 @@ func (s *up) RedisClient() (*redis.Client, error) {
 
 // setupDebugUtil 设置调试工具
 func (s *up) setupDebugUtil() error {
-	stdlog.Printf("|*** 加载调试工具：%v\n", s.config.IsDebugMode())
-	if !s.config.IsDebugMode() {
+	stdlog.Printf("|*** 加载调试工具：%v\n", s.Config.IsDebugMode())
+	if !s.Config.IsDebugMode() {
 		return nil
 	}
 	return debugutil.Setup()
@@ -160,8 +156,8 @@ func (s *up) setupLogUtil() (err error) {
 
 // setupLoggerFileWriter 启动日志文件写手柄
 func (s *up) setupLoggerFileWriter() (io.Writer, error) {
-	loggerConfig := s.config.LoggerConfig()
-	if !s.config.EnableLoggingFile() || loggerConfig.File == nil {
+	loggerConfig := s.Config.LoggerConfig()
+	if !s.Config.EnableLoggingFile() || loggerConfig.File == nil {
 		stdlog.Println("|*** 加载日志工具：虚拟的文件写手柄")
 		return writerutil.NewDummyWriter()
 	}
@@ -182,13 +178,13 @@ func (s *up) setupLogger() (logger log.Logger, err error) {
 	var loggers []log.Logger
 
 	// 配置
-	loggerConfig := s.config.LoggerConfig()
+	loggerConfig := s.Config.LoggerConfig()
 	if loggerConfig == nil {
 		return logger, err
 	}
 
 	// 日志 输出到控制台
-	if s.config.EnableLoggingConsole() && loggerConfig.Console != nil {
+	if s.Config.EnableLoggingConsole() && loggerConfig.Console != nil {
 		stdlog.Println("|*** 加载日志工具：日志输出到控制台")
 		stdLoggerConfig := &logutil.ConfigStd{
 			Level:      logutil.ParseLevel(loggerConfig.Console.Level),
@@ -202,7 +198,7 @@ func (s *up) setupLogger() (logger log.Logger, err error) {
 	}
 
 	// 日志 输出到文件
-	if s.config.EnableLoggingFile() && loggerConfig.File != nil {
+	if s.Config.EnableLoggingFile() && loggerConfig.File != nil {
 		stdlog.Println("|*** 加载日志工具：日志输出到文件")
 		// file logger
 		fileLoggerConfig := &logutil.ConfigFile{
@@ -241,7 +237,7 @@ func (s *up) setupLogger() (logger log.Logger, err error) {
 
 // setupMysqlGormDB mysql gorm 数据库
 func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
-	if s.config.MySQLConfig() == nil {
+	if s.Config.MySQLConfig() == nil {
 		stdlog.Println("|*** 加载MySQL-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
@@ -252,10 +248,10 @@ func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
 		writers []logger.Writer
 		opts    []mysqlutil.Option
 	)
-	if s.config.EnableLoggingConsole() {
+	if s.Config.EnableLoggingConsole() {
 		writers = append(writers, mysqlutil.NewStdWriter())
 	}
-	if s.config.EnableLoggingFile() {
+	if s.Config.EnableLoggingFile() {
 		writer, err := s.LoggerFileWriter()
 		if err != nil {
 			return nil, err
@@ -265,16 +261,16 @@ func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
 	if len(writers) > 0 {
 		opts = append(opts, mysqlutil.WithWriters(writers...))
 	}
-	return mysqlutil.NewMysqlDB(s.config.MySQLConfig(), opts...)
+	return mysqlutil.NewMysqlDB(s.Config.MySQLConfig(), opts...)
 }
 
 // setupRedisClient redis 客户端
 func (s *up) setupRedisClient() (*redis.Client, error) {
-	if s.config.RedisConfig() == nil {
+	if s.Config.RedisConfig() == nil {
 		stdlog.Println("|*** 加载Redis客户端：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
 	stdlog.Println("|*** 加载Redis客户端：成功")
 
-	return redisutil.NewDB(s.config.RedisConfig())
+	return redisutil.NewDB(s.Config.RedisConfig())
 }

@@ -17,6 +17,8 @@ message Bootstrap {
   Log log = 2;
   // data 数据
   Data data = 3;
+  // server 服务
+  Server server = 4;
 }
 
 // App application
@@ -111,4 +113,30 @@ message Data {
   }
   MySQL mysql = 1;
   Redis redis = 2;
+}
+
+// Server 服务
+message Server {
+  // HTTP http服务配置
+  message HTTP {
+    // network 网络
+    string network = 1;
+    // addr 地址
+    string addr = 2;
+    // timeout 超时时间
+    google.protobuf.Duration timeout = 3;
+  }
+  // GRPC grpc服务配置
+  message GRPC {
+    // network 网络
+    string network = 1;
+    // addr 地址
+    string addr = 2;
+    // timeout 超时时间
+    google.protobuf.Duration timeout = 3;
+  }
+  // http http服务配置
+  HTTP http = 1;
+  // grpc grpc服务配置
+  GRPC grpc = 2;
 }

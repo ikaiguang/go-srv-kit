@@ -161,3 +161,27 @@ func (s *configuration) RedisConfig() *confv1.Data_Redis {
 	}
 	return s.conf.Data.Redis
 }
+
+// ServerConfig server配置
+func (s *configuration) ServerConfig() *confv1.Server {
+	if s.conf.Server == nil {
+		return nil
+	}
+	return s.conf.Server
+}
+
+// HTTPConfig http配置
+func (s *configuration) HTTPConfig() *confv1.Server_HTTP {
+	if s.conf.Server == nil {
+		return nil
+	}
+	return s.conf.Server.Http
+}
+
+// GRPCConfig grpc配置
+func (s *configuration) GRPCConfig() *confv1.Server_GRPC {
+	if s.conf.Server == nil {
+		return nil
+	}
+	return s.conf.Server.Grpc
+}

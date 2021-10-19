@@ -37,6 +37,10 @@ func IsUninitializedError(err error) bool {
 
 // Args 参数
 type Args interface {
+}
+
+// Config 配置
+type Config interface {
 	// AppConfig APP配置
 	AppConfig() *confv1.App
 
@@ -48,12 +52,6 @@ type Args interface {
 	EnableLoggingConsole() bool
 	// EnableLoggingFile 是否启用 日志输出到文件
 	EnableLoggingFile() bool
-}
-
-// Config 配置
-type Config interface {
-	// Args 参数
-	Args
 
 	// LoggerConfig 日志配置
 	LoggerConfig() *confv1.Log
@@ -63,12 +61,18 @@ type Config interface {
 	MySQLConfig() *confv1.Data_MySQL
 	// RedisConfig redis配置
 	RedisConfig() *confv1.Data_Redis
+	// ServerConfig server配置
+	ServerConfig() *confv1.Server
+	// HTTPConfig http配置
+	HTTPConfig() *confv1.Server_HTTP
+	// GRPCConfig grpc配置
+	GRPCConfig() *confv1.Server_GRPC
 }
 
 // Packages 包/依赖
 type Packages interface {
-	// Args 参数
-	Args
+	// Config 配置
+	Config
 
 	// LoggerFileWriter 文件日志写手柄
 	LoggerFileWriter() (io.Writer, error)
