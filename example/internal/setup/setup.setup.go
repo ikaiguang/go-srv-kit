@@ -45,7 +45,7 @@ func Setup() (packages Packages, err error) {
 	}
 
 	// 设置日志工具
-	if err = upHandler.setupLogUtil(); err != nil {
+	if err = upHandler.setupLogHelper(); err != nil {
 		return packages, err
 	}
 

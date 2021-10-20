@@ -28,8 +28,10 @@ type up struct {
 	loggerFileWriter      io.Writer
 
 	// loggerMutex 日志
-	loggerMutex sync.Once
-	logger      log.Logger
+	loggerMutex       sync.Once
+	logger            log.Logger
+	loggerHelperMutex sync.Once
+	loggerHelper      log.Logger
 
 	// mysqlGormMutex mysql gorm
 	mysqlGormMutex sync.Once
@@ -91,6 +93,25 @@ func (s *up) Logger() (log.Logger, error) {
 	return s.logger, err
 }
 
+// LoggerHelper 日志处理示例
+func (s *up) LoggerHelper() (log.Logger, error) {
+	var err error
+	s.loggerHelperMutex.Do(func() {
+		s.loggerHelper, err = s.setupLoggerHelper()
+	})
+	if err != nil {
+		return nil, err
+	}
+	if s.loggerHelper != nil {
+		return s.loggerHelper, err
+	}
+	s.loggerHelper, err = s.setupLoggerHelper()
+	if err != nil {
+		return nil, err
+	}
+	return s.loggerHelper, err
+}
+
 // LoggerFileWriter 文件日志写手柄
 func (s *up) MysqlGormDB() (*gorm.DB, error) {
 	var err error
@@ -139,18 +160,27 @@ func (s *up) setupDebugUtil() error {
 	return debugutil.Setup()
 }
 
-// setupLogUtil 设置日志工具
-func (s *up) setupLogUtil() (err error) {
-	logger, err := s.Logger()
+// setupLogHelper 设置日志工具
+func (s *up) setupLogHelper() (err error) {
+	loggerInstance, err := s.LoggerHelper()
 	if err != nil {
 		return err
 	}
-	if logger == nil {
+	if loggerInstance == nil {
 		stdlog.Println("|*** 未加载日志工具")
 		return err
 	}
 
-	loghelper.Setup(logger)
+	// 日志
+	loggerConfig := s.Config.LoggerConfig()
+	if s.Config.EnableLoggingConsole() && loggerConfig.Console != nil {
+		stdlog.Println("|*** 加载日志工具：日志输出到控制台")
+	}
+	if s.Config.EnableLoggingFile() && loggerConfig.File != nil {
+		stdlog.Println("|*** 加载日志工具：日志输出到文件")
+	}
+
+	loghelper.Setup(loggerInstance)
 	return err
 }
 
@@ -172,8 +202,18 @@ func (s *up) setupLoggerFileWriter() (io.Writer, error) {
 	return writerutil.NewRotateFile(rotateConfig)
 }
 
-// setupLogger 启动日志文件写手柄
+// setupLogger 初始化日志输出实例
 func (s *up) setupLogger() (logger log.Logger, err error) {
+	return s.setupLoggerWithCallerSkip(1)
+}
+
+// setupLoggerHelper 初始化日志输出实例
+func (s *up) setupLoggerHelper() (logger log.Logger, err error) {
+	return s.setupLoggerWithCallerSkip(2)
+}
+
+// setupLoggerWithCallerSkip 初始化日志输出实例
+func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, err error) {
 	// loggers
 	var loggers []log.Logger
 
@@ -184,26 +224,28 @@ func (s *up) setupLogger() (logger log.Logger, err error) {
 	}
 
 	// 日志 输出到控制台
+	stdLogger, err := logutil.NewDummyLogger()
+	if err != nil {
+		return logger, err
+	}
 	if s.Config.EnableLoggingConsole() && loggerConfig.Console != nil {
-		stdlog.Println("|*** 加载日志工具：日志输出到控制台")
 		stdLoggerConfig := &logutil.ConfigStd{
 			Level:      logutil.ParseLevel(loggerConfig.Console.Level),
-			CallerSkip: logutil.DefaultCallerSkip + 2,
+			CallerSkip: logutil.DefaultCallerSkip + skip,
 		}
-		stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
+		stdLogger, err = logutil.NewStdLogger(stdLoggerConfig)
 		if err != nil {
 			return logger, err
 		}
-		loggers = append(loggers, stdLogger)
 	}
+	loggers = append(loggers, stdLogger)
 
 	// 日志 输出到文件
 	if s.Config.EnableLoggingFile() && loggerConfig.File != nil {
-		stdlog.Println("|*** 加载日志工具：日志输出到文件")
 		// file logger
 		fileLoggerConfig := &logutil.ConfigFile{
 			Level:      logutil.ParseLevel(loggerConfig.File.Level),
-			CallerSkip: logutil.DefaultCallerSkip + 2,
+			CallerSkip: logutil.DefaultCallerSkip + skip,
 
 			Dir:      loggerConfig.File.Dir,
 			Filename: loggerConfig.File.Filename,
