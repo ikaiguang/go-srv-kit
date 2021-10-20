@@ -7,6 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2"
 
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
+	routes "github.com/ikaiguang/go-srv-kit/example/internal/route"
 	servers "github.com/ikaiguang/go-srv-kit/example/internal/server"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 )
@@ -33,11 +34,7 @@ func newApp(packages setup.Packages) (app *kratos.App, err error) {
 	}
 
 	// 路由
-	err = servers.RegisterHTTPRoute(packages, hs)
-	if err != nil {
-		return app, err
-	}
-	err = servers.RegisterGRPCRoute(packages, gs)
+	err = routes.RegisterRoutes(packages, hs, gs)
 	if err != nil {
 		return app, err
 	}
