@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 const (
@@ -26,15 +27,15 @@ func Setup() (packages Packages, err error) {
 	// parses the command-line flags
 	flag.Parse()
 
-	// 开始配置
-	stdlog.Println("|==================== 配置程序 开始 ====================|")
-	defer stdlog.Println("|==================== 配置程序 结束 ====================|")
-
 	// 初始化配置手柄
 	configHandler, err := newConfigHandler()
 	if err != nil {
 		return packages, err
 	}
+
+	// 开始配置
+	stdlog.Println("|==================== 配置程序 开始 ====================|")
+	defer stdlog.Println("|==================== 配置程序 结束 ====================|")
 
 	// 启动手柄
 	upHandler := newUpHandler(configHandler)
@@ -63,12 +64,15 @@ func Setup() (packages Packages, err error) {
 
 // newConfigHandler 初始化配置手柄
 func newConfigHandler() (Config, error) {
+	stdlog.Println("|==================== 加载配置文件 开始 ====================|")
+	defer stdlog.Println()
+	defer stdlog.Println("|==================== 加载配置文件 结束 ====================|")
 	// 配置路径
 	confPath := _configFilepath
 	if confPath == "" {
 		confPath = _defaultConfigFilepath
 	}
-	stdlog.Printf("|*** 配置文件路径：%s\n", confPath)
+	log.Infof("配置文件路径: %s\n", confPath)
 
 	var opts []config.Option
 	opts = append(opts, config.WithSource(

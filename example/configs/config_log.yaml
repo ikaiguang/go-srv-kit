@@ -8,6 +8,7 @@ log:
     enable: true
     # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
     level: DEBUG
+    # dir: ./runtime/logs
     dir: ./
     filename: logs
     # rotate_time 轮询规则：n久 或 文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
