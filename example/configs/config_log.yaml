@@ -1,0 +1,20 @@
+# log 日志
+log:
+  console:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: debug
+  file:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: DEBUG
+    dir: ./
+    filename: logs
+    # rotate_time 轮询规则：n久 或 文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    rotate_time: 0s
+    # rotate_size 轮询规则：按文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    rotate_size: 52428800
+    # storage_counter 存储：n个 或 有效期storage_age(默认：2592000s = 30天)
+    storage_counter: 0
+    # storage_age 存储n久(默认：2592000s = 30天)
+    storage_age: 2592000s

@@ -1,0 +1,10 @@
+# server 服务
+server:
+  http:
+    network:
+    addr: 0.0.0.0:8080
+    timeout: 30s
+  grpc:
+    network:
+    addr: 0.0.0.0:9090
+    timeout: 30s

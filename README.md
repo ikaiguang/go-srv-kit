@@ -16,7 +16,7 @@ base on [kratos@v2](https://github.com/go-kratos/kratos)
 ```shell
 go run ./example/cmd/main/... -conf=./example/configs
 
-curl http://127.0.0.1:8000/v1/ping/hello
+curl http://127.0.0.1:8080/v1/ping/hello
 ```
 
 ## Go Package names

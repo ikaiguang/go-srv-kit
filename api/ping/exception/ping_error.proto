@@ -16,4 +16,5 @@ enum Error {
 
   UNKNOWN = 0 [(errors.code) = 404];
   CONTENT_MISSING = 1 [(errors.code) = 400];
+  CONTENT_ERROR = 2 [(errors.code) = 400];
 }

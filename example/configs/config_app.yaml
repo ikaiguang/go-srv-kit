@@ -1,0 +1,10 @@
+# app 程序
+app:
+  name: srv_kit
+  version: 1.0.0
+  # env 开发环境；值：DEVELOP、TESTING、PREVIEW、PRODUCTION
+  env: develop
+  endpoints:
+    - https://uufff.com
+  metadata:
+    id: "${app.name}_${app.version}_${app.env}"

@@ -28,3 +28,12 @@ func IsContentMissing(err error) bool {
 func ErrorContentMissing(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, Error_CONTENT_MISSING.String(), fmt.Sprintf(format, args...))
 }
+
+func IsContentError(err error) bool {
+	e := errors.FromError(err)
+	return e.Reason == Error_CONTENT_ERROR.String() && e.Code == 400
+}
+
+func ErrorContentError(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, Error_CONTENT_ERROR.String(), fmt.Sprintf(format, args...))
+}
