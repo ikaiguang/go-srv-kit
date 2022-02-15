@@ -45,7 +45,7 @@ func Setup() (packages Packages, err error) {
 	}
 
 	// 设置日志工具
-	if err = upHandler.setupLogHelper(); err != nil {
+	if _, err = upHandler.setupLogHelper(); err != nil {
 		return packages, err
 	}
 
@@ -58,7 +58,6 @@ func Setup() (packages Packages, err error) {
 	if _, err = upHandler.RedisClient(); err != nil {
 		return packages, err
 	}
-
 	return upHandler, err
 }
 

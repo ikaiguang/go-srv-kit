@@ -21,23 +21,30 @@ const (
 	_defaultRotationFilenameSuffix = "_app.%Y%m%d%H%M%S.log" // 文件名后缀
 )
 
-// file 输出到文件
-type file struct {
+var _ log.Logger = &File{}
+
+// File 输出到文件
+type File struct {
 	loggerHandler *zap.Logger
 }
 
 // NewFileLogger 输出到文件
-func NewFileLogger(conf *ConfigFile, opts ...Option) (log.Logger, error) {
-	handler := &file{}
-	if err := handler.InitLogger(conf, opts...); err != nil {
+func NewFileLogger(conf *ConfigFile, opts ...Option) (*File, error) {
+	handler := &File{}
+	if err := handler.initLogger(conf, opts...); err != nil {
 		err = errors.WithStack(err)
 		return handler, err
 	}
 	return handler, nil
 }
 
+// Sync zap.Logger.Sync
+func (s *File) Sync() error {
+	return s.loggerHandler.Sync()
+}
+
 // Log .
-func (s *file) Log(level log.Level, keyvals ...interface{}) (err error) {
+func (s *File) Log(level log.Level, keyvals ...interface{}) (err error) {
 	if len(keyvals) == 0 {
 		return err
 	}
@@ -69,8 +76,8 @@ func (s *file) Log(level log.Level, keyvals ...interface{}) (err error) {
 	return err
 }
 
-// InitLogger .
-func (s *file) InitLogger(conf *ConfigFile, opts ...Option) (err error) {
+// initLogger .
+func (s *File) initLogger(conf *ConfigFile, opts ...Option) (err error) {
 	// 可选项
 	options := options{
 		writer: nil,
@@ -130,7 +137,7 @@ func (s *file) InitLogger(conf *ConfigFile, opts ...Option) (err error) {
 }
 
 // getWriter log writer
-func (s *file) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
+func (s *File) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
 	writerConfig := &writerutil.ConfigRotate{
 		Dir:            cfg.Dir,
 		Filename:       cfg.Filename,

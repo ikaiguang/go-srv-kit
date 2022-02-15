@@ -17,6 +17,8 @@ func TestSetup(t *testing.T) {
 		t.Errorf("%+v\n", err)
 		t.FailNow()
 	}
+	defer func() { _ = packages.Close() }()
+
 	ctx := context.Background()
 
 	// env

@@ -1,8 +1,10 @@
 package setup
 
 import (
+	"fmt"
 	"io"
 	stdlog "log"
+	"strings"
 	"sync"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -27,11 +29,16 @@ type up struct {
 	loggerFileWriterMutex sync.Once
 	loggerFileWriter      io.Writer
 
+	// debugHelperCloseFnSlice debug工具
+	debugHelperCloseFnSlice []func() error
+
 	// loggerMutex 日志
-	loggerMutex       sync.Once
-	logger            log.Logger
-	loggerHelperMutex sync.Once
-	loggerHelper      log.Logger
+	loggerMutex              sync.Once
+	logger                   log.Logger
+	loggerCloseFnSlice       []func() error
+	loggerHelperMutex        sync.Once
+	loggerHelper             log.Logger
+	loggerHelperCloseFnSlice []func() error
 
 	// mysqlGormMutex mysql gorm
 	mysqlGormMutex sync.Once
@@ -52,6 +59,99 @@ func newUpHandler(conf Config) *up {
 	return &up{
 		Config: conf,
 	}
+}
+
+// Close .
+func (s *up) Close() (err error) {
+	// 退出程序
+	stdlog.Println("|==================== 退出程序 开始 ====================|")
+	defer stdlog.Println("|==================== 退出程序 结束 ====================|")
+
+	var errInfos []string
+	defer func() {
+		if len(errInfos) > 0 {
+			err = pkgerrors.New(strings.Join(errInfos, "；\n"))
+		}
+	}()
+
+	// 发生Panic
+	defer func() {
+		panicRecover := recover()
+		if panicRecover == nil {
+			return
+		}
+
+		// Panic
+		if len(errInfos) > 0 {
+			stdlog.Printf("|*** 退出程序 发生Panic：\n%s\n", strings.Join(errInfos, "\n"))
+		}
+		stdlog.Printf("|*** 退出程序 发生Panic：%v\n", strings.Join(errInfos, "\n"))
+	}()
+
+	// 缓存
+	if s.redisClient != nil {
+		stdlog.Println("|*** 退出程序：关闭Redis客户端")
+		err := s.redisClient.Close()
+		if err != nil {
+			errorPrefix := "redisClient.Close error : "
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		}
+	}
+
+	// 数据库
+	if s.mysqlGormDB != nil {
+		stdlog.Println("|*** 退出程序：关闭MySQL-GORM")
+		errorPrefix := "mysqlGormDB.Close error : "
+		connPool, err := s.mysqlGormDB.DB()
+		if err != nil {
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		} else if err = connPool.Close(); err != nil {
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		}
+	}
+
+	// debug
+	if len(s.debugHelperCloseFnSlice) > 0 {
+		stdlog.Println("|*** 退出程序：关闭Debug工具")
+	}
+	for i := range s.debugHelperCloseFnSlice {
+		err := s.debugHelperCloseFnSlice[i]()
+		if err != nil {
+			errorPrefix := fmt.Sprintf("debugHelperCloseFnSlice[%d] error : ", i+1)
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		}
+	}
+
+	// 日志
+	if len(s.loggerCloseFnSlice) > 0 {
+		stdlog.Println("|*** 退出程序：关闭日志输出实例")
+	}
+	for i := range s.loggerCloseFnSlice {
+		err := s.loggerCloseFnSlice[i]()
+		if err != nil {
+			errorPrefix := fmt.Sprintf("loggerCloseFnSlice[%d] error : ", i+1)
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		}
+	}
+
+	// 日志工具
+	if len(s.loggerHelperCloseFnSlice) > 0 {
+		stdlog.Println("|*** 退出程序：关闭日志输出工具")
+	}
+	for i := range s.loggerHelperCloseFnSlice {
+		err := s.loggerHelperCloseFnSlice[i]()
+		if err != nil {
+			errorPrefix := fmt.Sprintf("loggerHelperCloseFnSlice[%d] error : ", i+1)
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		}
+	}
+
+	// 有错误
+	if len(errInfos) > 0 {
+		err = pkgerrors.New(strings.Join(errInfos, "；\n"))
+		return err
+	}
+	return err
 }
 
 // LoggerFileWriter 文件日志写手柄
@@ -75,41 +175,43 @@ func (s *up) LoggerFileWriter() (io.Writer, error) {
 }
 
 // Logger 日志处理示例
-func (s *up) Logger() (log.Logger, error) {
-	var err error
+func (s *up) Logger() (log.Logger, []func() error, error) {
+	var (
+		err error
+	)
 	s.loggerMutex.Do(func() {
-		s.logger, err = s.setupLogger()
+		s.logger, s.loggerCloseFnSlice, err = s.setupLogger()
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if s.logger != nil {
-		return s.logger, err
+		return s.logger, s.loggerCloseFnSlice, err
 	}
-	s.logger, err = s.setupLogger()
+	s.logger, s.loggerCloseFnSlice, err = s.setupLogger()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return s.logger, err
+	return s.logger, s.loggerCloseFnSlice, err
 }
 
 // LoggerHelper 日志处理示例
-func (s *up) LoggerHelper() (log.Logger, error) {
+func (s *up) LoggerHelper() (log.Logger, []func() error, error) {
 	var err error
 	s.loggerHelperMutex.Do(func() {
-		s.loggerHelper, err = s.setupLoggerHelper()
+		s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.setupLoggerHelper()
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if s.loggerHelper != nil {
-		return s.loggerHelper, err
+		return s.loggerHelper, s.loggerHelperCloseFnSlice, err
 	}
-	s.loggerHelper, err = s.setupLoggerHelper()
+	s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.setupLoggerHelper()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return s.loggerHelper, err
+	return s.loggerHelper, s.loggerHelperCloseFnSlice, err
 }
 
 // LoggerFileWriter 文件日志写手柄
@@ -157,18 +259,23 @@ func (s *up) setupDebugUtil() error {
 	if !s.Config.IsDebugMode() {
 		return nil
 	}
-	return debugutil.Setup()
-}
-
-// setupLogHelper 设置日志工具
-func (s *up) setupLogHelper() (err error) {
-	loggerInstance, err := s.LoggerHelper()
+	syncFn, err := debugutil.Setup()
 	if err != nil {
 		return err
 	}
+	s.debugHelperCloseFnSlice = append(s.debugHelperCloseFnSlice, syncFn)
+	return err
+}
+
+// setupLogHelper 设置日志工具
+func (s *up) setupLogHelper() (closeFnSlice []func() error, err error) {
+	loggerInstance, closeFnSlice, err := s.LoggerHelper()
+	if err != nil {
+		return closeFnSlice, err
+	}
 	if loggerInstance == nil {
 		stdlog.Println("|*** 未加载日志工具")
-		return err
+		return closeFnSlice, err
 	}
 
 	// 日志
@@ -181,7 +288,7 @@ func (s *up) setupLogHelper() (err error) {
 	}
 
 	loghelper.Setup(loggerInstance)
-	return err
+	return closeFnSlice, err
 }
 
 // setupLoggerFileWriter 启动日志文件写手柄
@@ -203,40 +310,42 @@ func (s *up) setupLoggerFileWriter() (io.Writer, error) {
 }
 
 // setupLogger 初始化日志输出实例
-func (s *up) setupLogger() (logger log.Logger, err error) {
+func (s *up) setupLogger() (logger log.Logger, closeFnSlice []func() error, err error) {
 	return s.setupLoggerWithCallerSkip(1)
 }
 
 // setupLoggerHelper 初始化日志输出实例
-func (s *up) setupLoggerHelper() (logger log.Logger, err error) {
+func (s *up) setupLoggerHelper() (logger log.Logger, closeFnSlice []func() error, err error) {
 	return s.setupLoggerWithCallerSkip(2)
 }
 
 // setupLoggerWithCallerSkip 初始化日志输出实例
-func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, err error) {
+func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlice []func() error, err error) {
 	// loggers
 	var loggers []log.Logger
 
 	// 配置
 	loggerConfig := s.Config.LoggerConfig()
 	if loggerConfig == nil {
-		return logger, err
+		return logger, closeFnSlice, err
 	}
 
 	// 日志 输出到控制台
 	stdLogger, err := logutil.NewDummyLogger()
 	if err != nil {
-		return logger, err
+		return logger, closeFnSlice, err
 	}
 	if s.Config.EnableLoggingConsole() && loggerConfig.Console != nil {
 		stdLoggerConfig := &logutil.ConfigStd{
 			Level:      logutil.ParseLevel(loggerConfig.Console.Level),
 			CallerSkip: logutil.DefaultCallerSkip + skip,
 		}
-		stdLogger, err = logutil.NewStdLogger(stdLoggerConfig)
+		stdLoggerImpl, err := logutil.NewStdLogger(stdLoggerConfig)
 		if err != nil {
-			return logger, err
+			return logger, closeFnSlice, err
 		}
+		closeFnSlice = append(closeFnSlice, stdLoggerImpl.Sync)
+		stdLogger = stdLoggerImpl
 	}
 	loggers = append(loggers, stdLogger)
 
@@ -258,23 +367,24 @@ func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, err error) 
 		}
 		writer, err := s.LoggerFileWriter()
 		if err != nil {
-			return logger, err
+			return logger, closeFnSlice, err
 		}
 		fileLogger, err := logutil.NewFileLogger(
 			fileLoggerConfig,
 			logutil.WithWriter(writer),
 		)
+		closeFnSlice = append(closeFnSlice, fileLogger.Sync)
 		if err != nil {
-			return logger, err
+			return logger, closeFnSlice, err
 		}
 		loggers = append(loggers, fileLogger)
 	}
 
 	// 日志工具
 	if len(loggers) == 0 {
-		return logger, err
+		return logger, closeFnSlice, err
 	}
-	return log.MultiLogger(loggers...), err
+	return log.MultiLogger(loggers...), closeFnSlice, err
 }
 
 // setupMysqlGormDB mysql gorm 数据库

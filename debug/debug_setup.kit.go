@@ -14,7 +14,7 @@ var (
 )
 
 // Setup 启动
-func Setup() (err error) {
+func Setup() (syncFn func() error, err error) {
 	// std logger
 	stdLoggerConfig := &logutil.ConfigStd{
 		Level:      log.LevelDebug,
@@ -23,11 +23,12 @@ func Setup() (err error) {
 	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	if err != nil {
 		err = errors.WithStack(err)
-		return err
+		return syncFn, err
 	}
+	syncFn = stdLogger.Sync
 	handler = log.NewHelper(stdLogger)
 
-	return err
+	return syncFn, err
 }
 
 // defaultHandler .

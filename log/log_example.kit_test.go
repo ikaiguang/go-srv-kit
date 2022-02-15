@@ -15,6 +15,7 @@ func ExampleNewMultiLogger() {
 	if err != nil {
 		panic(err)
 	}
+	defer func() { _ = stdLogger.Sync() }()
 
 	// file logger
 	fileLoggerConfig := &ConfigFile{
@@ -25,6 +26,7 @@ func ExampleNewMultiLogger() {
 	if err != nil {
 		panic(err)
 	}
+	defer func() { _ = fileLogger.Sync() }()
 
 	logger := NewMultiLogger(stdLogger, fileLogger)
 	logHandler := log.NewHelper(logger)
@@ -52,6 +54,7 @@ func ExampleNewFileLogger() {
 	if err != nil {
 		panic(err)
 	}
+	defer func() { _ = fileLogger.Sync() }()
 
 	logHandler := log.NewHelper(fileLogger)
 	logHandler.Error("error")
@@ -69,6 +72,7 @@ func ExampleNewStdLogger() {
 	if err != nil {
 		panic(err)
 	}
+	defer func() { _ = stdLogger.Sync() }()
 
 	logHandler := log.NewHelper(stdLogger)
 	logHandler.Error("error")

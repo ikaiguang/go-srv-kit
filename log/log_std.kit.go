@@ -12,14 +12,16 @@ import (
 	timeutil "github.com/ikaiguang/go-srv-kit/time"
 )
 
-// std 标准输出
-type std struct {
+var _ log.Logger = &Std{}
+
+// Std 标准输出
+type Std struct {
 	loggerHandler *zap.Logger
 }
 
 // NewStdLogger 输出到控制台
-func NewStdLogger(conf *ConfigStd) (log.Logger, error) {
-	handler := &std{}
+func NewStdLogger(conf *ConfigStd) (*Std, error) {
+	handler := &Std{}
 	if err := handler.InitLogger(conf); err != nil {
 		err = errors.WithStack(err)
 		return handler, err
@@ -27,8 +29,13 @@ func NewStdLogger(conf *ConfigStd) (log.Logger, error) {
 	return handler, nil
 }
 
+// Sync zap.Logger.Sync
+func (s *Std) Sync() error {
+	return s.loggerHandler.Sync()
+}
+
 // Log .
-func (s *std) Log(level log.Level, keyvals ...interface{}) (err error) {
+func (s *Std) Log(level log.Level, keyvals ...interface{}) (err error) {
 	if len(keyvals) == 0 {
 		return err
 	}
@@ -61,7 +68,7 @@ func (s *std) Log(level log.Level, keyvals ...interface{}) (err error) {
 }
 
 // InitLogger .
-func (s *std) InitLogger(conf *ConfigStd) (err error) {
+func (s *Std) InitLogger(conf *ConfigStd) (err error) {
 	// 参考 zap.NewDevelopmentEncoderConfig()
 	encoderConf := zapcore.EncoderConfig{
 		MessageKey:    ZapMessageKey,

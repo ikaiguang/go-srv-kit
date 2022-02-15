@@ -15,7 +15,7 @@ func RegisterRoutes(packages setup.Packages, hs *http.Server, gs *grpc.Server) (
 	stdlog.Println("|*** 注册路由：...")
 
 	// 日志
-	logger, err := packages.Logger()
+	logger, _, err := packages.Logger()
 	if err != nil {
 		return err
 	}

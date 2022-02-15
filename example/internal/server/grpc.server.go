@@ -15,7 +15,7 @@ func NewGRPCServer(packages setup.Packages) (srv *grpc.Server, err error) {
 	stdlog.Printf("|*** 加载GRPC服务：%s\n", c.Grpc.Addr)
 
 	// 日志
-	logger, err := packages.Logger()
+	logger, _, err := packages.Logger()
 	if err != nil {
 		return srv, err
 	}

@@ -18,7 +18,7 @@ func newApp(packages setup.Packages) (app *kratos.App, err error) {
 	hostname, _ := os.Hostname()
 
 	// 日志
-	logger, err := packages.Logger()
+	logger, _, err := packages.Logger()
 	if err != nil {
 		return app, err
 	}
@@ -61,6 +61,7 @@ func main() {
 		stdlog.Fatalf("%+v\n", err)
 		return
 	}
+	//defer func() { _ = setup.Close() }()
 
 	// 包
 	packages, err := setup.GetPackages()
@@ -68,6 +69,8 @@ func main() {
 		stdlog.Fatalf("%+v\n", err)
 		return
 	}
+	// 关闭
+	defer func() { _ = setup.Close() }()
 
 	// 启动程序
 	stdlog.Println()

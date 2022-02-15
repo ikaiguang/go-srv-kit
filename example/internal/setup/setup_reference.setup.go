@@ -78,14 +78,17 @@ type Packages interface {
 	LoggerFileWriter() (io.Writer, error)
 	// Logger 日志处理实例 runtime.caller.skip + 1
 	// 用于 log.Helper 输出；例子：log.Helper.Info
-	Logger() (log.Logger, error)
+	Logger() (log.Logger, []func() error, error)
 	// LoggerHelper 日志处理实例 runtime.caller.skip + 2
 	// 用于包含 log.Helper 输出；例子：func Info(){log.Helper.Info()}
-	LoggerHelper() (log.Logger, error)
+	LoggerHelper() (log.Logger, []func() error, error)
 
 	// MysqlGormDB mysql gorm 数据库
 	MysqlGormDB() (*gorm.DB, error)
 
 	// RedisClient redis 客户端
 	RedisClient() (*redis.Client, error)
+
+	// 关闭
+	Close() error
 }

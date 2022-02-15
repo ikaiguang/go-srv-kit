@@ -49,37 +49,51 @@ func TestSetup_Xxx(t *testing.T) {
 	}
 
 	var (
-		oneLoggerFn = func(addSkip int) (log.Logger, error) {
+		oneLoggerFn = func(addSkip int) (log.Logger, func() error, error) {
 			stdLoggerConfig := &logutil.ConfigStd{
 				Level:      log.LevelDebug,
 				CallerSkip: logutil.DefaultCallerSkip + addSkip,
 			}
-			return logutil.NewStdLogger(stdLoggerConfig)
+			// 在for中Sync
+			logger, err := logutil.NewStdLogger(stdLoggerConfig)
+			if err != nil {
+				return logger, nil, err
+			}
+			return logger, logger.Sync, err
 		}
-		multiLoggerFn = func(addSkip int) (log.Logger, error) {
-			logger1, err := oneLoggerFn(addSkip)
+		multiLoggerFn = func(addSkip int) (log.Logger, []func() error, error) {
+			var closeFnSlice []func() error
+			logger1, syncFn1, err := oneLoggerFn(addSkip)
 			if err != nil {
-				return nil, err
+				return logger1, closeFnSlice, err
 			}
-			logger2, err := oneLoggerFn(addSkip)
+			closeFnSlice = append(closeFnSlice, syncFn1)
+
+			logger2, syncFn2, err := oneLoggerFn(addSkip)
 			if err != nil {
-				return nil, err
+				return logger2, closeFnSlice, err
 			}
-			return log.MultiLogger(logger1, logger2), nil
+			closeFnSlice = append(closeFnSlice, syncFn2)
+
+			return log.MultiLogger(logger1, logger2), closeFnSlice, nil
 		}
 	)
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var (
-				logger log.Logger
-				err    error
+				logger      log.Logger
+				syncFn      func() error
+				syncFnSlice []func() error
+				err         error
 			)
 			if tt.isMulti {
-				logger, err = multiLoggerFn(tt.addSkip)
+				logger, syncFnSlice, err = multiLoggerFn(tt.addSkip)
 			} else {
-				logger, err = oneLoggerFn(tt.addSkip)
+				logger, syncFn, err = oneLoggerFn(tt.addSkip)
+				syncFnSlice = append(syncFnSlice, syncFn)
 			}
 			require.Nil(t, err)
+
 			if tt.hasWith {
 				logger = log.With(logger, "caller", log.Caller(logutil.DefaultCallerValuer+tt.callerSkip))
 			}
@@ -87,6 +101,10 @@ func TestSetup_Xxx(t *testing.T) {
 			Setup(logger)
 
 			Infof("第 %d 个", i+1)
+
+			for fnIndex := range syncFnSlice {
+				_ = syncFnSlice[fnIndex]()
+			}
 		})
 	}
 }
@@ -99,6 +117,7 @@ func TestSetup_OneLogger_Xxx(t *testing.T) {
 	}
 	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
+	defer func() { _ = stdLogger.Sync() }()
 
 	// CallerSkip: DefaultCallerSkip + 2,
 	//stdLogger = log.With(stdLogger, "caller", log.Caller(DefaultCallerValuer+2))
@@ -114,10 +133,12 @@ func TestSetup_OneLogger_With(t *testing.T) {
 		Level:      log.LevelDebug,
 		CallerSkip: logutil.DefaultCallerSkip + 2,
 	}
-	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
+	stdLoggerHandler, err := logutil.NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
+	defer func() { _ = stdLoggerHandler.Sync() }()
 
 	// CallerSkip: DefaultCallerSkip + 2,
+	var stdLogger log.Logger = stdLoggerHandler
 	stdLogger = log.With(stdLogger, "caller", log.Caller(logutil.DefaultCallerValuer+2))
 
 	Setup(stdLogger)
@@ -133,6 +154,7 @@ func TestSetup_MultiLogger(t *testing.T) {
 	}
 	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
+	defer func() { _ = stdLogger.Sync() }()
 
 	// two
 	stdLoggerConfig2 := &logutil.ConfigStd{
@@ -141,6 +163,7 @@ func TestSetup_MultiLogger(t *testing.T) {
 	}
 	stdLogger2, err := logutil.NewStdLogger(stdLoggerConfig2)
 	require.Nil(t, err)
+	defer func() { _ = stdLogger2.Sync() }()
 
 	multiLogger := log.MultiLogger(stdLogger, stdLogger2)
 	multiLogger = log.With(multiLogger, "caller", log.Caller(logutil.DefaultCallerValuer+2))

@@ -15,7 +15,7 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 	stdlog.Printf("|*** 加载HTTP服务：%s\n", c.Http.Addr)
 
 	// 日志
-	logger, err := packages.Logger()
+	logger, _, err := packages.Logger()
 	if err != nil {
 		return srv, err
 	}

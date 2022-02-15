@@ -28,6 +28,7 @@ func TestNewFileLogger_Xxx(t *testing.T) {
 	}
 	logImpl, err := NewFileLogger(cfg)
 	require.Nil(t, err)
+	defer func() { _ = logImpl.Sync() }()
 
 	logHandler := log.NewHelper(logImpl)
 	logHandler.Error("log level error")
@@ -69,6 +70,7 @@ func TestNewFileLogger_WithWriter(t *testing.T) {
 
 	logImpl, err := NewFileLogger(cfg, WithWriter(writer))
 	require.Nil(t, err)
+	defer func() { _ = logImpl.Sync() }()
 	logHandler := log.NewHelper(logImpl)
 
 	total := int(writerConfig.StorageCounter + 1)

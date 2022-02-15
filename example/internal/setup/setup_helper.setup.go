@@ -36,3 +36,11 @@ func Init() (err error) {
 	}
 	return err
 }
+
+// Close .
+func Close() error {
+	if packages == nil {
+		return nil
+	}
+	return packages.Close()
+}
