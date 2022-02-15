@@ -85,7 +85,7 @@ func (s *up) Close() (err error) {
 		if len(errInfos) > 0 {
 			stdlog.Printf("|*** 退出程序 发生Panic：\n%s\n", strings.Join(errInfos, "\n"))
 		}
-		stdlog.Printf("|*** 退出程序 发生Panic：%v\n", strings.Join(errInfos, "\n"))
+		stdlog.Printf("|*** 退出程序 发生Panic：%v\n", panicRecover)
 	}()
 
 	// 缓存
