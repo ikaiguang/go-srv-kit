@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm/logger"
 
-	timeutil "github.com/ikaiguang/go-srv-kit/time"
+	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 )
 
 // NewStdWriter

@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+// Name random name
+func Name() string {
+	return strconv.FormatInt(time.Now().UnixNano(), 36) + "_" + Strings(5)
+}
+
 // Strings : A-Z a-z 0-9
 func Strings(size int) string {
 
@@ -111,9 +116,4 @@ func IntBetween(min, max int) int {
 	rand.Seed(time.Now().UnixNano())
 
 	return rand.Intn(max-min) + min
-}
-
-// Name random name
-func Name() string {
-	return strconv.FormatInt(time.Now().UnixNano(), 36) + "_" + Strings(5)
 }

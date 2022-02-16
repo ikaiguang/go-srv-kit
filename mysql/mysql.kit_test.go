@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
-	writerutil "github.com/ikaiguang/go-srv-kit/writer"
+	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
 var (

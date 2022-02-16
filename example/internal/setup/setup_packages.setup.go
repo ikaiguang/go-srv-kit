@@ -14,11 +14,11 @@ import (
 	"gorm.io/gorm/logger"
 
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
+	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
 	loghelper "github.com/ikaiguang/go-srv-kit/log/helper"
 	mysqlutil "github.com/ikaiguang/go-srv-kit/mysql"
 	redisutil "github.com/ikaiguang/go-srv-kit/redis"
-	writerutil "github.com/ikaiguang/go-srv-kit/writer"
 )
 
 // up 启动手柄

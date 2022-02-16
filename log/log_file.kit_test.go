@@ -8,7 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/stretchr/testify/require"
 
-	writerutil "github.com/ikaiguang/go-srv-kit/writer"
+	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
 // go test -v ./log/ -count=1 -test.run=TestNewFileLogger_Xxx

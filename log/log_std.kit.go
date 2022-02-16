@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	timeutil "github.com/ikaiguang/go-srv-kit/time"
+	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 )
 
 var _ log.Logger = &Std{}

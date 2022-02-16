@@ -10,8 +10,8 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	timeutil "github.com/ikaiguang/go-srv-kit/time"
-	writerutil "github.com/ikaiguang/go-srv-kit/writer"
+	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
+	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
 // 轮转日志参数
