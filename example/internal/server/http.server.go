@@ -3,6 +3,7 @@ package servers
 import (
 	stdlog "log"
 
+	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
@@ -19,11 +20,19 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 	if err != nil {
 		return srv, err
 	}
+	// 中间件
+	loggerMiddle, _, err := packages.LoggerMiddleware()
+	if err != nil {
+		return srv, err
+	}
 
 	// http
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
+		),
+		http.Middleware(
+			logging.Server(loggerMiddle),
 		),
 		http.Logger(logger),
 	}

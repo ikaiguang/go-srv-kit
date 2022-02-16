@@ -33,12 +33,15 @@ type up struct {
 	debugHelperCloseFnSlice []func() error
 
 	// loggerMutex 日志
-	loggerMutex              sync.Once
-	logger                   log.Logger
-	loggerCloseFnSlice       []func() error
-	loggerHelperMutex        sync.Once
-	loggerHelper             log.Logger
-	loggerHelperCloseFnSlice []func() error
+	loggerMutex                  sync.Once
+	logger                       log.Logger
+	loggerCloseFnSlice           []func() error
+	loggerHelperMutex            sync.Once
+	loggerHelper                 log.Logger
+	loggerHelperCloseFnSlice     []func() error
+	loggerMiddlewareMutex        sync.Once
+	loggerMiddleware             log.Logger
+	loggerMiddlewareCloseFnSlice []func() error
 
 	// mysqlGormMutex mysql gorm
 	mysqlGormMutex sync.Once
@@ -146,6 +149,30 @@ func (s *up) Close() (err error) {
 		}
 	}
 
+	// 中间件日志工具
+	if len(s.loggerMiddlewareCloseFnSlice) > 0 {
+		stdlog.Println("|*** 退出程序：关闭中间件日志输出工具")
+	}
+	for i := range s.loggerMiddlewareCloseFnSlice {
+		err := s.loggerMiddlewareCloseFnSlice[i]()
+		if err != nil {
+			errorPrefix := fmt.Sprintf("loggerMiddlewareCloseFnSlice[%d] error : ", i+1)
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		}
+	}
+
+	// Writer
+	type closer interface {
+		Close() error
+	}
+	if writerCloser, ok := s.loggerFileWriter.(closer); ok {
+		stdlog.Println("|*** 退出程序：关闭Writer")
+		if err := writerCloser.Close(); err != nil {
+			errorPrefix := "loggerFileWriter.Close error : "
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		}
+	}
+
 	// 有错误
 	if len(errInfos) > 0 {
 		err = pkgerrors.New(strings.Join(errInfos, "；\n"))
@@ -212,6 +239,25 @@ func (s *up) LoggerHelper() (log.Logger, []func() error, error) {
 		return nil, nil, err
 	}
 	return s.loggerHelper, s.loggerHelperCloseFnSlice, err
+}
+
+// LoggerMiddleware 中间件的日志处理示例
+func (s *up) LoggerMiddleware() (log.Logger, []func() error, error) {
+	var err error
+	s.loggerMiddlewareMutex.Do(func() {
+		s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.setupLoggerMiddleware()
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	if s.loggerMiddleware != nil {
+		return s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err
+	}
+	s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.setupLoggerMiddleware()
+	if err != nil {
+		return nil, nil, err
+	}
+	return s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err
 }
 
 // LoggerFileWriter 文件日志写手柄
@@ -311,12 +357,20 @@ func (s *up) setupLoggerFileWriter() (io.Writer, error) {
 
 // setupLogger 初始化日志输出实例
 func (s *up) setupLogger() (logger log.Logger, closeFnSlice []func() error, err error) {
-	return s.setupLoggerWithCallerSkip(1)
+	skip := logutil.DefaultCallerSkip + 1
+	return s.setupLoggerWithCallerSkip(skip)
 }
 
-// setupLoggerHelper 初始化日志输出实例
+// setupLoggerHelper 初始化日志工具输出实例
 func (s *up) setupLoggerHelper() (logger log.Logger, closeFnSlice []func() error, err error) {
-	return s.setupLoggerWithCallerSkip(2)
+	skip := logutil.DefaultCallerSkip + 2
+	return s.setupLoggerWithCallerSkip(skip)
+}
+
+// setupLoggerMiddleware 初始化中间价的日志输出实例
+func (s *up) setupLoggerMiddleware() (logger log.Logger, closeFnSlice []func() error, err error) {
+	skip := logutil.DefaultCallerSkip - 1
+	return s.setupLoggerWithCallerSkip(skip)
 }
 
 // setupLoggerWithCallerSkip 初始化日志输出实例
@@ -338,7 +392,7 @@ func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlic
 	if s.Config.EnableLoggingConsole() && loggerConfig.Console != nil {
 		stdLoggerConfig := &logutil.ConfigStd{
 			Level:      logutil.ParseLevel(loggerConfig.Console.Level),
-			CallerSkip: logutil.DefaultCallerSkip + skip,
+			CallerSkip: skip,
 		}
 		stdLoggerImpl, err := logutil.NewStdLogger(stdLoggerConfig)
 		if err != nil {
@@ -354,7 +408,7 @@ func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlic
 		// file logger
 		fileLoggerConfig := &logutil.ConfigFile{
 			Level:      logutil.ParseLevel(loggerConfig.File.Level),
-			CallerSkip: logutil.DefaultCallerSkip + skip,
+			CallerSkip: skip,
 
 			Dir:      loggerConfig.File.Dir,
 			Filename: loggerConfig.File.Filename,

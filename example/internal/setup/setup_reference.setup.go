@@ -82,6 +82,9 @@ type Packages interface {
 	// LoggerHelper 日志处理实例 runtime.caller.skip + 2
 	// 用于包含 log.Helper 输出；例子：func Info(){log.Helper.Info()}
 	LoggerHelper() (log.Logger, []func() error, error)
+	// LoggerMiddleware 日志处理实例 runtime.caller.skip - 1
+	// 用于包含 http.Middleware(logging.Server)
+	LoggerMiddleware() (log.Logger, []func() error, error)
 
 	// MysqlGormDB mysql gorm 数据库
 	MysqlGormDB() (*gorm.DB, error)

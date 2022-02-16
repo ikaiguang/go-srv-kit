@@ -6,24 +6,11 @@ api
 
 ```shell
 
-# mac & linux
-protoc -I. \
-  -I$GOPATH/src \
-  -I$GOPATH/src/github.com/ikaiguang/go-srv-kit/third_party/ \
-  --go_out=. --go_opt=paths=source_relative \
-  --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-  --go-http_out=paths=source_relative:. \
-  --go-errors_out=paths=source_relative:. \
-  ./*.proto
-
-# windows
-# protoc -I. -I%GOPATH%/src --go_out=paths=source_relative:. ./*.proto
-#protoc -I. \
-#  -I%GOPATH%/src \
-#  -I%GOPATH%/src/github.com/ikaiguang/go-srv-kit/third_party/ \
-#  --go_out=paths=source_relative:. \
-#  --go-http_out=paths=source_relative:. \
-#  --go-errors_out=paths=source_relative:. \
-#  ./*.proto
+# 生成 client 源码
+kratos proto client api/base/exception/base_error.exception.proto
+kratos proto client api/conf/v1/conf.v1.proto
+kratos proto client api/env/v1/env.v1.proto
+kratos proto client api/ping/exception/ping_error.exception.proto
+kratos proto client api/ping/v1/ping.v1.proto
 
 ```

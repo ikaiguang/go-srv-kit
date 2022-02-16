@@ -48,7 +48,7 @@ func (s *Std) Log(level log.Level, keyvals ...interface{}) (err error) {
 		msg = "\n"
 	)
 	for i := 0; i < len(keyvals); i += 2 {
-		msg += "*** | " + fmt.Sprint(keyvals[i]) + "\n"
+		msg += "|*** " + fmt.Sprint(keyvals[i]) + "\n"
 		msg += "\t" + fmt.Sprint(keyvals[i+1]) + "\n"
 	}
 

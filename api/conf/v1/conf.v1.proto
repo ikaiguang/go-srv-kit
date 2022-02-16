@@ -1,11 +1,10 @@
 syntax = "proto3";
 
-package conf.v1;
+package api.conf.v1;
 
 option go_package = "github.com/ikaiguang/go-srv-kit/api/conf/v1;v1";
 option java_multiple_files = true;
-option java_package = "com.github.srv.kit.conf.v1";
-option objc_class_prefix = "ConfV1";
+option java_package = "api.conf.v1";
 
 import "google/protobuf/duration.proto";
 

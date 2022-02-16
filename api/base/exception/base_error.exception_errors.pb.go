@@ -11,16 +11,22 @@ import (
 // is compatible with the kratos package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
-func IsUNKNOWN(err error) bool {
+func IsUnknown(err error) bool {
+	if err == nil {
+		return false
+	}
 	e := errors.FromError(err)
 	return e.Reason == Error_UNKNOWN.String() && e.Code == 404
 }
 
-func ErrorUNKNOWN(format string, args ...interface{}) *errors.Error {
+func ErrorUnknown(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, Error_UNKNOWN.String(), fmt.Sprintf(format, args...))
 }
 
 func IsContentMissing(err error) bool {
+	if err == nil {
+		return false
+	}
 	e := errors.FromError(err)
 	return e.Reason == Error_CONTENT_MISSING.String() && e.Code == 400
 }
@@ -30,6 +36,9 @@ func ErrorContentMissing(format string, args ...interface{}) *errors.Error {
 }
 
 func IsContentError(err error) bool {
+	if err == nil {
+		return false
+	}
 	e := errors.FromError(err)
 	return e.Reason == Error_CONTENT_ERROR.String() && e.Code == 400
 }
