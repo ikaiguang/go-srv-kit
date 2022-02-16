@@ -24,6 +24,26 @@ type stackTracer interface {
 	StackTrace() pkgerrors.StackTrace
 }
 
+// Stack
+func Stack(err error) (callers []string) {
+	trace, ok := err.(stackTracer)
+	if !ok {
+		pc, _, _, _ := runtime.Caller(1)
+		callers = []string{
+			fmt.Sprintf("%+v", pkgerrors.Frame(pc)),
+		}
+		return callers
+	}
+
+	// stack trace
+	st := trace.StackTrace()
+	callers = make([]string, len(st))
+	for i := range st {
+		callers[i] = fmt.Sprintf("%+v", st[i])
+	}
+	return callers
+}
+
 // Caller serializes a caller in file:line format
 func Caller(err error) (callers []string) {
 	trace, ok := err.(stackTracer)
@@ -50,9 +70,15 @@ func Caller(err error) (callers []string) {
 // CallerWithSkip .
 func CallerWithSkip(err error, skip int) (callers []string) {
 	callers = Caller(err)
-	if len(callers) <= skip {
-		callers = []string{}
+	callCounter := len(callers)
+	switch callCounter {
+	case 0, 1:
 		return callers
+	default:
+
+	}
+	if skip >= callCounter {
+		return callers[callCounter-1:]
 	}
 	return callers[skip:]
 }

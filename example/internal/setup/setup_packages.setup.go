@@ -115,7 +115,7 @@ func (s *up) Close() (err error) {
 
 	// debug
 	if len(s.debugHelperCloseFnSlice) > 0 {
-		stdlog.Println("|*** 退出程序：关闭Debug工具")
+		stdlog.Println("|*** 退出程序：关闭调试工具debugutil")
 	}
 	for i := range s.debugHelperCloseFnSlice {
 		err := s.debugHelperCloseFnSlice[i]()
@@ -301,10 +301,10 @@ func (s *up) RedisClient() (*redis.Client, error) {
 
 // setupDebugUtil 设置调试工具
 func (s *up) setupDebugUtil() error {
-	stdlog.Printf("|*** 加载调试工具：%v\n", s.Config.IsDebugMode())
 	if !s.Config.IsDebugMode() {
 		return nil
 	}
+	stdlog.Printf("|*** 加载调试工具debugutil")
 	syncFn, err := debugutil.Setup()
 	if err != nil {
 		return err

@@ -23,7 +23,7 @@ func ErrorStack(logger log.Logger) middleware.Middleware {
 			callers := errorutil.CallerWithSkip(err, 1)
 			_ = log.WithContext(ctx, logger).Log(
 				log.LevelError,
-				"msg", err.Error(),
+				"error msg", err.Error(),
 				"error stack", strings.Join(callers, "\n\t"),
 			)
 			return
