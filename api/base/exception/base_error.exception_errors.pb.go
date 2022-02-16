@@ -16,33 +16,201 @@ func IsUnknown(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == Error_UNKNOWN.String() && e.Code == 404
+	return e.Reason == ERROR_UNKNOWN.String() && e.Code == 404
 }
 
 func ErrorUnknown(format string, args ...interface{}) *errors.Error {
-	return errors.New(404, Error_UNKNOWN.String(), fmt.Sprintf(format, args...))
+	return errors.New(404, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
 }
 
-func IsContentMissing(err error) bool {
+func IsContinue(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == Error_CONTENT_MISSING.String() && e.Code == 400
+	return e.Reason == ERROR_CONTINUE.String() && e.Code == 100
 }
 
-func ErrorContentMissing(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, Error_CONTENT_MISSING.String(), fmt.Sprintf(format, args...))
+func ErrorContinue(format string, args ...interface{}) *errors.Error {
+	return errors.New(100, ERROR_CONTINUE.String(), fmt.Sprintf(format, args...))
 }
 
-func IsContentError(err error) bool {
+func IsProcessing(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == Error_CONTENT_ERROR.String() && e.Code == 400
+	return e.Reason == ERROR_PROCESSING.String() && e.Code == 102
 }
 
-func ErrorContentError(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, Error_CONTENT_ERROR.String(), fmt.Sprintf(format, args...))
+func ErrorProcessing(format string, args ...interface{}) *errors.Error {
+	return errors.New(102, ERROR_PROCESSING.String(), fmt.Sprintf(format, args...))
+}
+
+func IsOk(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_OK.String() && e.Code == 200
+}
+
+func ErrorOk(format string, args ...interface{}) *errors.Error {
+	return errors.New(200, ERROR_OK.String(), fmt.Sprintf(format, args...))
+}
+
+func IsCreated(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_CREATED.String() && e.Code == 201
+}
+
+func ErrorCreated(format string, args ...interface{}) *errors.Error {
+	return errors.New(201, ERROR_CREATED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsMultipleChoices(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_MULTIPLE_CHOICES.String() && e.Code == 300
+}
+
+func ErrorMultipleChoices(format string, args ...interface{}) *errors.Error {
+	return errors.New(300, ERROR_MULTIPLE_CHOICES.String(), fmt.Sprintf(format, args...))
+}
+
+func IsBadRequest(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_BAD_REQUEST.String() && e.Code == 400
+}
+
+func ErrorBadRequest(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ERROR_BAD_REQUEST.String(), fmt.Sprintf(format, args...))
+}
+
+func IsUnauthorized(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_UNAUTHORIZED.String() && e.Code == 401
+}
+
+func ErrorUnauthorized(format string, args ...interface{}) *errors.Error {
+	return errors.New(401, ERROR_UNAUTHORIZED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsForbidden(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_FORBIDDEN.String() && e.Code == 403
+}
+
+func ErrorForbidden(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ERROR_FORBIDDEN.String(), fmt.Sprintf(format, args...))
+}
+
+func IsNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ERROR_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
+
+func IsMethodNotAllowed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_METHOD_NOT_ALLOWED.String() && e.Code == 405
+}
+
+func ErrorMethodNotAllowed(format string, args ...interface{}) *errors.Error {
+	return errors.New(405, ERROR_METHOD_NOT_ALLOWED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsRequestTimeout(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_REQUEST_TIMEOUT.String() && e.Code == 408
+}
+
+func ErrorRequestTimeout(format string, args ...interface{}) *errors.Error {
+	return errors.New(408, ERROR_REQUEST_TIMEOUT.String(), fmt.Sprintf(format, args...))
+}
+
+func IsTooManyRequests(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_TOO_MANY_REQUESTS.String() && e.Code == 429
+}
+
+func ErrorTooManyRequests(format string, args ...interface{}) *errors.Error {
+	return errors.New(429, ERROR_TOO_MANY_REQUESTS.String(), fmt.Sprintf(format, args...))
+}
+
+func IsInternalServer(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_INTERNAL_SERVER.String() && e.Code == 500
+}
+
+func ErrorInternalServer(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_INTERNAL_SERVER.String(), fmt.Sprintf(format, args...))
+}
+
+func IsNotImplemented(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_NOT_IMPLEMENTED.String() && e.Code == 501
+}
+
+func ErrorNotImplemented(format string, args ...interface{}) *errors.Error {
+	return errors.New(501, ERROR_NOT_IMPLEMENTED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsBadGateway(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_BAD_GATEWAY.String() && e.Code == 502
+}
+
+func ErrorBadGateway(format string, args ...interface{}) *errors.Error {
+	return errors.New(502, ERROR_BAD_GATEWAY.String(), fmt.Sprintf(format, args...))
+}
+
+func IsGatewayTimeout(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_GATEWAY_TIMEOUT.String() && e.Code == 504
+}
+
+func ErrorGatewayTimeout(format string, args ...interface{}) *errors.Error {
+	return errors.New(504, ERROR_GATEWAY_TIMEOUT.String(), fmt.Sprintf(format, args...))
 }

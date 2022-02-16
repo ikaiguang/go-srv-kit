@@ -9,8 +9,8 @@ option go_package = "github.com/ikaiguang/go-srv-kit/api/ping/exception;exceptio
 option java_multiple_files = true;
 option java_package = "api.ping.exception";
 
-// Error
-enum Error {
+// ERROR .
+enum ERROR {
   option (errors.default_code) = 500;
 
   UNKNOWN = 0 [(errors.code) = 404];

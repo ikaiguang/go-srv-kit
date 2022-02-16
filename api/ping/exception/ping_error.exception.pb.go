@@ -21,53 +21,53 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Error
-type Error int32
+// ERROR .
+type ERROR int32
 
 const (
-	Error_UNKNOWN         Error = 0
-	Error_CONTENT_MISSING Error = 1
-	Error_CONTENT_ERROR   Error = 2
+	ERROR_UNKNOWN         ERROR = 0
+	ERROR_CONTENT_MISSING ERROR = 1
+	ERROR_CONTENT_ERROR   ERROR = 2
 )
 
-// Enum value maps for Error.
+// Enum value maps for ERROR.
 var (
-	Error_name = map[int32]string{
+	ERROR_name = map[int32]string{
 		0: "UNKNOWN",
 		1: "CONTENT_MISSING",
 		2: "CONTENT_ERROR",
 	}
-	Error_value = map[string]int32{
+	ERROR_value = map[string]int32{
 		"UNKNOWN":         0,
 		"CONTENT_MISSING": 1,
 		"CONTENT_ERROR":   2,
 	}
 )
 
-func (x Error) Enum() *Error {
-	p := new(Error)
+func (x ERROR) Enum() *ERROR {
+	p := new(ERROR)
 	*p = x
 	return p
 }
 
-func (x Error) String() string {
+func (x ERROR) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (Error) Descriptor() protoreflect.EnumDescriptor {
+func (ERROR) Descriptor() protoreflect.EnumDescriptor {
 	return file_api_ping_exception_ping_error_exception_proto_enumTypes[0].Descriptor()
 }
 
-func (Error) Type() protoreflect.EnumType {
+func (ERROR) Type() protoreflect.EnumType {
 	return &file_api_ping_exception_ping_error_exception_proto_enumTypes[0]
 }
 
-func (x Error) Number() protoreflect.EnumNumber {
+func (x ERROR) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use Error.Descriptor instead.
-func (Error) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use ERROR.Descriptor instead.
+func (ERROR) EnumDescriptor() ([]byte, []int) {
 	return file_api_ping_exception_ping_error_exception_proto_rawDescGZIP(), []int{0}
 }
 
@@ -79,8 +79,8 @@ var file_api_ping_exception_ping_error_exception_proto_rawDesc = []byte{
 	0x65, 0x78, 0x63, 0x65, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
 	0x12, 0x61, 0x70, 0x69, 0x2e, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x65, 0x78, 0x63, 0x65, 0x70, 0x74,
 	0x69, 0x6f, 0x6e, 0x1a, 0x13, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x73, 0x2f, 0x65, 0x72, 0x72, 0x6f,
-	0x72, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2a, 0x54, 0x0a, 0x05, 0x45, 0x72, 0x72, 0x6f,
-	0x72, 0x12, 0x11, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x1a, 0x04,
+	0x72, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2a, 0x54, 0x0a, 0x05, 0x45, 0x52, 0x52, 0x4f,
+	0x52, 0x12, 0x11, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x1a, 0x04,
 	0xa8, 0x45, 0x94, 0x03, 0x12, 0x19, 0x0a, 0x0f, 0x43, 0x4f, 0x4e, 0x54, 0x45, 0x4e, 0x54, 0x5f,
 	0x4d, 0x49, 0x53, 0x53, 0x49, 0x4e, 0x47, 0x10, 0x01, 0x1a, 0x04, 0xa8, 0x45, 0x90, 0x03, 0x12,
 	0x17, 0x0a, 0x0d, 0x43, 0x4f, 0x4e, 0x54, 0x45, 0x4e, 0x54, 0x5f, 0x45, 0x52, 0x52, 0x4f, 0x52,
@@ -107,7 +107,7 @@ func file_api_ping_exception_ping_error_exception_proto_rawDescGZIP() []byte {
 
 var file_api_ping_exception_ping_error_exception_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_api_ping_exception_ping_error_exception_proto_goTypes = []interface{}{
-	(Error)(0), // 0: api.ping.exception.Error
+	(ERROR)(0), // 0: api.ping.exception.ERROR
 }
 var file_api_ping_exception_ping_error_exception_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

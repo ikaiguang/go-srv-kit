@@ -16,11 +16,11 @@ func IsUnknown(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == Error_UNKNOWN.String() && e.Code == 404
+	return e.Reason == ERROR_UNKNOWN.String() && e.Code == 404
 }
 
 func ErrorUnknown(format string, args ...interface{}) *errors.Error {
-	return errors.New(404, Error_UNKNOWN.String(), fmt.Sprintf(format, args...))
+	return errors.New(404, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
 }
 
 func IsContentMissing(err error) bool {
@@ -28,11 +28,11 @@ func IsContentMissing(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == Error_CONTENT_MISSING.String() && e.Code == 400
+	return e.Reason == ERROR_CONTENT_MISSING.String() && e.Code == 400
 }
 
 func ErrorContentMissing(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, Error_CONTENT_MISSING.String(), fmt.Sprintf(format, args...))
+	return errors.New(400, ERROR_CONTENT_MISSING.String(), fmt.Sprintf(format, args...))
 }
 
 func IsContentError(err error) bool {
@@ -40,9 +40,9 @@ func IsContentError(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == Error_CONTENT_ERROR.String() && e.Code == 400
+	return e.Reason == ERROR_CONTENT_ERROR.String() && e.Code == 400
 }
 
 func ErrorContentError(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, Error_CONTENT_ERROR.String(), fmt.Sprintf(format, args...))
+	return errors.New(400, ERROR_CONTENT_ERROR.String(), fmt.Sprintf(format, args...))
 }
