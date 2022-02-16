@@ -3,11 +3,11 @@ package servers
 import (
 	stdlog "log"
 
-	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	middlewareutil "github.com/ikaiguang/go-srv-kit/kratos/middleware"
 )
 
 // NewHTTPServer new a HTTP server.
@@ -26,15 +26,18 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 		return srv, err
 	}
 
-	// http
+	// options
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
 		),
-		http.Middleware(
-			logging.Server(loggerMiddle),
-		),
+		//http.Middleware(
+		//	logging.Server(loggerMiddle),
+		//),
 		http.Logger(logger),
+	}
+	if packages.IsDebugMode() {
+		opts = append(opts, http.Middleware(middlewareutil.ErrorStack(loggerMiddle)))
 	}
 	if c.Http.Network != "" {
 		opts = append(opts, http.Network(c.Http.Network))

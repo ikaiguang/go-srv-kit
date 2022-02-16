@@ -56,6 +56,14 @@ func NewWithMetadata(code int, reason, message string, md map[string]string) err
 	return pkgerrors.WithStack(err)
 }
 
+// WithStack returns an error
+func WithStack(err error) error {
+	if err == nil {
+		return nil
+	}
+	return pkgerrors.WithStack(err)
+}
+
 // Wrap returns an error
 func Wrap(err *errors.Error) error {
 	if err == nil {

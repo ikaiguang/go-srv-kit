@@ -7,6 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	middlewareutil "github.com/ikaiguang/go-srv-kit/kratos/middleware"
 )
 
 // NewGRPCServer new a gRPC server.
@@ -19,13 +20,24 @@ func NewGRPCServer(packages setup.Packages) (srv *grpc.Server, err error) {
 	if err != nil {
 		return srv, err
 	}
+	// 中间件
+	loggerMiddle, _, err := packages.LoggerMiddleware()
+	if err != nil {
+		return srv, err
+	}
 
-	// grpc
+	// options
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
 		),
+		//grpc.Middleware(
+		//	logging.Server(loggerMiddle),
+		//),
 		grpc.Logger(logger),
+	}
+	if packages.IsDebugMode() {
+		opts = append(opts, grpc.Middleware(middlewareutil.ErrorStack(loggerMiddle)))
 	}
 	if c.Grpc.Network != "" {
 		opts = append(opts, grpc.Network(c.Grpc.Network))

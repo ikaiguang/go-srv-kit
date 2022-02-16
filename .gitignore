@@ -34,4 +34,4 @@ test
 .vscode/
 .idea/
 *.swp
-./openapi.yaml
+/openapi.yaml

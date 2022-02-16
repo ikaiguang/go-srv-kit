@@ -56,3 +56,13 @@ func GatewayTimeout(reason, message string) error {
 func ClientClosed(reason, message string) error {
 	return pkgerrors.WithStack(errors.New(499, reason, message))
 }
+
+// Unimplemented new NotImplemented error that is mapped to a HTTP 501 response.
+func Unimplemented(reason, message string) error {
+	return pkgerrors.WithStack(errors.New(http.StatusNotImplemented, reason, message))
+}
+
+// NotImplemented new NotImplemented error that is mapped to a HTTP 501 response.
+func NotImplemented(reason, message string) error {
+	return pkgerrors.WithStack(errors.New(http.StatusNotImplemented, reason, message))
+}

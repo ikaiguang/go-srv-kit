@@ -3,6 +3,7 @@ package errorutil
 import (
 	"fmt"
 	"runtime"
+	"strings"
 
 	pkgerrors "github.com/pkg/errors"
 )
@@ -11,6 +12,12 @@ const (
 	// caller stack trace depth
 	_stackTracerDepth = 7
 )
+
+// Println 输出错误
+func Println(err error) {
+	callers := Caller(err)
+	fmt.Println(strings.Join(callers, "\n"))
+}
 
 // stackTracer errors.StackTrace
 type stackTracer interface {
@@ -38,4 +45,14 @@ func Caller(err error) (callers []string) {
 		callers[i] = fmt.Sprintf("%+v", st[i])
 	}
 	return callers
+}
+
+// CallerWithSkip .
+func CallerWithSkip(err error, skip int) (callers []string) {
+	callers = Caller(err)
+	if len(callers) <= skip {
+		callers = []string{}
+		return callers
+	}
+	return callers[skip:]
 }
