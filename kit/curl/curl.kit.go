@@ -1,4 +1,4 @@
-package curlpkg
+package curlutil
 
 import (
 	"crypto/tls"
