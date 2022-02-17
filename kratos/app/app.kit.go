@@ -64,7 +64,7 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 		return
 	}
 	w.Header().Set("Content-Type", ContentType(codec.Name()))
-	w.WriteHeader(int(se.Code))
+	//w.WriteHeader(int(se.Code))
 	_, _ = w.Write(body)
 }
 
