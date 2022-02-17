@@ -5,6 +5,14 @@ import (
 	pkgerrors "github.com/pkg/errors"
 )
 
+// WithStack returns an error
+func WithStack(err error) error {
+	if err == nil {
+		return nil
+	}
+	return pkgerrors.WithStack(err)
+}
+
 // New returns an error object for the code, reason, message.
 func New(code int, reason, message string) error {
 	return pkgerrors.WithStack(errors.New(code, reason, message))
@@ -27,14 +35,6 @@ func NewWithError(code int, reason, message string, inError error) error {
 func NewWithMetadata(code int, reason, message string, md map[string]string) error {
 	err := errors.New(code, reason, message)
 	err.Metadata = md
-	return pkgerrors.WithStack(err)
-}
-
-// WithStack returns an error
-func WithStack(err error) error {
-	if err == nil {
-		return nil
-	}
 	return pkgerrors.WithStack(err)
 }
 

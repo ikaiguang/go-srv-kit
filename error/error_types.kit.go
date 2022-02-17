@@ -7,62 +7,98 @@ import (
 	pkgerrors "github.com/pkg/errors"
 )
 
+// errorMetadata .
+func errorMetadata(eSlice []error) map[string]string {
+	if len(eSlice) == 0 {
+		return nil
+	}
+
+	msg := ""
+	for i := range eSlice {
+		if eSlice[i] == nil {
+			continue
+		}
+		if i > 0 {
+			msg += " \n "
+		}
+		msg += eSlice[i].Error()
+	}
+	return map[string]string{"errors": msg}
+}
+
 // BadRequest new BadRequest error that is mapped to a 400 response.
-func BadRequest(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusBadRequest, reason, message))
+func BadRequest(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusBadRequest, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
 }
 
 // Unauthorized new Unauthorized error that is mapped to a 401 response.
-func Unauthorized(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusUnauthorized, reason, message))
+func Unauthorized(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusUnauthorized, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
 }
 
 // Forbidden new Forbidden error that is mapped to a 403 response.
-func Forbidden(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusForbidden, reason, message))
+func Forbidden(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusForbidden, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
 }
 
 // NotFound new NotFound error that is mapped to a 404 response.
-func NotFound(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusNotFound, reason, message))
+func NotFound(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusNotFound, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
 }
 
 // Conflict new Conflict error that is mapped to a 409 response.
-func Conflict(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusConflict, reason, message))
-}
-
-// InternalServer new InternalServer error that is mapped to a 500 response.
-func InternalServer(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusInternalServerError, reason, message))
-}
-
-// ServiceUnavailable new ServiceUnavailable error that is mapped to a HTTP 503 response.
-func ServiceUnavailable(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusServiceUnavailable, reason, message))
-}
-
-// BadGateway new BadGateway error that is mapped to a HTTP 502 response.
-func BadGateway(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusBadGateway, reason, message))
-}
-
-// GatewayTimeout new GatewayTimeout error that is mapped to a HTTP 504 response.
-func GatewayTimeout(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusGatewayTimeout, reason, message))
+func Conflict(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusConflict, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
 }
 
 // ClientClosed new ClientClosed error that is mapped to a HTTP 499 response.
-func ClientClosed(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(499, reason, message))
+func ClientClosed(reason, message string, eSlice ...error) error {
+	e := errors.New(499, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
 }
 
-// Unimplemented new NotImplemented error that is mapped to a HTTP 501 response.
-func Unimplemented(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusNotImplemented, reason, message))
+// InternalServer new InternalServer error that is mapped to a 500 response.
+func InternalServer(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusInternalServerError, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
 }
 
 // NotImplemented new NotImplemented error that is mapped to a HTTP 501 response.
-func NotImplemented(reason, message string) error {
-	return pkgerrors.WithStack(errors.New(http.StatusNotImplemented, reason, message))
+func NotImplemented(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusNotImplemented, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
+}
+
+// ServiceUnavailable new ServiceUnavailable error that is mapped to a HTTP 503 response.
+func ServiceUnavailable(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusServiceUnavailable, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
+}
+
+// BadGateway new BadGateway error that is mapped to a HTTP 502 response.
+func BadGateway(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusBadGateway, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
+}
+
+// GatewayTimeout new GatewayTimeout error that is mapped to a HTTP 504 response.
+func GatewayTimeout(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusGatewayTimeout, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
 }
