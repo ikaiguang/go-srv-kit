@@ -32,8 +32,11 @@ func (s *ping) Ping(ctx context.Context, in *v1.PingReq) (out *v1.PingResp, err 
 		return out, errorutil.WithStack(err)
 	}
 	if in.GetMessage() == "error" {
-		err = exception.ErrorContentError("testing error")
-		return out, errorutil.WithStack(err)
+		e := exception.ErrorContentError("testing error")
+		e.Metadata = map[string]string{
+			"testdata": "testdata",
+		}
+		return out, errorutil.WithStack(e)
 	}
 	//s.log.Log(log.LevelInfo, "name", "msyql", "msg", "xxx")
 	return &v1.PingResp{Message: "Received Message : " + in.GetMessage()}, err

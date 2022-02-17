@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package api.response.v1;
+
+import "google/protobuf/any.proto";
+
+// 多语言特定包名，用于源代码引用
+option go_package = "github.com/ikaiguang/go-srv-kit/api/response/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.response.v1";
+
+// Response 响应
+message Response {
+  int32 code = 1;
+  string reason = 2;
+  string message = 3;
+  string request_id = 4;
+
+  google.protobuf.Any data = 5;
+  map<string, string> metadata = 6;
+};
