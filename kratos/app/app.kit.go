@@ -20,6 +20,7 @@ var (
 )
 
 // Response 响应
+// 关联更新 v1.Response
 type Response struct {
 	Code     int32             `json:"code"`
 	Reason   string            `json:"reason"`
@@ -65,4 +66,26 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 	w.Header().Set("Content-Type", ContentType(codec.Name()))
 	w.WriteHeader(int(se.Code))
 	_, _ = w.Write(body)
+}
+
+// ResponseDecoder 解码结果
+func ResponseDecoder(contentBody []byte, data interface{}) (response *Response, err error) {
+	response = &Response{
+		Data: data,
+	}
+	err = UnmarshalJSON(contentBody, response)
+	if err != nil {
+		return response, err
+	}
+	return response, err
+}
+
+// ErrorDecoder 解码结果
+func ErrorDecoder(contentBody []byte) (response *v1.Response, err error) {
+	response = &v1.Response{}
+	err = UnmarshalJSON(contentBody, response)
+	if err != nil {
+		return response, err
+	}
+	return response, err
 }
