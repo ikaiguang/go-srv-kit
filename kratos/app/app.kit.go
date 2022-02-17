@@ -8,6 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 
 	v1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
+	connectionutil "github.com/ikaiguang/go-srv-kit/kit/connection"
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
@@ -64,8 +65,12 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 		return
 	}
 	w.Header().Set("Content-Type", ContentType(codec.Name()))
-	//w.WriteHeader(int(se.Code))
-	_, _ = w.Write(body)
+	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
+	// 在websocket时日志干扰：http: response.Write on hijacked connection from
+	if !connectionutil.IsWebSocketConn(r) {
+		w.WriteHeader(int(se.Code))
+		_, _ = w.Write(body)
+	}
 }
 
 // ResponseDecoder 解码结果
