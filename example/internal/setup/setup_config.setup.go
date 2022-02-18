@@ -137,11 +137,6 @@ func (s *configuration) AppConfig() *confv1.App {
 	return s.conf.App
 }
 
-// LoggerConfig 日志配置
-func (s *configuration) LoggerConfig() *confv1.Log {
-	return s.conf.Log
-}
-
 // LoggerConfigForConsole 日志配置 控制台
 func (s *configuration) LoggerConfigForConsole() *confv1.Log_Console {
 	if s.conf.Log.Console == nil {
@@ -177,14 +172,6 @@ func (s *configuration) RedisConfig() *confv1.Data_Redis {
 		return nil
 	}
 	return s.conf.Data.Redis
-}
-
-// ServerConfig server配置
-func (s *configuration) ServerConfig() *confv1.Server {
-	if s.conf.Server == nil {
-		return nil
-	}
-	return s.conf.Server
 }
 
 // HTTPConfig http配置
