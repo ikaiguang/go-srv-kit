@@ -2,6 +2,7 @@ package errorutil
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	pkgerrors "github.com/pkg/errors"
@@ -13,17 +14,22 @@ func errorMetadata(eSlice []error) map[string]string {
 		return nil
 	}
 
-	msg := ""
+	var (
+		metadata = make(map[string]string)
+		errorKey = "error"
+	)
+	if len(eSlice) == 1 {
+		metadata[errorKey] = eSlice[0].Error()
+		return metadata
+	}
 	for i := range eSlice {
 		if eSlice[i] == nil {
 			continue
 		}
-		if i > 0 {
-			msg += " \n "
-		}
-		msg += eSlice[i].Error()
+		key := errorKey + "_" + strconv.Itoa(i)
+		metadata[key] = eSlice[i].Error()
 	}
-	return map[string]string{"errors": msg}
+	return metadata
 }
 
 // BadRequest new BadRequest error that is mapped to a 400 response.
