@@ -325,11 +325,10 @@ func (s *up) setupLogHelper() (closeFnSlice []func() error, err error) {
 	}
 
 	// 日志
-	loggerConfig := s.Config.LoggerConfig()
-	if s.Config.EnableLoggingConsole() && loggerConfig.Console != nil {
+	if s.Config.EnableLoggingConsole() && s.LoggerConfigForConsole() != nil {
 		stdlog.Println("|*** 加载日志工具：日志输出到控制台")
 	}
-	if s.Config.EnableLoggingFile() && loggerConfig.File != nil {
+	if s.Config.EnableLoggingFile() && s.LoggerConfigForFile() != nil {
 		stdlog.Println("|*** 加载日志工具：日志输出到文件")
 	}
 
@@ -339,18 +338,18 @@ func (s *up) setupLogHelper() (closeFnSlice []func() error, err error) {
 
 // setupLoggerFileWriter 启动日志文件写手柄
 func (s *up) setupLoggerFileWriter() (io.Writer, error) {
-	loggerConfig := s.Config.LoggerConfig()
-	if !s.Config.EnableLoggingFile() || loggerConfig.File == nil {
+	fileLoggerConfig := s.Config.LoggerConfigForFile()
+	if !s.Config.EnableLoggingFile() || fileLoggerConfig == nil {
 		stdlog.Println("|*** 加载日志工具：虚拟的文件写手柄")
 		return writerutil.NewDummyWriter()
 	}
 	rotateConfig := &writerutil.ConfigRotate{
-		Dir:            loggerConfig.File.Dir,
-		Filename:       loggerConfig.File.Filename,
-		RotateTime:     loggerConfig.File.RotateTime.AsDuration(),
-		RotateSize:     loggerConfig.File.RotateSize,
-		StorageCounter: uint(loggerConfig.File.StorageCounter),
-		StorageAge:     loggerConfig.File.StorageAge.AsDuration(),
+		Dir:            fileLoggerConfig.Dir,
+		Filename:       fileLoggerConfig.Filename,
+		RotateTime:     fileLoggerConfig.RotateTime.AsDuration(),
+		RotateSize:     fileLoggerConfig.RotateSize,
+		StorageCounter: uint(fileLoggerConfig.StorageCounter),
+		StorageAge:     fileLoggerConfig.StorageAge.AsDuration(),
 	}
 	return writerutil.NewRotateFile(rotateConfig)
 }
@@ -378,20 +377,23 @@ func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlic
 	// loggers
 	var loggers []log.Logger
 
-	// 配置
-	loggerConfig := s.Config.LoggerConfig()
-	if loggerConfig == nil {
-		return logger, closeFnSlice, err
-	}
-
-	// 日志 输出到控制台
+	// DummyLogger
 	stdLogger, err := logutil.NewDummyLogger()
 	if err != nil {
 		return logger, closeFnSlice, err
 	}
-	if s.Config.EnableLoggingConsole() && loggerConfig.Console != nil {
+
+	// 配置
+	if !s.EnableLoggingConsole() && !s.EnableLoggingFile() {
+		fakeLogger := log.MultiLogger(stdLogger)
+		return fakeLogger, closeFnSlice, err
+	}
+
+	// 日志 输出到控制台
+	loggerConfigForConsole := s.LoggerConfigForConsole()
+	if s.Config.EnableLoggingConsole() && loggerConfigForConsole != nil {
 		stdLoggerConfig := &logutil.ConfigStd{
-			Level:      logutil.ParseLevel(loggerConfig.Console.Level),
+			Level:      logutil.ParseLevel(loggerConfigForConsole.Level),
 			CallerSkip: skip,
 		}
 		stdLoggerImpl, err := logutil.NewStdLogger(stdLoggerConfig)
@@ -404,20 +406,21 @@ func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlic
 	loggers = append(loggers, stdLogger)
 
 	// 日志 输出到文件
-	if s.Config.EnableLoggingFile() && loggerConfig.File != nil {
+	loggerConfigForFile := s.LoggerConfigForFile()
+	if s.Config.EnableLoggingFile() && loggerConfigForFile != nil {
 		// file logger
 		fileLoggerConfig := &logutil.ConfigFile{
-			Level:      logutil.ParseLevel(loggerConfig.File.Level),
+			Level:      logutil.ParseLevel(loggerConfigForFile.Level),
 			CallerSkip: skip,
 
-			Dir:      loggerConfig.File.Dir,
-			Filename: loggerConfig.File.Filename,
+			Dir:      loggerConfigForFile.Dir,
+			Filename: loggerConfigForFile.Filename,
 
-			RotateTime: loggerConfig.File.RotateTime.AsDuration(),
-			RotateSize: loggerConfig.File.RotateSize,
+			RotateTime: loggerConfigForFile.RotateTime.AsDuration(),
+			RotateSize: loggerConfigForFile.RotateSize,
 
-			StorageCounter: uint(loggerConfig.File.StorageCounter),
-			StorageAge:     loggerConfig.File.StorageAge.AsDuration(),
+			StorageCounter: uint(loggerConfigForFile.StorageCounter),
+			StorageAge:     loggerConfigForFile.StorageAge.AsDuration(),
 		}
 		writer, err := s.LoggerFileWriter()
 		if err != nil {

@@ -13,8 +13,8 @@ import (
 
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(packages setup.Packages) (srv *grpc.Server, err error) {
-	c := packages.ServerConfig()
-	stdlog.Printf("|*** 加载GRPC服务：%s\n", c.Grpc.Addr)
+	grpcConfig := packages.GRPCConfig()
+	stdlog.Printf("|*** 加载GRPC服务：%s\n", grpcConfig.Addr)
 
 	// 日志
 	logger, _, err := packages.Logger()
@@ -26,14 +26,14 @@ func NewGRPCServer(packages setup.Packages) (srv *grpc.Server, err error) {
 	var opts = []grpc.ServerOption{
 		grpc.Logger(logger),
 	}
-	if c.Grpc.Network != "" {
-		opts = append(opts, grpc.Network(c.Grpc.Network))
+	if grpcConfig.Network != "" {
+		opts = append(opts, grpc.Network(grpcConfig.Network))
 	}
-	if c.Grpc.Addr != "" {
-		opts = append(opts, grpc.Address(c.Grpc.Addr))
+	if grpcConfig.Addr != "" {
+		opts = append(opts, grpc.Address(grpcConfig.Addr))
 	}
-	if c.Grpc.Timeout != nil {
-		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
+	if grpcConfig.Timeout != nil {
+		opts = append(opts, grpc.Timeout(grpcConfig.Timeout.AsDuration()))
 	}
 
 	// ===== 中间件 =====

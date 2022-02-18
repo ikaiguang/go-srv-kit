@@ -53,16 +53,14 @@ type Config interface {
 	// EnableLoggingFile 是否启用 日志输出到文件
 	EnableLoggingFile() bool
 
-	// LoggerConfig 日志配置
-	LoggerConfig() *confv1.Log
-	// DataConfig 数据配置
-	DataConfig() *confv1.Data
+	// LoggerConfigForConsole 日志配置 控制台
+	LoggerConfigForConsole() *confv1.Log_Console
+	// LoggerConfigForFile 日志配置 文件
+	LoggerConfigForFile() *confv1.Log_File
 	// MySQLConfig mysql配置
 	MySQLConfig() *confv1.Data_MySQL
 	// RedisConfig redis配置
 	RedisConfig() *confv1.Data_Redis
-	// ServerConfig server配置
-	ServerConfig() *confv1.Server
 	// HTTPConfig http配置
 	HTTPConfig() *confv1.Server_HTTP
 	// GRPCConfig grpc配置

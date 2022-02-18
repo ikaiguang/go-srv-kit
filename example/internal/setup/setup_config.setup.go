@@ -142,6 +142,22 @@ func (s *configuration) LoggerConfig() *confv1.Log {
 	return s.conf.Log
 }
 
+// LoggerConfigForConsole 日志配置 控制台
+func (s *configuration) LoggerConfigForConsole() *confv1.Log_Console {
+	if s.conf.Log.Console == nil {
+		return nil
+	}
+	return s.conf.Log.Console
+}
+
+// LoggerConfigForFile 日志配置 文件
+func (s *configuration) LoggerConfigForFile() *confv1.Log_File {
+	if s.conf.Log.File == nil {
+		return nil
+	}
+	return s.conf.Log.File
+}
+
 // DataConfig 数据配置
 func (s *configuration) DataConfig() *confv1.Data {
 	return s.conf.Data

@@ -14,8 +14,8 @@ import (
 
 // NewHTTPServer new a HTTP server.
 func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
-	c := packages.ServerConfig()
-	stdlog.Printf("|*** 加载HTTP服务：%s\n", c.Http.Addr)
+	httpConfig := packages.HTTPConfig()
+	stdlog.Printf("|*** 加载HTTP服务：%s\n", httpConfig.Addr)
 
 	// 日志
 	logger, _, err := packages.Logger()
@@ -27,14 +27,14 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 	var opts = []http.ServerOption{
 		http.Logger(logger),
 	}
-	if c.Http.Network != "" {
-		opts = append(opts, http.Network(c.Http.Network))
+	if httpConfig.Network != "" {
+		opts = append(opts, http.Network(httpConfig.Network))
 	}
-	if c.Http.Addr != "" {
-		opts = append(opts, http.Address(c.Http.Addr))
+	if httpConfig.Addr != "" {
+		opts = append(opts, http.Address(httpConfig.Addr))
 	}
-	if c.Http.Timeout != nil {
-		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
+	if httpConfig.Timeout != nil {
+		opts = append(opts, http.Timeout(httpConfig.Timeout.AsDuration()))
 	}
 
 	// 响应

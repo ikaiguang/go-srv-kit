@@ -22,5 +22,4 @@ func TestNewConfiguration(t *testing.T) {
 
 	t.Log("*** | env：", handler.Env())
 	t.Logf("*** | AppConfig：%+v\n", handler.AppConfig())
-	t.Logf("*** | LoggerConfig：%+v\n", handler.LoggerConfig())
 }
