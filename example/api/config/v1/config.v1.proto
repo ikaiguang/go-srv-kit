@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package api.config.v1;
+
+import "github.com/ikaiguang/go-srv-kit/api/conf/v1/conf.v1.proto";
+
+// 多语言特定包名，用于源代码引用
+option go_package = "gitlab.muses.fun/mcs-be/export-android-app-service/api/config/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.config.v1";
+
+// Bootstrap 配置引导
+message Bootstrap {
+  // app application
+  api.conf.v1.App app = 1;
+  // log 日志
+  api.conf.v1.Log log = 2;
+  // data 数据
+  api.conf.v1.Data data = 3;
+  // server 服务
+  api.conf.v1.Server server = 4;
+}

@@ -8,6 +8,7 @@ import (
 
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
+	configv1 "github.com/ikaiguang/go-srv-kit/example/api/config/v1"
 )
 
 // configuration 实现ConfigInterface
@@ -15,7 +16,7 @@ type configuration struct {
 	// handler 配置处理手柄
 	handler config.Config
 	// conf 配置引导文件
-	conf *confv1.Bootstrap
+	conf *configv1.Bootstrap
 
 	// env app环境
 	env envv1.Env
@@ -49,7 +50,7 @@ func (s *configuration) New(opts ...config.Option) (err error) {
 	}
 
 	// 读取配置文件
-	s.conf = &confv1.Bootstrap{}
+	s.conf = &configv1.Bootstrap{}
 	if err = s.handler.Scan(s.conf); err != nil {
 		err = pkgerrors.WithStack(err)
 		return
