@@ -12,6 +12,8 @@ import (
 var (
 	// MarshalOptions is a configurable JSON format marshaller.
 	MarshalOptions = protojson.MarshalOptions{
+		//UseProtoNames:   true,
+		UseEnumNumbers:  true,
 		EmitUnpopulated: true,
 	}
 	// UnmarshalOptions is a configurable JSON format parser.
