@@ -40,11 +40,12 @@ func newApp(packages setup.Packages) (app *kratos.App, err error) {
 	}
 
 	// app
+	appConfig := packages.AppConfig()
 	app = kratos.New(
 		kratos.ID(hostname),
-		kratos.Name(packages.AppConfig().Name),
-		kratos.Version(packages.AppConfig().Version),
-		kratos.Metadata(packages.AppConfig().Metadata),
+		kratos.Name(appConfig.Name),
+		kratos.Version(appConfig.Version),
+		kratos.Metadata(appConfig.Metadata),
 		kratos.Logger(logger),
 		kratos.Server(hs, gs),
 	)
