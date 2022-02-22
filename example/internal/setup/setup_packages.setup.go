@@ -186,6 +186,9 @@ func (s *up) LoggerFileWriter() (io.Writer, error) {
 	var err error
 	s.loggerFileWriterMutex.Do(func() {
 		s.loggerFileWriter, err = s.setupLoggerFileWriter()
+		if err != nil {
+			s.loggerFileWriterMutex = sync.Once{}
+		}
 	})
 	if err != nil {
 		return nil, err
@@ -208,6 +211,9 @@ func (s *up) Logger() (log.Logger, []func() error, error) {
 	)
 	s.loggerMutex.Do(func() {
 		s.logger, s.loggerCloseFnSlice, err = s.setupLogger()
+		if err != nil {
+			s.loggerMutex = sync.Once{}
+		}
 	})
 	if err != nil {
 		return nil, nil, err
@@ -227,6 +233,9 @@ func (s *up) LoggerHelper() (log.Logger, []func() error, error) {
 	var err error
 	s.loggerHelperMutex.Do(func() {
 		s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.setupLoggerHelper()
+		if err != nil {
+			s.loggerHelperMutex = sync.Once{}
+		}
 	})
 	if err != nil {
 		return nil, nil, err
@@ -246,6 +255,9 @@ func (s *up) LoggerMiddleware() (log.Logger, []func() error, error) {
 	var err error
 	s.loggerMiddlewareMutex.Do(func() {
 		s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.setupLoggerMiddleware()
+		if err != nil {
+			s.loggerMiddlewareMutex = sync.Once{}
+		}
 	})
 	if err != nil {
 		return nil, nil, err
@@ -265,6 +277,9 @@ func (s *up) MysqlGormDB() (*gorm.DB, error) {
 	var err error
 	s.mysqlGormMutex.Do(func() {
 		s.mysqlGormDB, err = s.setupMysqlGormDB()
+		if err != nil {
+			s.mysqlGormMutex = sync.Once{}
+		}
 	})
 	if err != nil {
 		return nil, err
@@ -285,6 +300,9 @@ func (s *up) RedisClient() (*redis.Client, error) {
 	var err error
 	s.redisClientMutex.Do(func() {
 		s.redisClient, err = s.setupRedisClient()
+		if err != nil {
+			s.redisClientMutex = sync.Once{}
+		}
 	})
 	if err != nil {
 		return nil, err

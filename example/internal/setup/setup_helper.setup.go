@@ -22,6 +22,9 @@ func GetPackages() (Packages, error) {
 func Init() (err error) {
 	initMutex.Do(func() {
 		packages, err = Setup()
+		if err != nil {
+			initMutex = sync.Once{}
+		}
 	})
 	if err != nil {
 		return err
