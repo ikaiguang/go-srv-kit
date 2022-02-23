@@ -6,8 +6,9 @@ import (
 )
 
 const (
-	// RequestID custom
-	RequestID   = "X-Custom-Request-Id"
+	// RequestID http请求设置
+	RequestID = "X-Custom-Request-Id"
+	// IsWebsocket http请求设置
 	IsWebsocket = "X-Custom-Is-Websocket"
 
 	// WebsocketConnection websocket

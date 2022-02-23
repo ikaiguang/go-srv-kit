@@ -19,14 +19,22 @@ func ErrorStack(logger log.Logger) middleware.Middleware {
 				return reply, err
 			}
 
+			// websocket
+			//if httpContext, ok := contextutil.MatchHTTPContext(ctx); ok {
+			//	if headerutil.GetIsWebsocket(httpContext.Request().Header) {
+			//		return reply, err
+			//	}
+			//}
+
 			//errorutil.Println(err)
 			callers := errorutil.CallerWithSkip(err, 1)
+			//callers := errorutil.Caller(err)
 			_ = log.WithContext(ctx, logger).Log(
 				log.LevelError,
 				"error msg", err.Error(),
 				"error stack", strings.Join(callers, "\n\t"),
 			)
-			return
+			return reply, err
 		}
 	}
 }

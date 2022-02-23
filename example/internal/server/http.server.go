@@ -52,12 +52,12 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 	}
 	// 日志输出
 	//middlewareSlice = append(middlewareSlice, logging.Server(loggerMiddle))
+	// 请求头
+	middlewareSlice = append(middlewareSlice, middlewareutil.RequestHeader())
 	// 错误追踪
 	if packages.IsDebugMode() {
 		middlewareSlice = append(middlewareSlice, middlewareutil.ErrorStack(loggerMiddle))
 	}
-	// 响应头
-	middlewareSlice = append(middlewareSlice, middlewareutil.ResponseHeader())
 
 	// 中间件选项
 	opts = append(opts, http.Middleware(middlewareSlice...))

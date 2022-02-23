@@ -10,8 +10,8 @@ import (
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
-// ResponseHeader 响应头
-func ResponseHeader() middleware.Middleware {
+// RequestHeader 响应头
+func RequestHeader() middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			var traceID string
@@ -22,10 +22,14 @@ func ResponseHeader() middleware.Middleware {
 
 			// 设置请求头
 			if httpContext, ok := contextutil.MatchHTTPContext(ctx); ok {
-				headerutil.SetRequestID(httpContext.Response().Header(), traceID)
+				// request id
+				headerutil.SetRequestID(httpContext.Request().Header, traceID)
+				// 是否websocket
+				// 在升级为websocket链接后设置：websocketutil.UpgradeConn
+				//if connectionutil.IsWebSocketConn(httpContext.Request()) {
+				//	headerutil.SetIsWebsocket(httpContext.Request().Header)
+				//}
 			}
-
-			// 是否websocket
 
 			return handler(ctx, req)
 		}
