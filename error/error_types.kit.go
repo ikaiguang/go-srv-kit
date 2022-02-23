@@ -19,7 +19,9 @@ func errorMetadata(eSlice []error) map[string]string {
 		errorKey = "error"
 	)
 	if len(eSlice) == 1 {
-		metadata[errorKey] = eSlice[0].Error()
+		if eSlice[0] != nil {
+			metadata[errorKey] = eSlice[0].Error()
+		}
 		return metadata
 	}
 	for i := range eSlice {

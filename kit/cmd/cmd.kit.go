@@ -22,7 +22,7 @@ func RunCommandWithWorkDir(workDir, command string, args []string) (output []byt
 	cmd := exec.Command(command, args...)
 	cmd.Dir = workDir
 
-	debugutil.Debugw("cmd", command, "args", args)
+	debugutil.Debugw("workdir", workDir, "cmd", command, "args", args)
 
 	return run(cmd)
 }

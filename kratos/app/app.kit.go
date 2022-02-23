@@ -36,7 +36,7 @@ type Response struct {
 func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
 	data := &Response{
 		Code:      0,
-		RequestId: w.Header().Get(headerutil.RequestID),
+		RequestId: headerutil.GetRequestID(w.Header()),
 		Data:      v,
 	}
 	return http.DefaultResponseEncoder(w, r, data)
@@ -57,7 +57,7 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 		Reason:    se.Reason,
 		Message:   se.Message,
 		Metadata:  se.Metadata,
-		RequestId: w.Header().Get(headerutil.RequestID),
+		RequestId: headerutil.GetRequestID(w.Header()),
 	}
 	body, err := codec.Marshal(data)
 	if err != nil {

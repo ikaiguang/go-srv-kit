@@ -22,9 +22,11 @@ func ResponseHeader() middleware.Middleware {
 
 			// 设置请求头
 			if httpContext, ok := contextutil.MatchHTTPContext(ctx); ok {
-				// http
-				httpContext.Response().Header().Set(headerutil.RequestID, traceID)
+				headerutil.SetRequestID(httpContext.Response().Header(), traceID)
 			}
+
+			// 是否websocket
+
 			return handler(ctx, req)
 		}
 	}

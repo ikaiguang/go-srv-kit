@@ -6,8 +6,11 @@ import (
 )
 
 const (
-	RequestID = "x-custom-request-id"
+	// RequestID custom
+	RequestID   = "X-Custom-Request-Id"
+	IsWebsocket = "X-Custom-Is-Websocket"
 
+	// WebsocketConnection websocket
 	WebsocketConnection = "Connection"
 	WebsocketUpgrade    = "Upgrade"
 	WebsocketSecVersion = "Sec-Websocket-Version"
