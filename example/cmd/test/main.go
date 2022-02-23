@@ -26,7 +26,7 @@ var (
 )
 
 // runTest 运行测试
-func runTest(packages setup.Packages) {
+func runTest(modulesHandler setup.Modules) {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
@@ -53,7 +53,7 @@ func main() {
 	//defer func() { _ = setup.Close() }()
 
 	// 包
-	packages, err := setup.GetPackages()
+	packages, err := setup.GetModules()
 	if err != nil {
 		stdlog.Fatalf("%+v\n", err)
 		return

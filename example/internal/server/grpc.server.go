@@ -12,12 +12,12 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(packages setup.Packages) (srv *grpc.Server, err error) {
-	grpcConfig := packages.GRPCConfig()
+func NewGRPCServer(modulesHandler setup.Modules) (srv *grpc.Server, err error) {
+	grpcConfig := modulesHandler.GRPCConfig()
 	stdlog.Printf("|*** 加载GRPC服务：%s\n", grpcConfig.Addr)
 
 	// 日志
-	logger, _, err := packages.Logger()
+	logger, _, err := modulesHandler.Logger()
 	if err != nil {
 		return srv, err
 	}
@@ -41,14 +41,14 @@ func NewGRPCServer(packages setup.Packages) (srv *grpc.Server, err error) {
 		recovery.Recovery(),
 	}
 	// 中间件日志
-	loggerMiddle, _, err := packages.LoggerMiddleware()
+	loggerMiddle, _, err := modulesHandler.LoggerMiddleware()
 	if err != nil {
 		return srv, err
 	}
 	// 日志输出
 	//middlewareSlice = append(middlewareSlice, logging.Server(loggerMiddle))
 	// 错误追踪
-	if packages.IsDebugMode() {
+	if modulesHandler.IsDebugMode() {
 		middlewareSlice = append(middlewareSlice, middlewareutil.ErrorStack(loggerMiddle))
 	}
 
@@ -63,7 +63,7 @@ func NewGRPCServer(packages setup.Packages) (srv *grpc.Server, err error) {
 }
 
 // RegisterGRPCRoute 注册路由
-func RegisterGRPCRoute(packages setup.Packages, srv *grpc.Server) (err error) {
+func RegisterGRPCRoute(modulesHandler setup.Modules, srv *grpc.Server) (err error) {
 	stdlog.Println("|*** 注册GRPC路由：...")
 	return err
 }

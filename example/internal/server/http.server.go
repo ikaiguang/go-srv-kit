@@ -13,12 +13,12 @@ import (
 )
 
 // NewHTTPServer new a HTTP server.
-func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
-	httpConfig := packages.HTTPConfig()
+func NewHTTPServer(modulesHandler setup.Modules) (srv *http.Server, err error) {
+	httpConfig := modulesHandler.HTTPConfig()
 	stdlog.Printf("|*** 加载HTTP服务：%s\n", httpConfig.Addr)
 
 	// 日志
-	logger, _, err := packages.Logger()
+	logger, _, err := modulesHandler.Logger()
 	if err != nil {
 		return srv, err
 	}
@@ -46,7 +46,7 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 		recovery.Recovery(),
 	}
 	// 中间件日志
-	loggerMiddle, _, err := packages.LoggerMiddleware()
+	loggerMiddle, _, err := modulesHandler.LoggerMiddleware()
 	if err != nil {
 		return srv, err
 	}
@@ -55,7 +55,7 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 	// 请求头
 	middlewareSlice = append(middlewareSlice, middlewareutil.RequestHeader())
 	// 错误追踪
-	if packages.IsDebugMode() {
+	if modulesHandler.IsDebugMode() {
 		middlewareSlice = append(middlewareSlice, middlewareutil.ErrorStack(loggerMiddle))
 	}
 
@@ -70,7 +70,7 @@ func NewHTTPServer(packages setup.Packages) (srv *http.Server, err error) {
 }
 
 // RegisterHTTPRoute 注册路由
-func RegisterHTTPRoute(packages setup.Packages, srv *http.Server) (err error) {
+func RegisterHTTPRoute(modulesHandler setup.Modules, srv *http.Server) (err error) {
 	stdlog.Println("|*** 注册HTTP路由：...")
 	return err
 }

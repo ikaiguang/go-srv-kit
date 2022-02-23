@@ -14,10 +14,8 @@ import (
 )
 
 var (
-	// Config implement
-	_ Config = &configuration{}
-	// Packages implement
-	_ Packages = &up{}
+	_ Config  = &configuration{}
+	_ Modules = &modules{}
 
 	// ErrUnimplemented 未实现
 	ErrUnimplemented = strerrors.New("unimplemented")
@@ -67,8 +65,8 @@ type Config interface {
 	GRPCConfig() *confv1.Server_GRPC
 }
 
-// Packages 包/依赖
-type Packages interface {
+// Modules 模块、组件、单元
+type Modules interface {
 	// Config 配置
 	Config
 

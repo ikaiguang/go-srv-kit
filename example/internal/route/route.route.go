@@ -12,11 +12,11 @@ import (
 )
 
 // RegisterRoutes 注册路由
-func RegisterRoutes(packages setup.Packages, hs *http.Server, gs *grpc.Server) (err error) {
+func RegisterRoutes(modulesHandler setup.Modules, hs *http.Server, gs *grpc.Server) (err error) {
 	stdlog.Println("|*** 注册路由：...")
 
 	// 日志
-	logger, _, err := packages.Logger()
+	logger, _, err := modulesHandler.Logger()
 	if err != nil {
 		return err
 	}

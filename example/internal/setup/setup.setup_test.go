@@ -12,17 +12,17 @@ import (
 
 // go test -v ./example/internal/setup/ -count=1 -test.run=TestSetup -conf=./../../configs
 func TestSetup(t *testing.T) {
-	packages, err := Setup()
+	modulesHandler, err := Setup()
 	if err != nil {
 		t.Errorf("%+v\n", err)
 		t.FailNow()
 	}
-	defer func() { _ = packages.Close() }()
+	defer func() { _ = modulesHandler.Close() }()
 
 	ctx := context.Background()
 
 	// env
-	loghelper.Infof("env = %v", packages.Env())
+	loghelper.Infof("env = %v", modulesHandler.Env())
 
 	// debug
 	debugutil.Println("*** | ==> debug util print")
@@ -31,7 +31,7 @@ func TestSetup(t *testing.T) {
 	loghelper.Info("*** | ==> log helper info")
 
 	// db
-	db, err := packages.MysqlGormDB()
+	db, err := modulesHandler.MysqlGormDB()
 	require.Nil(t, err)
 	require.NotNil(t, db)
 	type DBRes struct {
@@ -43,7 +43,7 @@ func TestSetup(t *testing.T) {
 	t.Logf("db res : %+v\n", dbRes)
 
 	// redis
-	redisCC, err := packages.RedisClient()
+	redisCC, err := modulesHandler.RedisClient()
 	require.Nil(t, err)
 	require.NotNil(t, redisCC)
 	redisKey := "test-foo"
@@ -54,4 +54,23 @@ func TestSetup(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, redisValue, redisGotValue)
 	t.Logf("redis res : %+v\n", redisGotValue)
+}
+
+// go test -v ./example/internal/setup/ -count=1 -test.run=TestGetModules -conf=./../../configs
+func TestGetModules(t *testing.T) {
+	modulesHandler, err := GetModules()
+	require.Nil(t, err)
+	require.NotNil(t, modulesHandler)
+	modulesHandler, err = GetModules()
+	require.Nil(t, err)
+	require.NotNil(t, modulesHandler)
+
+	// env
+	loghelper.Infof("env = %v", modulesHandler.Env())
+
+	// debug
+	debugutil.Println("*** | ==> debug util print")
+
+	// 日志
+	loghelper.Info("*** | ==> log helper info")
 }

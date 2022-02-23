@@ -21,8 +21,8 @@ import (
 	redisutil "github.com/ikaiguang/go-srv-kit/redis"
 )
 
-// up 启动手柄
-type up struct {
+// modules 模块
+type modules struct {
 	Config
 
 	// loggerFileWriterMutex 日志文件写手柄
@@ -52,20 +52,20 @@ type up struct {
 	redisClient      *redis.Client
 }
 
-// NewUpPackages .
-func NewUpPackages(conf Config) Packages {
-	return newUpHandler(conf)
+// NewModules .
+func NewModules(conf Config) Modules {
+	return newModuleHandler(conf)
 }
 
-// newUpHandler .
-func newUpHandler(conf Config) *up {
-	return &up{
+// newModuleHandler .
+func newModuleHandler(conf Config) *modules {
+	return &modules{
 		Config: conf,
 	}
 }
 
 // Close .
-func (s *up) Close() (err error) {
+func (s *modules) Close() (err error) {
 	// 退出程序
 	stdlog.Println("|==================== 退出程序 开始 ====================|")
 	defer stdlog.Println("|==================== 退出程序 结束 ====================|")
@@ -182,10 +182,10 @@ func (s *up) Close() (err error) {
 }
 
 // LoggerFileWriter 文件日志写手柄
-func (s *up) LoggerFileWriter() (io.Writer, error) {
+func (s *modules) LoggerFileWriter() (io.Writer, error) {
 	var err error
 	s.loggerFileWriterMutex.Do(func() {
-		s.loggerFileWriter, err = s.setupLoggerFileWriter()
+		s.loggerFileWriter, err = s.loadingLoggerFileWriter()
 	})
 	if err != nil {
 		s.loggerFileWriterMutex = sync.Once{}
@@ -195,7 +195,7 @@ func (s *up) LoggerFileWriter() (io.Writer, error) {
 		return s.loggerFileWriter, err
 	}
 
-	s.loggerFileWriter, err = s.setupLoggerFileWriter()
+	s.loggerFileWriter, err = s.loadingLoggerFileWriter()
 	if err != nil {
 		return nil, err
 	}
@@ -203,12 +203,12 @@ func (s *up) LoggerFileWriter() (io.Writer, error) {
 }
 
 // Logger 日志处理示例
-func (s *up) Logger() (log.Logger, []func() error, error) {
+func (s *modules) Logger() (log.Logger, []func() error, error) {
 	var (
 		err error
 	)
 	s.loggerMutex.Do(func() {
-		s.logger, s.loggerCloseFnSlice, err = s.setupLogger()
+		s.logger, s.loggerCloseFnSlice, err = s.loadingLogger()
 	})
 	if err != nil {
 		s.loggerMutex = sync.Once{}
@@ -217,7 +217,7 @@ func (s *up) Logger() (log.Logger, []func() error, error) {
 	if s.logger != nil {
 		return s.logger, s.loggerCloseFnSlice, err
 	}
-	s.logger, s.loggerCloseFnSlice, err = s.setupLogger()
+	s.logger, s.loggerCloseFnSlice, err = s.loadingLogger()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -225,10 +225,10 @@ func (s *up) Logger() (log.Logger, []func() error, error) {
 }
 
 // LoggerHelper 日志处理示例
-func (s *up) LoggerHelper() (log.Logger, []func() error, error) {
+func (s *modules) LoggerHelper() (log.Logger, []func() error, error) {
 	var err error
 	s.loggerHelperMutex.Do(func() {
-		s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.setupLoggerHelper()
+		s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.loadingLoggerHelper()
 	})
 	if err != nil {
 		s.loggerHelperMutex = sync.Once{}
@@ -237,7 +237,7 @@ func (s *up) LoggerHelper() (log.Logger, []func() error, error) {
 	if s.loggerHelper != nil {
 		return s.loggerHelper, s.loggerHelperCloseFnSlice, err
 	}
-	s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.setupLoggerHelper()
+	s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.loadingLoggerHelper()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -245,10 +245,10 @@ func (s *up) LoggerHelper() (log.Logger, []func() error, error) {
 }
 
 // LoggerMiddleware 中间件的日志处理示例
-func (s *up) LoggerMiddleware() (log.Logger, []func() error, error) {
+func (s *modules) LoggerMiddleware() (log.Logger, []func() error, error) {
 	var err error
 	s.loggerMiddlewareMutex.Do(func() {
-		s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.setupLoggerMiddleware()
+		s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.loadingLoggerMiddleware()
 	})
 	if err != nil {
 		s.loggerMiddlewareMutex = sync.Once{}
@@ -257,7 +257,7 @@ func (s *up) LoggerMiddleware() (log.Logger, []func() error, error) {
 	if s.loggerMiddleware != nil {
 		return s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err
 	}
-	s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.setupLoggerMiddleware()
+	s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.loadingLoggerMiddleware()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -265,10 +265,10 @@ func (s *up) LoggerMiddleware() (log.Logger, []func() error, error) {
 }
 
 // LoggerFileWriter 文件日志写手柄
-func (s *up) MysqlGormDB() (*gorm.DB, error) {
+func (s *modules) MysqlGormDB() (*gorm.DB, error) {
 	var err error
 	s.mysqlGormMutex.Do(func() {
-		s.mysqlGormDB, err = s.setupMysqlGormDB()
+		s.mysqlGormDB, err = s.loadingMysqlGormDB()
 	})
 	if err != nil {
 		s.mysqlGormMutex = sync.Once{}
@@ -278,7 +278,7 @@ func (s *up) MysqlGormDB() (*gorm.DB, error) {
 		return s.mysqlGormDB, err
 	}
 
-	s.mysqlGormDB, err = s.setupMysqlGormDB()
+	s.mysqlGormDB, err = s.loadingMysqlGormDB()
 	if err != nil {
 		return nil, err
 	}
@@ -286,10 +286,10 @@ func (s *up) MysqlGormDB() (*gorm.DB, error) {
 }
 
 // RedisClient redis 客户端
-func (s *up) RedisClient() (*redis.Client, error) {
+func (s *modules) RedisClient() (*redis.Client, error) {
 	var err error
 	s.redisClientMutex.Do(func() {
-		s.redisClient, err = s.setupRedisClient()
+		s.redisClient, err = s.loadingRedisClient()
 	})
 	if err != nil {
 		s.redisClientMutex = sync.Once{}
@@ -298,15 +298,15 @@ func (s *up) RedisClient() (*redis.Client, error) {
 	if s.redisClient != nil {
 		return s.redisClient, err
 	}
-	s.redisClient, err = s.setupRedisClient()
+	s.redisClient, err = s.loadingRedisClient()
 	if err != nil {
 		return nil, err
 	}
 	return s.redisClient, err
 }
 
-// setupDebugUtil 设置调试工具
-func (s *up) setupDebugUtil() error {
+// loadingDebugUtil 加载调试工具
+func (s *modules) loadingDebugUtil() error {
 	if !s.Config.IsDebugMode() {
 		return nil
 	}
@@ -319,8 +319,8 @@ func (s *up) setupDebugUtil() error {
 	return err
 }
 
-// setupLogHelper 设置日志工具
-func (s *up) setupLogHelper() (closeFnSlice []func() error, err error) {
+// loadingLogHelper 加载日志工具
+func (s *modules) loadingLogHelper() (closeFnSlice []func() error, err error) {
 	loggerInstance, closeFnSlice, err := s.LoggerHelper()
 	if err != nil {
 		return closeFnSlice, err
@@ -342,8 +342,8 @@ func (s *up) setupLogHelper() (closeFnSlice []func() error, err error) {
 	return closeFnSlice, err
 }
 
-// setupLoggerFileWriter 启动日志文件写手柄
-func (s *up) setupLoggerFileWriter() (io.Writer, error) {
+// loadingLoggerFileWriter 启动日志文件写手柄
+func (s *modules) loadingLoggerFileWriter() (io.Writer, error) {
 	fileLoggerConfig := s.Config.LoggerConfigForFile()
 	if !s.Config.EnableLoggingFile() || fileLoggerConfig == nil {
 		stdlog.Println("|*** 加载日志工具：虚拟的文件写手柄")
@@ -360,26 +360,26 @@ func (s *up) setupLoggerFileWriter() (io.Writer, error) {
 	return writerutil.NewRotateFile(rotateConfig)
 }
 
-// setupLogger 初始化日志输出实例
-func (s *up) setupLogger() (logger log.Logger, closeFnSlice []func() error, err error) {
+// loadingLogger 初始化日志输出实例
+func (s *modules) loadingLogger() (logger log.Logger, closeFnSlice []func() error, err error) {
 	skip := logutil.DefaultCallerSkip + 1
-	return s.setupLoggerWithCallerSkip(skip)
+	return s.loadingLoggerWithCallerSkip(skip)
 }
 
-// setupLoggerHelper 初始化日志工具输出实例
-func (s *up) setupLoggerHelper() (logger log.Logger, closeFnSlice []func() error, err error) {
+// loadingLoggerHelper 初始化日志工具输出实例
+func (s *modules) loadingLoggerHelper() (logger log.Logger, closeFnSlice []func() error, err error) {
 	skip := logutil.DefaultCallerSkip + 2
-	return s.setupLoggerWithCallerSkip(skip)
+	return s.loadingLoggerWithCallerSkip(skip)
 }
 
-// setupLoggerMiddleware 初始化中间价的日志输出实例
-func (s *up) setupLoggerMiddleware() (logger log.Logger, closeFnSlice []func() error, err error) {
+// loadingLoggerMiddleware 初始化中间价的日志输出实例
+func (s *modules) loadingLoggerMiddleware() (logger log.Logger, closeFnSlice []func() error, err error) {
 	skip := logutil.DefaultCallerSkip - 1
-	return s.setupLoggerWithCallerSkip(skip)
+	return s.loadingLoggerWithCallerSkip(skip)
 }
 
-// setupLoggerWithCallerSkip 初始化日志输出实例
-func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlice []func() error, err error) {
+// loadingLoggerWithCallerSkip 初始化日志输出实例
+func (s *modules) loadingLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlice []func() error, err error) {
 	// loggers
 	var loggers []log.Logger
 
@@ -450,8 +450,8 @@ func (s *up) setupLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlic
 	return log.MultiLogger(loggers...), closeFnSlice, err
 }
 
-// setupMysqlGormDB mysql gorm 数据库
-func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
+// loadingMysqlGormDB mysql gorm 数据库
+func (s *modules) loadingMysqlGormDB() (*gorm.DB, error) {
 	if s.Config.MySQLConfig() == nil {
 		stdlog.Println("|*** 加载MySQL-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
@@ -479,8 +479,8 @@ func (s *up) setupMysqlGormDB() (*gorm.DB, error) {
 	return mysqlutil.NewMysqlDB(s.Config.MySQLConfig(), opts...)
 }
 
-// setupRedisClient redis 客户端
-func (s *up) setupRedisClient() (*redis.Client, error) {
+// loadingRedisClient redis 客户端
+func (s *modules) loadingRedisClient() (*redis.Client, error) {
 	if s.Config.RedisConfig() == nil {
 		stdlog.Println("|*** 加载Redis客户端：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)

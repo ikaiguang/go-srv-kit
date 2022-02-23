@@ -24,7 +24,7 @@ func TestNewUpPackages(t *testing.T) {
 	t.Log("*** | env：", configHandler.Env())
 
 	// up
-	upHandler := NewUpPackages(configHandler)
+	upHandler := NewModules(configHandler)
 
 	// db
 	db, err := upHandler.MysqlGormDB()
