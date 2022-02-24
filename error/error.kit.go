@@ -7,9 +7,6 @@ import (
 
 // WithStack returns an error
 func WithStack(err error) error {
-	if err == nil {
-		return nil
-	}
 	return pkgerrors.WithStack(err)
 }
 
