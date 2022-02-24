@@ -9,8 +9,8 @@ import (
 	respv1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 )
 
-// go test -v -count=1 ./kratos/app -test.run=TestResponseDecoder
-func TestResponseDecoder(t *testing.T) {
+// go test -v -count=1 ./kratos/app -test.run=TestDecodeSuccessResponse
+func TestDecodeSuccessResponse(t *testing.T) {
 	body := []byte(`{"code":0,"reason":"","message":"","data":{"message":"Received Message : hello"},"request_id":""}`)
 	tests := []struct {
 		name     string
@@ -29,7 +29,7 @@ func TestResponseDecoder(t *testing.T) {
 	for _, v := range tests {
 		t.Run(v.name, func(t *testing.T) {
 			actual := &v1.PingResp{}
-			got, err := ResponseDecoder(v.body, actual)
+			got, err := DecodeSuccessResponse(v.body, actual)
 			require.Nil(t, err)
 			require.Equal(t, v.wantCode, int(got.Code))
 			require.Equal(t, v.wantData.Message, actual.Message)
@@ -37,8 +37,8 @@ func TestResponseDecoder(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./kratos/app -test.run=TestErrorEncoder
-func TestErrorEncoder(t *testing.T) {
+// go test -v -count=1 ./kratos/app -test.run=TestDecodeErrorResponse
+func TestDecodeErrorResponse(t *testing.T) {
 	body := []byte(`{"code":400, "reason":"CONTENT_ERROR", "message":"testing error", "requestId":"", "data":null, "metadata":{"testdata":"testdata"}}`)
 	tests := []struct {
 		name     string
@@ -60,7 +60,7 @@ func TestErrorEncoder(t *testing.T) {
 
 	for _, v := range tests {
 		t.Run(v.name, func(t *testing.T) {
-			got, err := ErrorDecoder(v.body)
+			got, err := DecodeErrorResponse(v.body)
 			require.Nil(t, err)
 			require.Equal(t, v.wantCode, int(got.Code))
 			require.Equal(t, v.wantData.Reason, got.Reason)

@@ -30,8 +30,8 @@ func NewTestService(logger log.Logger) v1.SrvTestdataServer {
 
 // Websocket websocket
 func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.TestResp, err error) {
-	err = errorutil.NotImplemented(baseexception.ERROR_NOT_IMPLEMENTED.String(), "未实现")
-	return &v1.TestResp{}, err
+	//err = errorutil.NotImplemented(baseexception.ERROR_NOT_IMPLEMENTED.String(), "未实现")
+	//return &v1.TestResp{}, err
 
 	// http
 	httpContext, isHTTPContext := contextutil.MatchHTTPContext(ctx)
@@ -41,7 +41,7 @@ func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.Test
 		resp = &v1.TestResp{
 			Message: xid.New().String(),
 		}
-		//err = errorutil.NotImplemented(baseexception.ERROR_NOT_IMPLEMENTED.String(), "未实现")
+		err = errorutil.NotImplemented(baseexception.ERROR_NOT_IMPLEMENTED.String(), "未实现")
 		return resp, err
 	}
 
