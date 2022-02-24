@@ -153,11 +153,6 @@ func (s *configuration) LoggerConfigForFile() *confv1.Log_File {
 	return s.conf.Log.File
 }
 
-// DataConfig 数据配置
-func (s *configuration) DataConfig() *confv1.Data {
-	return s.conf.Data
-}
-
 // MySQLConfig mysql配置
 func (s *configuration) MySQLConfig() *confv1.Data_MySQL {
 	if s.conf.Data == nil {

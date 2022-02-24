@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/rs/xid"
 
-	baseexception "github.com/ikaiguang/go-srv-kit/api/base/exception"
+	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
 	v1 "github.com/ikaiguang/go-srv-kit/api/testdata/v1"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	contextutil "github.com/ikaiguang/go-srv-kit/kratos/context"
@@ -30,7 +30,7 @@ func NewTestService(logger log.Logger) v1.SrvTestdataServer {
 
 // Websocket websocket
 func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.TestResp, err error) {
-	//err = errorutil.NotImplemented(baseexception.ERROR_NOT_IMPLEMENTED.String(), "未实现")
+	//err = errorutil.NotImplemented(baseerror.ERROR_NOT_IMPLEMENTED.String(), "未实现")
 	//return &v1.TestResp{}, err
 
 	// http
@@ -41,11 +41,11 @@ func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.Test
 		resp = &v1.TestResp{
 			Message: xid.New().String(),
 		}
-		err = errorutil.NotImplemented(baseexception.ERROR_NOT_IMPLEMENTED.String(), "未实现")
+		err = errorutil.NotImplemented(baseerror.ERROR_NOT_IMPLEMENTED.String(), "未实现")
 		return resp, err
 	}
 
-	err = errorutil.NotImplemented(baseexception.ERROR_NOT_IMPLEMENTED.String(), "未实现")
+	err = errorutil.NotImplemented(baseerror.ERROR_NOT_IMPLEMENTED.String(), "未实现")
 	return &v1.TestResp{}, err
 }
 
@@ -60,7 +60,7 @@ func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
 	// 升级连接
 	c, err := websocketutil.UpgradeConn(ctx.Response(), ctx.Request(), ctx.Response().Header())
 	if err != nil {
-		err = errorutil.InternalServer(baseexception.ERROR_INTERNAL_SERVER.String(), "ws开启失败", err)
+		err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws开启失败", err)
 		s.log.Error(err)
 		return
 	}
@@ -74,7 +74,7 @@ func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
 				s.log.Infow("websocket close", wsErr.Error())
 				break
 			}
-			err = errorutil.InternalServer(baseexception.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", err)
+			err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", err)
 			s.log.Error(err)
 			return
 		}
@@ -89,7 +89,7 @@ func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
 		// 处理
 		needCloseConn, err := s.processWsMessage(ctx, wsMessage)
 		if err != nil {
-			err = errorutil.InternalServer(baseexception.ERROR_INTERNAL_SERVER.String(), "ws处理信息失败", err)
+			err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws处理信息失败", err)
 			s.log.Error(err)
 			return
 		}
@@ -101,7 +101,7 @@ func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
 				s.log.Infow("websocket close", wsErr.Error())
 				break
 			}
-			err = errorutil.InternalServer(baseexception.ERROR_INTERNAL_SERVER.String(), "JSON编码错误", err)
+			err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "JSON编码错误", err)
 			s.log.Error(err)
 			return
 		}

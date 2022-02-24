@@ -4,7 +4,7 @@
 // - protoc             v3.19.3
 // source: api/testdata/v1/testdata.v1.proto
 
-package v1
+package testdatav1
 
 import (
 	context "context"
@@ -52,7 +52,7 @@ func NewSrvTestdataClient(cc grpc.ClientConnInterface) SrvTestdataClient {
 
 func (c *srvTestdataClient) Websocket(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (*TestResp, error) {
 	out := new(TestResp)
-	err := c.cc.Invoke(ctx, "/api.testdata.v1.SrvTestdata/Websocket", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.testdata.testdatav1.SrvTestdata/Websocket", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (c *srvTestdataClient) Websocket(ctx context.Context, in *TestReq, opts ...
 
 func (c *srvTestdataClient) Get(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (*TestResp, error) {
 	out := new(TestResp)
-	err := c.cc.Invoke(ctx, "/api.testdata.v1.SrvTestdata/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.testdata.testdatav1.SrvTestdata/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (c *srvTestdataClient) Get(ctx context.Context, in *TestReq, opts ...grpc.C
 
 func (c *srvTestdataClient) Put(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (*TestResp, error) {
 	out := new(TestResp)
-	err := c.cc.Invoke(ctx, "/api.testdata.v1.SrvTestdata/Put", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.testdata.testdatav1.SrvTestdata/Put", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (c *srvTestdataClient) Put(ctx context.Context, in *TestReq, opts ...grpc.C
 
 func (c *srvTestdataClient) Post(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (*TestResp, error) {
 	out := new(TestResp)
-	err := c.cc.Invoke(ctx, "/api.testdata.v1.SrvTestdata/Post", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.testdata.testdatav1.SrvTestdata/Post", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (c *srvTestdataClient) Post(ctx context.Context, in *TestReq, opts ...grpc.
 
 func (c *srvTestdataClient) Delete(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (*TestResp, error) {
 	out := new(TestResp)
-	err := c.cc.Invoke(ctx, "/api.testdata.v1.SrvTestdata/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.testdata.testdatav1.SrvTestdata/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (c *srvTestdataClient) Delete(ctx context.Context, in *TestReq, opts ...grp
 
 func (c *srvTestdataClient) Patch(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (*TestResp, error) {
 	out := new(TestResp)
-	err := c.cc.Invoke(ctx, "/api.testdata.v1.SrvTestdata/Patch", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.testdata.testdatav1.SrvTestdata/Patch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (c *srvTestdataClient) Patch(ctx context.Context, in *TestReq, opts ...grpc
 }
 
 func (c *srvTestdataClient) ServerToClient(ctx context.Context, in *TestReq, opts ...grpc.CallOption) (SrvTestdata_ServerToClientClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SrvTestdata_ServiceDesc.Streams[0], "/api.testdata.v1.SrvTestdata/ServerToClient", opts...)
+	stream, err := c.cc.NewStream(ctx, &SrvTestdata_ServiceDesc.Streams[0], "/api.testdata.testdatav1.SrvTestdata/ServerToClient", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func (x *srvTestdataServerToClientClient) Recv() (*TestResp, error) {
 }
 
 func (c *srvTestdataClient) ClientToServer(ctx context.Context, opts ...grpc.CallOption) (SrvTestdata_ClientToServerClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SrvTestdata_ServiceDesc.Streams[1], "/api.testdata.v1.SrvTestdata/ClientToServer", opts...)
+	stream, err := c.cc.NewStream(ctx, &SrvTestdata_ServiceDesc.Streams[1], "/api.testdata.testdatav1.SrvTestdata/ClientToServer", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +171,7 @@ func (x *srvTestdataClientToServerClient) CloseAndRecv() (*TestResp, error) {
 }
 
 func (c *srvTestdataClient) BidirectionalStream(ctx context.Context, opts ...grpc.CallOption) (SrvTestdata_BidirectionalStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SrvTestdata_ServiceDesc.Streams[2], "/api.testdata.v1.SrvTestdata/BidirectionalStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &SrvTestdata_ServiceDesc.Streams[2], "/api.testdata.testdatav1.SrvTestdata/BidirectionalStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +280,7 @@ func _SrvTestdata_Websocket_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.testdata.v1.SrvTestdata/Websocket",
+		FullMethod: "/api.testdata.testdatav1.SrvTestdata/Websocket",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SrvTestdataServer).Websocket(ctx, req.(*TestReq))
@@ -298,7 +298,7 @@ func _SrvTestdata_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.testdata.v1.SrvTestdata/Get",
+		FullMethod: "/api.testdata.testdatav1.SrvTestdata/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SrvTestdataServer).Get(ctx, req.(*TestReq))
@@ -316,7 +316,7 @@ func _SrvTestdata_Put_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.testdata.v1.SrvTestdata/Put",
+		FullMethod: "/api.testdata.testdatav1.SrvTestdata/Put",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SrvTestdataServer).Put(ctx, req.(*TestReq))
@@ -334,7 +334,7 @@ func _SrvTestdata_Post_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.testdata.v1.SrvTestdata/Post",
+		FullMethod: "/api.testdata.testdatav1.SrvTestdata/Post",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SrvTestdataServer).Post(ctx, req.(*TestReq))
@@ -352,7 +352,7 @@ func _SrvTestdata_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.testdata.v1.SrvTestdata/Delete",
+		FullMethod: "/api.testdata.testdatav1.SrvTestdata/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SrvTestdataServer).Delete(ctx, req.(*TestReq))
@@ -370,7 +370,7 @@ func _SrvTestdata_Patch_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.testdata.v1.SrvTestdata/Patch",
+		FullMethod: "/api.testdata.testdatav1.SrvTestdata/Patch",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SrvTestdataServer).Patch(ctx, req.(*TestReq))
@@ -455,7 +455,7 @@ func (x *srvTestdataBidirectionalStreamServer) Recv() (*TestReq, error) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var SrvTestdata_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.testdata.v1.SrvTestdata",
+	ServiceName: "api.testdata.testdatav1.SrvTestdata",
 	HandlerType: (*SrvTestdataServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

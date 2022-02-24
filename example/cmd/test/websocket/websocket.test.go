@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 
-	baseexception "github.com/ikaiguang/go-srv-kit/api/base/exception"
+	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	websocketutil "github.com/ikaiguang/go-srv-kit/kratos/websocket"
@@ -50,7 +50,7 @@ func TestWebsocket() (processResp interface{}, err error) {
 					loghelper.Infow("websocket close", wsErr.Error())
 					break
 				}
-				err = errorutil.InternalServer(baseexception.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", wsErr)
+				err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", wsErr)
 				loghelper.Error(err)
 				return
 			}
@@ -86,7 +86,7 @@ func TestWebsocket() (processResp interface{}, err error) {
 					loghelper.Infow("websocket close", wsErr.Error())
 					break
 				}
-				err = errorutil.InternalServer(baseexception.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", err)
+				err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", err)
 				loghelper.Error(err)
 				return
 			}

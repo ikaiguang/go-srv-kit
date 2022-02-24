@@ -4,7 +4,7 @@
 // - protoc             v3.19.3
 // source: api/ping/v1/ping.v1.proto
 
-package v1
+package pingv1
 
 import (
 	context "context"
@@ -38,7 +38,7 @@ func NewSrvPingClient(cc grpc.ClientConnInterface) SrvPingClient {
 
 func (c *srvPingClient) Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingResp, error) {
 	out := new(PingResp)
-	err := c.cc.Invoke(ctx, "/api.ping.v1.SrvPing/Ping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.ping.pingv1.SrvPing/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func _SrvPing_Ping_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.ping.v1.SrvPing/Ping",
+		FullMethod: "/api.ping.pingv1.SrvPing/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SrvPingServer).Ping(ctx, req.(*PingReq))
@@ -98,7 +98,7 @@ func _SrvPing_Ping_Handler(srv interface{}, ctx context.Context, dec func(interf
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var SrvPing_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.ping.v1.SrvPing",
+	ServiceName: "api.ping.pingv1.SrvPing",
 	HandlerType: (*SrvPingServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -2,7 +2,7 @@
 // versions:
 // protoc-gen-go-http v2.1.4
 
-package v1
+package testdatav1
 
 import (
 	context "context"
@@ -42,7 +42,7 @@ func _SrvTestdata_Websocket0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx ht
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, "/api.testdata.v1.SrvTestdata/Websocket")
+		http.SetOperation(ctx, "/api.testdata.testdatav1.SrvTestdata/Websocket")
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Websocket(ctx, req.(*TestReq))
 		})
@@ -61,7 +61,7 @@ func _SrvTestdata_Get0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Con
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, "/api.testdata.v1.SrvTestdata/Get")
+		http.SetOperation(ctx, "/api.testdata.testdatav1.SrvTestdata/Get")
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Get(ctx, req.(*TestReq))
 		})
@@ -80,7 +80,7 @@ func _SrvTestdata_Put0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Con
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, "/api.testdata.v1.SrvTestdata/Put")
+		http.SetOperation(ctx, "/api.testdata.testdatav1.SrvTestdata/Put")
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Put(ctx, req.(*TestReq))
 		})
@@ -99,7 +99,7 @@ func _SrvTestdata_Post0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Co
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, "/api.testdata.v1.SrvTestdata/Post")
+		http.SetOperation(ctx, "/api.testdata.testdatav1.SrvTestdata/Post")
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Post(ctx, req.(*TestReq))
 		})
@@ -118,7 +118,7 @@ func _SrvTestdata_Delete0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, "/api.testdata.v1.SrvTestdata/Delete")
+		http.SetOperation(ctx, "/api.testdata.testdatav1.SrvTestdata/Delete")
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Delete(ctx, req.(*TestReq))
 		})
@@ -137,7 +137,7 @@ func _SrvTestdata_Patch0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.C
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, "/api.testdata.v1.SrvTestdata/Patch")
+		http.SetOperation(ctx, "/api.testdata.testdatav1.SrvTestdata/Patch")
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Patch(ctx, req.(*TestReq))
 		})
@@ -171,7 +171,7 @@ func (c *SrvTestdataHTTPClientImpl) Delete(ctx context.Context, in *TestReq, opt
 	var out TestResp
 	pattern := "/api/v1/testdata/post"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation("/api.testdata.v1.SrvTestdata/Delete"))
+	opts = append(opts, http.Operation("/api.testdata.testdatav1.SrvTestdata/Delete"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
@@ -184,7 +184,7 @@ func (c *SrvTestdataHTTPClientImpl) Get(ctx context.Context, in *TestReq, opts .
 	var out TestResp
 	pattern := "/api/v1/testdata/get"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation("/api.testdata.v1.SrvTestdata/Get"))
+	opts = append(opts, http.Operation("/api.testdata.testdatav1.SrvTestdata/Get"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -197,7 +197,7 @@ func (c *SrvTestdataHTTPClientImpl) Patch(ctx context.Context, in *TestReq, opts
 	var out TestResp
 	pattern := "/api/v1/testdata/post"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation("/api.testdata.v1.SrvTestdata/Patch"))
+	opts = append(opts, http.Operation("/api.testdata.testdatav1.SrvTestdata/Patch"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PATCH", path, in, &out, opts...)
 	if err != nil {
@@ -210,7 +210,7 @@ func (c *SrvTestdataHTTPClientImpl) Post(ctx context.Context, in *TestReq, opts 
 	var out TestResp
 	pattern := "/api/v1/testdata/post"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation("/api.testdata.v1.SrvTestdata/Post"))
+	opts = append(opts, http.Operation("/api.testdata.testdatav1.SrvTestdata/Post"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
@@ -223,7 +223,7 @@ func (c *SrvTestdataHTTPClientImpl) Put(ctx context.Context, in *TestReq, opts .
 	var out TestResp
 	pattern := "/api/v1/testdata/put"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation("/api.testdata.v1.SrvTestdata/Put"))
+	opts = append(opts, http.Operation("/api.testdata.testdatav1.SrvTestdata/Put"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
@@ -236,7 +236,7 @@ func (c *SrvTestdataHTTPClientImpl) Websocket(ctx context.Context, in *TestReq, 
 	var out TestResp
 	pattern := "/api/v1/testdata/websocket"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation("/api.testdata.v1.SrvTestdata/Websocket"))
+	opts = append(opts, http.Operation("/api.testdata.testdatav1.SrvTestdata/Websocket"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package api.response.v1;
+package api.response.responsev1;
 
 import "google/protobuf/any.proto";
 
 // 多语言特定包名，用于源代码引用
-option go_package = "github.com/ikaiguang/go-srv-kit/api/response/v1;v1";
+option go_package = "github.com/ikaiguang/go-srv-kit/api/response/v1;responsev1";
 option java_multiple_files = true;
-option java_package = "api.response.v1";
+option java_package = "api.response.responsev1";
 
 // Response 响应
 message Response {
