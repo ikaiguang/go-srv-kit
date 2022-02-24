@@ -81,7 +81,7 @@ func Do(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes
 	httpResp, err := httpClient.Do(httpReq)
 	if err != nil {
 		err = pkgerrors.WithStack(err)
-		return
+		return httpCode, bodyBytes, err
 	}
 	defer func() { _ = httpResp.Body.Close() }()
 
@@ -89,8 +89,12 @@ func Do(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes
 	httpCode = httpResp.StatusCode
 	bodyBytes, err = ioutil.ReadAll(httpResp.Body)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
-		return
+		if err == io.EOF {
+			err = nil
+		} else {
+			err = pkgerrors.WithStack(err)
+		}
+		return httpCode, bodyBytes, err
 	}
-	return
+	return httpCode, bodyBytes, err
 }
