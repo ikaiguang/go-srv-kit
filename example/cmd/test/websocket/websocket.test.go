@@ -23,7 +23,7 @@ func RunTestWebsocket() {
 		return
 	}
 	jsonContent, _ := apputil.JSON(processResp)
-	stdlog.Println(string(jsonContent))
+	stdlog.Println("==> RunTestWebsocket result :", string(jsonContent))
 }
 
 // TestWebsocket 测试websocket

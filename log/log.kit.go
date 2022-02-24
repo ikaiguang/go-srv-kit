@@ -26,13 +26,13 @@ const (
 	DefaultCallerValuer = 4
 
 	// zapcore.EncoderConfig keys
-	ZapMessageKey    = "z_Msg"
-	ZapLevelKey      = "z_Lv"
-	ZapTimeKey       = "z_Time"
-	ZapNameKey       = "z_Name"
-	ZapCallerKey     = "z_Caller"
-	ZapFunctionKey   = "z_Fn"
-	ZapStacktraceKey = "z_ST"
+	ZapMessageKey    = "msg"
+	ZapLevelKey      = "level"
+	ZapTimeKey       = "time"
+	ZapNameKey       = "name"
+	ZapCallerKey     = "caller"
+	ZapFunctionKey   = "func"
+	ZapStacktraceKey = "stack"
 )
 
 // NewMultiLogger wraps multi logger.
