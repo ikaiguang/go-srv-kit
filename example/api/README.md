@@ -29,15 +29,15 @@ git clone https://github.com/go-kratos/kratos.git
 ```shell
 
 # 生成 client 源码
-kratos proto client api/android/v1/android_export.v1.proto
-kratos proto client api/android/exception/android_error.exception.proto
+kratos proto client api/ping/v1/ping.v1.proto
+kratos proto client api/ping/error/ping.error.proto
 
 # 生成 proto 模板
-# kratos proto add api/android/v1/android_export.v1.proto
+# kratos proto add api/ping/v1/ping.v1.proto
 
 # 生成 server 源码
-# mkdir -p internal/application/service/android
-# kratos proto server api/android/v1/android_export.v1.proto -t internal/application/service/android
+# mkdir -p internal/application/service/ping
+# kratos proto server api/ping/v1/ping.v1.proto -t internal/application/service/ping
 # 修改生成文件名称，符合命名规则
 
 ```

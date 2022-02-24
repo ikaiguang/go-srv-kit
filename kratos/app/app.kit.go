@@ -15,7 +15,7 @@ var (
 )
 
 // Response 响应
-// 关联更新 v1.Response
+// 关联更新 responsev1.Response
 type Response struct {
 	Code     int32             `json:"code"`
 	Reason   string            `json:"reason"`
