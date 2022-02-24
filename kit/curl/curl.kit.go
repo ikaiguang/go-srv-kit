@@ -66,16 +66,36 @@ func NewHTTPClient(opts ...Option) *http.Client {
 	return httpClient
 }
 
-// DoOnce 请求一次后关闭连接
-func DoOnce(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
+// Do 请求
+func Do(httpReq *http.Request, opts ...Option) (httpCode int, bodyBytes []byte, err error) {
+	httpClient := NewHTTPClient(opts...)
 	defer httpClient.CloseIdleConnections()
 
-	return Do(httpClient, httpReq)
+	httpResp, err := httpClient.Do(httpReq)
+	if err != nil {
+		err = pkgerrors.WithStack(err)
+		return httpCode, bodyBytes, err
+	}
+	defer func() { _ = httpResp.Body.Close() }()
+
+	return response(httpResp)
 }
 
-// Do 请求
-func Do(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
-	// 请手动关闭
+// Default http.DefaultClient
+func Default(httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
+	httpResp, err := http.DefaultClient.Do(httpReq)
+	if err != nil {
+		err = pkgerrors.WithStack(err)
+		return httpCode, bodyBytes, err
+	}
+	defer func() { _ = httpResp.Body.Close() }()
+
+	return response(httpResp)
+}
+
+// DoWithClient 请求一次后关闭连接
+func DoWithClient(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
+	// 哪里开启，哪里关闭
 	//defer httpClient.CloseIdleConnections()
 
 	httpResp, err := httpClient.Do(httpReq)
@@ -84,6 +104,13 @@ func Do(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes
 		return httpCode, bodyBytes, err
 	}
 	defer func() { _ = httpResp.Body.Close() }()
+
+	return response(httpResp)
+}
+
+// response
+func response(httpResp *http.Response) (httpCode int, bodyBytes []byte, err error) {
+	//defer func() { _ = httpResp.Body.Close() }()
 
 	// resp
 	httpCode = httpResp.StatusCode
