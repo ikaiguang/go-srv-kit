@@ -25,11 +25,11 @@ func IsSuccessCode(code int32) bool {
 	if code == OK {
 		return true
 	}
-	return IsSuccessHTTPCode(code)
+	return IsSuccessHTTPCode(int(code))
 }
 
 // IsSuccessHTTPCode 成功的HTTP响应吗
-func IsSuccessHTTPCode(code int32) bool {
+func IsSuccessHTTPCode(code int) bool {
 	if code >= stdhttp.StatusOK && code < stdhttp.StatusMultipleChoices {
 		return true
 	}
