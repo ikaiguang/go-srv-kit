@@ -1,10 +1,15 @@
 package apputil
 
 import (
+	stdhttp "net/http"
+
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"google.golang.org/grpc/codes"
 )
 
 const (
+	OK = 0
+
 	baseContentType = "application"
 )
 
@@ -24,4 +29,25 @@ type Response struct {
 
 	Data      interface{} `json:"data"`
 	RequestId string      `json:"request_id"`
+}
+
+// IsSuccessCode 成功的响应码
+func IsSuccessCode(code int32) bool {
+	if code == OK {
+		return true
+	}
+	return IsSuccessHTTPCode(code)
+}
+
+// IsSuccessHTTPCode 成功的HTTP响应吗
+func IsSuccessHTTPCode(code int32) bool {
+	if code >= stdhttp.StatusOK && code < stdhttp.StatusMultipleChoices {
+		return true
+	}
+	return false
+}
+
+// IsSuccessGRPCCode 成功的GRPC响应吗
+func IsSuccessGRPCCode(code uint32) bool {
+	return codes.Code(code) == codes.OK
 }

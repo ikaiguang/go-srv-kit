@@ -22,7 +22,7 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 
 	// 响应结果
 	data := &Response{
-		Code:      0,
+		Code:      OK,
 		RequestId: headerutil.GetRequestID(r.Header),
 		Data:      v,
 	}

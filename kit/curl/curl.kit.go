@@ -66,15 +66,15 @@ func NewHTTPClient(opts ...Option) *http.Client {
 	return httpClient
 }
 
-// DoRequestOnce 请求一次后关闭连接
-func DoRequestOnce(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
+// DoOnce 请求一次后关闭连接
+func DoOnce(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
 	defer httpClient.CloseIdleConnections()
 
-	return DoRequest(httpClient, httpReq)
+	return Do(httpClient, httpReq)
 }
 
-// DoRequest 请求
-func DoRequest(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
+// Do 请求
+func Do(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
 	// 请手动关闭
 	//defer httpClient.CloseIdleConnections()
 
@@ -93,22 +93,4 @@ func DoRequest(httpClient *http.Client, httpReq *http.Request) (httpCode int, bo
 		return
 	}
 	return
-}
-
-// RequestParam 请求参数
-type RequestParam struct {
-	// Timeout 请求超时；默认 DefaultTimeout = 1分钟
-	Timeout time.Duration
-}
-
-// Do 执行请求
-func Do(httpReq *http.Request, requestParam *RequestParam) (httpCode int, bodyBytes []byte, err error) {
-	// client
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: tr}
-	defer httpClient.CloseIdleConnections()
-
-	return DoRequest(httpClient, httpReq)
 }
