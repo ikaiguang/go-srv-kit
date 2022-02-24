@@ -11,206 +11,254 @@ import (
 // is compatible with the kratos package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
-func IsUnknown(err error) bool {
+func IsStatusUnknown(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_UNKNOWN.String() && e.Code == 404
+	return e.Reason == ERROR_STATUS_UNKNOWN.String() && e.Code == 404
 }
 
-func ErrorUnknown(format string, args ...interface{}) *errors.Error {
-	return errors.New(404, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
+func ErrorStatusUnknown(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ERROR_STATUS_UNKNOWN.String(), fmt.Sprintf(format, args...))
 }
 
-func IsContinue(err error) bool {
+func IsStatusRequestFailure(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_CONTINUE.String() && e.Code == 100
+	return e.Reason == ERROR_STATUS_REQUEST_FAILURE.String() && e.Code == 503
 }
 
-func ErrorContinue(format string, args ...interface{}) *errors.Error {
-	return errors.New(100, ERROR_CONTINUE.String(), fmt.Sprintf(format, args...))
+func ErrorStatusRequestFailure(format string, args ...interface{}) *errors.Error {
+	return errors.New(503, ERROR_STATUS_REQUEST_FAILURE.String(), fmt.Sprintf(format, args...))
 }
 
-func IsProcessing(err error) bool {
+func IsStatusContinue(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_PROCESSING.String() && e.Code == 102
+	return e.Reason == ERROR_STATUS_CONTINUE.String() && e.Code == 100
 }
 
-func ErrorProcessing(format string, args ...interface{}) *errors.Error {
-	return errors.New(102, ERROR_PROCESSING.String(), fmt.Sprintf(format, args...))
+func ErrorStatusContinue(format string, args ...interface{}) *errors.Error {
+	return errors.New(100, ERROR_STATUS_CONTINUE.String(), fmt.Sprintf(format, args...))
 }
 
-func IsOk(err error) bool {
+func IsStatusProcessing(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_OK.String() && e.Code == 200
+	return e.Reason == ERROR_STATUS_PROCESSING.String() && e.Code == 102
 }
 
-func ErrorOk(format string, args ...interface{}) *errors.Error {
-	return errors.New(200, ERROR_OK.String(), fmt.Sprintf(format, args...))
+func ErrorStatusProcessing(format string, args ...interface{}) *errors.Error {
+	return errors.New(102, ERROR_STATUS_PROCESSING.String(), fmt.Sprintf(format, args...))
 }
 
-func IsCreated(err error) bool {
+func IsStatusOk(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_CREATED.String() && e.Code == 201
+	return e.Reason == ERROR_STATUS_OK.String() && e.Code == 200
 }
 
-func ErrorCreated(format string, args ...interface{}) *errors.Error {
-	return errors.New(201, ERROR_CREATED.String(), fmt.Sprintf(format, args...))
+func ErrorStatusOk(format string, args ...interface{}) *errors.Error {
+	return errors.New(200, ERROR_STATUS_OK.String(), fmt.Sprintf(format, args...))
 }
 
-func IsMultipleChoices(err error) bool {
+func IsStatusCreated(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_MULTIPLE_CHOICES.String() && e.Code == 300
+	return e.Reason == ERROR_STATUS_CREATED.String() && e.Code == 201
 }
 
-func ErrorMultipleChoices(format string, args ...interface{}) *errors.Error {
-	return errors.New(300, ERROR_MULTIPLE_CHOICES.String(), fmt.Sprintf(format, args...))
+func ErrorStatusCreated(format string, args ...interface{}) *errors.Error {
+	return errors.New(201, ERROR_STATUS_CREATED.String(), fmt.Sprintf(format, args...))
 }
 
-func IsBadRequest(err error) bool {
+func IsStatusAccepted(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_BAD_REQUEST.String() && e.Code == 400
+	return e.Reason == ERROR_STATUS_ACCEPTED.String() && e.Code == 202
 }
 
-func ErrorBadRequest(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ERROR_BAD_REQUEST.String(), fmt.Sprintf(format, args...))
+func ErrorStatusAccepted(format string, args ...interface{}) *errors.Error {
+	return errors.New(202, ERROR_STATUS_ACCEPTED.String(), fmt.Sprintf(format, args...))
 }
 
-func IsUnauthorized(err error) bool {
+func IsStatusNoContent(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_UNAUTHORIZED.String() && e.Code == 401
+	return e.Reason == ERROR_STATUS_NO_CONTENT.String() && e.Code == 204
 }
 
-func ErrorUnauthorized(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_UNAUTHORIZED.String(), fmt.Sprintf(format, args...))
+func ErrorStatusNoContent(format string, args ...interface{}) *errors.Error {
+	return errors.New(204, ERROR_STATUS_NO_CONTENT.String(), fmt.Sprintf(format, args...))
 }
 
-func IsForbidden(err error) bool {
+func IsStatusMultipleChoices(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_FORBIDDEN.String() && e.Code == 403
+	return e.Reason == ERROR_STATUS_MULTIPLE_CHOICES.String() && e.Code == 300
 }
 
-func ErrorForbidden(format string, args ...interface{}) *errors.Error {
-	return errors.New(403, ERROR_FORBIDDEN.String(), fmt.Sprintf(format, args...))
+func ErrorStatusMultipleChoices(format string, args ...interface{}) *errors.Error {
+	return errors.New(300, ERROR_STATUS_MULTIPLE_CHOICES.String(), fmt.Sprintf(format, args...))
 }
 
-func IsNotFound(err error) bool {
+func IsStatusBadRequest(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_NOT_FOUND.String() && e.Code == 404
+	return e.Reason == ERROR_STATUS_BAD_REQUEST.String() && e.Code == 400
 }
 
-func ErrorNotFound(format string, args ...interface{}) *errors.Error {
-	return errors.New(404, ERROR_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+func ErrorStatusBadRequest(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ERROR_STATUS_BAD_REQUEST.String(), fmt.Sprintf(format, args...))
 }
 
-func IsMethodNotAllowed(err error) bool {
+func IsStatusUnauthorized(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_METHOD_NOT_ALLOWED.String() && e.Code == 405
+	return e.Reason == ERROR_STATUS_UNAUTHORIZED.String() && e.Code == 401
 }
 
-func ErrorMethodNotAllowed(format string, args ...interface{}) *errors.Error {
-	return errors.New(405, ERROR_METHOD_NOT_ALLOWED.String(), fmt.Sprintf(format, args...))
+func ErrorStatusUnauthorized(format string, args ...interface{}) *errors.Error {
+	return errors.New(401, ERROR_STATUS_UNAUTHORIZED.String(), fmt.Sprintf(format, args...))
 }
 
-func IsRequestTimeout(err error) bool {
+func IsStatusForbidden(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_REQUEST_TIMEOUT.String() && e.Code == 408
+	return e.Reason == ERROR_STATUS_FORBIDDEN.String() && e.Code == 403
 }
 
-func ErrorRequestTimeout(format string, args ...interface{}) *errors.Error {
-	return errors.New(408, ERROR_REQUEST_TIMEOUT.String(), fmt.Sprintf(format, args...))
+func ErrorStatusForbidden(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ERROR_STATUS_FORBIDDEN.String(), fmt.Sprintf(format, args...))
 }
 
-func IsTooManyRequests(err error) bool {
+func IsStatusNotFound(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_TOO_MANY_REQUESTS.String() && e.Code == 429
+	return e.Reason == ERROR_STATUS_NOT_FOUND.String() && e.Code == 404
 }
 
-func ErrorTooManyRequests(format string, args ...interface{}) *errors.Error {
-	return errors.New(429, ERROR_TOO_MANY_REQUESTS.String(), fmt.Sprintf(format, args...))
+func ErrorStatusNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ERROR_STATUS_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
 
-func IsInternalServer(err error) bool {
+func IsStatusMethodNotAllowed(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_INTERNAL_SERVER.String() && e.Code == 500
+	return e.Reason == ERROR_STATUS_METHOD_NOT_ALLOWED.String() && e.Code == 405
 }
 
-func ErrorInternalServer(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_INTERNAL_SERVER.String(), fmt.Sprintf(format, args...))
+func ErrorStatusMethodNotAllowed(format string, args ...interface{}) *errors.Error {
+	return errors.New(405, ERROR_STATUS_METHOD_NOT_ALLOWED.String(), fmt.Sprintf(format, args...))
 }
 
-func IsNotImplemented(err error) bool {
+func IsStatusRequestTimeout(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_NOT_IMPLEMENTED.String() && e.Code == 501
+	return e.Reason == ERROR_STATUS_REQUEST_TIMEOUT.String() && e.Code == 408
 }
 
-func ErrorNotImplemented(format string, args ...interface{}) *errors.Error {
-	return errors.New(501, ERROR_NOT_IMPLEMENTED.String(), fmt.Sprintf(format, args...))
+func ErrorStatusRequestTimeout(format string, args ...interface{}) *errors.Error {
+	return errors.New(408, ERROR_STATUS_REQUEST_TIMEOUT.String(), fmt.Sprintf(format, args...))
 }
 
-func IsBadGateway(err error) bool {
+func IsStatusTooManyRequests(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_BAD_GATEWAY.String() && e.Code == 502
+	return e.Reason == ERROR_STATUS_TOO_MANY_REQUESTS.String() && e.Code == 429
 }
 
-func ErrorBadGateway(format string, args ...interface{}) *errors.Error {
-	return errors.New(502, ERROR_BAD_GATEWAY.String(), fmt.Sprintf(format, args...))
+func ErrorStatusTooManyRequests(format string, args ...interface{}) *errors.Error {
+	return errors.New(429, ERROR_STATUS_TOO_MANY_REQUESTS.String(), fmt.Sprintf(format, args...))
 }
 
-func IsGatewayTimeout(err error) bool {
+func IsStatusInternalServer(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_GATEWAY_TIMEOUT.String() && e.Code == 504
+	return e.Reason == ERROR_STATUS_INTERNAL_SERVER.String() && e.Code == 500
 }
 
-func ErrorGatewayTimeout(format string, args ...interface{}) *errors.Error {
-	return errors.New(504, ERROR_GATEWAY_TIMEOUT.String(), fmt.Sprintf(format, args...))
+func ErrorStatusInternalServer(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_STATUS_INTERNAL_SERVER.String(), fmt.Sprintf(format, args...))
+}
+
+func IsStatusNotImplemented(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_STATUS_NOT_IMPLEMENTED.String() && e.Code == 501
+}
+
+func ErrorStatusNotImplemented(format string, args ...interface{}) *errors.Error {
+	return errors.New(501, ERROR_STATUS_NOT_IMPLEMENTED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsStatusBadGateway(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_STATUS_BAD_GATEWAY.String() && e.Code == 502
+}
+
+func ErrorStatusBadGateway(format string, args ...interface{}) *errors.Error {
+	return errors.New(502, ERROR_STATUS_BAD_GATEWAY.String(), fmt.Sprintf(format, args...))
+}
+
+func IsStatusServiceUnavailable(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_STATUS_SERVICE_UNAVAILABLE.String() && e.Code == 503
+}
+
+func ErrorStatusServiceUnavailable(format string, args ...interface{}) *errors.Error {
+	return errors.New(503, ERROR_STATUS_SERVICE_UNAVAILABLE.String(), fmt.Sprintf(format, args...))
+}
+
+func IsStatusGatewayTimeout(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_STATUS_GATEWAY_TIMEOUT.String() && e.Code == 504
+}
+
+func ErrorStatusGatewayTimeout(format string, args ...interface{}) *errors.Error {
+	return errors.New(504, ERROR_STATUS_GATEWAY_TIMEOUT.String(), fmt.Sprintf(format, args...))
 }

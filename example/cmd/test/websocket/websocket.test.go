@@ -50,7 +50,7 @@ func TestWebsocket() (processResp interface{}, err error) {
 					loghelper.Infow("websocket close", wsErr.Error())
 					break
 				}
-				err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", wsErr)
+				err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws读取信息失败", wsErr)
 				loghelper.Error(err)
 				return
 			}
@@ -86,7 +86,7 @@ func TestWebsocket() (processResp interface{}, err error) {
 					loghelper.Infow("websocket close", wsErr.Error())
 					break
 				}
-				err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", err)
+				err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws读取信息失败", err)
 				loghelper.Error(err)
 				return
 			}

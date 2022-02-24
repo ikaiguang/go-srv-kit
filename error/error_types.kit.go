@@ -34,6 +34,20 @@ func errorMetadata(eSlice []error) map[string]string {
 	return metadata
 }
 
+// Accepted 202
+func Accepted(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusAccepted, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
+}
+
+// NoContent 204
+func NoContent(reason, message string, eSlice ...error) error {
+	e := errors.New(http.StatusNoContent, reason, message)
+	e.Metadata = errorMetadata(eSlice)
+	return pkgerrors.WithStack(e)
+}
+
 // BadRequest new BadRequest error that is mapped to a 400 response.
 func BadRequest(reason, message string, eSlice ...error) error {
 	e := errors.New(http.StatusBadRequest, reason, message)

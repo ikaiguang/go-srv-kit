@@ -13,41 +13,36 @@ option java_package = "api.base.exception";
 enum ERROR {
   option (errors.default_code) = 500;
 
-  // UNKNOWN 未知
-  UNKNOWN = 0 [(errors.code) = 404];
+  // STATUS_UNKNOWN 常规
+  STATUS_UNKNOWN = 0 [(errors.code) = 404];
+  STATUS_REQUEST_FAILURE = 1 [(errors.code) = 503];
 
-  // CONTINUE Continue
-  CONTINUE = 100 [(errors.code) = 100];
-  PROCESSING = 102 [(errors.code) = 102];
+  // STATUS_CONTINUE Continue
+  STATUS_CONTINUE = 100 [(errors.code) = 100];
+  STATUS_PROCESSING = 102 [(errors.code) = 102];
 
-  // OK OK
-  OK = 200 [(errors.code) = 200];
-  CREATED = 201 [(errors.code) = 201];
+  // STATUS_OK OK
+  STATUS_OK = 200 [(errors.code) = 200];
+  STATUS_CREATED = 201 [(errors.code) = 201];
+  STATUS_ACCEPTED = 202 [(errors.code) = 202];
+  STATUS_NO_CONTENT = 204 [(errors.code) = 204];
 
   // MULTIPLE_CHOICES MultipleChoices
-  MULTIPLE_CHOICES = 300 [(errors.code) = 300];
+  STATUS_MULTIPLE_CHOICES = 300 [(errors.code) = 300];
 
-  // BAD_REQUEST Bad Request
-  BAD_REQUEST = 400 [(errors.code) = 400];
-  // UNAUTHORIZED Unauthorized
-  UNAUTHORIZED = 401 [(errors.code) = 401];
-  // FORBIDDEN Forbidden
-  FORBIDDEN = 403 [(errors.code) = 403];
-  // NOT_FOUND Not Found
-  NOT_FOUND = 404 [(errors.code) = 404];
-  // METHOD_NOT_ALLOWED Method Not Allowed
-  METHOD_NOT_ALLOWED = 405 [(errors.code) = 405];
-  // REQUEST_TIMEOUT Request Timeout
-  REQUEST_TIMEOUT = 408 [(errors.code) = 408];
-  // TOO_MANY_REQUESTS Too Many Requests
-  TOO_MANY_REQUESTS = 429 [(errors.code) = 429];
+  // STATUS_BAD_REQUEST Bad Request
+  STATUS_BAD_REQUEST = 400 [(errors.code) = 400];
+  STATUS_UNAUTHORIZED = 401 [(errors.code) = 401];
+  STATUS_FORBIDDEN = 403 [(errors.code) = 403];
+  STATUS_NOT_FOUND = 404 [(errors.code) = 404];
+  STATUS_METHOD_NOT_ALLOWED = 405 [(errors.code) = 405];
+  STATUS_REQUEST_TIMEOUT = 408 [(errors.code) = 408];
+  STATUS_TOO_MANY_REQUESTS = 429 [(errors.code) = 429];
 
-  // INTERNAL_SERVER Internal Server Error
-  INTERNAL_SERVER = 500 [(errors.code) = 500];
-  // NOT_IMPLEMENTED Not Implemented
-  NOT_IMPLEMENTED = 501 [(errors.code) = 501];
-  // BAD_GATEWAY Bad Gateway
-  BAD_GATEWAY = 502 [(errors.code) = 502];
-  // GATEWAY_TIMEOUT Gateway Timeout
-  GATEWAY_TIMEOUT = 504 [(errors.code) = 504];
+  // STATUS_INTERNAL_SERVER Internal Server Error
+  STATUS_INTERNAL_SERVER = 500 [(errors.code) = 500];
+  STATUS_NOT_IMPLEMENTED = 501 [(errors.code) = 501];
+  STATUS_BAD_GATEWAY = 502 [(errors.code) = 502];
+  STATUS_SERVICE_UNAVAILABLE = 503 [(errors.code) = 503];
+  STATUS_GATEWAY_TIMEOUT = 504 [(errors.code) = 504];
 }

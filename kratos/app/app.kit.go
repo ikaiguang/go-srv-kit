@@ -6,6 +6,8 @@ import (
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/grpc/codes"
+
+	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
 )
 
 const (
@@ -48,5 +50,17 @@ func ToError(response ResponseInterface) *errors.Error {
 		Reason:   response.GetReason(),
 		Message:  response.GetMessage(),
 		Metadata: response.GetMetadata(),
+	}
+}
+
+// HTTPError 转换为错误
+func HTTPError(code int, message string) *errors.Error {
+	return &errors.Error{
+		Code:    int32(code),
+		Reason:  baseerror.ERROR_STATUS_REQUEST_FAILURE.String(),
+		Message: message,
+		Metadata: map[string]string{
+			"status": stdhttp.StatusText(code),
+		},
 	}
 }

@@ -13,6 +13,8 @@ import (
 
 // ResponseEncoder http.DefaultResponseEncoder
 func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
+	w.WriteHeader(stdhttp.StatusOK)
+
 	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
 	// 在websocket时日志干扰：http: response.Write on hijacked connection from
 	// is websocket
@@ -31,6 +33,8 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 
 // ErrorEncoder http.DefaultErrorEncoder
 func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
+	w.WriteHeader(stdhttp.StatusOK)
+
 	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
 	// 在websocket时日志干扰：http: response.Write on hijacked connection from
 	// is websocket
@@ -55,7 +59,7 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 		return
 	}
 	w.Header().Set("Content-Type", ContentType(codec.Name()))
-	w.WriteHeader(int(se.Code))
+	//w.WriteHeader(int(se.Code))
 	_, _ = w.Write(body)
 }
 

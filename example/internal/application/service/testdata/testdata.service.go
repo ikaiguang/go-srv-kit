@@ -41,11 +41,11 @@ func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.Test
 		resp = &v1.TestResp{
 			Message: xid.New().String(),
 		}
-		err = errorutil.NotImplemented(baseerror.ERROR_NOT_IMPLEMENTED.String(), "未实现")
+		err = errorutil.NotImplemented(baseerror.ERROR_STATUS_NOT_IMPLEMENTED.String(), "未实现")
 		return resp, err
 	}
 
-	err = errorutil.NotImplemented(baseerror.ERROR_NOT_IMPLEMENTED.String(), "未实现")
+	err = errorutil.NotImplemented(baseerror.ERROR_STATUS_NOT_IMPLEMENTED.String(), "未实现")
 	return &v1.TestResp{}, err
 }
 
@@ -60,7 +60,7 @@ func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
 	// 升级连接
 	c, err := websocketutil.UpgradeConn(ctx.Response(), ctx.Request(), ctx.Response().Header())
 	if err != nil {
-		err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws开启失败", err)
+		err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws开启失败", err)
 		s.log.Error(err)
 		return
 	}
@@ -74,7 +74,7 @@ func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
 				s.log.Infow("websocket close", wsErr.Error())
 				break
 			}
-			err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", err)
+			err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws读取信息失败", err)
 			s.log.Error(err)
 			return
 		}
@@ -89,7 +89,7 @@ func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
 		// 处理
 		needCloseConn, err := s.processWsMessage(ctx, wsMessage)
 		if err != nil {
-			err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "ws处理信息失败", err)
+			err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws处理信息失败", err)
 			s.log.Error(err)
 			return
 		}
@@ -101,7 +101,7 @@ func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
 				s.log.Infow("websocket close", wsErr.Error())
 				break
 			}
-			err = errorutil.InternalServer(baseerror.ERROR_INTERNAL_SERVER.String(), "JSON编码错误", err)
+			err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "JSON编码错误", err)
 			s.log.Error(err)
 			return
 		}
