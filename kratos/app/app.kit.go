@@ -3,6 +3,7 @@ package apputil
 import (
 	stdhttp "net/http"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/grpc/codes"
 )
@@ -50,4 +51,14 @@ func IsSuccessHTTPCode(code int32) bool {
 // IsSuccessGRPCCode 成功的GRPC响应吗
 func IsSuccessGRPCCode(code uint32) bool {
 	return codes.Code(code) == codes.OK
+}
+
+// ToError 转换为错误
+func ToError(response Response) *errors.Error {
+	return &errors.Error{
+		Code:     response.Code,
+		Reason:   response.Reason,
+		Message:  response.Message,
+		Metadata: response.Metadata,
+	}
 }
