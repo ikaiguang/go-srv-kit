@@ -20,18 +20,6 @@ var (
 	_ = http.DefaultErrorEncoder
 )
 
-// Response 响应
-// 关联更新 responsev1.Response
-type Response struct {
-	Code     int32             `json:"code"`
-	Reason   string            `json:"reason"`
-	Message  string            `json:"message"`
-	Metadata map[string]string `json:"metadata,omitempty"`
-
-	Data      interface{} `json:"data"`
-	RequestId string      `json:"request_id"`
-}
-
 // IsSuccessCode 成功的响应码
 func IsSuccessCode(code int32) bool {
 	if code == OK {
@@ -54,11 +42,11 @@ func IsSuccessGRPCCode(code uint32) bool {
 }
 
 // ToError 转换为错误
-func ToError(response Response) *errors.Error {
+func ToError(response ResponseInterface) *errors.Error {
 	return &errors.Error{
-		Code:     response.Code,
-		Reason:   response.Reason,
-		Message:  response.Message,
-		Metadata: response.Metadata,
+		Code:     response.GetCode(),
+		Reason:   response.GetReason(),
+		Message:  response.GetMessage(),
+		Metadata: response.GetMetadata(),
 	}
 }
