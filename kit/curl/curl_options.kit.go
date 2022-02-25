@@ -12,6 +12,11 @@ type options struct {
 // Option is config option.
 type Option func(*options)
 
+// WithTimeoutDefault 默认时间选项
+func WithTimeoutDefault() Option {
+	return WithTimeout(DefaultTimeout)
+}
+
 // WithTimeout http.Client.Timeout
 func WithTimeout(duration time.Duration) Option {
 	return func(o *options) {

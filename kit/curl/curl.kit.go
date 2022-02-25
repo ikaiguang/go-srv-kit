@@ -25,9 +25,9 @@ const (
 )
 
 // NewPostRequest Post请求
-func NewPostRequest(httpURL string, body io.Reader) (req *http.Request, err error) {
+func NewPostRequest(httpURL string, body io.Reader) (httpReq *http.Request, err error) {
 	// http
-	httpReq, err := http.NewRequest(http.MethodPost, httpURL, body)
+	httpReq, err = http.NewRequest(http.MethodPost, httpURL, body)
 	if err != nil {
 		err = pkgerrors.WithStack(err)
 		return
@@ -36,12 +36,23 @@ func NewPostRequest(httpURL string, body io.Reader) (req *http.Request, err erro
 }
 
 // NewGetRequest Get请求
-func NewGetRequest(httpURL string, body io.Reader) (req *http.Request, err error) {
+func NewGetRequest(httpURL string, body io.Reader) (httpReq *http.Request, err error) {
 	// http
-	httpReq, err := http.NewRequest(http.MethodGet, httpURL, body)
+	httpReq, err = http.NewRequest(http.MethodGet, httpURL, body)
 	if err != nil {
 		err = pkgerrors.WithStack(err)
 		return
+	}
+	return httpReq, err
+}
+
+// NewRequest .
+func NewRequest(httpMethod, httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	// http
+	httpReq, err = http.NewRequest(httpMethod, httpURL, body)
+	if err != nil {
+		err = pkgerrors.WithStack(err)
+		return httpReq, err
 	}
 	return httpReq, err
 }
