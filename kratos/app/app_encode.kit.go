@@ -7,20 +7,20 @@ import (
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
+	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
 	v1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 // ResponseEncoder http.DefaultResponseEncoder
 func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
-	w.WriteHeader(stdhttp.StatusOK)
-
 	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
 	// 在websocket时日志干扰：http: response.Write on hijacked connection from
 	// is websocket
 	if headerutil.GetIsWebsocket(r.Header) {
 		return nil
 	}
+	w.WriteHeader(stdhttp.StatusOK)
 
 	// 响应结果
 	data := &Response{
@@ -28,19 +28,23 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 		RequestId: headerutil.GetRequestID(r.Header),
 		Data:      v,
 	}
+	if v == nil {
+		data.Code = stdhttp.StatusInternalServerError
+		data.Reason = baseerror.ERROR_STATUS_NO_CONTENT.String()
+		data.Metadata = map[string]string{"data": "null"}
+	}
 	return http.DefaultResponseEncoder(w, r, data)
 }
 
 // ErrorEncoder http.DefaultErrorEncoder
 func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
-	w.WriteHeader(stdhttp.StatusOK)
-
 	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
 	// 在websocket时日志干扰：http: response.Write on hijacked connection from
 	// is websocket
 	if headerutil.GetIsWebsocket(r.Header) {
 		return
 	}
+	w.WriteHeader(stdhttp.StatusOK)
 
 	// 响应错误
 	se := errors.FromError(err)
