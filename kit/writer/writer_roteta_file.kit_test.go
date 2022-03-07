@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./writer/ -count=1 -test.run=TestNewRotateFile
+// go test -v ./kit/writer/ -count=1 -test.run=TestNewRotateFile
 func TestNewRotateFile(t *testing.T) {
 	conf := &ConfigRotate{
 		Dir:      ".",
@@ -17,6 +17,7 @@ func TestNewRotateFile(t *testing.T) {
 		RotateTime:     time.Second,
 		StorageCounter: 10,
 	}
+	//writer, err := NewRotateFile(conf, WithFilenameSuffix(".testdata.log"))
 	writer, err := NewRotateFile(conf)
 	require.Nil(t, err)
 

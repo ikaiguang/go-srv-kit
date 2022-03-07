@@ -11,11 +11,15 @@ log:
     # dir: ./runtime/logs
     dir: ./
     filename: logs
-    # rotate_time 轮询规则：n久 或 文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
-    rotate_time: 0s
-    # rotate_size 轮询规则：按文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
+    # 轮询规则：默认为：RotateTime
+    rotate_time: 86400s
+    # rotate_size 轮询规则：按文件大小(默认：52428800 # 50<<20 = 50M)
+    # 轮询规则：默认为：RotateTime
     rotate_size: 52428800
-    # storage_counter 存储：n个 或 有效期storage_age(默认：2592000s = 30天)
-    storage_counter: 0
-    # storage_age 存储n久(默认：2592000s = 30天)
+    # storage_age 存储规则：n久(默认：30天)
+    # 存储规则：默认为：StorageAge
     storage_age: 2592000s
+    # storage_counter 存储规则：n个(默认：10086个)
+    # 存储规则：默认为：StorageAge
+    storage_counter: 10086

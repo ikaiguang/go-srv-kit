@@ -55,15 +55,19 @@ message Log {
     // filename 文件名(默认：${filename}_app.%Y%m%d%H%M%S.log)
     string filename = 4;
 
-    // rotate_time 轮询规则：n久 或 文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    // rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
+    // 轮询规则：默认为：rotate_time
     google.protobuf.Duration rotate_time = 5;
-    // rotate_size 轮询规则：按文件大小rotate_size(默认：52428800 # 50<<20 = 50M)
+    // rotate_size 轮询规则：按文件大小(默认：52428800 # 50<<20 = 50M)
+    // 轮询规则：默认为：rotate_time
     int64 rotate_size = 6;
 
-    // storage_counter 存储：n个 或 有效期storage_age(默认：2592000s = 30天)
-    uint32 storage_counter = 7;
     // storage_age 存储n久(默认：2592000s = 30天)
+    // 存储规则：默认为：storage_age
     google.protobuf.Duration storage_age = 8;
+    // storage_counter 存储：n个 或 有效期storage_age(默认：2592000s = 30天)
+    // 存储规则：默认为：storage_age
+    uint32 storage_counter = 7;
   }
 
   // console 输出到控制台

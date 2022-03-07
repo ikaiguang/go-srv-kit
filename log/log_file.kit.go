@@ -108,7 +108,7 @@ func (s *File) initLogger(conf *ConfigFile, opts ...Option) (err error) {
 
 	// writer
 	if options.writer == nil {
-		options.writer, err = s.getWriter(conf)
+		options.writer, err = s.getWriter(conf, &options)
 		if err != nil {
 			err = errors.WithStack(err)
 			return err
@@ -137,7 +137,7 @@ func (s *File) initLogger(conf *ConfigFile, opts ...Option) (err error) {
 }
 
 // getWriter log writer
-func (s *File) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
+func (s *File) getWriter(cfg *ConfigFile, opt *options) (writer io.Writer, err error) {
 	writerConfig := &writerutil.ConfigRotate{
 		Dir:            cfg.Dir,
 		Filename:       cfg.Filename,
@@ -146,5 +146,9 @@ func (s *File) getWriter(cfg *ConfigFile) (writer io.Writer, err error) {
 		StorageCounter: cfg.StorageCounter,
 		StorageAge:     cfg.StorageAge,
 	}
-	return writerutil.NewRotateFile(writerConfig)
+	var opts []writerutil.Option
+	if opt.filenameSuffix != "" {
+		opts = append(opts, writerutil.WithFilenameSuffix(opt.filenameSuffix))
+	}
+	return writerutil.NewRotateFile(writerConfig, opts...)
 }
