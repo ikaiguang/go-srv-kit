@@ -8,11 +8,17 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 )
 
 var _ log.Logger = &Std{}
+
+// ConfigStd 标准输出
+type ConfigStd struct {
+	// Level 日志级别
+	Level log.Level
+	// CallerSkip 日志 runtime caller skips
+	CallerSkip int
+}
 
 // Std 标准输出
 type Std struct {
@@ -68,26 +74,38 @@ func (s *Std) Log(level log.Level, keyvals ...interface{}) (err error) {
 }
 
 // InitLogger .
-func (s *Std) InitLogger(conf *ConfigStd) (err error) {
+func (s *Std) InitLogger(conf *ConfigStd, opts ...Option) (err error) {
+	// 可选项
+	option := options{
+		writer:     nil,
+		loggerKeys: DefaultLoggerKey(),
+		timeFormat: DefaultTimeFormat,
+	}
+	for _, o := range opts {
+		o(&option)
+	}
+
 	// 参考 zap.NewDevelopmentEncoderConfig()
 	encoderConf := zapcore.EncoderConfig{
-		MessageKey:    ZapMessageKey,
-		LevelKey:      ZapLevelKey,
-		TimeKey:       ZapTimeKey,
-		NameKey:       ZapNameKey,
-		CallerKey:     ZapCallerKey,
-		FunctionKey:   ZapFunctionKey,
-		StacktraceKey: ZapStacktraceKey,
+		MessageKey:    LoggerKeyMessage.Value(),
+		LevelKey:      LoggerKeyLevel.Value(),
+		TimeKey:       LoggerKeyTime.Value(),
+		NameKey:       LoggerKeyName.Value(),
+		CallerKey:     LoggerKeyCaller.Value(),
+		FunctionKey:   LoggerKeyFunction.Value(),
+		StacktraceKey: LoggerKeyStacktrace.Value(),
 
 		LineEnding:  zapcore.DefaultLineEnding,
 		EncodeLevel: zapcore.CapitalColorLevelEncoder,
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendString(t.Format(timeutil.YmdHmsMLogger))
+			enc.AppendString(t.Format(option.timeFormat))
 		},
 		EncodeDuration: zapcore.StringDurationEncoder,
 		//EncodeCaller:   zapcore.ShortCallerEncoder,
 		EncodeCaller: zapcore.FullCallerEncoder,
 	}
+	SetZapLoggerKeys(&encoderConf, option.loggerKeys)
+
 	// 参考 zap.NewDevelopmentConfig()
 	loggerConf := &zap.Config{
 		Level:            zap.NewAtomicLevelAt(ToZapLevel(conf.Level)),

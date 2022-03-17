@@ -8,6 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/stretchr/testify/require"
 
+	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
@@ -20,13 +21,19 @@ func TestNewFileLogger_Xxx(t *testing.T) {
 		Dir:      "./../bin/",
 		Filename: "rotation",
 
-		//RotateTime: time.Second * 1,
-		RotateSize: 50 << 20, // 50M : 50 << 20
+		RotateTime: time.Second * 1,
+		//RotateSize: 50 << 20, // 50M : 50 << 20
 
 		StorageCounter: 2,
 		//StorageAge: time.Hour,
 	}
-	logImpl, err := NewFileLogger(cfg)
+	logImpl, err := NewFileLogger(
+		cfg,
+		//WithFilenameSuffix("_xxx"),
+		WithFilenameSuffix("_xxx.%Y%m%d%H%M%S.log"),
+		WithLoggerKey(map[LoggerKey]string{LoggerKeyTime: "date"}),
+		WithTimeFormat(timeutil.YmdHmsMillisecond),
+	)
 	require.Nil(t, err)
 	defer func() { _ = logImpl.Sync() }()
 
@@ -68,7 +75,14 @@ func TestNewFileLogger_WithWriter(t *testing.T) {
 	writer, err := writerutil.NewRotateFile(writerConfig)
 	require.Nil(t, err)
 
-	logImpl, err := NewFileLogger(cfg, WithWriter(writer))
+	logImpl, err := NewFileLogger(
+		cfg,
+		WithWriter(writer),
+		//WithFilenameSuffix("_xxx"),
+		//WithFilenameSuffix("_xxx.%Y%m%d%H%M%S.log"),
+		WithLoggerKey(map[LoggerKey]string{LoggerKeyTime: "date"}),
+		WithTimeFormat(timeutil.YmdHmsMillisecond),
+	)
 	require.Nil(t, err)
 	defer func() { _ = logImpl.Sync() }()
 	logHandler := log.NewHelper(logImpl)

@@ -10,7 +10,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
@@ -22,6 +21,32 @@ const (
 )
 
 var _ log.Logger = &File{}
+
+// ConfigFile 输出到文件
+type ConfigFile struct {
+	// Level 日志级别
+	Level log.Level
+	// CallerSkip 日志 runtime caller skips
+	CallerSkip int
+
+	// 存储位置
+	// Dir 文件夹
+	Dir string
+	// Filename 文件名(默认：${filename}_app.%Y%m%d.log)
+	Filename string
+
+	// 轮询规则：默认为：RotateTime
+	// RotateTime 轮询规则：n久(默认：86400s # 86400s = 1天)
+	RotateTime time.Duration
+	// RotateSize 轮询规则：按文件大小RotateSize(默认：52428800 # 50<<20 = 50M)
+	RotateSize int64
+
+	// 存储规则：默认为：StorageAge
+	// StorageAge 存储：n久(默认：30天)
+	StorageAge time.Duration
+	// StorageCounter 存储：n个(默认：10086个)
+	StorageCounter uint
+}
 
 // File 输出到文件
 type File struct {
@@ -79,36 +104,39 @@ func (s *File) Log(level log.Level, keyvals ...interface{}) (err error) {
 // initLogger .
 func (s *File) initLogger(conf *ConfigFile, opts ...Option) (err error) {
 	// 可选项
-	options := options{
-		writer: nil,
+	option := options{
+		writer:     nil,
+		loggerKeys: DefaultLoggerKey(),
+		timeFormat: DefaultTimeFormat,
 	}
 	for _, o := range opts {
-		o(&options)
+		o(&option)
 	}
 
 	// 参考 zap.NewProductionEncoderConfig()
 	encoderConf := zapcore.EncoderConfig{
-		MessageKey:    ZapMessageKey,
-		LevelKey:      ZapLevelKey,
-		TimeKey:       ZapTimeKey,
-		NameKey:       ZapNameKey,
-		CallerKey:     ZapCallerKey,
-		FunctionKey:   ZapFunctionKey,
-		StacktraceKey: ZapStacktraceKey,
+		MessageKey:    LoggerKeyMessage.Value(),
+		LevelKey:      LoggerKeyLevel.Value(),
+		TimeKey:       LoggerKeyTime.Value(),
+		NameKey:       LoggerKeyName.Value(),
+		CallerKey:     LoggerKeyCaller.Value(),
+		FunctionKey:   LoggerKeyFunction.Value(),
+		StacktraceKey: LoggerKeyStacktrace.Value(),
 
 		LineEnding:  zapcore.DefaultLineEnding,
 		EncodeLevel: zapcore.CapitalLevelEncoder,
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendString(t.Format(timeutil.YmdHmsMLogger))
+			enc.AppendString(t.Format(option.timeFormat))
 		},
 		EncodeDuration: zapcore.StringDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 		//EncodeCaller: zapcore.FullCallerEncoder,
 	}
+	SetZapLoggerKeys(&encoderConf, option.loggerKeys)
 
 	// writer
-	if options.writer == nil {
-		options.writer, err = s.getWriter(conf, &options)
+	if option.writer == nil {
+		option.writer, err = s.getWriter(conf, &option)
 		if err != nil {
 			err = errors.WithStack(err)
 			return err
@@ -118,7 +146,7 @@ func (s *File) initLogger(conf *ConfigFile, opts ...Option) (err error) {
 	encoder := zapcore.NewJSONEncoder(encoderConf)
 	zapCore := zapcore.NewCore(
 		encoder,
-		zapcore.AddSync(options.writer),
+		zapcore.AddSync(option.writer),
 		zap.NewAtomicLevelAt(ToZapLevel(conf.Level)),
 	)
 
