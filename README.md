@@ -1,10 +1,13 @@
-# server kit base on kratos
+# 服务工具
 
-kratos helper
+为服务开发提供基础工具
 
-base on [kratos@v2](https://github.com/go-kratos/kratos)
+## Overview
 
-文档地址
+- 基于[go-kratos](https://github.com/go-kratos/kratos)
+- Domain-Driven Design (DDD)
+
+## 文档地址
 
 - [kratos-github](https://github.com/go-kratos/kratos)
 - [kratos-docs](https://go-kratos.dev/docs/)

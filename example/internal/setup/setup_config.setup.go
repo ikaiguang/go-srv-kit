@@ -1,15 +1,54 @@
 package setup
 
 import (
+	"flag"
+	stdlog "log"
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/config"
+	"github.com/go-kratos/kratos/v2/config/file"
+	"github.com/go-kratos/kratos/v2/log"
 	pkgerrors "github.com/pkg/errors"
 
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
 	configv1 "github.com/ikaiguang/go-srv-kit/example/api/config/v1"
 )
+
+const (
+	_defaultConfigFilepath = "./configs"
+)
+
+var (
+	// _configFilepath 配置文件 所在的目录
+	_configFilepath string
+)
+
+func init() {
+	flag.StringVar(&_configFilepath, "conf", "./configs", "config path, eg: -conf config.yaml")
+}
+
+// newConfigHandler 初始化配置手柄
+func newConfigHandler() (Config, error) {
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+	stdlog.Println("|==================== 加载配置文件 开始 ====================|")
+	defer stdlog.Println()
+	defer stdlog.Println("|==================== 加载配置文件 结束 ====================|")
+	// 配置路径
+	confPath := _configFilepath
+	if confPath == "" {
+		confPath = _defaultConfigFilepath
+	}
+	log.Infof("配置文件路径: %s\n", confPath)
+
+	var opts []config.Option
+	opts = append(opts, config.WithSource(
+		file.NewSource(confPath),
+	))
+	return NewConfiguration(opts...)
+}
 
 // configuration 实现ConfigInterface
 type configuration struct {
