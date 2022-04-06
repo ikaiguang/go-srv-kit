@@ -27,3 +27,9 @@ curl http://127.0.0.1:8080/api/v1/ping/error
 
 > 参考链接 https://blog.golang.org/package-names
 
+## 感谢支持
+
+| 感谢支持                           | LOGO                                                                                                    | 支持内容                            |
+|--------------------------------|---------------------------------------------------------------------------------------------------------|---------------------------------|
+| [JETBRAINS](www.jetbrains.com) | <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" width="120"> | Open Source Development License |
+
