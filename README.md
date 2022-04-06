@@ -27,6 +27,7 @@ curl http://127.0.0.1:8080/api/v1/ping/error
 
 - [github.com/go-kratos/kratos](https://github.com/go-kratos/kratos)
 - [Domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design)
+- [github.com/uber-go/guide](https://github.com/uber-go/guide)
 - [Go Package names](https://blog.golang.org/package-names)
 
 ## 感谢支持

@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package api.page.pagev1;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/api/page/v1;pagev1";
+option java_multiple_files = true;
+option java_package = "api.page.pagev1";
+
+// PagingMode 分页模式
+enum PagingMode {
+  // PAGING_NUMBER 页码分页
+  PAGING_NUMBER = 0;
+  // PAGING_CURSOR 游标分页
+  PAGING_CURSOR = 1;
+}
+
+// PageRequest 分页请求
+message PageRequest {
+  // page 第几页；默认第一页
+  uint32 page = 1;
+  // page_size 每页显示多少条(默认：15)
+  uint32 page_size = 2;
+
+  // order_by_array 排序；例：["id-desc", "created_time-asc"]
+  repeated PagingOrder order_by_array = 3;
+}
+
+// PageInfo 分页信息
+message PageInfo {
+  // total_number 总条数
+  int64 total_number = 1;
+  // total_page 总页数
+  int64 total_page = 2;
+  // page 第几页
+  uint32 page = 3;
+  // page_size 每页显示多少条
+  uint32 page_size = 4;
+}
+
+// PagingOrder 分页排序(例子：order by id desc)
+message PagingOrder {
+  // column 排序的字段(例子：id)
+  string column = 1;
+  // direction 排序的方向(例子：desc)
+  string direction = 2;
+}
+
+// CursorRequest 游标分页请求
+message CursorRequest {
+  // current_page 当前在第几页(默认：0)
+  uint32 current_page = 1;
+  // page 跳转到第几页(默认：1)
+  uint32 page = 2;
+  // cursor_column 游标模式的字段名(默认：id)
+  string cursor_column = 3;
+  // cursor_direction 游标模式的排序方式(默认：desc)
+  string cursor_direction = 4;
+  // cursor_value  游标模式的值
+  double cursor_value = 5;
+}
+
+// CursorInfo 游标分页信息
+message CursorInfo {
+  // total_number 总记录数
+  uint32 total_number = 1;
+  // total_page 总页码数
+  uint32 total_page = 2;
+  // page 第几页
+  uint32 page = 3;
+  // page_size 每页显示多少条
+  uint32 page_size = 4;
+
+  // cursor_column 游标模式的字段名(默认：id)
+  string cursor_column = 200;
+  // cursor_direction 游标模式的排序方式(默认：desc)
+  string cursor_direction = 201;
+  // cursor_value  游标模式的值
+  double cursor_value = 202;
+}
