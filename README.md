@@ -23,9 +23,11 @@ curl http://127.0.0.1:8080/api/v1/ping/hello
 curl http://127.0.0.1:8080/api/v1/ping/error
 ```
 
-## Go Package names
+## 参考链接
 
-> 参考链接 https://blog.golang.org/package-names
+- [github.com/go-kratos/kratos](https://github.com/go-kratos/kratos)
+- [Domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design)
+- [Go Package names](https://blog.golang.org/package-names)
 
 ## 感谢支持
 
