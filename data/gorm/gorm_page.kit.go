@@ -34,7 +34,8 @@ func Page(db *gorm.DB, pageOption *pageutil.PageOption) *gorm.DB {
 	for i := range pageOption.Order {
 		column := pageOption.Order[i].Column
 		if !regColumn.MatchString(pageOption.Order[i].Column) {
-			column = pageutil.DefaultOrderColumn
+			//column = pageutil.DefaultOrderColumn
+			column = "bad_order_with_invalid_column"
 			if db.Logger != nil {
 				db.Logger.Error(context.Background(), "invalid column(", pageOption.Order[i].Column, ")")
 			}

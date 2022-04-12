@@ -27,7 +27,7 @@ var (
 	}
 )
 
-// go test -v ./redis/ -count=1 -test.run=TestNewDB_Xxx
+// go test -v ./data/redis/ -count=1 -test.run=TestNewDB_Xxx
 func TestNewDB_Xxx(t *testing.T) {
 	db, err := NewDB(redisConfig)
 	require.Nil(t, err)
