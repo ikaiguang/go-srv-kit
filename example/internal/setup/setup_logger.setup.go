@@ -22,13 +22,6 @@ func (s *modules) Logger() (log.Logger, []func() error, error) {
 		s.loggerMutex = sync.Once{}
 		return nil, nil, err
 	}
-	if s.logger != nil {
-		return s.logger, s.loggerCloseFnSlice, err
-	}
-	s.logger, s.loggerCloseFnSlice, err = s.loadingLogger()
-	if err != nil {
-		return nil, nil, err
-	}
 	return s.logger, s.loggerCloseFnSlice, err
 }
 
@@ -42,13 +35,6 @@ func (s *modules) LoggerHelper() (log.Logger, []func() error, error) {
 		s.loggerHelperMutex = sync.Once{}
 		return nil, nil, err
 	}
-	if s.loggerHelper != nil {
-		return s.loggerHelper, s.loggerHelperCloseFnSlice, err
-	}
-	s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.loadingLoggerHelper()
-	if err != nil {
-		return nil, nil, err
-	}
 	return s.loggerHelper, s.loggerHelperCloseFnSlice, err
 }
 
@@ -60,13 +46,6 @@ func (s *modules) LoggerMiddleware() (log.Logger, []func() error, error) {
 	})
 	if err != nil {
 		s.loggerMiddlewareMutex = sync.Once{}
-		return nil, nil, err
-	}
-	if s.loggerMiddleware != nil {
-		return s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err
-	}
-	s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.loadingLoggerMiddleware()
-	if err != nil {
 		return nil, nil, err
 	}
 	return s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err

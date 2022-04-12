@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -v -count=1 ./kit/page -test.run=TestPaginate_MakePageOptions
-func TestPaginate_MakePageOptions(t *testing.T) {
+// go test -v -count=1 ./kit/page -test.run=TestPaginate_ConvertToPageOption
+func TestPaginate_ConvertToPageOption(t *testing.T) {
 	defaultRequest := DefaultPageRequest()
 	pageRequestFor10 := &pagev1.PageRequest{
 		Page:     10,
@@ -97,10 +97,9 @@ func TestPaginate_ParsePageRequest(t *testing.T) {
 	}
 	for _, param := range tests {
 		t.Run(param.name, func(t *testing.T) {
-			got := pageHandler.ParsePageRequest(param.given)
+			got, _ := ParsePageRequest(param.given)
 			assert.Equal(t, param.want.Page, got.Page, "Page")
 			assert.Equal(t, param.want.PageSize, got.PageSize, "PageSize")
-			assert.Equal(t, len(param.want.OrderByArray), len(got.OrderByArray), "OrderByArray")
 		})
 	}
 }
@@ -176,7 +175,6 @@ func TestPaginate_DefaultPageRequest(t *testing.T) {
 			got := DefaultPageRequest()
 			assert.Equal(t, param.want.Page, got.Page, "Page")
 			assert.Equal(t, param.want.PageSize, got.PageSize, "PageSize")
-			assert.Equal(t, len(param.want.OrderByArray), len(got.OrderByArray), "OrderByArray")
 		})
 	}
 }

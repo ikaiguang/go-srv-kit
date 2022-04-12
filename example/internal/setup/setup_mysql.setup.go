@@ -11,7 +11,7 @@ import (
 	mysqlutil "github.com/ikaiguang/go-srv-kit/mysql"
 )
 
-// LoggerFileWriter 文件日志写手柄
+// MysqlGormDB 数据库
 func (s *modules) MysqlGormDB() (*gorm.DB, error) {
 	var err error
 	s.mysqlGormMutex.Do(func() {
@@ -19,14 +19,6 @@ func (s *modules) MysqlGormDB() (*gorm.DB, error) {
 	})
 	if err != nil {
 		s.mysqlGormMutex = sync.Once{}
-		return nil, err
-	}
-	if s.mysqlGormDB != nil {
-		return s.mysqlGormDB, err
-	}
-
-	s.mysqlGormDB, err = s.loadingMysqlGormDB()
-	if err != nil {
 		return nil, err
 	}
 	return s.mysqlGormDB, err

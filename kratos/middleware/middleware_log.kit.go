@@ -68,9 +68,6 @@ func ServerLog(logger log.Logger) middleware.Middleware {
 				kv = append(kv, "operation", operation)
 			}
 
-			// 执行时间 & 响应代码
-			kv = append(kv, "latency", time.Since(startTime).Seconds())
-
 			// websocket 不输出错误
 			if isWebsocket {
 				_ = log.WithContext(ctx, logger).Log(loggingLevel, kv...)

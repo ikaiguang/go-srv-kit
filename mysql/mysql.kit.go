@@ -20,7 +20,7 @@ func NewMysqlDB(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error
 // mySQL
 type mySQL struct{}
 
-// init 初始化
+// New 初始化
 func (s *mySQL) New(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err error) {
 	// 可选项
 	options := options{
@@ -76,7 +76,7 @@ func (s *mySQL) New(conf *confv1.Data_MySQL, opts ...Option) (db *gorm.DB, err e
 	return db, err
 }
 
-// mysqlLogger 日志
+// newLogger 日志
 func (s *mySQL) newLogger(conf *confv1.Data_MySQL, opt *options) logger.Interface {
 	loggerConfig := &logger.Config{
 		LogLevel:                  s.parseLevel(conf.LoggerLevel),
@@ -93,7 +93,7 @@ func (s *mySQL) newLogger(conf *confv1.Data_MySQL, opt *options) logger.Interfac
 	return NewLogger(loggerConfig, opt.writers...)
 }
 
-// mysqlLogger 日志
+// parseLevel 日志
 func (s *mySQL) parseLevel(lv string) logger.LogLevel {
 	switch strings.ToUpper(lv) {
 	case "DEBUG":

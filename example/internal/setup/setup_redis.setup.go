@@ -20,13 +20,6 @@ func (s *modules) RedisClient() (*redis.Client, error) {
 		s.redisClientMutex = sync.Once{}
 		return nil, err
 	}
-	if s.redisClient != nil {
-		return s.redisClient, err
-	}
-	s.redisClient, err = s.loadingRedisClient()
-	if err != nil {
-		return nil, err
-	}
 	return s.redisClient, err
 }
 

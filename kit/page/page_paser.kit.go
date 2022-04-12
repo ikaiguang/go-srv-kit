@@ -4,21 +4,22 @@ import (
 	"strings"
 
 	pagev1 "github.com/ikaiguang/go-srv-kit/api/page/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // ParsePageRequest 解析页码分页请求
 func ParsePageRequest(pageRequest *pagev1.PageRequest) (*pagev1.PageRequest, *Options) {
-	pageRequest = pageHandler.ParsePageRequest(pageRequest)
-	opt := pageHandler.ConvertToPageOption(pageRequest)
+	if pageRequest == nil {
+		pageRequest = DefaultPageRequest()
+	} else {
+		pageRequest = proto.Clone(pageRequest).(*pagev1.PageRequest)
+		pageRequest.Page = ParsePage(pageRequest.Page)
+		pageRequest.PageSize = ParsePageSize(pageRequest.PageSize)
+	}
+
+	opt := ConvertToPageOption(pageRequest)
 	return pageRequest, opt
 }
-
-// ParseCursorRequest 解析游标分页请求
-//func ParseCursorRequest(cursorRequest *pagev1.CursorRequest) (*pagev1.CursorRequest, *Options) {
-//	cursorRequest = cursorHandler.ParsePageRequest(cursorRequest)
-//	opt := pageHandler.ConvertToPageOption(cursorRequest)
-//	return cursorRequest, opt
-//}
 
 // ParsePage 页码
 func ParsePage(pageNumber uint32) uint32 {

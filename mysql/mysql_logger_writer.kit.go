@@ -14,7 +14,7 @@ import (
 	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 )
 
-// NewStdWriter
+// NewStdWriter .
 func NewStdWriter() logger.Writer {
 	//return stdlog.New(os.Stderr, "", stdlog.LstdFlags)
 	return &std{
