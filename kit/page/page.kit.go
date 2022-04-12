@@ -21,27 +21,27 @@ func DefaultPageRequest() *pagev1.PageRequest {
 	}
 }
 
-// Options .
-type Options struct {
-	Where  []*Where
-	Order  []*pagev1.PagingOrder
+// PageOptions .
+type PageOptions struct {
+	Where  []*PageWhere
+	Order  []*pagev1.PageOrder
 	Limit  uint32
 	Offset uint32
 }
 
 // ConvertToPageOption 转换为分页选项
-func ConvertToPageOption(pageRequest *pagev1.PageRequest) *Options {
-	opts := &Options{
-		Where:  []*Where{},
-		Order:  []*pagev1.PagingOrder{},
+func ConvertToPageOption(pageRequest *pagev1.PageRequest) *PageOptions {
+	opts := &PageOptions{
+		Where:  []*PageWhere{},
+		Order:  []*pagev1.PageOrder{},
 		Limit:  pageRequest.PageSize,
 		Offset: pageRequest.PageSize * (pageRequest.Page - 1),
 	}
 	return opts
 }
 
-// Where 分页条件；例：where id = ?(where id = 1)
-type Where struct {
+// PageWhere 分页条件；例：where id = ?(where id = 1)
+type PageWhere struct {
 	// Column 字段
 	Column string
 	// Condition 条件
