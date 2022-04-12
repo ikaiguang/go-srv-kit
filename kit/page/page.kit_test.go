@@ -18,12 +18,12 @@ func TestPaginate_ConvertToPageOption(t *testing.T) {
 	tests := []struct {
 		name        string
 		pageRequest *pagev1.PageRequest
-		want        *PageOptions
+		want        *PageOption
 	}{
 		{
 			name:        "#准备分页选项#defaut",
 			pageRequest: defaultRequest,
-			want: &PageOptions{
+			want: &PageOption{
 				Limit:  defaultRequest.PageSize,
 				Offset: defaultRequest.PageSize * (defaultRequest.Page - 1),
 			},
@@ -31,7 +31,7 @@ func TestPaginate_ConvertToPageOption(t *testing.T) {
 		{
 			name:        "#准备分页选项#每页10条之第10页",
 			pageRequest: pageRequestFor10,
-			want: &PageOptions{
+			want: &PageOption{
 				Limit:  pageRequestFor10.PageSize,
 				Offset: pageRequestFor10.PageSize * (pageRequestFor10.Page - 1),
 			},

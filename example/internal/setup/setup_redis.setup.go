@@ -5,9 +5,8 @@ import (
 	"sync"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/ikaiguang/go-srv-kit/data/redis"
 	pkgerrors "github.com/pkg/errors"
-
-	redisutil "github.com/ikaiguang/go-srv-kit/redis"
 )
 
 // RedisClient redis 客户端

@@ -21,21 +21,21 @@ func DefaultPageRequest() *pagev1.PageRequest {
 	}
 }
 
-// PageOptions .
-type PageOptions struct {
+// PageOption .
+type PageOption struct {
 	Where  []*PageWhere
 	Order  []*pagev1.PageOrder
-	Limit  uint32
-	Offset uint32
+	Limit  int
+	Offset int
 }
 
 // ConvertToPageOption 转换为分页选项
-func ConvertToPageOption(pageRequest *pagev1.PageRequest) *PageOptions {
-	opts := &PageOptions{
+func ConvertToPageOption(pageRequest *pagev1.PageRequest) *PageOption {
+	opts := &PageOption{
 		Where:  []*PageWhere{},
 		Order:  []*pagev1.PageOrder{},
-		Limit:  pageRequest.PageSize,
-		Offset: pageRequest.PageSize * (pageRequest.Page - 1),
+		Limit:  int(pageRequest.PageSize),
+		Offset: int(pageRequest.PageSize * (pageRequest.Page - 1)),
 	}
 	return opts
 }
@@ -44,8 +44,8 @@ func ConvertToPageOption(pageRequest *pagev1.PageRequest) *PageOptions {
 type PageWhere struct {
 	// Column 字段
 	Column string
-	// Condition 条件
-	Condition string
+	// Operator 运算符
+	Operator string
 	// Placeholder 占位符
 	Placeholder string
 	// Data 数据

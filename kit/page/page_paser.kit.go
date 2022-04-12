@@ -8,7 +8,7 @@ import (
 )
 
 // ParsePageRequest 解析页码分页请求
-func ParsePageRequest(pageRequest *pagev1.PageRequest) (*pagev1.PageRequest, *PageOptions) {
+func ParsePageRequest(pageRequest *pagev1.PageRequest) (*pagev1.PageRequest, *PageOption) {
 	if pageRequest == nil {
 		pageRequest = DefaultPageRequest()
 	} else {

@@ -4,11 +4,10 @@ import (
 	stdlog "log"
 	"sync"
 
+	mysqlutil2 "github.com/ikaiguang/go-srv-kit/data/mysql"
 	pkgerrors "github.com/pkg/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-
-	mysqlutil "github.com/ikaiguang/go-srv-kit/mysql"
 )
 
 // MysqlGormDB 数据库
@@ -35,20 +34,20 @@ func (s *modules) loadingMysqlGormDB() (*gorm.DB, error) {
 	// logger writer
 	var (
 		writers []logger.Writer
-		opts    []mysqlutil.Option
+		opts    []mysqlutil2.Option
 	)
 	if s.Config.EnableLoggingConsole() {
-		writers = append(writers, mysqlutil.NewStdWriter())
+		writers = append(writers, mysqlutil2.NewStdWriter())
 	}
 	if s.Config.EnableLoggingFile() {
 		writer, err := s.LoggerFileWriter()
 		if err != nil {
 			return nil, err
 		}
-		writers = append(writers, mysqlutil.NewJSONWriter(writer))
+		writers = append(writers, mysqlutil2.NewJSONWriter(writer))
 	}
 	if len(writers) > 0 {
-		opts = append(opts, mysqlutil.WithWriters(writers...))
+		opts = append(opts, mysqlutil2.WithWriters(writers...))
 	}
-	return mysqlutil.NewMysqlDB(s.Config.MySQLConfig(), opts...)
+	return mysqlutil2.NewMysqlDB(s.Config.MySQLConfig(), opts...)
 }
