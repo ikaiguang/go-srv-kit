@@ -1,6 +1,7 @@
 package gormutil
 
 import (
+	"bytes"
 	"log"
 	"os"
 	"testing"
@@ -19,7 +20,7 @@ var (
 type User struct {
 	Id   int64  `gorm:"PRIMARY_KEY;COLUMN:id"` // id
 	Name string `gorm:"COLUMN:name"`           // name
-	Age  int64  `gorm:"COLUMN:age"`            // age
+	Age  int    `gorm:"COLUMN:age"`            // age
 }
 
 // TableName 表名
@@ -66,5 +67,48 @@ func TestMain(m *testing.M) {
 
 // ========== 批量插入 ==========
 
+var _ BatchInsertRepo = new(UserSlice)
+
 // UserSlice 用户切片
 type UserSlice []*User
+
+// TableName 表名
+func (s UserSlice) TableName() string {
+	if len(s) > 0 {
+		return s[0].TableName()
+	}
+	return (&User{}).TableName()
+}
+
+// Len 长度
+func (s UserSlice) Len() int {
+	return len(s)
+}
+
+// InsertColumns 插入的列
+func (s UserSlice) InsertColumns() (columnList []string, placeholder string) {
+	// columns
+	insertColumn := []string{
+		"name", "age",
+	}
+
+	// placeholders
+	insertPlaceholderBytes := bytes.Repeat([]byte("?, "), len(insertColumn))
+	insertPlaceholderBytes = bytes.TrimSuffix(insertPlaceholderBytes, []byte(", "))
+
+	return insertColumn, string(insertPlaceholderBytes)
+}
+
+// InsertValues 插入的值
+func (s UserSlice) InsertValues(args *BatchInsertValueArgs) (prepareData []interface{}, placeholderSlice []string) {
+	dataModels := ([]*User(s))[args.StepStart:args.StepEnd]
+	for _, dataModel := range dataModels {
+		// placeholder
+		placeholderSlice = append(placeholderSlice, "("+args.InsertPlaceholder+")")
+
+		// prepare data
+		prepareData = append(prepareData, dataModel.Name)
+		prepareData = append(prepareData, dataModel.Age)
+	}
+	return prepareData, placeholderSlice
+}

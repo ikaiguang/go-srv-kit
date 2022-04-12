@@ -25,10 +25,10 @@ type BatchInsertValueArgs struct {
 type BatchInsertRepo interface {
 	// TableName 表名
 	TableName() string
-	// Len 获取数据长度
+	// Len 数据长度
 	// 例子：length := len([]*User{})
 	Len() int
-	// InsertColumns 插入的列；
+	// InsertColumns 插入的列
 	// @param columnList 插入的列名数组；例：[]string{"id"，"name"，"age"}
 	// @param placeholder 列的占位符；例："?, ?, ?"
 	// 在实现此方法时：需要自行拼接占位符；
