@@ -24,16 +24,16 @@ func TestPaginate_ConvertToPageOption(t *testing.T) {
 			name:        "#准备分页选项#defaut",
 			pageRequest: defaultRequest,
 			want: &PageOption{
-				Limit:  defaultRequest.PageSize,
-				Offset: defaultRequest.PageSize * (defaultRequest.Page - 1),
+				Limit:  int(defaultRequest.PageSize),
+				Offset: int(defaultRequest.PageSize * (defaultRequest.Page - 1)),
 			},
 		},
 		{
 			name:        "#准备分页选项#每页10条之第10页",
 			pageRequest: pageRequestFor10,
 			want: &PageOption{
-				Limit:  pageRequestFor10.PageSize,
-				Offset: pageRequestFor10.PageSize * (pageRequestFor10.Page - 1),
+				Limit:  int(pageRequestFor10.PageSize),
+				Offset: int(pageRequestFor10.PageSize * (pageRequestFor10.Page - 1)),
 			},
 		},
 	}
@@ -100,57 +100,6 @@ func TestPaginate_ParsePageRequest(t *testing.T) {
 			got, _ := ParsePageRequest(param.given)
 			assert.Equal(t, param.want.Page, got.Page, "Page")
 			assert.Equal(t, param.want.PageSize, got.PageSize, "PageSize")
-		})
-	}
-}
-
-// go test -v -count=1 ./kit/page -test.run=TestPaginate_ParseDirection
-func TestPaginate_ParseDirection(t *testing.T) {
-	tests := []struct {
-		name  string
-		given string
-		want  string
-	}{
-		{
-			name:  "#解析分页排序方向#unknown",
-			given: "unknown",
-			want:  DefaultDirectionDesc,
-		},
-		{
-			name:  "#解析分页排序方向#desc",
-			given: "desc",
-			want:  DefaultDirectionDesc,
-		},
-		{
-			name:  "#解析分页排序方向#DESC",
-			given: "DESC",
-			want:  DefaultDirectionDesc,
-		},
-		{
-			name:  "#解析分页排序方向#DeSC",
-			given: "DeSC",
-			want:  DefaultDirectionDesc,
-		},
-		{
-			name:  "#解析分页排序方向#asc",
-			given: "asc",
-			want:  DefaultDirectionAsc,
-		},
-		{
-			name:  "#解析分页排序方向#ASC",
-			given: "ASC",
-			want:  DefaultDirectionAsc,
-		},
-		{
-			name:  "#解析分页排序方向#AsC",
-			given: "AsC",
-			want:  DefaultDirectionAsc,
-		},
-	}
-	for _, param := range tests {
-		t.Run(param.name, func(t *testing.T) {
-			got := ParseOrderDirection(param.given)
-			assert.Equal(t, param.want, got, "Direction")
 		})
 	}
 }

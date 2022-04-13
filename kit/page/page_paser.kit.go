@@ -1,8 +1,6 @@
 package pageutil
 
 import (
-	"strings"
-
 	pagev1 "github.com/ikaiguang/go-srv-kit/api/page/v1"
 	"google.golang.org/protobuf/proto"
 )
@@ -35,12 +33,4 @@ func ParsePageSize(pageSize uint32) uint32 {
 		return DefaultPageSize
 	}
 	return pageSize
-}
-
-// ParseOrderDirection 排序方向
-func ParseOrderDirection(orderDirection string) string {
-	if orderDirection = strings.ToLower(orderDirection); orderDirection == DefaultDirectionAsc {
-		return DefaultDirectionAsc
-	}
-	return DefaultDirectionDesc
 }

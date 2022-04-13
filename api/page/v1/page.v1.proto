@@ -19,17 +19,9 @@ message PageResponse {
   // total_number 总条数
   int64 total_number = 1;
   // total_page 总页数
-  uint32 total_page = 2;
+  int64 total_page = 2;
   // page 第几页
   uint32 page = 3;
   // page_size 每页显示多少条
   uint32 page_size = 4;
-}
-
-// PageOrder 分页排序(例子：order by id desc)
-message PageOrder {
-  // column 排序的字段(例子：id)
-  string column = 1;
-  // direction 排序的方向(例子：desc)
-  string direction = 2;
 }
