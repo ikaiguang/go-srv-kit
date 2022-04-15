@@ -6,11 +6,10 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/pkg/errors"
+	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
+	pkgerrors "github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
 // 轮转日志参数
@@ -57,7 +56,7 @@ type File struct {
 func NewFileLogger(conf *ConfigFile, opts ...Option) (*File, error) {
 	handler := &File{}
 	if err := handler.initLogger(conf, opts...); err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return handler, err
 	}
 	return handler, nil
@@ -138,7 +137,7 @@ func (s *File) initLogger(conf *ConfigFile, opts ...Option) (err error) {
 	if option.writer == nil {
 		option.writer, err = s.getWriter(conf, &option)
 		if err != nil {
-			err = errors.WithStack(err)
+			err = pkgerrors.WithStack(err)
 			return err
 		}
 	}

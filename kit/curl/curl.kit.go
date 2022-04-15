@@ -11,17 +11,17 @@ import (
 )
 
 const (
-	// header
-	_contentType = "Content-Type"
-	_userAgent   = "User-Agent"
-
-	// timeout
+	// DefaultTimeout timeout
 	DefaultTimeout = time.Minute
 
-	// content type
+	// ContentType header
+	ContentType         = "Content-Type"
 	ContentTypeJSON     = "application/json"
 	ContentTypeJSONUtf8 = "application/json; charset=utf-8"
 	ContentTypePB       = "application/x-protobuf"
+
+	// UserAgent Accept header
+	UserAgent = "User-Agent"
 )
 
 // NewPostRequest Post请求

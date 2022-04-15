@@ -6,13 +6,12 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/pkg/errors"
-
 	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	websocketutil "github.com/ikaiguang/go-srv-kit/kratos/websocket"
 	loghelper "github.com/ikaiguang/go-srv-kit/log/helper"
+	pkgerrors "github.com/pkg/errors"
 )
 
 // RunTestWebsocket 测试websocket
@@ -34,7 +33,7 @@ func TestWebsocket() (processResp interface{}, err error) {
 	u := url.URL{Scheme: "ws", Host: "127.0.0.1:8080", Path: urlPath}
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return processResp, err
 	}
 	defer func() { _ = c.Close() }()
@@ -93,6 +92,5 @@ func TestWebsocket() (processResp interface{}, err error) {
 		}
 		counter++
 	}
-
-	return processResp, err
+	//return processResp, err
 }

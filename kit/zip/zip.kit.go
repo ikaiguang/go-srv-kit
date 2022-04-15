@@ -7,10 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/pkg/errors"
-
 	fileutil "github.com/ikaiguang/go-srv-kit/kit/file"
 	filepathutil "github.com/ikaiguang/go-srv-kit/kit/filepath"
+	pkgerrors "github.com/pkg/errors"
 )
 
 // Zip 压缩目录
@@ -19,7 +18,7 @@ import (
 func Zip(resourcePath string, zipPath string) error {
 	fileInfo, err := os.Stat(resourcePath)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 	// 压缩文件
@@ -29,7 +28,7 @@ func Zip(resourcePath string, zipPath string) error {
 
 	targetFile, err := os.Create(zipPath)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 	defer func() { _ = targetFile.Close() }()
@@ -48,7 +47,7 @@ func Zip(resourcePath string, zipPath string) error {
 		}
 		zipFilePath, err := filepath.Rel(resourcePath, fps[i])
 		if err != nil {
-			err = errors.WithStack(err)
+			err = pkgerrors.WithStack(err)
 			return err
 		}
 		err = AddFileToZip(zipWriter, fps[i], zipFilePath)
@@ -65,7 +64,7 @@ func Zip(resourcePath string, zipPath string) error {
 func ZipFile(filePath string, zipPath string) error {
 	targetFile, err := os.Create(zipPath)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 	defer func() { _ = targetFile.Close() }()
@@ -88,21 +87,21 @@ func AddFileToZip(zipWriter *zip.Writer, srcFilePath, zipFilePath string) error 
 	// XXX: Read with buffer.
 	content, err := ioutil.ReadFile(srcFilePath)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 
 	// 写入文件
 	zipFile, err := zipWriter.Create(zipFilePath)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 
 	// // 写入文件
 	_, err = zipFile.Write(content)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 	return err
@@ -114,7 +113,7 @@ func AddFileToZip(zipWriter *zip.Writer, srcFilePath, zipFilePath string) error 
 func Unzip(zipPath, unzipResourceDir string) (err error) {
 	reader, err := zip.OpenReader(zipPath)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 	defer func() { _ = reader.Close() }()
@@ -150,14 +149,14 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 		err = os.MkdirAll(filepath.Dir(outputPath), fileutil.DefaultFileMode)
 	}
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 
 	// 创建输出文件
 	outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, fileutil.DefaultFileMode)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 	defer func() { _ = outputFile.Close() }()
@@ -165,7 +164,7 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 	// 打开输入文件
 	inputFile, err := zipFile.Open()
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 	defer func() { _ = inputFile.Close() }()
@@ -173,7 +172,7 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 	// 复制
 	_, err = io.Copy(outputFile, inputFile)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return err
 	}
 	return err

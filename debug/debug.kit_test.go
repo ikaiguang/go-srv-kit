@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/pkg/errors"
+	pkgerrors "github.com/pkg/errors"
 )
 
 func TestMain(m *testing.M) {
@@ -34,8 +34,8 @@ func TestDebug(t *testing.T) {
 
 // go test -v ./debug/ -count=1 -test.run=TestDebugf
 func TestDebugf(t *testing.T) {
-	Debugf("%+v", errors.New("error 1"))
-	Debugf("%+v", errors.New("error 2"))
+	Debugf("%+v", pkgerrors.New("error 1"))
+	Debugf("%+v", pkgerrors.New("error 2"))
 }
 
 // go test -v ./debug/ -count=1 -test.run=TestFatal

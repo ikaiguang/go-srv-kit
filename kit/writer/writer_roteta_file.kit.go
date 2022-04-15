@@ -6,7 +6,7 @@ import (
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"github.com/pkg/errors"
+	pkgerrors "github.com/pkg/errors"
 )
 
 // 轮转日志参数
@@ -79,7 +79,7 @@ func NewRotateFile(cfg *ConfigRotate, configOpts ...Option) (writer io.Writer, e
 		rotateOpts...,
 	)
 	if err != nil {
-		err = errors.WithStack(err)
+		err = pkgerrors.WithStack(err)
 		return
 	}
 	return
