@@ -34,13 +34,13 @@ func Setup() (modulesHandler Modules, err error) {
 	}
 
 	// mysql gorm 数据库
-	if _, err = setupHandler.MysqlGormDB(); err != nil {
-		return modulesHandler, err
-	}
+	//if _, err = setupHandler.MysqlGormDB(); err != nil {
+	//	return modulesHandler, err
+	//}
 
 	// redis 客户端
-	if _, err = setupHandler.RedisClient(); err != nil {
-		return modulesHandler, err
-	}
+	//if _, err = setupHandler.RedisClient(); err != nil {
+	//	return modulesHandler, err
+	//}
 	return setupHandler, err
 }

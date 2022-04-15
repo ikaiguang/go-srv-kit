@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package api.ping.pingv1;
+package kit.api.ping.pingv1;
 
 import "google/api/annotations.proto";
 
 // 多语言特定包名，用于源代码引用
 option go_package = "github.com/ikaiguang/go-srv-kit/api/ping/v1;pingv1";
 option java_multiple_files = true;
-option java_package = "api.ping.pingv1";
+option java_package = "kit.api.ping.pingv1";
 
 // PingReq ping请求
 //

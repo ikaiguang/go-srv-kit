@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package api.base.baseerror;
+package kit.api.base.baseerror;
 
 import "errors/errors.proto";
 
 // 多语言特定包名，用于源代码引用
 option go_package = "github.com/ikaiguang/go-srv-kit/api/base/error;baseerror";
 option java_multiple_files = true;
-option java_package = "api.base.exception";
+option java_package = "kit.api.base.baseerror";
 
 // ERROR .
 enum ERROR {

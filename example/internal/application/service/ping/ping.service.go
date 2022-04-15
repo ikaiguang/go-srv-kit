@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 
-	"github.com/ikaiguang/go-srv-kit/api/ping/error"
+	pingerror "github.com/ikaiguang/go-srv-kit/api/ping/error"
 	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 )
@@ -28,11 +28,11 @@ func (s *ping) Ping(ctx context.Context, in *pingv1.PingReq) (out *pingv1.PingRe
 	s.log.WithContext(ctx).Infof("Ping Received: %v", in.GetMessage())
 
 	if in.GetMessage() == "" {
-		err = exception.ErrorContentMissing("content missing")
+		err = pingerror.ErrorContentMissing("content missing")
 		return out, errorutil.WithStack(err)
 	}
 	if in.GetMessage() == "error" {
-		e := exception.ErrorContentError("testing error")
+		e := pingerror.ErrorContentError("testing error")
 		e.Metadata = map[string]string{
 			"testdata": "testdata",
 		}
