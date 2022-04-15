@@ -5,17 +5,6 @@
 - [kratos-github](https://github.com/go-kratos/kratos)
 - [kratos-docs](https://go-kratos.dev/docs/)
 
-## 运行
-
-在当前目录先运行
-
-```shell
-go run ./cmd/main/... -conf=./configs
-
-curl http://127.0.0.1:8080/api/v1/ping/hello
-curl http://127.0.0.1:8080/api/v1/ping/error
-```
-
 ## JETBRAINS Golang 配置
 
 配置项：setting -> tool -> terminal -> application settings -> shell path
@@ -28,3 +17,14 @@ curl http://127.0.0.1:8080/api/v1/ping/error
 2. 编辑文件`./api/config/README.md`；修改执行命令到对应的目录；
 3. 全局替换`github.com/ikaiguang/go-srv-kit/example/internal`为`github.com/ikaiguang/go-srv-xxx/internal`；
 4. 格式化项目代码；
+
+## 运行
+
+在当前目录先运行
+
+```shell
+go run ./cmd/main/... -conf=./configs
+
+curl http://127.0.0.1:8080/api/v1/ping/hello
+curl http://127.0.0.1:8080/api/v1/ping/error
+```
