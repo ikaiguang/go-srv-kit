@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package api.config.configv1;
+package example.api.config.configv1;
 
 import "github.com/ikaiguang/go-srv-kit/api/conf/v1/conf.v1.proto";
 
