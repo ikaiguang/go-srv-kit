@@ -14,7 +14,9 @@
 
 ## 运行Example
 
-运行Example
+运行Example;
+
+**Windows**系统，请使用`CMD`或`Git-Bash`运行。原因：某些命令行工具无法正确读取配置目录；例：`PowerShell`
 
 ```shell
 go run ./example/cmd/main/... -conf=./example/configs
