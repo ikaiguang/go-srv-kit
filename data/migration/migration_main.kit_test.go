@@ -2,14 +2,13 @@ package migrationuitl
 
 import (
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"os"
 	"testing"
 	"time"
-
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var (
@@ -52,7 +51,6 @@ func (s *TestMigration) TableName() string {
 func TestMain(m *testing.M) {
 	var (
 		err error
-		dsn = "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True"
 		opt = &gorm.Config{
 			PrepareStmt:                              true,
 			SkipDefaultTransaction:                   true,
@@ -65,7 +63,10 @@ func TestMain(m *testing.M) {
 			}),
 		}
 	)
+	dsn := "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True"
 	dbConn, err = gorm.Open(mysql.Open(dsn), opt)
+	//dsn := "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	//dbConn, err = gorm.Open(postgres.Open(dsn), opt)
 	if err != nil {
 		log.Fatalf("==> 请先配置数据库，错误信息：%v\n", err)
 	}
