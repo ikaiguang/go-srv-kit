@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 	)
 	dbConn, err = gorm.Open(mysql.Open(dsn), opt)
 	if err != nil {
-		panic(err)
+		log.Fatalf("==> 请先配置数据库，错误信息：%v\n", err)
 	}
 
 	// select
