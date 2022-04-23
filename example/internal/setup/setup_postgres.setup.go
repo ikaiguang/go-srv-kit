@@ -2,7 +2,7 @@ package setup
 
 import (
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
-	mysqlutil "github.com/ikaiguang/go-srv-kit/data/mysql"
+	psqlutil "github.com/ikaiguang/go-srv-kit/data/postgres"
 	stdlog "log"
 	"sync"
 
@@ -11,26 +11,26 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// MysqlGormDB 数据库
-func (s *modules) MysqlGormDB() (*gorm.DB, error) {
+// PostgresGormDB 数据库
+func (s *modules) PostgresGormDB() (*gorm.DB, error) {
 	var err error
-	s.mysqlGormMutex.Do(func() {
-		s.mysqlGormDB, err = s.loadingMysqlGormDB()
+	s.postgresGormMutex.Do(func() {
+		s.postgresGormDB, err = s.loadingPostgresGormDB()
 	})
 	if err != nil {
-		s.mysqlGormMutex = sync.Once{}
+		s.postgresGormMutex = sync.Once{}
 		return nil, err
 	}
-	return s.mysqlGormDB, err
+	return s.postgresGormDB, err
 }
 
-// loadingMysqlGormDB mysql gorm 数据库
-func (s *modules) loadingMysqlGormDB() (*gorm.DB, error) {
-	if s.Config.MySQLConfig() == nil {
-		stdlog.Println("|*** 加载MySQL-GORM：未初始化")
+// loadingPostgresGormDB postgres gorm 数据库
+func (s *modules) loadingPostgresGormDB() (*gorm.DB, error) {
+	if s.Config.PostgresConfig() == nil {
+		stdlog.Println("|*** 加载Postgres-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
-	stdlog.Println("|*** 加载MySQL-GORM：...")
+	stdlog.Println("|*** 加载Postgres-GORM：...")
 
 	// logger writer
 	var (
@@ -50,5 +50,5 @@ func (s *modules) loadingMysqlGormDB() (*gorm.DB, error) {
 	if len(writers) > 0 {
 		opts = append(opts, gormutil.WithWriters(writers...))
 	}
-	return mysqlutil.NewMysqlDB(s.Config.MySQLConfig(), opts...)
+	return psqlutil.NewDB(s.Config.PostgresConfig(), opts...)
 }

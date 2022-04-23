@@ -35,6 +35,10 @@ type modules struct {
 	mysqlGormMutex sync.Once
 	mysqlGormDB    *gorm.DB
 
+	// postgresGormMutex mysql gorm
+	postgresGormMutex sync.Once
+	postgresGormDB    *gorm.DB
+
 	// redisClientMutex redis客户端
 	redisClientMutex sync.Once
 	redisClient      *redis.Client

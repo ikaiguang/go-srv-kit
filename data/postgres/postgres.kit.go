@@ -1,19 +1,19 @@
-package mysqlutil
+package psqlutil
 
 import (
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-// NewMysqlDB .
-func NewMysqlDB(conf *confv1.Data_MySQL, opts ...gormutil.Option) (db *gorm.DB, err error) {
+// NewPostgresDB .
+func NewPostgresDB(conf *confv1.Data_PSQL, opts ...gormutil.Option) (db *gorm.DB, err error) {
 	return NewDB(conf, opts...)
 }
 
 // NewDB 初始化
-func NewDB(conf *confv1.Data_MySQL, opts ...gormutil.Option) (db *gorm.DB, err error) {
+func NewDB(conf *confv1.Data_PSQL, opts ...gormutil.Option) (db *gorm.DB, err error) {
 	// 链接选项
 	connOption := &gormutil.ConnOption{
 		LoggerEnable:              conf.LoggerEnable,
@@ -33,7 +33,7 @@ func NewDB(conf *confv1.Data_MySQL, opts ...gormutil.Option) (db *gorm.DB, err e
 	}
 
 	// 拨号
-	dialect := mysql.Open(conf.Dsn)
+	dialect := postgres.Open(conf.Dsn)
 
 	return gormutil.NewDB(dialect, connOption)
 }

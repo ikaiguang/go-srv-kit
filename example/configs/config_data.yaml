@@ -1,5 +1,22 @@
 # data 数据
 data:
+  # psql postgres
+  psql:
+    dsn: "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+    # slow_threshold 慢查询时间
+    slow_threshold: 0.1s
+    logger_enable: true
+    logger_colorful: true
+    # logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR
+    logger_level: DEBUG
+    # conn_max_active 连接的最大数量
+    conn_max_active: 100
+    # conn_max_lifetime 连接可复用的最大时间
+    conn_max_lifetime: 3600s
+    # conn_max_idle 连接池中空闲连接的最大数量
+    conn_max_idle: 10
+    # conn_max_idle_time 设置连接空闲的最长时间
+    conn_max_idle_time: 1800s
   # mysql MySQL
   mysql:
     dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True
@@ -33,7 +50,3 @@ data:
     conn_max_idle: 10
     # conn_max_idle_time 设置连接空闲的最长时间
     conn_max_idle_time: 1800s
-
-
-
-

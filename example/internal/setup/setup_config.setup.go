@@ -200,6 +200,14 @@ func (s *configuration) MySQLConfig() *confv1.Data_MySQL {
 	return s.conf.Data.Mysql
 }
 
+// PostgresConfig mysql配置
+func (s *configuration) PostgresConfig() *confv1.Data_PSQL {
+	if s.conf.Data == nil {
+		return nil
+	}
+	return s.conf.Data.Psql
+}
+
 // RedisConfig redis配置
 func (s *configuration) RedisConfig() *confv1.Data_Redis {
 	if s.conf.Data == nil {

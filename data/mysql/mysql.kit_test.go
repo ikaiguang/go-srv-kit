@@ -1,24 +1,22 @@
 package mysqlutil
 
 import (
-	"log"
-	"os"
-	"testing"
-	"time"
-
-	"github.com/go-kratos/kratos/v2/errors"
+	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
+	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
+	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
-	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
+	"log"
+	"os"
+	"testing"
+	"time"
 )
 
 var (
-	mysqlConfig = &confv1.Data_MySQL{
+	dbConfig = &confv1.Data_MySQL{
 		Dsn:             "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True",
 		SlowThreshold:   durationpb.New(time.Millisecond * 100),
 		LoggerEnable:    true,
@@ -32,26 +30,11 @@ var (
 
 // go test -v ./data/mysql/ -count=1 -test.run=TestNewDB_Xxx
 func TestNewDB_Xxx(t *testing.T) {
-	db, err := NewMysqlDB(mysqlConfig)
+	db, err := NewMysqlDB(dbConfig)
 	require.Nil(t, err)
 
-	// res
-	type Model struct {
-		ID   uint64 `gorm:"column:id;primary_key;" json:"id"`
-		UUID string `gorm:"column:uuid" json:"uuid"`
-	}
-	res := &Model{}
-
-	// select
-	err = db.Table("ikg_test").Where("id = ?", 1).First(&res).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			t.Log("select result ", err)
-		}
-		t.Error(err)
-		t.FailNow()
-	}
-	t.Logf("%+v\n", res)
+	// testDBConn
+	testDBConn(t, db)
 }
 
 // go test -v ./data/mysql/ -count=1 -test.run=TestNewDB_WithWriters
@@ -67,33 +50,18 @@ func TestNewDB_WithWriters(t *testing.T) {
 	require.Nil(t, err)
 
 	//opt := WithWriters(NewStdWriter(), NewWriter(fileWriter), NewJSONWriter(fileWriter))
-	opt := WithWriters(NewStdWriter(), NewJSONWriter(fileWriter))
-	db, err := NewMysqlDB(mysqlConfig, opt)
+	opt := gormutil.WithWriters(gormutil.NewStdWriter(), gormutil.NewJSONWriter(fileWriter))
+	db, err := NewMysqlDB(dbConfig, opt)
 	require.Nil(t, err)
 
-	// res
-	type Model struct {
-		ID   uint64 `gorm:"column:id;primary_key;" json:"id"`
-		UUID string `gorm:"column:uuid" json:"uuid"`
-	}
-	res := &Model{}
-
-	// select
-	err = db.Table("ikg_test").Where("id = ?", 1).First(&res).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			t.Log("select result ", err)
-		}
-		t.Error(err)
-		t.FailNow()
-	}
-	t.Logf("%+v\n", res)
+	// testDBConn
+	testDBConn(t, db)
 }
 
 // go test -v ./data/mysql/ -count=1 -test.run=TestDefaultGorm_Xxx
 func TestDefaultGorm_Xxx(t *testing.T) {
 	// 拨号
-	dialect := mysql.Open(mysqlConfig.Dsn)
+	dialect := mysql.Open(dbConfig.Dsn)
 
 	loggerHandler := logger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), logger.Config{
 		LogLevel:                  logger.Info,
@@ -112,21 +80,21 @@ func TestDefaultGorm_Xxx(t *testing.T) {
 	db, err := gorm.Open(dialect, opt)
 	require.Nil(t, err)
 
-	// res
-	type Model struct {
-		ID   uint64 `gorm:"column:id;primary_key;" json:"id"`
-		UUID string `gorm:"column:uuid" json:"uuid"`
-	}
-	res := &Model{}
+	// testDBConn
+	testDBConn(t, db)
+}
 
-	// select
-	err = db.Table("ikg_test").Where("id = ?", 1).First(&res).Error
+// testDBConn .
+func testDBConn(t *testing.T, db *gorm.DB) {
+	stdDB, err := db.DB()
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			t.Log("select result ", err)
-		}
 		t.Error(err)
-		t.FailNow()
+		return
 	}
-	t.Logf("%+v\n", res)
+
+	err = stdDB.Ping()
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }

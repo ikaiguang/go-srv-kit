@@ -56,6 +56,16 @@ func (s *modules) Close() (err error) {
 			errInfos = append(errInfos, errorPrefix+err.Error())
 		}
 	}
+	if s.postgresGormDB != nil {
+		stdlog.Println("|*** 退出程序：关闭Postgres-GORM")
+		errorPrefix := "postgresGormDB.Close error : "
+		connPool, err := s.postgresGormDB.DB()
+		if err != nil {
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		} else if err = connPool.Close(); err != nil {
+			errInfos = append(errInfos, errorPrefix+err.Error())
+		}
+	}
 
 	// debug
 	if len(s.debugHelperCloseFnSlice) > 0 {

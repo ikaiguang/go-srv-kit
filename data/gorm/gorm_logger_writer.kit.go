@@ -1,4 +1,4 @@
-package mysqlutil
+package gormutil
 
 import (
 	"encoding/json"

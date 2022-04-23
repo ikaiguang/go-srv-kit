@@ -57,6 +57,8 @@ type Config interface {
 	LoggerConfigForFile() *confv1.Log_File
 	// MySQLConfig mysql配置
 	MySQLConfig() *confv1.Data_MySQL
+	// PostgresConfig postgres配置
+	PostgresConfig() *confv1.Data_PSQL
 	// RedisConfig redis配置
 	RedisConfig() *confv1.Data_Redis
 	// HTTPConfig http配置
@@ -88,6 +90,6 @@ type Modules interface {
 	// RedisClient redis 客户端
 	RedisClient() (*redis.Client, error)
 
-	// 关闭
+	// Close 关闭
 	Close() error
 }

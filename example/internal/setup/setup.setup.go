@@ -38,6 +38,11 @@ func Setup() (modulesHandler Modules, err error) {
 	//	return modulesHandler, err
 	//}
 
+	// postgres gorm 数据库
+	//if _, err = setupHandler.PostgresGormDB(); err != nil {
+	//	return modulesHandler, err
+	//}
+
 	// redis 客户端
 	//if _, err = setupHandler.RedisClient(); err != nil {
 	//	return modulesHandler, err

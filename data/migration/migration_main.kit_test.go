@@ -1,6 +1,7 @@
 package migrationuitl
 
 import (
+	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 	"log"
 	"os"
 	"testing"
@@ -69,7 +70,8 @@ func TestMain(m *testing.M) {
 		log.Fatalf("==> 请先配置数据库，错误信息：%v\n", err)
 	}
 
-	dbConn = dbConn.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4")
+	//dbConn = dbConn.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4")
+	dbConn = gormutil.SetOption(dbConn, gormutil.OptionKeyTableOptions, gormutil.OptionValueEngineInnoDB)
 
 	// 运行 & 退出
 	os.Exit(m.Run())
