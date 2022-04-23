@@ -6,7 +6,9 @@ import (
 )
 
 var (
-	migrations = &migrationRegister{}
+	migrations = &migrationRegister{
+		m: make(map[string]MigrationRepo),
+	}
 )
 
 // migrationRegister 注册迁移

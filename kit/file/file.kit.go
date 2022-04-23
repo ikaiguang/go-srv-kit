@@ -10,7 +10,7 @@ const (
 	// DefaultFileMode 文件权限
 	DefaultFileMode os.FileMode = 0744
 
-	// RuntimeDir 临时目录
+	// DefaultRuntimeDir 临时目录
 	DefaultRuntimeDir = "runtime"
 )
 

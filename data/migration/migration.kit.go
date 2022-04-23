@@ -22,13 +22,13 @@ type MigrationRepo interface {
 
 // Migration 数据库迁移
 type Migration struct {
-	Id                 uint64    `gorm:"COLUMN:id;primaryKey;type:uint;autoIncrement;size:20;comment:'ID'"`
-	MigrationKey       string    `gorm:"COLUMN:migration_key;uniqueIndex;type:string;size:255;not null;default:'';comment:'迁移key：唯一'"`
-	MigrationBatch     uint      `gorm:"COLUMN:migration_batch;type:uint;size:11;not null;default:0;comment:'迁移批次'"`
-	MigrationDesc      string    `gorm:"COLUMN:migration_desc;type:text;default:'';comment:'迁移描述'"`
-	MigrationExtraInfo string    `gorm:"COLUMN:migration_extra_info;type:json;default:'{}';comment:'迁移：额外信息'"`
-	CreatedTime        time.Time `gorm:"COLUMN:created_time;type:time;autoCreateTime:milli;comment:'创建时间'"`
-	UpdatedTime        time.Time `gorm:"COLUMN:updated_time;type:time;autoUpdateTime:milli;comment:'更新时间'"`
+	Id                 uint64    `gorm:"COLUMN:id;primaryKey;type:bigint unsigned auto_increment;comment:ID"`
+	MigrationKey       string    `gorm:"COLUMN:migration_key;uniqueIndex;type:string;size:255;not null;default:'';comment:迁移key：唯一"`
+	MigrationBatch     uint      `gorm:"COLUMN:migration_batch;type:int unsigned;not null;default:0;comment:迁移批次"`
+	MigrationDesc      string    `gorm:"COLUMN:migration_desc;type:text;not null;comment:迁移描述"`
+	MigrationExtraInfo string    `gorm:"COLUMN:migration_extra_info;type:json;not null;comment:迁移：额外信息"`
+	CreatedTime        time.Time `gorm:"COLUMN:created_time;type:time;not null;autoCreateTime:milli;comment:创建时间"`
+	UpdatedTime        time.Time `gorm:"COLUMN:updated_time;type:time;not null;autoUpdateTime:milli;comment:更新时间"`
 }
 
 // TableName 表名
@@ -60,7 +60,7 @@ func (s *CreateTable) Identifier() string {
 
 // Up implements the Migration interface.
 func (s *CreateTable) Up() error {
-	if !s.migrator.HasTable(s.table) {
+	if s.migrator.HasTable(s.table) {
 		return nil
 	}
 	return s.migrator.CreateTable(s.table)
@@ -106,7 +106,7 @@ func (s *DropTable) Up() error {
 
 // Down implements the Migration interface.
 func (s *DropTable) Down() error {
-	if !s.migrator.HasTable(s.table) {
+	if s.migrator.HasTable(s.table) {
 		return nil
 	}
 	return s.migrator.CreateTable(s.table)
