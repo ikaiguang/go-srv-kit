@@ -3,7 +3,6 @@ package migrationuitl
 import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"time"
 )
 
 const (
@@ -18,22 +17,6 @@ type MigrationRepo interface {
 	Up() error
 	// Down 回滚迁移
 	Down() error
-}
-
-// Migration 数据库迁移
-type Migration struct {
-	Id                 uint64    `gorm:"COLUMN:id;primaryKey;type:bigint unsigned auto_increment;comment:ID"`
-	MigrationKey       string    `gorm:"COLUMN:migration_key;uniqueIndex;type:string;size:255;not null;default:'';comment:迁移key：唯一"`
-	MigrationBatch     uint      `gorm:"COLUMN:migration_batch;type:int unsigned;not null;default:0;comment:迁移批次"`
-	MigrationDesc      string    `gorm:"COLUMN:migration_desc;type:text;not null;comment:迁移描述"`
-	MigrationExtraInfo string    `gorm:"COLUMN:migration_extra_info;type:json;not null;comment:迁移：额外信息"`
-	CreatedTime        time.Time `gorm:"COLUMN:created_time;type:time;not null;autoCreateTime:milli;comment:创建时间"`
-	UpdatedTime        time.Time `gorm:"COLUMN:updated_time;type:time;not null;autoUpdateTime:milli;comment:更新时间"`
-}
-
-// TableName 表名
-func (s *Migration) TableName() string {
-	return DefaultMigrationTableName
 }
 
 // ===== 创建表 =====

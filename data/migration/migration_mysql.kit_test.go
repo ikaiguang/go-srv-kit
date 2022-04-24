@@ -1,7 +1,9 @@
 package migrationuitl
 
 import (
+	"fmt"
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
+	"github.com/stretchr/testify/require"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -11,12 +13,72 @@ import (
 	"time"
 )
 
-var (
-	dbConn *gorm.DB
-)
+// go test -v -count=1 ./data/migration -test.run=TestMigrateALL_MySQL
+func TestMigrateALL_MySQL(t *testing.T) {
+	dbConn, err := newMysqlDB()
+	require.Nil(t, err)
+
+	var (
+		normalMg = NewCreateTable(dbConn.Migrator(), &Migration{})
+		testMg   = NewCreateTable(dbConn.Migrator(), &TestMigration{})
+	)
+	var args = []struct {
+		name string
+		repo MigrationRepo
+	}{
+		{
+			name: "#创建表：" + normalMg.Identifier(),
+			repo: normalMg,
+		},
+		{
+			name: "#创建表：" + testMg.Identifier(),
+			repo: testMg,
+		},
+	}
+
+	for i := range args {
+		MustRegisterMigrate(args[i].repo)
+	}
+
+	// 迁移
+	err = MigrateALL()
+	require.Nil(t, err)
+	err = Migrate(testMg.Identifier(), normalMg.Identifier())
+	require.Nil(t, err)
+	err = MigrateRepos(testMg, normalMg)
+	require.Nil(t, err)
+	// 回滚
+	err = RollbackALL()
+	require.Nil(t, err)
+	err = Rollback(testMg.Identifier(), normalMg.Identifier())
+	require.Nil(t, err)
+	err = RollbackRepos(testMg, normalMg)
+	require.Nil(t, err)
+}
+
+// Migration 数据库迁移
+// 文档地址：https://gorm.io/docs/models.html
+// MySQL 支持 unsigned
+// Postgres 不支持 unsigned
+type Migration struct {
+	Id                 uint64    `gorm:"COLUMN:id;primaryKey;type:bigint unsigned auto_increment;comment:ID"`
+	MigrationKey       string    `gorm:"COLUMN:migration_key;uniqueIndex;type:string;size:255;not null;default:'';comment:迁移key：唯一"`
+	MigrationBatch     uint      `gorm:"COLUMN:migration_batch;type:int unsigned;not null;default:0;comment:迁移批次"`
+	MigrationDesc      string    `gorm:"COLUMN:migration_desc;type:text;not null;comment:迁移描述"`
+	MigrationExtraInfo string    `gorm:"COLUMN:migration_extra_info;type:json;not null;comment:迁移：额外信息"`
+	CreatedTime        time.Time `gorm:"COLUMN:created_time;type:time;not null;autoCreateTime:milli;comment:创建时间"`
+	UpdatedTime        time.Time `gorm:"COLUMN:updated_time;type:time;not null;autoUpdateTime:milli;comment:更新时间"`
+}
+
+// TableName 表名
+func (s *Migration) TableName() string {
+	return DefaultMigrationTableName
+}
 
 // TestMigration test
 // 文档地址：https://gorm.io/docs/models.html
+// MySQL 支持 unsigned
+// Postgres 不支持 unsigned
 type TestMigration struct {
 	Id                uint64     `gorm:"COLUMN:id;primaryKey;type:bigint unsigned auto_increment;comment:ID"`
 	ColumnUniqueIndex string     `gorm:"COLUMN:column_unique_index;uniqueIndex;type:string;size:255;not null;default:'';comment:唯一索引"`
@@ -48,7 +110,8 @@ func (s *TestMigration) TableName() string {
 	return "srv_test_migration"
 }
 
-func TestMain(m *testing.M) {
+// newMysqlDB ...
+func newMysqlDB() (*gorm.DB, error) {
 	var (
 		err error
 		opt = &gorm.Config{
@@ -64,16 +127,13 @@ func TestMain(m *testing.M) {
 		}
 	)
 	dsn := "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True"
-	dbConn, err = gorm.Open(mysql.Open(dsn), opt)
-	//dsn := "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	//dbConn, err = gorm.Open(postgres.Open(dsn), opt)
+	dbConn, err := gorm.Open(mysql.Open(dsn), opt)
 	if err != nil {
-		log.Fatalf("==> 请先配置数据库，错误信息：%v\n", err)
+		err = fmt.Errorf("请先配置数据库，错误信息：%s", err.Error())
+		return dbConn, err
 	}
-
-	//dbConn = dbConn.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4")
+	dbConn = dbConn.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4")
 	dbConn = gormutil.SetOption(dbConn, gormutil.OptionKeyTableOptions, gormutil.OptionValueEngineInnoDB)
 
-	// 运行 & 退出
-	os.Exit(m.Run())
+	return dbConn, err
 }
