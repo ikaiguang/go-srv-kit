@@ -24,7 +24,7 @@ require (
 	google.golang.org/genproto v0.0.0-20220421151946-72621c1f0bd3
 	google.golang.org/grpc v1.45.0
 	google.golang.org/protobuf v1.28.0
-	gorm.io/driver/mysql v1.3.2
+	gorm.io/driver/mysql v1.3.3
 	gorm.io/driver/postgres v1.3.4 // indirect
 	gorm.io/gorm v1.23.4
 	gorm.io/hints v1.1.0
