@@ -1,8 +1,9 @@
 package gormutil
 
 import (
-	"gorm.io/gorm/logger"
 	"strings"
+
+	"gorm.io/gorm/logger"
 )
 
 // NewLogger 数据库日志

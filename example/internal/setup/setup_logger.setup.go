@@ -88,7 +88,7 @@ func (s *modules) loadingLoggerHelper() (logger log.Logger, closeFnSlice []func(
 
 // loadingLoggerMiddleware 初始化中间价的日志输出实例
 func (s *modules) loadingLoggerMiddleware() (logger log.Logger, closeFnSlice []func() error, err error) {
-	skip := logutil.DefaultCallerSkip - 1
+	skip := logutil.DefaultCallerSkip
 	return s.loadingLoggerWithCallerSkip(skip)
 }
 

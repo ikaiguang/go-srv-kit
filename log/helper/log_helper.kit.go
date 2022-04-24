@@ -1,8 +1,6 @@
 package loghelper
 
 import (
-	"context"
-
 	"github.com/go-kratos/kratos/v2/log"
 
 	"github.com/ikaiguang/go-srv-kit/log"
@@ -28,12 +26,6 @@ func defaultHandler() *log.Helper {
 	logger, _ := logutil.NewDummyLogger()
 
 	return log.NewHelper(logger)
-}
-
-// WithContext returns a shallow copy of h with its context changed
-// to ctx. The provided ctx must be non-nil.
-func WithContext(ctx context.Context) *log.Helper {
-	return helper.WithContext(ctx)
 }
 
 // Log Print log by level and keyvals.

@@ -2,14 +2,15 @@ package migrationuitl
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"log"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // go test -v -count=1 ./data/migration -test.run=TestMigrateALL_Postgres

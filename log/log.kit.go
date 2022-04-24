@@ -24,7 +24,7 @@ const (
 	// 使用 logutil.Setup + log.With 		ConfigStd.CallerSkip = DefaultCallerSkip + 2
 	// 使用 logutil.Setup log.MultiLogger 	ConfigStd.CallerSkip = DefaultCallerSkip + 2
 	// log.With 会把 单个Logger 转换为 MultiLogger
-	DefaultCallerSkip = 3
+	DefaultCallerSkip = 2
 
 	// DefaultCallerValuer log.With 之 log.Caller
 	//
@@ -33,10 +33,10 @@ const (
 	// 使用 logutil.Setup 	CallerValuer = DefaultCallerValuer + 2
 	DefaultCallerValuer = 4
 
-	// DefaultTimeFormat
+	// DefaultTimeFormat 日志时间格式
 	DefaultTimeFormat = timeutil.YmdHmsMLogger
 
-	// zapcore.EncoderConfig keys
+	// LoggerKeyMessage zapcore.EncoderConfig keys
 	LoggerKeyMessage    LoggerKey = "msg"
 	LoggerKeyLevel      LoggerKey = "level"
 	LoggerKeyTime       LoggerKey = "time"

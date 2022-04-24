@@ -75,11 +75,11 @@ func main() {
 
 	// 启动程序
 	stdlog.Println()
-	stdlog.Println("|==================== 启动程序 开始 ====================|")
+	stdlog.Println("|==================== 加载程序 开始 ====================|")
 
 	// 启动
 	app, err := newApp(modules)
-	stdlog.Println("|==================== 启动程序 结束 ====================|")
+	stdlog.Println("|==================== 加载程序 结束 ====================|")
 	if err := app.Run(); err != nil {
 		debugutil.Fatalf("%+v\n", err)
 		return

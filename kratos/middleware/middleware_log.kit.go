@@ -51,7 +51,6 @@ func ServerLog(logger log.Logger) middleware.Middleware {
 					"kind", "server",
 					"component", kind,
 					"latency", time.Since(startTime).Seconds(),
-					//"operation", operation,
 				}
 			)
 

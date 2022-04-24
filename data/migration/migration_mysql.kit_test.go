@@ -2,15 +2,16 @@ package migrationuitl
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"testing"
+	"time"
+
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"testing"
-	"time"
 )
 
 // go test -v -count=1 ./data/migration -test.run=TestMigrateALL_MySQL
