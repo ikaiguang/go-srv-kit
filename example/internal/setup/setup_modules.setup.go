@@ -13,6 +13,10 @@ import (
 type modules struct {
 	Config
 
+	// loggerPrefixFieldMutex 日志前缀
+	loggerPrefixFieldMutex sync.Once
+	loggerPrefixField      *LoggerPrefixField
+
 	// loggerFileWriterMutex 日志文件写手柄
 	loggerFileWriterMutex sync.Once
 	loggerFileWriter      io.Writer

@@ -2,7 +2,9 @@ package setup
 
 import (
 	strerrors "errors"
+	"fmt"
 	"io"
+	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
@@ -33,8 +35,21 @@ func IsUninitializedError(err error) bool {
 	return strerrors.Is(pkgerrors.Cause(err), ErrUninitialized)
 }
 
-// Args 参数
-type Args interface {
+// LoggerPrefixField with logger fields.
+type LoggerPrefixField struct {
+	AppName    string `json:"name"`
+	AppVersion string `json:"version"`
+	AppEnv     string `json:"env"`
+}
+
+// String returns the string representation of LoggerPrefixField.
+func (s *LoggerPrefixField) String() string {
+	strSlice := []string{
+		"name:" + fmt.Sprintf("%q", s.AppName),
+		"version:" + fmt.Sprintf("%q", s.AppVersion),
+		"env:" + fmt.Sprintf("%q", s.AppEnv),
+	}
+	return strings.Join(strSlice, " ")
 }
 
 // Config 配置
@@ -72,6 +87,8 @@ type Modules interface {
 	// Config 配置
 	Config
 
+	// LoggerPrefixField 日志前缀字段
+	LoggerPrefixField() *LoggerPrefixField
 	// LoggerFileWriter 文件日志写手柄
 	LoggerFileWriter() (io.Writer, error)
 	// Logger 日志处理实例 runtime.caller.skip + 1

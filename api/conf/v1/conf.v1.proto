@@ -22,12 +22,12 @@ message Bootstrap {
 
 // App application
 message App {
-  // env app 环境
-  string env = 1;
   // name app名字
-  string name = 2;
+  string name = 1;
   // version app版本
-  string version = 3;
+  string version = 2;
+  // env app 环境
+  string env = 3;
   // endpoints app站点
   repeated string endpoints = 4;
   // metadata 元数据

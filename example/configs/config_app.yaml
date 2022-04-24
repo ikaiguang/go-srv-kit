@@ -1,7 +1,7 @@
 # app 程序
 app:
   name: go-srv-kit
-  version: 1.0.0
+  version: v1.0.0
   # env 开发环境；值：DEVELOP、TESTING、PREVIEW、PRODUCTION
   env: develop
   endpoints:
