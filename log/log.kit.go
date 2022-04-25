@@ -46,6 +46,15 @@ const (
 	LoggerKeyStacktrace LoggerKey = "stack"
 )
 
+var (
+	// CallerSkipForMiddleware 中间件日志
+	CallerSkipForMiddleware = DefaultCallerSkip
+	// CallerSkipForLogger 基础日志
+	CallerSkipForLogger = DefaultCallerSkip + 1
+	// CallerSkipForHelper 日志助手
+	CallerSkipForHelper = DefaultCallerSkip + 2
+)
+
 // NewMultiLogger wraps multi logger.
 func NewMultiLogger(logs ...log.Logger) log.Logger {
 	return log.MultiLogger(logs...)

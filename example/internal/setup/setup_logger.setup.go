@@ -76,7 +76,7 @@ func (s *modules) loadingLogHelper() (closeFnSlice []func() error, err error) {
 
 // loadingLogger 初始化日志输出实例
 func (s *modules) loadingLogger() (logger log.Logger, closeFnSlice []func() error, err error) {
-	skip := logutil.DefaultCallerSkip + 1
+	skip := logutil.CallerSkipForLogger
 	//return s.loadingLoggerWithCallerSkip(skip)
 	logger, closeFnSlice, err = s.loadingLoggerWithCallerSkip(skip)
 	if err != nil {
@@ -88,7 +88,7 @@ func (s *modules) loadingLogger() (logger log.Logger, closeFnSlice []func() erro
 
 // loadingLoggerHelper 初始化日志工具输出实例
 func (s *modules) loadingLoggerHelper() (logger log.Logger, closeFnSlice []func() error, err error) {
-	skip := logutil.DefaultCallerSkip + 2
+	skip := logutil.CallerSkipForHelper
 	//return s.loadingLoggerWithCallerSkip(skip)
 	logger, closeFnSlice, err = s.loadingLoggerWithCallerSkip(skip)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *modules) loadingLoggerHelper() (logger log.Logger, closeFnSlice []func(
 
 // loadingLoggerMiddleware 初始化中间价的日志输出实例
 func (s *modules) loadingLoggerMiddleware() (logger log.Logger, closeFnSlice []func() error, err error) {
-	skip := logutil.DefaultCallerSkip
+	skip := logutil.CallerSkipForMiddleware
 	//return s.loadingLoggerWithCallerSkip(skip)
 	logger, closeFnSlice, err = s.loadingLoggerWithCallerSkip(skip)
 	if err != nil {
