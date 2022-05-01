@@ -30,7 +30,7 @@ func TestWebsocket() (processResp interface{}, err error) {
 	urlPath := "/api/v1/testdata/websocket"
 
 	// 开启ws
-	u := url.URL{Scheme: "ws", Host: "127.0.0.1:8080", Path: urlPath}
+	u := url.URL{Scheme: "ws", Host: "127.0.0.1:8081", Path: urlPath}
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		err = pkgerrors.WithStack(err)

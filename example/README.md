@@ -21,6 +21,6 @@
 ```shell
 go run ./cmd/main/... -conf=./configs
 
-curl http://127.0.0.1:8080/api/v1/ping/hello
-curl http://127.0.0.1:8080/api/v1/ping/error
+curl http://127.0.0.1:8081/api/v1/ping/hello
+curl http://127.0.0.1:8081/api/v1/ping/error
 ```
