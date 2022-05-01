@@ -35,3 +35,8 @@ func getLocalIP() string {
 	}
 	return localIp
 }
+
+// IsValidIP 有效的ip
+func IsValidIP(ip string) bool {
+	return net.ParseIP(ip) != nil
+}

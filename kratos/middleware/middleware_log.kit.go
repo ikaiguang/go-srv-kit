@@ -31,7 +31,7 @@ type RequestMessage struct {
 // GetRequestInfo 获取服务信息
 func (s *RequestMessage) GetRequestInfo() string {
 	str := "kind=" + `"` + s.Kind + `"`
-	str += "component=" + `"` + s.Component + `"`
+	str += " component=" + `"` + s.Component + `"`
 	str += " latency=" + `"` + s.ExecTime.String() + `"`
 	str += " clientIP=" + `"` + s.ClientIP + `"`
 	return str
@@ -40,7 +40,7 @@ func (s *RequestMessage) GetRequestInfo() string {
 // GetOperationInfo .
 func (s *RequestMessage) GetOperationInfo() string {
 	str := "method=" + `"` + s.Method + `"`
-	str += " operation=" + `"` + s.Operation + `"`
+	str += " operation=" + fmt.Sprintf("%q", s.Operation)
 	return str
 }
 
@@ -56,9 +56,9 @@ type ErrMessage struct {
 
 // GetErrorDetail ...
 func (s *ErrMessage) GetErrorDetail() string {
-	message := "code=" + strconv.FormatInt(int64(s.Code), 10)
+	message := "code=" + `"` + strconv.FormatInt(int64(s.Code), 10) + `"`
 	message += " reason=" + `"` + s.Reason + `"`
-	message += " detail=" + `"` + s.Msg + `"`
+	message += " detail=" + fmt.Sprintf("%q", s.Msg)
 
 	return message
 }
