@@ -3,6 +3,7 @@ package middlewareutil
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,55 +17,103 @@ import (
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
-// ServerLog is an server logging middleware. 日志
-// logging.Server(logger)
+// RequestMessage 请求信息
+type RequestMessage struct {
+	Kind      string
+	Component string
+	Method    string
+	Operation string
+
+	ExecTime time.Duration
+	ClientIP string
+}
+
+// GetRequestInfo 获取服务信息
+func (s *RequestMessage) GetRequestInfo() string {
+	str := "kind=" + `"` + s.Kind + `"`
+	str += "component=" + `"` + s.Component + `"`
+	str += " latency=" + `"` + s.ExecTime.String() + `"`
+	str += " clientIP=" + `"` + s.ClientIP + `"`
+	return str
+}
+
+// GetOperationInfo .
+func (s *RequestMessage) GetOperationInfo() string {
+	str := "method=" + `"` + s.Method + `"`
+	str += " operation=" + `"` + s.Operation + `"`
+	return str
+}
+
+// ErrMessage 响应信息
+type ErrMessage struct {
+	Code   int32
+	Reason string
+	Msg    string
+	Stack  string
+
+	RequestArgs string
+}
+
+// GetErrorDetail ...
+func (s *ErrMessage) GetErrorDetail() string {
+	message := "code=" + strconv.FormatInt(int64(s.Code), 10)
+	message += " reason=" + `"` + s.Reason + `"`
+	message += " detail=" + `"` + s.Msg + `"`
+
+	return message
+}
+
+// ServerLog 中间件日志
+// 参考 logging.Server(logger)
 func ServerLog(logger log.Logger) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			var (
-				code      int32
-				reason    string
-				kind      string
-				operation string
+				isWebsocket    = false
+				loggingLevel   = log.LevelInfo
+				requestMessage = &RequestMessage{
+					Kind: "server",
+				}
+				errMessage = &ErrMessage{
+					Code: 0,
+				}
 			)
+
+			// 信息
+			if info, ok := transport.FromServerContext(ctx); ok {
+				requestMessage.Component = info.Kind().String()
+				requestMessage.Operation = info.Operation()
+			}
 
 			// 时间
 			startTime := time.Now()
 
-			// 信息
-			if info, ok := transport.FromServerContext(ctx); ok {
-				kind = info.Kind().String()
-				operation = info.Operation()
-			}
-
 			// 执行结果
 			reply, err = handler(ctx, req)
-			if se := errors.FromError(err); se != nil {
-				code = se.Code
-				reason = se.Reason
-			}
+			// 错误在最后判断
+			//if err != nil {}
 
-			// logging
-			var (
-				loggingLevel = log.LevelInfo
-				kv           = []interface{}{
-					"kind", "server",
-					"component", kind,
-					"latency", time.Since(startTime).Seconds(),
-				}
-			)
+			// 执行时间
+			requestMessage.ExecTime = time.Since(startTime)
 
 			// request
-			var isWebsocket = false
 			if httpContext, isHTTP := contextutil.MatchHTTPContext(ctx); isHTTP {
-				method := httpContext.Request().Method
+				requestMessage.Method = httpContext.Request().Method
+				requestMessage.Operation = httpContext.Request().URL.String()
 				if headerutil.GetIsWebsocket(httpContext.Request().Header) {
 					isWebsocket = true
-					method = "WS"
+					requestMessage.Method = "WS"
 				}
-				kv = append(kv, "operation", method+" "+httpContext.Request().URL.String())
+				requestMessage.ClientIP = contextutil.ClientIPFromHTTP(httpContext)
 			} else {
-				kv = append(kv, "operation", operation)
+				requestMessage.Method = "GRPC"
+				requestMessage.ClientIP = contextutil.ClientIPFromGRPC(ctx)
+			}
+
+			// 打印日志
+			var kv = []interface{}{
+				"request", requestMessage.GetRequestInfo(),
+				"operation", requestMessage.GetOperationInfo(),
 			}
 
 			// websocket 不输出错误
@@ -73,27 +122,35 @@ func ServerLog(logger log.Logger) middleware.Middleware {
 				return
 			}
 
-			// args
+			// 有错误的
 			if err != nil {
 				loggingLevel = log.LevelError
-				kv = append(kv,
-					"code", code,
-					"reason", reason,
-					"error", err.Error(),
-					"args", extractArgs(req),
-				)
-				callers := errorutil.CallerWithSkip(err, 1)
-				if len(callers) > 1 {
-					kv = append(kv, "stack", strings.Join(callers, "\n\t"))
-				} else {
-					kv = append(kv, "stack", "")
+				// 错误信息
+				errMessage.Msg = err.Error()
+				if se := errors.FromError(err); se != nil {
+					errMessage.Code = se.Code
+					errMessage.Reason = se.Reason
 				}
+				// 错误调用
+				if callers := errorutil.CallerWithSkip(err, 1); len(callers) > 0 {
+					errMessage.Stack = strings.Join(callers, "\n\t")
+				}
+				// 请求参数
+				errMessage.RequestArgs = extractArgs(req)
+
+				// 打印日志
+				kv = append(kv,
+					"error", errMessage.GetErrorDetail(),
+					"args", errMessage.RequestArgs,
+					"stack", errMessage.Stack,
+				)
 			}
 
 			// 输出日志
 			_ = log.WithContext(ctx, logger).Log(loggingLevel, kv...)
 			return
 		}
+
 	}
 }
 
