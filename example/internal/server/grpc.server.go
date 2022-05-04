@@ -38,7 +38,7 @@ func NewGRPCServer(modulesHandler setup.Modules) (srv *grpc.Server, err error) {
 
 	// ===== 中间件 =====
 	var middlewareSlice = []middleware.Middleware{
-		recovery.Recovery(),
+		recovery.Recovery(recovery.WithLogger(logger)),
 	}
 	// 中间件日志
 	loggerMiddle, _, err := modulesHandler.LoggerMiddleware()

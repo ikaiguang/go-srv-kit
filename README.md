@@ -23,6 +23,16 @@ go run ./example/cmd/main/... -conf=./example/configs
 
 curl http://127.0.0.1:8081/api/v1/ping/hello
 curl http://127.0.0.1:8081/api/v1/ping/error
+
+# 运行测试 PROTOBUF
+curl -X GET \
+    -H "Content-Type: application/proto" \
+    -H "Accept: application/proto" \
+    http://127.0.0.1:8081/api/v1/ping/hello
+curl -X GET \
+    -H "Content-Type: application/proto" \
+    -H "Accept: application/proto" \
+    http://127.0.0.1:8081/api/v1/ping/error
 ```
 
 ## 参考链接

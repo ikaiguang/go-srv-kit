@@ -6,10 +6,11 @@ import (
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
-
 	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
-	v1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
+	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ResponseEncoder http.DefaultResponseEncoder
@@ -23,12 +24,23 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 	w.WriteHeader(stdhttp.StatusOK)
 
 	// 响应结果
-	data := &Response{
+	data := &responsev1.Response{
 		Code:      OK,
 		RequestId: headerutil.GetRequestID(r.Header),
-		Data:      v,
+		//Data:      v,
 	}
-	if v == nil {
+	if v != nil {
+		if vMessage, ok := v.(proto.Message); ok {
+			anyData, err := anypb.New(vMessage)
+			if err != nil {
+				data.Code = stdhttp.StatusInternalServerError
+				data.Reason = baseerror.ERROR_STATUS_NO_CONTENT.String()
+				data.Metadata = map[string]string{"error": err.Error()}
+			} else {
+				data.Data = anyData
+			}
+		}
+	} else {
 		data.Code = stdhttp.StatusInternalServerError
 		data.Reason = baseerror.ERROR_STATUS_NO_CONTENT.String()
 		data.Metadata = map[string]string{"data": "null"}
@@ -48,23 +60,15 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 
 	// 响应错误
 	se := errors.FromError(err)
-	codec, _ := http.CodecForRequest(r, "Accept")
-
-	data := &v1.Response{
+	data := &responsev1.Response{
 		Code:      se.Code,
 		Reason:    se.Reason,
 		Message:   se.Message,
 		Metadata:  se.Metadata,
 		RequestId: headerutil.GetRequestID(r.Header),
 	}
-	body, err := codec.Marshal(data)
-	if err != nil {
-		w.WriteHeader(stdhttp.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", ContentType(codec.Name()))
-	//w.WriteHeader(int(se.Code))
-	_, _ = w.Write(body)
+	_ = http.DefaultResponseEncoder(w, r, data)
+	return
 }
 
 // ContentType returns the content-type with base prefix.
