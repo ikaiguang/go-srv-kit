@@ -7,15 +7,27 @@ import (
 
 const (
 	// RequestID http请求设置
-	RequestID = "X-Custom-Request-Id"
+	RequestID = "x-custom-request-id"
 	// IsWebsocket http请求设置
-	IsWebsocket = "X-Custom-Is-Websocket"
+	IsWebsocket = "x-custom-is-websocket"
+	// RemoteAddr 远程地址
+	RemoteAddr = "x-custom-remote-addr"
 
 	// WebsocketConnection websocket
 	WebsocketConnection = "Connection"
 	WebsocketUpgrade    = "Upgrade"
 	WebsocketSecVersion = "Sec-Websocket-Version"
 	WebsocketSecKey     = "Sec-Websocket-Key"
+)
+
+// Trusted platforms
+const (
+	// PlatformGoogleAppEngine When running on Google App Engine. Trust X-Appengine-Remote-Addr
+	// for determining the client's IP
+	PlatformGoogleAppEngine = "X-Appengine-Remote-Addr"
+	// PlatformCloudflare When using Cloudflare's CDN. Trust CF-Connecting-IP for determining
+	// the client's IP
+	PlatformCloudflare = "CF-Connecting-IP"
 )
 
 // ContainsValue .

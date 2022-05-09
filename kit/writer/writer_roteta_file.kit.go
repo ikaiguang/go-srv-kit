@@ -15,7 +15,7 @@ const (
 	DefaultRotationSize            = 50 << 20            // 50M
 	DefaultRotationStorageAge      = time.Hour * 24 * 30 // 30天
 	DefaultRotationCounter         = 10086               // 10086个
-	_defaultRotationFilenameSuffix = ".%Y%m%d%H%M%S.log" // 文件名后缀
+	_defaultRotationFilenameSuffix = "_%Y%m%d%H%M%S.log" // 文件名后缀
 )
 
 // ConfigRotate 轮转输出

@@ -44,5 +44,13 @@ func (s *modules) loadingLoggerFileWriter() (io.Writer, error) {
 		StorageCounter: uint(fileLoggerConfig.StorageCounter),
 		StorageAge:     fileLoggerConfig.StorageAge.AsDuration(),
 	}
+	if appConfig := s.Config.AppConfig(); appConfig != nil {
+		if appConfig.Env != "" {
+			rotateConfig.Filename += "_" + appConfig.Env
+		}
+		if appConfig.Version != "" {
+			rotateConfig.Filename += "_" + appConfig.Version
+		}
+	}
 	return writerutil.NewRotateFile(rotateConfig)
 }
