@@ -5,6 +5,7 @@ import (
 	"os/exec"
 
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
+	bufferutil "github.com/ikaiguang/go-srv-kit/kit/buffer"
 )
 
 // RunCommand 运行命令
@@ -30,11 +31,11 @@ func RunCommandWithWorkDir(workDir, command string, args []string) (output []byt
 // run 运行命令
 func run(cmdHandler *exec.Cmd) (output []byte, err error) {
 	var (
-		stdout = getBuffer()
-		stderr = getBuffer()
+		stdout = bufferutil.GetBuffer()
+		stderr = bufferutil.GetBuffer()
 	)
-	defer putBuffer(stdout)
-	defer putBuffer(stderr)
+	defer bufferutil.PutBuffer(stdout)
+	defer bufferutil.PutBuffer(stderr)
 
 	cmdHandler.Stdout = stdout
 	cmdHandler.Stderr = stderr

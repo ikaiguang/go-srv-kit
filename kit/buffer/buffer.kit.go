@@ -1,4 +1,4 @@
-package cmdutil
+package bufferutil
 
 import (
 	"bytes"
@@ -13,13 +13,13 @@ var (
 	}
 )
 
-// getBuffer .
-func getBuffer() *bytes.Buffer {
+// GetBuffer .
+func GetBuffer() *bytes.Buffer {
 	return bufferPool.Get().(*bytes.Buffer)
 }
 
-// putBuffer .
-func putBuffer(buf *bytes.Buffer) {
+// PutBuffer .
+func PutBuffer(buf *bytes.Buffer) {
 	buf.Reset()
 	bufferPool.Put(buf)
 }
