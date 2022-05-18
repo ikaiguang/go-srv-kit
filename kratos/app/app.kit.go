@@ -46,21 +46,25 @@ func IsSuccessGRPCCode(code uint32) bool {
 // ToError 转换为错误
 func ToError(response ResponseInterface) *errors.Error {
 	return &errors.Error{
-		Code:     response.GetCode(),
-		Reason:   response.GetReason(),
-		Message:  response.GetMessage(),
-		Metadata: response.GetMetadata(),
+		Status: errors.Status{
+			Code:     response.GetCode(),
+			Reason:   response.GetReason(),
+			Message:  response.GetMessage(),
+			Metadata: response.GetMetadata(),
+		},
 	}
 }
 
 // HTTPError 转换为错误
 func HTTPError(code int, message string) *errors.Error {
 	return &errors.Error{
-		Code:    int32(code),
-		Reason:  baseerror.ERROR_STATUS_REQUEST_FAILURE.String(),
-		Message: message,
-		Metadata: map[string]string{
-			"status": stdhttp.StatusText(code),
+		Status: errors.Status{
+			Code:    int32(code),
+			Reason:  baseerror.ERROR_STATUS_REQUEST_FAILURE.String(),
+			Message: message,
+			Metadata: map[string]string{
+				"status": stdhttp.StatusText(code),
+			},
 		},
 	}
 }

@@ -18,6 +18,20 @@ const (
 	WebsocketUpgrade    = "Upgrade"
 	WebsocketSecVersion = "Sec-Websocket-Version"
 	WebsocketSecKey     = "Sec-Websocket-Key"
+
+	// ContentType header
+	ContentType         = "Content-Type"
+	ContentTypeJSON     = "application/json"
+	ContentTypeJSONUtf8 = "application/json; charset=utf-8"
+	ContentTypeProto    = "application/proto"
+	ContentTypeProtobuf = "application/x-protobuf"
+
+	// Accept header
+	Accept         = "Accept"
+	AcceptJSON     = "application/json"
+	AcceptJSONUtf8 = "application/json; charset=utf-8"
+	AcceptProto    = "application/proto"
+	AcceptProtobuf = "application/x-protobuf"
 )
 
 // Trusted platforms

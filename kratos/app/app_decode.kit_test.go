@@ -11,6 +11,53 @@ import (
 	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 )
 
+// go test -v -count=1 ./kratos/app -test.run=TestDecodeProto
+func TestDecodeProto(t *testing.T) {
+	var (
+		err      error
+		response = &responsev1.Response{
+			Code:      400,
+			Reason:    "CONTENT_ERROR",
+			Message:   "testing error",
+			RequestId: "",
+			Metadata:  map[string]string{"testdata": "testdata"},
+		}
+		data = &pingv1.PingResp{
+			Message: "ping-pong",
+		}
+	)
+
+	response.Data, err = anypb.New(data)
+	require.Nil(t, err)
+	body, err := protojson.Marshal(response)
+	require.Nil(t, err)
+
+	tests := []struct {
+		name     string
+		body     []byte
+		wantCode int32
+		wantData *responsev1.Response
+	}{
+		{
+			name:     "#test_error",
+			body:     body,
+			wantCode: response.Code,
+			wantData: response,
+		},
+	}
+
+	for _, v := range tests {
+		t.Run(v.name, func(t *testing.T) {
+			actual := &pingv1.PingResp{}
+			got, err := DecodeProto(v.body, actual)
+			require.Nil(t, err)
+			require.Equal(t, v.wantCode, got.Code)
+			require.Equal(t, v.wantData.Reason, got.Reason)
+			require.Equal(t, data.Message, actual.Message)
+		})
+	}
+}
+
 // go test -v -count=1 ./kratos/app -test.run=TestDecodeResponse
 func TestDecodeResponse(t *testing.T) {
 	body := []byte(`{"code":0,"reason":"","message":"","data":{"message":"Received Message : hello"},"request_id":""}`)
@@ -67,53 +114,6 @@ func TestDecodeError(t *testing.T) {
 			require.Equal(t, v.wantCode, int(got.Code))
 			require.Equal(t, v.wantData.Reason, got.Reason)
 			require.Equal(t, v.wantData.Message, got.Message)
-		})
-	}
-}
-
-// go test -v -count=1 ./kratos/app -test.run=TestDecodeProto
-func TestDecodeProto(t *testing.T) {
-	var (
-		err      error
-		response = &responsev1.Response{
-			Code:      400,
-			Reason:    "CONTENT_ERROR",
-			Message:   "testing error",
-			RequestId: "",
-			Metadata:  map[string]string{"testdata": "testdata"},
-		}
-		data = &pingv1.PingResp{
-			Message: "ping-pong",
-		}
-	)
-
-	response.Data, err = anypb.New(data)
-	require.Nil(t, err)
-	body, err := protojson.Marshal(response)
-	require.Nil(t, err)
-
-	tests := []struct {
-		name     string
-		body     []byte
-		wantCode int32
-		wantData *responsev1.Response
-	}{
-		{
-			name:     "#test_error",
-			body:     body,
-			wantCode: response.Code,
-			wantData: response,
-		},
-	}
-
-	for _, v := range tests {
-		t.Run(v.name, func(t *testing.T) {
-			actual := &pingv1.PingResp{}
-			got, err := DecodeProto(v.body, actual)
-			require.Nil(t, err)
-			require.Equal(t, v.wantCode, got.Code)
-			require.Equal(t, v.wantData.Reason, got.Reason)
-			require.Equal(t, data.Message, actual.Message)
 		})
 	}
 }

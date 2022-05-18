@@ -7,6 +7,25 @@ import (
 	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 )
 
+// DecodeProto 解码结果
+func DecodeProto(contentBody []byte, pbMessage proto.Message) (response *responsev1.Response, err error) {
+	response = &responsev1.Response{}
+	err = protojson.Unmarshal(contentBody, response)
+	if err != nil {
+		return response, err
+	}
+
+	// 解密
+	if response.Data == nil {
+		return response, err
+	}
+	err = response.Data.UnmarshalTo(pbMessage)
+	if err != nil {
+		return response, err
+	}
+	return response, err
+}
+
 // DecodeResponse 解码结果
 func DecodeResponse(contentBody []byte, data interface{}) (response *Response, err error) {
 	response = &Response{
@@ -23,25 +42,6 @@ func DecodeResponse(contentBody []byte, data interface{}) (response *Response, e
 func DecodeError(contentBody []byte) (response *responsev1.Response, err error) {
 	response = &responsev1.Response{}
 	err = UnmarshalJSON(contentBody, response)
-	if err != nil {
-		return response, err
-	}
-	return response, err
-}
-
-// DecodeProto 解码结果
-func DecodeProto(contentBody []byte, pbMessage proto.Message) (response *responsev1.Response, err error) {
-	response = &responsev1.Response{}
-	err = protojson.Unmarshal(contentBody, response)
-	if err != nil {
-		return response, err
-	}
-
-	// 解密
-	if response.Data == nil {
-		return response, err
-	}
-	err = response.Data.UnmarshalTo(pbMessage)
 	if err != nil {
 		return response, err
 	}
