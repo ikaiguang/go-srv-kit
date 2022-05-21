@@ -5,6 +5,14 @@
 - [kratos-github](https://github.com/go-kratos/kratos)
 - [kratos-docs](https://go-kratos.dev/docs/)
 
+## 执行生成脚本 与 编译proto
+
+```shell
+# 执行生成脚本 与 编译proto
+# go run ./example/cmd/main/... -path=./api/ping
+go run ./cmd/proto/... -path=./api/conf
+```
+
 ## 复制为新项目
 
 1. 编辑文件`./api/config/v1/config.v1.proto`；修改`package`和`option`定义路径；
