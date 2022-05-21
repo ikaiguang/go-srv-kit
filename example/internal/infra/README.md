@@ -1,4 +1,4 @@
 # DDD.Infrastructure
 
-- DDD.Infrastructure.Persistence
-- DDD.Infrastructure.Datasource
+- DDD.Infrastructure
+- DDD.Infrastructure
