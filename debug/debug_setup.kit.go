@@ -2,8 +2,6 @@ package debugutil
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
-	pkgerrors "github.com/pkg/errors"
-
 	logutil "github.com/ikaiguang/go-srv-kit/log"
 )
 
@@ -22,7 +20,6 @@ func Setup() (syncFn func() error, err error) {
 	}
 	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return syncFn, err
 	}
 	syncFn = stdLogger.Sync

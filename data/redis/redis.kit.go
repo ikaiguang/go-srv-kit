@@ -2,10 +2,9 @@ package redisutil
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-redis/redis/v8"
-	pkgerrors "github.com/pkg/errors"
-
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 )
 
@@ -29,7 +28,7 @@ func NewDB(conf *confv1.Data_Redis) (db *redis.Client, err error) {
 	// ping 测试连接
 	err = db.Ping(context.Background()).Err()
 	if err != nil {
-		err = pkgerrors.Errorf("redis connection ping failed : %s", err.Error())
+		err = fmt.Errorf("redis connection ping failed : %w", err)
 		return db, err
 	}
 	return db, err

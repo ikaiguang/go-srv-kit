@@ -6,9 +6,8 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	stderrors "errors"
 	"io"
-
-	pkgerrors "github.com/pkg/errors"
 )
 
 // EncryptCBC CBC模式加密
@@ -16,7 +15,6 @@ func EncryptCBC(rawData, key []byte) (res string, err error) {
 	// block
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return
 	}
 
@@ -30,7 +28,6 @@ func EncryptCBC(rawData, key []byte) (res string, err error) {
 	cipherText := make([]byte, blockSize+len(rawData))
 	iv := cipherText[:blockSize]
 	if _, err = io.ReadFull(rand.Reader, iv); err != nil {
-		err = pkgerrors.WithStack(err)
 		return
 	}
 
@@ -47,21 +44,19 @@ func DecryptCBC(rawData string, key []byte) (res string, err error) {
 	// base64
 	encryptData, err := base64.URLEncoding.DecodeString(rawData)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
-		return "", err
+		return res, err
 	}
 
 	// block
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return
 	}
 
 	blockSize := block.BlockSize()
 
 	if len(encryptData) < blockSize {
-		err = pkgerrors.New("cipherText too short")
+		err = stderrors.New("cipherText too short")
 		return
 	}
 	iv := encryptData[:blockSize]
@@ -69,7 +64,7 @@ func DecryptCBC(rawData string, key []byte) (res string, err error) {
 
 	// CBC mode always works in whole blocks.
 	if len(encryptData)%blockSize != 0 {
-		err = pkgerrors.New("cipherText is not a multiple of the block size")
+		err = stderrors.New("cipherText is not a multiple of the block size")
 		return
 	}
 

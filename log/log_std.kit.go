@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -29,7 +28,6 @@ type Std struct {
 func NewStdLogger(conf *ConfigStd) (*Std, error) {
 	handler := &Std{}
 	if err := handler.InitLogger(conf); err != nil {
-		err = errors.WithStack(err)
 		return handler, err
 	}
 	return handler, nil
@@ -128,7 +126,6 @@ func (s *Std) InitLogger(conf *ConfigStd, opts ...Option) (err error) {
 		zap.AddStacktrace(stacktraceLevel),
 	)
 	if err != nil {
-		err = errors.WithStack(err)
 		return
 	}
 	return err

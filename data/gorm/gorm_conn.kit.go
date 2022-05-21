@@ -1,7 +1,6 @@
 package gormutil
 
 import (
-	pkgerrors "github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -21,14 +20,12 @@ func NewDB(dialect gorm.Dialector, connOption *ConnOption) (db *gorm.DB, err err
 	// 数据库链接
 	db, err = gorm.Open(dialect, gormConfig)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return
 	}
 
 	// 连接池
 	connPool, err := db.DB()
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return
 	}
 	//  连接的最大数量

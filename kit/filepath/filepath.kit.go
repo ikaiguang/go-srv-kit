@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 
 	fileutil "github.com/ikaiguang/go-srv-kit/kit/file"
-	pkgerrors "github.com/pkg/errors"
 )
 
 // WaldDir 遍历所有的目录与文件
@@ -24,7 +23,6 @@ func WaldDir(rootPath string) (filePaths []string, fileInfos []os.FileInfo, err 
 
 	err = filepath.Walk(rootPath, dirFn)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return filePaths, fileInfos, err
 	}
 	return filePaths, fileInfos, err
@@ -34,14 +32,12 @@ func WaldDir(rootPath string) (filePaths []string, fileInfos []os.FileInfo, err 
 func ReadDir(rootPath string) (fileInfos []os.FileInfo, err error) {
 	d, err := os.Open(rootPath)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return fileInfos, err
 	}
 	defer func() { _ = d.Close() }()
 
 	fileInfos, err = d.Readdir(-1)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return fileInfos, err
 	}
 	return fileInfos, err
@@ -52,7 +48,6 @@ func CreateDir(destDir string) (err error) {
 	// 创建目录
 	err = os.MkdirAll(destDir, fileutil.DefaultFileMode)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return err
 	}
 	return err
@@ -65,20 +60,17 @@ func RenewDir(destDir string) (err error) {
 		// 删除已存在
 		err = os.RemoveAll(destDir)
 		if err != nil {
-			err = pkgerrors.WithStack(err)
 			return err
 		}
 	} else if os.IsNotExist(err) {
 		err = nil // 文件不存在
 	} else {
-		err = pkgerrors.WithStack(err)
 		return err
 	}
 
 	// 创建目录
 	err = os.MkdirAll(destDir, fileutil.DefaultFileMode)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return err
 	}
 	return err

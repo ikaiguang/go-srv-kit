@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	pkgerrors "github.com/pkg/errors"
 )
 
 const (
@@ -29,7 +27,6 @@ func NewPostRequest(httpURL string, body io.Reader) (httpReq *http.Request, err 
 	// http
 	httpReq, err = http.NewRequest(http.MethodPost, httpURL, body)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return
 	}
 	return httpReq, err
@@ -40,7 +37,6 @@ func NewGetRequest(httpURL string, body io.Reader) (httpReq *http.Request, err e
 	// http
 	httpReq, err = http.NewRequest(http.MethodGet, httpURL, body)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return
 	}
 	return httpReq, err
@@ -51,7 +47,6 @@ func NewRequest(httpMethod, httpURL string, body io.Reader) (httpReq *http.Reque
 	// http
 	httpReq, err = http.NewRequest(httpMethod, httpURL, body)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return httpReq, err
 	}
 	return httpReq, err
@@ -84,7 +79,6 @@ func Do(httpReq *http.Request, opts ...Option) (httpCode int, bodyBytes []byte, 
 
 	httpResp, err := httpClient.Do(httpReq)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return httpCode, bodyBytes, err
 	}
 	defer func() { _ = httpResp.Body.Close() }()
@@ -96,7 +90,6 @@ func Do(httpReq *http.Request, opts ...Option) (httpCode int, bodyBytes []byte, 
 func Default(httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
 	httpResp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return httpCode, bodyBytes, err
 	}
 	defer func() { _ = httpResp.Body.Close() }()
@@ -111,7 +104,6 @@ func DoWithClient(httpClient *http.Client, httpReq *http.Request) (httpCode int,
 
 	httpResp, err := httpClient.Do(httpReq)
 	if err != nil {
-		err = pkgerrors.WithStack(err)
 		return httpCode, bodyBytes, err
 	}
 	defer func() { _ = httpResp.Body.Close() }()
@@ -129,8 +121,6 @@ func response(httpResp *http.Response) (httpCode int, bodyBytes []byte, err erro
 	if err != nil {
 		if err == io.EOF {
 			err = nil
-		} else {
-			err = pkgerrors.WithStack(err)
 		}
 		return httpCode, bodyBytes, err
 	}
