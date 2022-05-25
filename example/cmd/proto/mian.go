@@ -22,7 +22,7 @@ const (
 	LinuxShellBin   string = "/bin/sh -c" // mac & linux
 	WindowsShellBin string = "cmd.exe /C" // windows
 
-	ExecScriptFilename = "proto.sh"
+	ExecScriptFilename = "proto_script.sh"
 
 	_uninitialized = "uninitialized"
 )
