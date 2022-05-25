@@ -5,9 +5,8 @@ import (
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"google.golang.org/grpc/codes"
-
 	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
+	"google.golang.org/grpc/codes"
 )
 
 const (

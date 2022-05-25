@@ -1,10 +1,12 @@
+// Package apputil
 // from github.com/go-kratos/kratos/v2/encoding/json
 package apputil
 
 import (
-	"encoding/json"
+	stdjson "encoding/json"
 	"reflect"
 
+	"github.com/go-kratos/kratos/v2/encoding/json"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -22,6 +24,16 @@ var (
 	}
 )
 
+// SetJSONMarshalOptions 设置json编码选项
+func SetJSONMarshalOptions(opt *protojson.MarshalOptions) {
+	json.MarshalOptions = *opt
+}
+
+// SetJSONUnmarshalOptions 设置json编码选项
+func SetJSONUnmarshalOptions(opt *protojson.UnmarshalOptions) {
+	json.UnmarshalOptions = *opt
+}
+
 // JSON 编码json
 func JSON(v interface{}) ([]byte, error) {
 	return MarshalJSON(v)
@@ -30,19 +42,19 @@ func JSON(v interface{}) ([]byte, error) {
 // MarshalJSON 编码json
 func MarshalJSON(v interface{}) ([]byte, error) {
 	switch m := v.(type) {
-	case json.Marshaler:
+	case stdjson.Marshaler:
 		return m.MarshalJSON()
 	case proto.Message:
 		return MarshalOptions.Marshal(m)
 	default:
-		return json.Marshal(m)
+		return stdjson.Marshal(m)
 	}
 }
 
 // UnmarshalJSON 解码json
 func UnmarshalJSON(data []byte, v interface{}) error {
 	switch m := v.(type) {
-	case json.Unmarshaler:
+	case stdjson.Unmarshaler:
 		return m.UnmarshalJSON(data)
 	case proto.Message:
 		return UnmarshalOptions.Unmarshal(data, m)
@@ -57,6 +69,6 @@ func UnmarshalJSON(data []byte, v interface{}) error {
 		if m, ok := reflect.Indirect(rv).Interface().(proto.Message); ok {
 			return UnmarshalOptions.Unmarshal(data, m)
 		}
-		return json.Unmarshal(data, m)
+		return stdjson.Unmarshal(data, m)
 	}
 }
