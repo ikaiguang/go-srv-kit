@@ -17,7 +17,7 @@ func Printf(format string, a ...interface{}) {
 
 // Printw .
 func Printw(keyvals ...interface{}) {
-	handler.Fatalw(keyvals...)
+	handler.Debugw(keyvals...)
 }
 
 // Debug .
