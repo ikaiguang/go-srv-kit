@@ -17,7 +17,7 @@ func (l LoggerKey) Value() string {
 
 const (
 	// DefaultCallerSkip 日志 runtime caller skip
-	DefaultCallerSkip = 2
+	DefaultCallerSkip = 3
 
 	// DefaultCallerValuer log.With 之 log.Caller
 	DefaultCallerValuer = 4
@@ -49,19 +49,6 @@ func NewMultiLogger(logs ...log.Logger) log.Logger {
 	return &MultiLogger{
 		logs: logs,
 	}
-}
-
-// MultiLogger 多日志
-type MultiLogger struct {
-	logs []log.Logger
-}
-
-// Log ...
-func (s *MultiLogger) Log(level log.Level, keyvals ...interface{}) error {
-	for i := range s.logs {
-		s.logs[i].Log(level, keyvals...)
-	}
-	return nil
 }
 
 // DefaultLoggerKey 日志消息key
@@ -123,4 +110,19 @@ func SetZapLoggerKeys(encoderConfig *zapcore.EncoderConfig, loggerKeys map[Logge
 	if data, ok := loggerKeys[LoggerKeyStacktrace]; ok {
 		encoderConfig.StacktraceKey = data
 	}
+}
+
+// MultiLogger 多日志
+type MultiLogger struct {
+	logs []log.Logger
+}
+
+// Log ...
+func (s *MultiLogger) Log(level log.Level, keyvals ...interface{}) error {
+	for i := range s.logs {
+		if logErr := s.logs[i].Log(level, keyvals...); logErr != nil {
+			return logErr
+		}
+	}
+	return nil
 }

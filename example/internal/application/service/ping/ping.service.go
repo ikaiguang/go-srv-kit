@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
+	debugutil "github.com/ikaiguang/go-srv-kit/debug"
 	loghelper "github.com/ikaiguang/go-srv-kit/log/helper"
 
 	pingerror "github.com/ikaiguang/go-srv-kit/api/ping/error"
@@ -50,10 +51,12 @@ func (s *ping) Ping(ctx context.Context, in *pingv1.PingReq) (out *pingv1.PingRe
 }
 
 // testLogger .
+// curl http://127.0.0.1:8081/api/v1/ping/logger
 func (s *ping) testLogger(ctx context.Context, in *pingv1.PingReq) {
-	s.log.WithContext(ctx).Infof("testing Logger : Ping Received: %s", in.GetMessage())
-	s.log.Infow("test logger : Ping Received: ", in.GetMessage())
-	loghelper.ContextInfo(ctx, "test logger : Ping Received: ", in.GetMessage())
-	loghelper.ContextInfow(ctx, "test logger : Ping Received: ", in.GetMessage())
-	loghelper.Info("test logger : Ping Received: ", in.GetMessage())
+	s.log.WithContext(ctx).Infof("==> s.log.WithContext(ctx).Infof : Ping Received: %s", in.GetMessage())
+	s.log.Infow("==> s.log.Infow : Ping Received: ", in.GetMessage())
+	loghelper.ContextInfo(ctx, "==> loghelper.ContextInfo : Ping Received: ", in.GetMessage())
+	loghelper.ContextInfow(ctx, "==> loghelper.ContextInfow : Ping Received: ", in.GetMessage())
+	loghelper.Info("==> loghelper.Info : Ping Received: ", in.GetMessage())
+	debugutil.Printw("==> debugutil.Print : Ping Received: ", in.GetMessage())
 }

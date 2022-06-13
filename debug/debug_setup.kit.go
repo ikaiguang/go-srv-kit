@@ -16,7 +16,7 @@ func Setup() (syncFn func() error, err error) {
 	// std logger
 	stdLoggerConfig := &logutil.ConfigStd{
 		Level:      log.LevelDebug,
-		CallerSkip: logutil.DefaultCallerSkip + 1,
+		CallerSkip: logutil.DefaultCallerSkip,
 	}
 	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	if err != nil {
