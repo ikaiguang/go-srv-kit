@@ -5,9 +5,9 @@
 *.dll
 *.so
 *.dylib
-.idea
-.vscode/
 *.swp
+.vscode
+.idea
 
 # Test binary, built with `go test -c`
 *.test
@@ -15,21 +15,13 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
-
-### Go Patch ###
-###/vendor/
-/Godeps/
-# Dependency directories (remove the comment below to include it)
-vendor/
-
 ### macOS ###
 # General
 Thumbs.db
 .DS_Store
 .AppleDouble
 .LSOverride
+__MACOSX
 
 # Icon must end with two \r
 Icon
@@ -69,8 +61,6 @@ Sessionx.vim
 # Temporary
 .netrwhist
 *~
-# Auto-generated tag files
-tags
 # Persistent undo
 [._]*.un~
 
@@ -82,11 +72,41 @@ tags
 *.cert
 *.key
 
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+### Go Patch ###
+###/vendor/
+/Godeps/
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
 # PROJECT
 /bin
 !runtime/README.md
 /runtime
 /cache
+.cache
 /openapi.yaml
-/test
-*.log
+mytest
+_testdata
