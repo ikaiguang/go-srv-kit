@@ -5,14 +5,6 @@
 - [kratos-github](https://github.com/go-kratos/kratos)
 - [kratos-docs](https://go-kratos.dev/docs/)
 
-## 执行生成脚本 与 编译proto
-
-```shell
-# 执行生成脚本 与 编译proto
-# go run ./example/cmd/main/... -path=./api/ping
-go run ./cmd/proto/... -path=./api/conf
-```
-
 ## 复制为新项目
 
 1. 编辑文件`./api/config/v1/config.v1.proto`；修改`package`和`option`定义路径；
@@ -21,6 +13,19 @@ go run ./cmd/proto/... -path=./api/conf
 4. 编辑文件`./README.md`；修改标题等内容
 5. 编辑配置文件：app、log、server、data、...
 6. 格式化项目代码；
+
+## 执行生成脚本 与 编译proto
+
+```shell
+
+# 执行生成脚本 与 编译proto
+# make proto_user
+# make proto_xxx
+# kratos proto client api/ping/v1/ping.v1.proto
+go run ./cmd/proto/... -path=./api/user
+go run ./cmd/proto/... -path=./api/xxx
+    
+```
 
 ## 运行
 
@@ -35,19 +40,6 @@ go run ./cmd/main/... -conf=./configs
 # make ping
 curl http://127.0.0.1:8081/api/v1/ping/hello
 curl http://127.0.0.1:8081/api/v1/ping/error
-```
-
-## 执行生成脚本 与 编译proto
-
-```shell
-
-# 执行生成脚本 与 编译proto
-# make proto_user
-# make proto_xxx
-# kratos proto client api/ping/v1/ping.v1.proto
-go run ./cmd/proto/... -path=./api/user
-go run ./cmd/proto/... -path=./api/xxx
-    
 ```
 
 ## 创建数据库
