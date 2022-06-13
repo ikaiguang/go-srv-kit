@@ -123,7 +123,7 @@ func (s *modules) loadingLoggerWithCallerSkip(skip int) (logger log.Logger, clos
 
 	// 配置
 	if !s.EnableLoggingConsole() && !s.EnableLoggingFile() {
-		fakeLogger := log.MultiLogger(stdLogger)
+		fakeLogger := logutil.NewMultiLogger(stdLogger)
 		return fakeLogger, closeFnSlice, err
 	}
 
@@ -179,5 +179,5 @@ func (s *modules) loadingLoggerWithCallerSkip(skip int) (logger log.Logger, clos
 	if len(loggers) == 0 {
 		return logger, closeFnSlice, err
 	}
-	return log.MultiLogger(loggers...), closeFnSlice, err
+	return logutil.NewMultiLogger(loggers...), closeFnSlice, err
 }

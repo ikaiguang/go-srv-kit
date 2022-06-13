@@ -17,20 +17,9 @@ func (l LoggerKey) Value() string {
 
 const (
 	// DefaultCallerSkip 日志 runtime caller skip
-	// 使用 单个Logger 		ConfigStd.CallerSkip = DefaultCallerSkip
-	// 使用 log.MultiLogger	ConfigStd.CallerSkip = DefaultCallerSkip + 1
-	//
-	// 使用 logutil.Setup 单个Logger 			ConfigStd.CallerSkip = DefaultCallerSkip + 1
-	// 使用 logutil.Setup + log.With 		ConfigStd.CallerSkip = DefaultCallerSkip + 2
-	// 使用 logutil.Setup log.MultiLogger 	ConfigStd.CallerSkip = DefaultCallerSkip + 2
-	// log.With 会把 单个Logger 转换为 MultiLogger
 	DefaultCallerSkip = 2
 
 	// DefaultCallerValuer log.With 之 log.Caller
-	//
-	// 使用 单个Logger 		CallerValuer = DefaultCallerValuer
-	// 使用 log.MultiLogger 	CallerValuer = DefaultCallerValuer
-	// 使用 logutil.Setup 	CallerValuer = DefaultCallerValuer + 2
 	DefaultCallerValuer = 4
 
 	// DefaultTimeFormat 日志时间格式
@@ -57,7 +46,22 @@ var (
 
 // NewMultiLogger wraps multi logger.
 func NewMultiLogger(logs ...log.Logger) log.Logger {
-	return log.MultiLogger(logs...)
+	return &MultiLogger{
+		logs: logs,
+	}
+}
+
+// MultiLogger 多日志
+type MultiLogger struct {
+	logs []log.Logger
+}
+
+// Log ...
+func (s *MultiLogger) Log(level log.Level, keyvals ...interface{}) error {
+	for i := range s.logs {
+		s.logs[i].Log(level, keyvals...)
+	}
+	return nil
 }
 
 // DefaultLoggerKey 日志消息key

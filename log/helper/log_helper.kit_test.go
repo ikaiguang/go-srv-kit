@@ -75,7 +75,7 @@ func TestSetup_Xxx(t *testing.T) {
 			}
 			closeFnSlice = append(closeFnSlice, syncFn2)
 
-			return log.MultiLogger(logger1, logger2), closeFnSlice, nil
+			return logutil.NewMultiLogger(logger1, logger2), closeFnSlice, nil
 		}
 	)
 	for i, tt := range tests {
@@ -165,7 +165,7 @@ func TestSetup_MultiLogger(t *testing.T) {
 	require.Nil(t, err)
 	defer func() { _ = stdLogger2.Sync() }()
 
-	multiLogger := log.MultiLogger(stdLogger, stdLogger2)
+	multiLogger := logutil.NewMultiLogger(stdLogger, stdLogger2)
 	multiLogger = log.With(multiLogger, "caller", log.Caller(logutil.DefaultCallerValuer+2))
 
 	Setup(multiLogger)
