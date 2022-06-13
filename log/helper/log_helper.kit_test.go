@@ -9,7 +9,7 @@ import (
 	"github.com/ikaiguang/go-srv-kit/log"
 )
 
-// go test -v ./log/helper/ -count=1 -test.run=TestSetup_Xxx
+// go test -v -count=1 ./log/helper/ -test.run=TestSetup_Xxx
 func TestSetup_Xxx(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -20,22 +20,22 @@ func TestSetup_Xxx(t *testing.T) {
 	}{
 		{
 			name:       "#Setup_OneLogger",
-			addSkip:    1,
-			callerSkip: 2,
+			addSkip:    0,
+			callerSkip: 0,
 			hasWith:    false,
 			isMulti:    false,
 		},
 		{
 			name:       "#Setup_OneLogger_With",
-			addSkip:    2,
-			callerSkip: 2,
+			addSkip:    1,
+			callerSkip: 1,
 			hasWith:    true,
 			isMulti:    false,
 		},
 		{
 			name:       "#Setup_MultiLogger",
-			addSkip:    2,
-			callerSkip: 2,
+			addSkip:    1,
+			callerSkip: 1,
 			hasWith:    false,
 			isMulti:    true,
 		},

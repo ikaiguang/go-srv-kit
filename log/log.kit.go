@@ -18,21 +18,8 @@ func (l LoggerKey) Value() string {
 const (
 	// DefaultCallerSkip 日志 runtime caller skip
 	DefaultCallerSkip = 3
-
 	// DefaultCallerValuer log.With 之 log.Caller
 	DefaultCallerValuer = 4
-
-	// DefaultTimeFormat 日志时间格式
-	DefaultTimeFormat = timeutil.YmdHmsMLogger
-
-	// LoggerKeyMessage zapcore.EncoderConfig keys
-	LoggerKeyMessage    LoggerKey = "msg"
-	LoggerKeyLevel      LoggerKey = "level"
-	LoggerKeyTime       LoggerKey = "time"
-	LoggerKeyName       LoggerKey = "name"
-	LoggerKeyCaller     LoggerKey = "caller"
-	LoggerKeyFunction   LoggerKey = "func"
-	LoggerKeyStacktrace LoggerKey = "stack"
 )
 
 var (
@@ -50,6 +37,20 @@ func NewMultiLogger(logs ...log.Logger) log.Logger {
 		logs: logs,
 	}
 }
+
+const (
+	// LoggerKeyMessage zapcore.EncoderConfig keys
+	LoggerKeyMessage    LoggerKey = "msg"
+	LoggerKeyLevel      LoggerKey = "level"
+	LoggerKeyTime       LoggerKey = "time"
+	LoggerKeyName       LoggerKey = "name"
+	LoggerKeyCaller     LoggerKey = "caller"
+	LoggerKeyFunction   LoggerKey = "func"
+	LoggerKeyStacktrace LoggerKey = "stack"
+
+	// DefaultTimeFormat 日志时间格式
+	DefaultTimeFormat = timeutil.YmdHmsMLogger
+)
 
 // DefaultLoggerKey 日志消息key
 func DefaultLoggerKey() map[LoggerKey]string {
