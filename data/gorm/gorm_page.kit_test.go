@@ -199,7 +199,7 @@ func TestPaging(t *testing.T) {
 			t.Log("==> pageResp.Page", pageResp.Page)
 			t.Log("==> pageResp.PageSize", pageResp.PageSize)
 
-			var idList = make([]int64, len(dataModels))
+			var idList = make([]uint64, len(dataModels))
 			for i := range dataModels {
 				idList[i] = dataModels[i].Id
 			}

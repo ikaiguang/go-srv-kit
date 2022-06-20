@@ -15,10 +15,16 @@ type BatchInsertValueArgs struct {
 	StepStart int
 	// StepEnd 结束步长：索引
 	StepEnd int
-	// InsertColumns 插入的列；例："id"，"name"，"age"
-	InsertColumnStr string
+
 	// InsertPlaceholder 列的占位符；例："?, ?, ?"
 	InsertPlaceholder string
+	// InsertSQL 入库的SQL；INSERT INTO ... VALUES (...) AS alias
+	InsertSQL string
+	// ConflictActionSQL 存在冲突，执行冲突动作
+	//insertSQL += "ON DUPLICATE KEY UPDATE " + strings.Join(s.UpdateColumnFromMtdReportData(), ",")
+	//insertSQL += "ON CONFLICT (id) DO UPDATE SET column_2= CONCAT(test_table.column_2, excluded.column_2)"
+	ConflictActionSQL   string
+	ConflictPrepareData []interface{}
 }
 
 // BatchInsertRepo 批量插入
@@ -40,7 +46,7 @@ type BatchInsertRepo interface {
 }
 
 // BatchInsert 批量插入
-func BatchInsert(db *gorm.DB, repo BatchInsertRepo) error {
+func BatchInsert(db *gorm.DB, repo BatchInsertRepo, opts ...BatchInsertOption) error {
 	if repo.Len() == 0 {
 		if db.Logger != nil {
 			db.Logger.Info(context.Background(), "insert data is empty")
@@ -48,13 +54,48 @@ func BatchInsert(db *gorm.DB, repo BatchInsertRepo) error {
 		return nil
 	}
 
+	// 选项
+	opt := &batchInsertOptions{}
+	for i := range opts {
+		opts[i](opt)
+	}
+
 	// insert columns
 	insertColumnList, insertPlaceholder := repo.InsertColumns()
 	insertColumnStr := strings.Join(insertColumnList, ", ")
-	columnLen := len(insertColumnList)
+
+	// SQL
+	insertSQL := "INSERT"
+	if opt.isInsertIgnore {
+		insertSQL += " IGNORE"
+	}
+	insertSQL = fmt.Sprintf(insertSQL+" INTO %s(%s) VALUES ", repo.TableName(), insertColumnStr)
+
+	// ON CONFLICT；
+	// MySQL : ON DUPLICATE KEY UPDATE；
+	//insertSQL += "ON DUPLICATE KEY UPDATE " + strings.Join(s.UpdateColumnFromMtdReportData(), ",")
+	// Postgres : ON CONFLICT : PostgresSQL V9.5 以上可用。
+	//insertSQL += "ON CONFLICT (id) DO UPDATE SET column_2= CONCAT(test_table.column_2, excluded.column_2)"
+	conflictActionSQL := ""
+	if opt.withConflictAction {
+		conflictActionSQL += " " + opt.onConflictValueAlias + " "
+		conflictActionSQL += opt.onConflictTarget + " "
+		conflictActionSQL += opt.onConflictAction + " "
+	}
+
+	// insert args
+	args := &BatchInsertValueArgs{
+		StepStart:           0,
+		StepEnd:             0,
+		InsertPlaceholder:   insertPlaceholder,
+		InsertSQL:           insertSQL,
+		ConflictActionSQL:   conflictActionSQL,
+		ConflictPrepareData: opt.onConflictPrepareData,
+	}
 
 	// sql : 1390 Prepared statement contains too many placeholders[65535(2^16-1)]
 	// insert channelLen records at a time
+	columnLen := len(insertColumnList)
 	channelLen := 65535 / columnLen
 	channelCount := int(math.Ceil(float64(repo.Len()) / float64(channelLen)))
 
@@ -67,12 +108,8 @@ func BatchInsert(db *gorm.DB, repo BatchInsertRepo) error {
 		}
 
 		// insert
-		args := &BatchInsertValueArgs{
-			StepStart:         start,
-			StepEnd:           end,
-			InsertColumnStr:   insertColumnStr,
-			InsertPlaceholder: insertPlaceholder,
-		}
+		args.StepStart = start
+		args.StepEnd = end
 		if err := insertIntoTable(db, repo, args); err != nil {
 			return err
 		}
@@ -83,26 +120,17 @@ func BatchInsert(db *gorm.DB, repo BatchInsertRepo) error {
 // insertIntoTable into table
 func insertIntoTable(dbConn *gorm.DB, repo BatchInsertRepo, args *BatchInsertValueArgs) (err error) {
 	// SQL
-	insertSQL := fmt.Sprintf("INSERT INTO %s(%s) VALUES ", repo.TableName(), args.InsertColumnStr)
-
-	// prepare data
-	//var (
-	//	prepareData []interface{}
-	//	placeholderSlice []string
-	//)
-	//for _, dataModel := range dataModels {
-	//	// placeholder
-	//	placeholderSlice = append(placeholderSlice, "("+placeholder+")")
-	//
-	//	// prepare data
-	//	prepareData = append(prepareData, m.insertValues(dataModel)...)
-	//}
+	insertSQL := args.InsertSQL
 
 	// prepare data
 	prepareData, placeholderSlice := repo.InsertValues(args)
+	if len(args.ConflictPrepareData) > 0 {
+		prepareData = append(prepareData, args.ConflictPrepareData...)
+	}
 
 	// SQL
 	insertSQL += strings.Join(placeholderSlice, ", ")
+	insertSQL += args.ConflictActionSQL
 
 	// insert
 	if err = dbConn.Exec(insertSQL, prepareData...).Error; err != nil {

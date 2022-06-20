@@ -110,3 +110,4 @@ dist
 /openapi.yaml
 mytest
 _testdata
+_output
