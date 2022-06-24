@@ -11,6 +11,7 @@ import (
 // is compatible with the kratos package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
+// STATUS_UNKNOWN 常规
 func IsStatusUnknown(err error) bool {
 	if err == nil {
 		return false
@@ -19,6 +20,7 @@ func IsStatusUnknown(err error) bool {
 	return e.Reason == ERROR_STATUS_UNKNOWN.String() && e.Code == 404
 }
 
+// STATUS_UNKNOWN 常规
 func ErrorStatusUnknown(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ERROR_STATUS_UNKNOWN.String(), fmt.Sprintf(format, args...))
 }
@@ -35,6 +37,7 @@ func ErrorStatusRequestFailure(format string, args ...interface{}) *errors.Error
 	return errors.New(503, ERROR_STATUS_REQUEST_FAILURE.String(), fmt.Sprintf(format, args...))
 }
 
+// STATUS_CONTINUE Continue
 func IsStatusContinue(err error) bool {
 	if err == nil {
 		return false
@@ -43,6 +46,7 @@ func IsStatusContinue(err error) bool {
 	return e.Reason == ERROR_STATUS_CONTINUE.String() && e.Code == 100
 }
 
+// STATUS_CONTINUE Continue
 func ErrorStatusContinue(format string, args ...interface{}) *errors.Error {
 	return errors.New(100, ERROR_STATUS_CONTINUE.String(), fmt.Sprintf(format, args...))
 }
@@ -59,6 +63,7 @@ func ErrorStatusProcessing(format string, args ...interface{}) *errors.Error {
 	return errors.New(102, ERROR_STATUS_PROCESSING.String(), fmt.Sprintf(format, args...))
 }
 
+// STATUS_OK OK
 func IsStatusOk(err error) bool {
 	if err == nil {
 		return false
@@ -67,6 +72,7 @@ func IsStatusOk(err error) bool {
 	return e.Reason == ERROR_STATUS_OK.String() && e.Code == 200
 }
 
+// STATUS_OK OK
 func ErrorStatusOk(format string, args ...interface{}) *errors.Error {
 	return errors.New(200, ERROR_STATUS_OK.String(), fmt.Sprintf(format, args...))
 }
@@ -107,6 +113,7 @@ func ErrorStatusNoContent(format string, args ...interface{}) *errors.Error {
 	return errors.New(204, ERROR_STATUS_NO_CONTENT.String(), fmt.Sprintf(format, args...))
 }
 
+// MULTIPLE_CHOICES MultipleChoices
 func IsStatusMultipleChoices(err error) bool {
 	if err == nil {
 		return false
@@ -115,10 +122,12 @@ func IsStatusMultipleChoices(err error) bool {
 	return e.Reason == ERROR_STATUS_MULTIPLE_CHOICES.String() && e.Code == 300
 }
 
+// MULTIPLE_CHOICES MultipleChoices
 func ErrorStatusMultipleChoices(format string, args ...interface{}) *errors.Error {
 	return errors.New(300, ERROR_STATUS_MULTIPLE_CHOICES.String(), fmt.Sprintf(format, args...))
 }
 
+// STATUS_BAD_REQUEST Bad Request
 func IsStatusBadRequest(err error) bool {
 	if err == nil {
 		return false
@@ -127,6 +136,7 @@ func IsStatusBadRequest(err error) bool {
 	return e.Reason == ERROR_STATUS_BAD_REQUEST.String() && e.Code == 400
 }
 
+// STATUS_BAD_REQUEST Bad Request
 func ErrorStatusBadRequest(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ERROR_STATUS_BAD_REQUEST.String(), fmt.Sprintf(format, args...))
 }
@@ -203,6 +213,7 @@ func ErrorStatusTooManyRequests(format string, args ...interface{}) *errors.Erro
 	return errors.New(429, ERROR_STATUS_TOO_MANY_REQUESTS.String(), fmt.Sprintf(format, args...))
 }
 
+// STATUS_INTERNAL_SERVER Internal Server Error
 func IsStatusInternalServer(err error) bool {
 	if err == nil {
 		return false
@@ -211,6 +222,7 @@ func IsStatusInternalServer(err error) bool {
 	return e.Reason == ERROR_STATUS_INTERNAL_SERVER.String() && e.Code == 500
 }
 
+// STATUS_INTERNAL_SERVER Internal Server Error
 func ErrorStatusInternalServer(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ERROR_STATUS_INTERNAL_SERVER.String(), fmt.Sprintf(format, args...))
 }

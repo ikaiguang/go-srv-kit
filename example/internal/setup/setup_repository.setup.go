@@ -107,6 +107,8 @@ type Modules interface {
 
 	// MysqlGormDB mysql gorm 数据库
 	MysqlGormDB() (*gorm.DB, error)
+	// PostgresGormDB postgres gorm 数据库
+	PostgresGormDB() (*gorm.DB, error)
 
 	// RedisClient redis 客户端
 	RedisClient() (*redis.Client, error)

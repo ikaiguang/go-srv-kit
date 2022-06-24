@@ -11,20 +11,12 @@ var (
 )
 
 // Init 启动与配置与设置存储Packages
-func Init() (err error) {
+func Init(opts ...Option) (err error) {
 	initModulesMutex.Do(func() {
-		modulesInstance, err = Setup()
+		modulesInstance, err = Setup(opts...)
 	})
 	if err != nil {
 		initModulesMutex = sync.Once{}
-		return err
-	}
-	if modulesInstance != nil {
-		return err
-	}
-
-	modulesInstance, err = Setup()
-	if err != nil {
 		return err
 	}
 	return err

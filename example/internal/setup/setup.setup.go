@@ -6,12 +6,12 @@ import (
 )
 
 // Setup 启动与配置
-func Setup() (modulesHandler Modules, err error) {
+func Setup(opts ...Option) (modulesHandler Modules, err error) {
 	// parses the command-line flags
 	flag.Parse()
 
 	// 初始化配置手柄
-	configHandler, err := newConfigHandler()
+	configHandler, err := newConfigHandler(opts...)
 	if err != nil {
 		return modulesHandler, err
 	}

@@ -29,16 +29,25 @@ func init() {
 }
 
 // newConfigHandler 初始化配置手柄
-func newConfigHandler() (Config, error) {
+func newConfigHandler(setupOpts ...Option) (Config, error) {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
+
+	// 启动选项
+	setupOpt := &options{}
+	for i := range setupOpts {
+		setupOpts[i](setupOpt)
+	}
+
 	stdlog.Println("|==================== 加载配置文件 开始 ====================|")
 	defer stdlog.Println()
 	defer stdlog.Println("|==================== 加载配置文件 结束 ====================|")
 	// 配置路径
 	confPath := _configFilepath
-	if confPath == "" {
+	if setupOpt.configPath != "" {
+		confPath = setupOpt.configPath
+	} else if confPath == "" {
 		confPath = _defaultConfigFilepath
 	}
 	log.Infof("配置文件路径: %s\n", confPath)

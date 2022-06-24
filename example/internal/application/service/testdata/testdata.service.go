@@ -49,7 +49,7 @@ func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.Test
 	return &v1.TestResp{}, err
 }
 
-// WsMessageChan ws
+// WsMessage ws
 type WsMessage struct {
 	Type    int
 	Content []byte

@@ -14,17 +14,12 @@
 5. 编辑配置文件：app、log、server、data、...
 6. 格式化项目代码；
 
-## 执行生成脚本 与 编译proto
+## 创建数据库
+
+编辑文件`./configs/config_data.yaml`；配置数据库与创建数据库
 
 ```shell
-
-# 执行生成脚本 与 编译proto
-# make proto_user
-# make proto_xxx
-# kratos proto client api/ping/v1/ping.v1.proto
-go run ./cmd/proto/... -path=./api/user
-go run ./cmd/proto/... -path=./api/xxx
-    
+CREATE DATABASE srv_example DEFAULT CHARSET utf8mb4;
 ```
 
 ## 运行
@@ -42,9 +37,15 @@ curl http://127.0.0.1:8081/api/v1/ping/hello
 curl http://127.0.0.1:8081/api/v1/ping/error
 ```
 
-## 创建数据库
+## 执行生成脚本 与 编译proto
 
 ```shell
-CREATE DATABASE srv_example DEFAULT CHARSET utf8mb4;
-```
 
+# 执行生成脚本 与 编译proto
+# make proto_user
+# make proto_xxx
+# kratos proto client api/ping/v1/ping.v1.proto
+go run ./cmd/proto/... -path=./api/user
+go run ./cmd/proto/... -path=./api/xxx
+    
+```
