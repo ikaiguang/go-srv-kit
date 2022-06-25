@@ -1,13 +1,13 @@
 package debugutil
 
 // Print .
-func Print(msg interface{}) {
-	handler.Debug(msg)
+func Print(a ...interface{}) {
+	handler.Debug(a...)
 }
 
 // Println .
-func Println(msg interface{}) {
-	handler.Debug(msg)
+func Println(a ...interface{}) {
+	handler.Debug(a...)
 }
 
 // Printf .
@@ -21,8 +21,8 @@ func Printw(keyvals ...interface{}) {
 }
 
 // Debug .
-func Debug(msg interface{}) {
-	handler.Debug(msg)
+func Debug(a ...interface{}) {
+	handler.Debug(a...)
 }
 
 // Debugf .
@@ -36,8 +36,8 @@ func Debugw(keyvals ...interface{}) {
 }
 
 // Info .
-func Info(msg interface{}) {
-	handler.Info(msg)
+func Info(a ...interface{}) {
+	handler.Info(a...)
 }
 
 // Infof .
@@ -51,8 +51,8 @@ func Infow(keyvals ...interface{}) {
 }
 
 // Warn .
-func Warn(msg interface{}) {
-	handler.Warn(msg)
+func Warn(a ...interface{}) {
+	handler.Warn(a...)
 }
 
 // Warnf .
@@ -66,8 +66,8 @@ func Warnw(keyvals ...interface{}) {
 }
 
 // Error .
-func Error(msg interface{}) {
-	handler.Error(msg)
+func Error(a ...interface{}) {
+	handler.Error(a...)
 }
 
 // Errorf .
@@ -81,8 +81,8 @@ func Errorw(keyvals ...interface{}) {
 }
 
 // Fatal .
-func Fatal(msg interface{}) {
-	handler.Fatal(msg)
+func Fatal(a ...interface{}) {
+	handler.Fatal(a...)
 }
 
 // Fatalf .
