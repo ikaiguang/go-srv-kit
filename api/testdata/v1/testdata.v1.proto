@@ -34,7 +34,7 @@ service SrvTestdata {
 
   // Get Get
   rpc Get (TestReq) returns (TestResp) {
-    option (google.api.http) = {
+    option (google.api.httpgoogle.api.http) = {
       get: "/api/v1/testdata/get"
       // body:"*" // WARN: GET xxx body should not be declared.
     };

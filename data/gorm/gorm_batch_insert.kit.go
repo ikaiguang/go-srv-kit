@@ -47,9 +47,14 @@ type BatchInsertRepo interface {
 
 // BatchInsert 批量插入
 func BatchInsert(db *gorm.DB, repo BatchInsertRepo, opts ...BatchInsertOption) error {
+	return BatchInsertWithContext(context.Background(), db, repo, opts...)
+}
+
+// BatchInsertWithContext 批量插入
+func BatchInsertWithContext(ctx context.Context, db *gorm.DB, repo BatchInsertRepo, opts ...BatchInsertOption) error {
 	if repo.Len() == 0 {
 		if db.Logger != nil {
-			db.Logger.Info(context.Background(), "insert data is empty")
+			db.Logger.Info(ctx, "insert data is empty")
 		}
 		return nil
 	}
@@ -110,7 +115,7 @@ func BatchInsert(db *gorm.DB, repo BatchInsertRepo, opts ...BatchInsertOption) e
 		// insert
 		args.StepStart = start
 		args.StepEnd = end
-		if err := insertIntoTable(db, repo, args); err != nil {
+		if err := insertIntoTable(ctx, db, repo, args); err != nil {
 			return err
 		}
 	}
@@ -118,7 +123,7 @@ func BatchInsert(db *gorm.DB, repo BatchInsertRepo, opts ...BatchInsertOption) e
 }
 
 // insertIntoTable into table
-func insertIntoTable(dbConn *gorm.DB, repo BatchInsertRepo, args *BatchInsertValueArgs) (err error) {
+func insertIntoTable(ctx context.Context, dbConn *gorm.DB, repo BatchInsertRepo, args *BatchInsertValueArgs) (err error) {
 	// SQL
 	insertSQL := args.InsertSQL
 
@@ -133,7 +138,7 @@ func insertIntoTable(dbConn *gorm.DB, repo BatchInsertRepo, args *BatchInsertVal
 	insertSQL += args.ConflictActionSQL
 
 	// insert
-	if err = dbConn.Exec(insertSQL, prepareData...).Error; err != nil {
+	if err = dbConn.WithContext(ctx).Exec(insertSQL, prepareData...).Error; err != nil {
 		return err
 	}
 	return
