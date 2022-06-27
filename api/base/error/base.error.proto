@@ -17,6 +17,7 @@ enum ERROR {
   // STATUS_UNKNOWN 常规
   STATUS_UNKNOWN = 0 [(errors.code) = 404];
   STATUS_REQUEST_FAILURE = 1 [(errors.code) = 503];
+  STATUS_RECORD_ALREADY_EXISTS = 2 [(errors.code) = 400];
 
   // STATUS_CONTINUE Continue
   STATUS_CONTINUE = 100 [(errors.code) = 100];

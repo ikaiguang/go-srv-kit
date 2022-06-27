@@ -37,6 +37,18 @@ func ErrorStatusRequestFailure(format string, args ...interface{}) *errors.Error
 	return errors.New(503, ERROR_STATUS_REQUEST_FAILURE.String(), fmt.Sprintf(format, args...))
 }
 
+func IsStatusRecordAlreadyExists(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_STATUS_RECORD_ALREADY_EXISTS.String() && e.Code == 400
+}
+
+func ErrorStatusRecordAlreadyExists(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ERROR_STATUS_RECORD_ALREADY_EXISTS.String(), fmt.Sprintf(format, args...))
+}
+
 // STATUS_CONTINUE Continue
 func IsStatusContinue(err error) bool {
 	if err == nil {

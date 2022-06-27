@@ -24,7 +24,7 @@ type stackTracer interface {
 	StackTrace() pkgerrors.StackTrace
 }
 
-// Stack
+// Stack ...
 func Stack(err error) (callers []string) {
 	trace, ok := err.(stackTracer)
 	if !ok {
