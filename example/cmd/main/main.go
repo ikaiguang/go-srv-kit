@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
-
+	"github.com/go-kratos/kratos/v2/log"
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
 	routes "github.com/ikaiguang/go-srv-kit/example/internal/route"
 	servers "github.com/ikaiguang/go-srv-kit/example/internal/server"
@@ -22,6 +22,7 @@ func newApp(modulesHandler setup.Modules) (app *kratos.App, err error) {
 	if err != nil {
 		return app, err
 	}
+	log.SetLogger(logger)
 
 	// 服务
 	hs, err := servers.NewHTTPServer(modulesHandler)

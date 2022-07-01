@@ -17,15 +17,13 @@ func NewGRPCServer(modulesHandler setup.Modules) (srv *grpc.Server, err error) {
 	stdlog.Printf("|*** 加载GRPC服务：%s\n", grpcConfig.Addr)
 
 	// 日志
-	logger, _, err := modulesHandler.Logger()
-	if err != nil {
-		return srv, err
-	}
+	//logger, _, err := modulesHandler.Logger()
+	//if err != nil {
+	//	return srv, err
+	//}
 
 	// options
-	var opts = []grpc.ServerOption{
-		grpc.Logger(logger),
-	}
+	var opts []grpc.ServerOption
 	if grpcConfig.Network != "" {
 		opts = append(opts, grpc.Network(grpcConfig.Network))
 	}
@@ -38,7 +36,7 @@ func NewGRPCServer(modulesHandler setup.Modules) (srv *grpc.Server, err error) {
 
 	// ===== 中间件 =====
 	var middlewareSlice = []middleware.Middleware{
-		recovery.Recovery(recovery.WithLogger(logger)),
+		recovery.Recovery(),
 	}
 	// 中间件日志
 	loggerMiddle, _, err := modulesHandler.LoggerMiddleware()

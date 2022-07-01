@@ -18,15 +18,13 @@ func NewHTTPServer(modulesHandler setup.Modules) (srv *http.Server, err error) {
 	stdlog.Printf("|*** 加载HTTP服务：%s\n", httpConfig.Addr)
 
 	// 日志
-	logger, _, err := modulesHandler.Logger()
-	if err != nil {
-		return srv, err
-	}
+	//logger, _, err := modulesHandler.Logger()
+	//if err != nil {
+	//	return srv, err
+	//}
 
 	// options
-	var opts = []http.ServerOption{
-		http.Logger(logger),
-	}
+	var opts []http.ServerOption
 	if httpConfig.Network != "" {
 		opts = append(opts, http.Network(httpConfig.Network))
 	}
@@ -43,7 +41,7 @@ func NewHTTPServer(modulesHandler setup.Modules) (srv *http.Server, err error) {
 
 	// ===== 中间件 =====
 	var middlewareSlice = []middleware.Middleware{
-		recovery.Recovery(recovery.WithLogger(logger)),
+		recovery.Recovery(),
 	}
 	// 中间件日志
 	loggerMiddle, _, err := modulesHandler.LoggerMiddleware()
