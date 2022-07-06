@@ -8,9 +8,9 @@ import (
 	pkgerrors "github.com/pkg/errors"
 )
 
-const (
-	// caller stack trace depth
-	_stackTracerDepth = 7
+var (
+	// DefaultStackTracerDepth 错误追踪最深层数
+	DefaultStackTracerDepth = 10
 )
 
 // Println 输出错误
@@ -57,8 +57,8 @@ func Caller(err error) (callers []string) {
 
 	// stack trace
 	st := trace.StackTrace()
-	if len(st) > _stackTracerDepth {
-		st = st[:_stackTracerDepth]
+	if len(st) > DefaultStackTracerDepth {
+		st = st[:DefaultStackTracerDepth]
 	}
 	callers = make([]string, len(st))
 	for i := range st {
