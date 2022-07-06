@@ -1,6 +1,8 @@
 package errorutil
 
 import (
+	"strconv"
+
 	"github.com/go-kratos/kratos/v2/errors"
 	pkgerrors "github.com/pkg/errors"
 )
@@ -41,4 +43,30 @@ func WrapWithMetadata(err *errors.Error, md map[string]string) error {
 	}
 	err = err.WithMetadata(md)
 	return pkgerrors.WithStack(err)
+}
+
+// errorMetadata .
+func errorMetadata(eSlice []error) map[string]string {
+	if len(eSlice) == 0 {
+		return nil
+	}
+
+	var (
+		metadata = make(map[string]string)
+		errorKey = "error"
+	)
+	if len(eSlice) == 1 {
+		if eSlice[0] != nil {
+			metadata[errorKey] = eSlice[0].Error()
+		}
+		return metadata
+	}
+	for i := range eSlice {
+		if eSlice[i] == nil {
+			continue
+		}
+		key := errorKey + "_" + strconv.Itoa(i)
+		metadata[key] = eSlice[i].Error()
+	}
+	return metadata
 }
