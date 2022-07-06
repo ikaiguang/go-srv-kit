@@ -9,8 +9,8 @@ import (
 	pkgerrors "github.com/pkg/errors"
 )
 
-// RedisClient redis 客户端
-func (s *modules) RedisClient() (*redis.Client, error) {
+// GetRedisClient redis 客户端
+func (s *modules) GetRedisClient() (*redis.Client, error) {
 	var err error
 	s.redisClientMutex.Do(func() {
 		s.redisClient, err = s.loadingRedisClient()

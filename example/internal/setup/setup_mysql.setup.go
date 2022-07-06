@@ -1,18 +1,19 @@
 package setup
 
 import (
-	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
-	mysqlutil "github.com/ikaiguang/go-srv-kit/data/mysql"
 	stdlog "log"
 	"sync"
+
+	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
+	mysqlutil "github.com/ikaiguang/go-srv-kit/data/mysql"
 
 	pkgerrors "github.com/pkg/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-// MysqlGormDB 数据库
-func (s *modules) MysqlGormDB() (*gorm.DB, error) {
+// GetMySQLGormDB 数据库
+func (s *modules) GetMySQLGormDB() (*gorm.DB, error) {
 	var err error
 	s.mysqlGormMutex.Do(func() {
 		s.mysqlGormDB, err = s.loadingMysqlGormDB()

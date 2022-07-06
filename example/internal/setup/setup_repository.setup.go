@@ -105,13 +105,12 @@ type Modules interface {
 	// 用于包含 http.Middleware(logging.Server)
 	LoggerMiddleware() (log.Logger, []func() error, error)
 
-	// MysqlGormDB mysql gorm 数据库
-	MysqlGormDB() (*gorm.DB, error)
-	// PostgresGormDB postgres gorm 数据库
-	PostgresGormDB() (*gorm.DB, error)
-
-	// RedisClient redis 客户端
-	RedisClient() (*redis.Client, error)
+	// GetMySQLGormDB mysql gorm 数据库
+	GetMySQLGormDB() (*gorm.DB, error)
+	// GetPostgresGormDB postgres gorm 数据库
+	GetPostgresGormDB() (*gorm.DB, error)
+	// GetRedisClient redis 客户端
+	GetRedisClient() (*redis.Client, error)
 
 	// Close 关闭
 	Close() error

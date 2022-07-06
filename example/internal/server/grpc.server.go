@@ -6,9 +6,9 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
 
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
-	middlewareutil "github.com/ikaiguang/go-srv-kit/kratos/middleware"
 )
 
 // NewGRPCServer new a gRPC server.
@@ -44,7 +44,7 @@ func NewGRPCServer(modulesHandler setup.Modules) (srv *grpc.Server, err error) {
 		return srv, err
 	}
 	// 日志输出
-	middlewareSlice = append(middlewareSlice, middlewareutil.ServerLog(loggerMiddle))
+	middlewareSlice = append(middlewareSlice, logmiddle.ServerLog(loggerMiddle))
 
 	// 中间件选项
 	opts = append(opts, grpc.Middleware(middlewareSlice...))

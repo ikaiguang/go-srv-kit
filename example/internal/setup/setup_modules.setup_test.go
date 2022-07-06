@@ -27,12 +27,12 @@ func TestNewUpPackages(t *testing.T) {
 	upHandler := NewModules(configHandler)
 
 	// db
-	db, err := upHandler.MysqlGormDB()
+	db, err := upHandler.GetMySQLGormDB()
 	require.Nil(t, err)
 	require.NotNil(t, db)
 
 	// redis
-	redisCC, err := upHandler.RedisClient()
+	redisCC, err := upHandler.GetRedisClient()
 	require.Nil(t, err)
 	require.NotNil(t, redisCC)
 }

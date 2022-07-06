@@ -1,18 +1,19 @@
 package setup
 
 import (
-	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
-	psqlutil "github.com/ikaiguang/go-srv-kit/data/postgres"
 	stdlog "log"
 	"sync"
+
+	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
+	psqlutil "github.com/ikaiguang/go-srv-kit/data/postgres"
 
 	pkgerrors "github.com/pkg/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-// PostgresGormDB 数据库
-func (s *modules) PostgresGormDB() (*gorm.DB, error) {
+// GetPostgresGormDB 数据库
+func (s *modules) GetPostgresGormDB() (*gorm.DB, error) {
 	var err error
 	s.postgresGormMutex.Do(func() {
 		s.postgresGormDB, err = s.loadingPostgresGormDB()

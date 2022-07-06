@@ -1,9 +1,11 @@
 package apputil
 
 import (
+	stdjson "encoding/json"
 	stdhttp "net/http"
 	"strings"
 
+	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
@@ -21,31 +23,74 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 	if headerutil.GetIsWebsocket(r.Header) {
 		return nil
 	}
-	w.WriteHeader(stdhttp.StatusOK)
+
+	// nil
+	if v == nil {
+		//respData := &responsev1.Response{
+		//	Code:      OK,
+		//	RequestId: headerutil.GetRequestID(r.Header),
+		//	//Data:      v,
+		//}
+		//respData.Code = stdhttp.StatusInternalServerError
+		//respData.Reason = baseerror.ERROR_STATUS_NO_CONTENT.String()
+		//respData.Metadata = map[string]string{"data": "null"}
+		return nil
+	}
+
+	// 响应
+	if rd, ok := v.(http.Redirector); ok {
+		url, code := rd.Redirect()
+		stdhttp.Redirect(w, r, url, code)
+		return nil
+	}
 
 	// 响应结果
-	data := &responsev1.Response{
+	respData := &responsev1.Response{
 		Code:      OK,
 		RequestId: headerutil.GetRequestID(r.Header),
 		//Data:      v,
 	}
-	if v != nil {
-		if vMessage, ok := v.(proto.Message); ok {
-			anyData, err := anypb.New(vMessage)
-			if err != nil {
-				data.Code = stdhttp.StatusInternalServerError
-				data.Reason = baseerror.ERROR_STATUS_NO_CONTENT.String()
-				data.Metadata = map[string]string{"error": err.Error()}
-			} else {
-				data.Data = anyData
-			}
-		}
+	var resultMessage proto.Message
+	if vMessage, ok := v.(proto.Message); ok {
+		// message
+		resultMessage = vMessage
 	} else {
-		data.Code = stdhttp.StatusInternalServerError
-		data.Reason = baseerror.ERROR_STATUS_NO_CONTENT.String()
-		data.Metadata = map[string]string{"data": "null"}
+		// unknown
+		vBytes, _ := stdjson.Marshal(v)
+		resultMessage = &responsev1.Data{
+			Data: string(vBytes),
+		}
 	}
-	return http.DefaultResponseEncoder(w, r, data)
+	anyData, err := anypb.New(resultMessage)
+	if err != nil {
+		respData.Code = stdhttp.StatusInternalServerError
+		respData.Reason = baseerror.ERROR_STATUS_NO_CONTENT.String()
+		respData.Metadata = map[string]string{"error": err.Error()}
+	} else {
+		respData.Data = anyData
+	}
+
+	// return
+	codec, _ := http.CodecForRequest(r, "Accept")
+	dataBytes, err := codec.Marshal(respData)
+	if err != nil {
+		return err
+	}
+	switch codec.Name() {
+	case json.Name:
+		w.Header().Set("Content-Type", headerutil.ContentTypeJSONUtf8)
+	default:
+		w.Header().Set("Content-Type", ContentType(codec.Name()))
+	}
+	w.WriteHeader(stdhttp.StatusOK)
+	_, err = w.Write(dataBytes)
+	if err != nil {
+		return err
+	}
+	return nil
+
+	// 参考
+	//return http.DefaultResponseEncoder(w, r, respData)
 }
 
 // ErrorEncoder http.DefaultErrorEncoder
@@ -56,7 +101,6 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 	if headerutil.GetIsWebsocket(r.Header) {
 		return
 	}
-	w.WriteHeader(stdhttp.StatusOK)
 
 	// 响应错误
 	se := errors.FromError(err)
@@ -67,7 +111,27 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 		Metadata:  se.Metadata,
 		RequestId: headerutil.GetRequestID(r.Header),
 	}
-	_ = http.DefaultResponseEncoder(w, r, data)
+
+	codec, _ := http.CodecForRequest(r, "Accept")
+	//body, err := codec.Marshal(se)
+	body, err := codec.Marshal(data)
+	if err != nil {
+		w.WriteHeader(stdhttp.StatusInternalServerError)
+		return
+	}
+	switch codec.Name() {
+	case json.Name:
+		w.Header().Set("Content-Type", headerutil.ContentTypeJSONUtf8)
+	default:
+		w.Header().Set("Content-Type", ContentType(codec.Name()))
+	}
+	w.WriteHeader(stdhttp.StatusOK)
+	//w.WriteHeader(int(se.Code))
+	_, _ = w.Write(body)
+
+	// 参考
+	//_ = http.DefaultResponseEncoder(w, r, data)
+	//http.DefaultErrorEncoder(w, r, err)
 	return
 }
 

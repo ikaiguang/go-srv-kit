@@ -31,7 +31,7 @@ func TestSetup(t *testing.T) {
 	loghelper.Info("*** | ==> log helper info")
 
 	// db
-	db, err := modulesHandler.MysqlGormDB()
+	db, err := modulesHandler.GetMySQLGormDB()
 	require.Nil(t, err)
 	require.NotNil(t, db)
 	type DBRes struct {
@@ -43,7 +43,7 @@ func TestSetup(t *testing.T) {
 	t.Logf("db res : %+v\n", dbRes)
 
 	// redis
-	redisCC, err := modulesHandler.RedisClient()
+	redisCC, err := modulesHandler.GetRedisClient()
 	require.Nil(t, err)
 	require.NotNil(t, redisCC)
 	redisKey := "test-foo"

@@ -6,10 +6,11 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	headermiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/header"
+	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
 
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
-	middlewareutil "github.com/ikaiguang/go-srv-kit/kratos/middleware"
 )
 
 // NewHTTPServer new a HTTP server.
@@ -49,9 +50,9 @@ func NewHTTPServer(modulesHandler setup.Modules) (srv *http.Server, err error) {
 		return srv, err
 	}
 	// 请求头
-	middlewareSlice = append(middlewareSlice, middlewareutil.RequestHeader())
+	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())
 	// 日志输出
-	middlewareSlice = append(middlewareSlice, middlewareutil.ServerLog(loggerMiddle))
+	middlewareSlice = append(middlewareSlice, logmiddle.ServerLog(loggerMiddle))
 
 	// 中间件选项
 	opts = append(opts, http.Middleware(middlewareSlice...))

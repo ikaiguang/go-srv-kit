@@ -1,4 +1,4 @@
-package middlewareutil
+package logmiddle
 
 import (
 	"context"
@@ -63,9 +63,38 @@ func (s *ErrMessage) GetErrorDetail() string {
 	return message
 }
 
+// options ...
+type options struct {
+	withSkip      bool
+	withSkipDepth int
+}
+
+// Option ...
+type Option func(options *options)
+
+// WithDefaultSkip ...
+func WithDefaultSkip() Option {
+	return func(o *options) {
+		o.withSkip = true
+		o.withSkipDepth = 1
+	}
+}
+
+// WithCallerSkip ...
+func WithCallerSkip(skip int) Option {
+	return func(o *options) {
+		o.withSkip = true
+		o.withSkipDepth = skip
+	}
+}
+
 // ServerLog 中间件日志
 // 参考 logging.Server(logger)
-func ServerLog(logger log.Logger) middleware.Middleware {
+func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
+	opt := &options{}
+	for i := range opts {
+		opts[i](opt)
+	}
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			var (
@@ -132,7 +161,13 @@ func ServerLog(logger log.Logger) middleware.Middleware {
 					errMessage.Reason = se.Reason
 				}
 				// 错误调用
-				if callers := errorutil.CallerWithSkip(err, 1); len(callers) > 0 {
+				var callers []string
+				if opt.withSkip && opt.withSkipDepth > 0 {
+					callers = errorutil.CallerWithSkip(err, opt.withSkipDepth)
+				} else {
+					callers = errorutil.Stack(err)
+				}
+				if len(callers) > 0 {
 					errMessage.Stack = strings.Join(callers, "\n\t")
 				}
 				// 请求参数
