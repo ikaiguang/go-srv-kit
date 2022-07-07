@@ -7,26 +7,9 @@ import (
 
 	"github.com/go-kratos/kratos/v2/transport/http"
 	iputil "github.com/ikaiguang/go-srv-kit/kit/ip"
-	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 )
-
-// TrustedPlatform 信任的平台
-var (
-	defaultTrustedPlatform = headerutil.RemoteAddr
-)
-
-// SetTrustedPlatform 设置信任的平台
-func SetTrustedPlatform(platformHeader string) {
-	defaultTrustedPlatform = platformHeader
-}
-
-// MatchHTTPContext 匹配
-func MatchHTTPContext(ctx context.Context) (http.Context, bool) {
-	httpCtx, ok := ctx.(http.Context)
-	return httpCtx, ok
-}
 
 // ClientIP 获取客户端IP
 func ClientIP(ctx context.Context) string {
@@ -38,60 +21,74 @@ func ClientIP(ctx context.Context) string {
 }
 
 // ClientIPFromHTTP ...
-func ClientIPFromHTTP(ctx http.Context) string {
+func ClientIPFromHTTP(ctx http.Context) (clientIP string) {
+	if clientIp, ok := GetClientIpFromContext(ctx); ok {
+		return clientIp
+	}
+	defer func() {
+		SetClientIpToContext(ctx, clientIP)
+	}()
+
 	// Check if we're running on a trusted platform, continue running backwards if error
 	if defaultTrustedPlatform != "" {
 		// Developers can define their own header of Trusted Platform or use predefined constants
-		if addr := ctx.Header().Get(defaultTrustedPlatform); addr != "" {
-			return addr
+		if clientIP = ctx.Header().Get(defaultTrustedPlatform); clientIP != "" {
+			return clientIP
 		}
 	}
 
 	ips := strings.Split(ctx.Header().Get("X-Forwarded-For"), ",")
 	for i := len(ips) - 1; i >= 0; i-- {
-		if clientIP := strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
+		if clientIP = strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
 			return clientIP
 		}
 	}
 
 	ips = strings.Split(ctx.Header().Get("X-Real-Ip"), ",")
 	for i := len(ips) - 1; i >= 0; i-- {
-		if clientIP := strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
+		if clientIP = strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
 			return clientIP
 		}
 	}
 
 	ip, _, err := net.SplitHostPort(strings.TrimSpace(ctx.Request().RemoteAddr))
 	if err != nil {
-		return ""
-	}
-	if clientIP := strings.TrimSpace(ip); iputil.IsValidIP(clientIP) {
 		return clientIP
 	}
-	return ""
+	if clientIP = strings.TrimSpace(ip); iputil.IsValidIP(clientIP) {
+		return clientIP
+	}
+	return clientIP
 }
 
 // ClientIPFromGRPC ...
-func ClientIPFromGRPC(ctx context.Context) string {
+func ClientIPFromGRPC(ctx context.Context) (clientIP string) {
+	if clientIp, ok := GetClientIpFromContext(ctx); ok {
+		return clientIp
+	}
+	defer func() {
+		SetClientIpToContext(ctx, clientIP)
+	}()
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		// Check if we're running on a trusted platform, continue running backwards if error
 		if defaultTrustedPlatform != "" {
 			// Developers can define their own header of Trusted Platform or use predefined constants
 			if addrSlice := md.Get(strings.ToLower(defaultTrustedPlatform)); len(addrSlice) > 0 {
-				return addrSlice[0]
+				clientIP = addrSlice[0]
+				return clientIP
 			}
 		}
 
 		ips := md.Get("x-forwarded-for")
 		for i := len(ips) - 1; i >= 0; i-- {
-			if clientIP := strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
+			if clientIP = strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
 				return clientIP
 			}
 		}
 
 		ips = md.Get("x-real-ip")
 		for i := len(ips) - 1; i >= 0; i-- {
-			if clientIP := strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
+			if clientIP = strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
 				return clientIP
 			}
 		}
@@ -99,9 +96,25 @@ func ClientIPFromGRPC(ctx context.Context) string {
 
 	if pr, ok := peer.FromContext(ctx); ok {
 		if tcpAddr, ok := pr.Addr.(*net.TCPAddr); ok {
-			return tcpAddr.IP.String()
+			clientIP = tcpAddr.IP.String()
+			return clientIP
 		}
-		return pr.Addr.String()
+		clientIP = pr.Addr.String()
+		return clientIP
 	}
-	return ""
+	return clientIP
+}
+
+// clientIpKey ...
+type clientIpKey struct{}
+
+// SetClientIpToContext put client ip into context
+func SetClientIpToContext(ctx context.Context, clientIp string) context.Context {
+	return context.WithValue(ctx, clientIpKey{}, clientIp)
+}
+
+// GetClientIpFromContext extract client ip from context
+func GetClientIpFromContext(ctx context.Context) (clientIp string, ok bool) {
+	clientIp, ok = ctx.Value(clientIpKey{}).(string)
+	return
 }
