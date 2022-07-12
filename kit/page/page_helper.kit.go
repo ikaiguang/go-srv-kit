@@ -6,11 +6,11 @@ import (
 
 // HasNextPage 是否有下一页
 func HasNextPage(pageResponse *pagev1.PageResponse) bool {
-	return pageResponse.TotalPage > int64(pageResponse.Page)
+	return pageResponse.TotalPage > pageResponse.Page
 }
 
 // CalcPageResponse 计算分页响应
-func CalcPageResponse(pageRequest *pagev1.PageRequest, totalNumber int64) *pagev1.PageResponse {
+func CalcPageResponse(pageRequest *pagev1.PageRequest, totalNumber uint32) *pagev1.PageResponse {
 	pageResponse := &pagev1.PageResponse{
 		TotalNumber: totalNumber,
 		Page:        pageRequest.Page,
@@ -20,8 +20,8 @@ func CalcPageResponse(pageRequest *pagev1.PageRequest, totalNumber int64) *pagev
 		return pageResponse
 	}
 	// TotalPage
-	pageResponse.TotalPage = pageResponse.TotalNumber / int64(pageResponse.PageSize)
-	if pageResponse.TotalNumber%int64(pageResponse.PageSize) != 0 {
+	pageResponse.TotalPage = pageResponse.TotalNumber / pageResponse.PageSize
+	if pageResponse.TotalNumber%pageResponse.PageSize != 0 {
 		pageResponse.TotalPage += 1
 	}
 	return pageResponse

@@ -193,7 +193,7 @@ func TestPaging(t *testing.T) {
 				t.FailNow()
 			}
 
-			pageResp := pageutil.CalcPageResponse(pageReq, counter)
+			pageResp := pageutil.CalcPageResponse(pageReq, uint32(counter))
 			t.Log("==> pageResp.TotalNumber", pageResp.TotalNumber)
 			t.Log("==> pageResp.TotalPage", pageResp.TotalPage)
 			t.Log("==> pageResp.Page", pageResp.Page)

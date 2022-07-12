@@ -19,7 +19,7 @@ data:
     conn_max_idle_time: 1800s
   # mysql MySQL
   mysql:
-    dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True
+    dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True&loc=Local
     # slow_threshold 慢查询时间
     slow_threshold: 0.1s
     logger_enable: true
@@ -37,6 +37,7 @@ data:
   # redis
   redis:
     addr: 127.0.0.1:6379
+    username:
     password:
     db: 0
     dial_timeout: 3s

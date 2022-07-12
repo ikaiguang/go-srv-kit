@@ -21,10 +21,7 @@ func RegisterRoutes(modulesHandler setup.Modules, hs *http.Server, gs *grpc.Serv
 		return err
 	}
 
-	stdlog.Println("|*** 注册路由：ping")
 	pingroute.RegisterRoutes(hs, gs, logger)
-
-	stdlog.Println("|*** 注册路由：testdata")
 	testdataroute.RegisterRoutes(hs, gs, logger)
 
 	return err

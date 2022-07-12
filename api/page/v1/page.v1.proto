@@ -18,9 +18,9 @@ message PageRequest {
 // PageResponse 分页信息
 message PageResponse {
   // total_number 总条数
-  int64 total_number = 1;
+  uint32 total_number = 1;
   // total_page 总页数
-  int64 total_page = 2;
+  uint32 total_page = 2;
   // page 第几页
   uint32 page = 3;
   // page_size 每页显示多少条
