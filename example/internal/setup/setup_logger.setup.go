@@ -7,7 +7,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 
 	logutil "github.com/ikaiguang/go-srv-kit/log"
-	loghelper "github.com/ikaiguang/go-srv-kit/log/helper"
 )
 
 // Logger 日志处理示例
@@ -70,7 +69,7 @@ func (s *modules) loadingLogHelper() (closeFnSlice []func() error, err error) {
 		stdlog.Println("|*** 加载日志工具：日志输出到文件")
 	}
 
-	loghelper.Setup(loggerInstance)
+	logutil.Setup(loggerInstance)
 	return closeFnSlice, err
 }
 

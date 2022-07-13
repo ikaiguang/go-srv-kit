@@ -8,7 +8,7 @@ import (
 	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1"
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
-	loghelper "github.com/ikaiguang/go-srv-kit/log/helper"
+	logutil "github.com/ikaiguang/go-srv-kit/log"
 )
 
 // ping .
@@ -54,8 +54,8 @@ func (s *ping) Ping(ctx context.Context, in *pingv1.PingReq) (out *pingv1.PingRe
 func (s *ping) testLogger(ctx context.Context, in *pingv1.PingReq) {
 	s.log.WithContext(ctx).Infof("==> s.log.WithContext(ctx).Infof : Ping Received: %s", in.GetMessage())
 	s.log.Infow("==> s.log.Infow : Ping Received: ", in.GetMessage())
-	loghelper.ContextInfo(ctx, "==> loghelper.ContextInfo : Ping Received: ", in.GetMessage())
-	loghelper.ContextInfow(ctx, "==> loghelper.ContextInfow : Ping Received: ", in.GetMessage())
-	loghelper.Info("==> loghelper.Info : Ping Received: ", in.GetMessage())
+	logutil.InfoWithContext(ctx, "==> loghelper.ContextInfo : Ping Received: ", in.GetMessage())
+	logutil.InfowWithContext(ctx, "==> loghelper.ContextInfow : Ping Received: ", in.GetMessage())
+	logutil.Info("==> loghelper.Info : Ping Received: ", in.GetMessage())
 	debugutil.Printw("==> debugutil.Print : Ping Received: ", in.GetMessage())
 }

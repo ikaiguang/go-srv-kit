@@ -1,4 +1,4 @@
-package loghelper
+package logutil
 
 import (
 	"context"
