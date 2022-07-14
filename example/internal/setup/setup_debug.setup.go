@@ -7,7 +7,7 @@ import (
 )
 
 // loadingDebugUtil 加载调试工具
-func (s *modules) loadingDebugUtil() error {
+func (s *engines) loadingDebugUtil() error {
 	if !s.Config.IsDebugMode() {
 		return nil
 	}

@@ -13,13 +13,13 @@ import (
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 )
 
-// NewHTTPServer new a HTTP server.
-func NewHTTPServer(modulesHandler setup.Modules) (srv *http.Server, err error) {
-	httpConfig := modulesHandler.HTTPConfig()
+// NewHTTPServer new HTTP server.
+func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
+	httpConfig := engineHandler.HTTPConfig()
 	stdlog.Printf("|*** 加载HTTP服务：%s\n", httpConfig.Addr)
 
 	// 日志
-	//logger, _, err := modulesHandler.Logger()
+	//logger, _, err := engineHandler.Logger()
 	//if err != nil {
 	//	return srv, err
 	//}
@@ -45,7 +45,7 @@ func NewHTTPServer(modulesHandler setup.Modules) (srv *http.Server, err error) {
 		recovery.Recovery(),
 	}
 	// 中间件日志
-	loggerMiddle, _, err := modulesHandler.LoggerMiddleware()
+	loggerMiddle, _, err := engineHandler.LoggerMiddleware()
 	if err != nil {
 		return srv, err
 	}
@@ -65,7 +65,7 @@ func NewHTTPServer(modulesHandler setup.Modules) (srv *http.Server, err error) {
 }
 
 // RegisterHTTPRoute 注册路由
-func RegisterHTTPRoute(modulesHandler setup.Modules, srv *http.Server) (err error) {
+func RegisterHTTPRoute(engineHandler setup.Engine, srv *http.Server) (err error) {
 	stdlog.Println("|*** 注册HTTP路由：...")
 	return err
 }

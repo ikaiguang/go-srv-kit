@@ -8,7 +8,7 @@ import (
 )
 
 // LoggerPrefixField .
-func (s *modules) LoggerPrefixField() *LoggerPrefixField {
+func (s *engines) LoggerPrefixField() *LoggerPrefixField {
 	s.loggerPrefixFieldMutex.Do(func() {
 		s.loggerPrefixField = s.assemblyLoggerPrefixField()
 	})
@@ -16,7 +16,7 @@ func (s *modules) LoggerPrefixField() *LoggerPrefixField {
 }
 
 // assemblyLoggerPrefixField 组装日志前缀
-func (s *modules) assemblyLoggerPrefixField() *LoggerPrefixField {
+func (s *engines) assemblyLoggerPrefixField() *LoggerPrefixField {
 	appConfig := s.AppConfig()
 
 	fields := &LoggerPrefixField{
@@ -30,7 +30,7 @@ func (s *modules) assemblyLoggerPrefixField() *LoggerPrefixField {
 }
 
 // withLoggerPrefix ...
-func (s *modules) withLoggerPrefix(logger log.Logger) log.Logger {
+func (s *engines) withLoggerPrefix(logger log.Logger) log.Logger {
 	var (
 		prefixKey   = "app"
 		prefixField = s.LoggerPrefixField()

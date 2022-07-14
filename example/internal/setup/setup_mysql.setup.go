@@ -13,7 +13,7 @@ import (
 )
 
 // GetMySQLGormDB 数据库
-func (s *modules) GetMySQLGormDB() (*gorm.DB, error) {
+func (s *engines) GetMySQLGormDB() (*gorm.DB, error) {
 	var err error
 	s.mysqlGormMutex.Do(func() {
 		s.mysqlGormDB, err = s.loadingMysqlGormDB()
@@ -26,7 +26,7 @@ func (s *modules) GetMySQLGormDB() (*gorm.DB, error) {
 }
 
 // loadingMysqlGormDB mysql gorm 数据库
-func (s *modules) loadingMysqlGormDB() (*gorm.DB, error) {
+func (s *engines) loadingMysqlGormDB() (*gorm.DB, error) {
 	if s.Config.MySQLConfig() == nil {
 		stdlog.Println("|*** 加载MySQL-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)

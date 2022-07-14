@@ -12,12 +12,12 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(modulesHandler setup.Modules) (srv *grpc.Server, err error) {
-	grpcConfig := modulesHandler.GRPCConfig()
+func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
+	grpcConfig := engineHandler.GRPCConfig()
 	stdlog.Printf("|*** 加载GRPC服务：%s\n", grpcConfig.Addr)
 
 	// 日志
-	//logger, _, err := modulesHandler.Logger()
+	//logger, _, err := engineHandler.Logger()
 	//if err != nil {
 	//	return srv, err
 	//}
@@ -39,7 +39,7 @@ func NewGRPCServer(modulesHandler setup.Modules) (srv *grpc.Server, err error) {
 		recovery.Recovery(),
 	}
 	// 中间件日志
-	loggerMiddle, _, err := modulesHandler.LoggerMiddleware()
+	loggerMiddle, _, err := engineHandler.LoggerMiddleware()
 	if err != nil {
 		return srv, err
 	}
@@ -57,7 +57,7 @@ func NewGRPCServer(modulesHandler setup.Modules) (srv *grpc.Server, err error) {
 }
 
 // RegisterGRPCRoute 注册路由
-func RegisterGRPCRoute(modulesHandler setup.Modules, srv *grpc.Server) (err error) {
+func RegisterGRPCRoute(engineHandler setup.Engine, srv *grpc.Server) (err error) {
 	stdlog.Println("|*** 注册GRPC路由：...")
 	return err
 }

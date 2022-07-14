@@ -13,7 +13,7 @@ import (
 )
 
 // GetPostgresGormDB 数据库
-func (s *modules) GetPostgresGormDB() (*gorm.DB, error) {
+func (s *engines) GetPostgresGormDB() (*gorm.DB, error) {
 	var err error
 	s.postgresGormMutex.Do(func() {
 		s.postgresGormDB, err = s.loadingPostgresGormDB()
@@ -26,7 +26,7 @@ func (s *modules) GetPostgresGormDB() (*gorm.DB, error) {
 }
 
 // loadingPostgresGormDB postgres gorm 数据库
-func (s *modules) loadingPostgresGormDB() (*gorm.DB, error) {
+func (s *engines) loadingPostgresGormDB() (*gorm.DB, error) {
 	if s.Config.PostgresConfig() == nil {
 		stdlog.Println("|*** 加载Postgres-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)

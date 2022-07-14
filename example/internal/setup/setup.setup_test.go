@@ -4,34 +4,34 @@ import (
 	"context"
 	"testing"
 
+	logutil "github.com/ikaiguang/go-srv-kit/log"
 	"github.com/stretchr/testify/require"
 
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
-	loghelper "github.com/ikaiguang/go-srv-kit/log/helper"
 )
 
 // go test -v ./example/internal/setup/ -count=1 -test.run=TestSetup -conf=./../../configs
 func TestSetup(t *testing.T) {
-	modulesHandler, err := Setup()
+	engineHandler, err := Setup()
 	if err != nil {
 		t.Errorf("%+v\n", err)
 		t.FailNow()
 	}
-	defer func() { _ = modulesHandler.Close() }()
+	defer func() { _ = engineHandler.Close() }()
 
 	ctx := context.Background()
 
 	// env
-	loghelper.Infof("env = %v", modulesHandler.Env())
+	logutil.Infof("env = %v", engineHandler.Env())
 
 	// debug
 	debugutil.Println("*** | ==> debug util print")
 
 	// 日志
-	loghelper.Info("*** | ==> log helper info")
+	logutil.Info("*** | ==> log helper info")
 
 	// db
-	db, err := modulesHandler.GetMySQLGormDB()
+	db, err := engineHandler.GetMySQLGormDB()
 	require.Nil(t, err)
 	require.NotNil(t, db)
 	type DBRes struct {
@@ -43,7 +43,7 @@ func TestSetup(t *testing.T) {
 	t.Logf("db res : %+v\n", dbRes)
 
 	// redis
-	redisCC, err := modulesHandler.GetRedisClient()
+	redisCC, err := engineHandler.GetRedisClient()
 	require.Nil(t, err)
 	require.NotNil(t, redisCC)
 	redisKey := "test-foo"
@@ -56,21 +56,21 @@ func TestSetup(t *testing.T) {
 	t.Logf("redis res : %+v\n", redisGotValue)
 }
 
-// go test -v ./example/internal/setup/ -count=1 -test.run=TestGetModules -conf=./../../configs
-func TestGetModules(t *testing.T) {
-	modulesHandler, err := GetModules()
+// go test -v ./example/internal/setup/ -count=1 -test.run=TestGetEngine -conf=./../../configs
+func TestGetEngine(t *testing.T) {
+	engineHandler, err := GetEngine()
 	require.Nil(t, err)
-	require.NotNil(t, modulesHandler)
-	modulesHandler, err = GetModules()
+	require.NotNil(t, engineHandler)
+	engineHandler, err = GetEngine()
 	require.Nil(t, err)
-	require.NotNil(t, modulesHandler)
+	require.NotNil(t, engineHandler)
 
 	// env
-	loghelper.Infof("env = %v", modulesHandler.Env())
+	logutil.Infof("env = %v", engineHandler.Env())
 
 	// debug
 	debugutil.Println("*** | ==> debug util print")
 
 	// 日志
-	loghelper.Info("*** | ==> log helper info")
+	logutil.Info("*** | ==> log helper info")
 }

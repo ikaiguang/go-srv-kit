@@ -13,35 +13,35 @@ import (
 )
 
 // newApp .
-func newApp(modulesHandler setup.Modules) (app *kratos.App, err error) {
+func newApp(engineHandler setup.Engine) (app *kratos.App, err error) {
 	// 主机
 	hostname, _ := os.Hostname()
 
 	// 日志
-	logger, _, err := modulesHandler.Logger()
+	logger, _, err := engineHandler.Logger()
 	if err != nil {
 		return app, err
 	}
 	log.SetLogger(logger)
 
 	// 服务
-	hs, err := servers.NewHTTPServer(modulesHandler)
+	hs, err := servers.NewHTTPServer(engineHandler)
 	if err != nil {
 		return app, err
 	}
-	gs, err := servers.NewGRPCServer(modulesHandler)
+	gs, err := servers.NewGRPCServer(engineHandler)
 	if err != nil {
 		return app, err
 	}
 
 	// 路由
-	err = routes.RegisterRoutes(modulesHandler, hs, gs)
+	err = routes.RegisterRoutes(engineHandler, hs, gs)
 	if err != nil {
 		return app, err
 	}
 
 	// app
-	appConfig := modulesHandler.AppConfig()
+	appConfig := engineHandler.AppConfig()
 	app = kratos.New(
 		kratos.ID(hostname),
 		kratos.Name(appConfig.Name),
@@ -65,8 +65,8 @@ func main() {
 	}
 	//defer func() { _ = setup.Close() }()
 
-	// 模块
-	modules, err := setup.GetModules()
+	// 引擎模块
+	engineHandler, err := setup.GetEngine()
 	if err != nil {
 		stdlog.Fatalf("%+v\n", err)
 		return
@@ -79,7 +79,7 @@ func main() {
 	stdlog.Println("|==================== 加载程序 开始 ====================|")
 
 	// 启动
-	app, err := newApp(modules)
+	app, err := newApp(engineHandler)
 	stdlog.Println("|==================== 加载程序 结束 ====================|")
 	if err := app.Run(); err != nil {
 		debugutil.Fatalf("%+v\n", err)

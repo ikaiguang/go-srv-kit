@@ -9,7 +9,7 @@ import (
 )
 
 // LoggerFileWriter 文件日志写手柄
-func (s *modules) LoggerFileWriter() (io.Writer, error) {
+func (s *engines) LoggerFileWriter() (io.Writer, error) {
 	var err error
 	s.loggerFileWriterMutex.Do(func() {
 		s.loggerFileWriter, err = s.loadingLoggerFileWriter()
@@ -30,7 +30,7 @@ func (s *modules) LoggerFileWriter() (io.Writer, error) {
 }
 
 // loadingLoggerFileWriter 启动日志文件写手柄
-func (s *modules) loadingLoggerFileWriter() (io.Writer, error) {
+func (s *engines) loadingLoggerFileWriter() (io.Writer, error) {
 	fileLoggerConfig := s.Config.LoggerConfigForFile()
 	if !s.Config.EnableLoggingFile() || fileLoggerConfig == nil {
 		stdlog.Println("|*** 加载日志工具：虚拟的文件写手柄")

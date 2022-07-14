@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	_ Config  = &configuration{}
-	_ Modules = &modules{}
+	_ Config = &configuration{}
+	_ Engine = &engines{}
 
 	// ErrUnimplemented 未实现
 	ErrUnimplemented = strerrors.New("unimplemented")
@@ -86,8 +86,8 @@ type Config interface {
 	GRPCConfig() *confv1.Server_GRPC
 }
 
-// Modules 模块、组件、单元
-type Modules interface {
+// Engine 引擎模块、组件、单元
+type Engine interface {
 	// Config 配置
 	Config
 

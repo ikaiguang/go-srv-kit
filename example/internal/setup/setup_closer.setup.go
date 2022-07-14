@@ -9,7 +9,7 @@ import (
 )
 
 // Close .
-func (s *modules) Close() (err error) {
+func (s *engines) Close() (err error) {
 	// 退出程序
 	stdlog.Println("|==================== 退出程序 开始 ====================|")
 	defer stdlog.Println("|==================== 退出程序 结束 ====================|")

@@ -9,8 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// modules 模块
-type modules struct {
+// engines 引擎模块
+type engines struct {
 	Config
 
 	// loggerPrefixFieldMutex 日志前缀
@@ -48,9 +48,9 @@ type modules struct {
 	redisClient      *redis.Client
 }
 
-// NewModules .
-func NewModules(conf Config) *modules {
-	return &modules{
+// NewEngine ...
+func NewEngine(conf Config) *engines {
+	return &engines{
 		Config: conf,
 	}
 }
