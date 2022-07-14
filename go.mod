@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/cespare/xxhash v1.1.0 // indirect
-	github.com/go-kratos/kratos/v2 v2.3.1
+	github.com/go-kratos/kratos/v2 v2.4.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-redsync/redsync/v4 v4.5.1
 	github.com/go-resty/resty/v2 v2.7.0
