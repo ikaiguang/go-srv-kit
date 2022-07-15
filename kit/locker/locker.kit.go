@@ -5,10 +5,15 @@ import (
 	"fmt"
 )
 
-// Locker .
-type Locker interface {
-	Lock(ctx context.Context, name string) (err error)
+// Unlock 解锁
+type Unlock interface {
 	Unlock(ctx context.Context) (ok bool, err error)
+}
+
+// Lock 加锁
+type Lock interface {
+	Mutex(ctx context.Context, lockName string) (locker Unlock, err error)
+	Once(ctx context.Context, lockName string) (locker Unlock, err error)
 }
 
 // NewErrLockerFailed .
