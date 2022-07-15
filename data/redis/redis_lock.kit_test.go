@@ -66,10 +66,10 @@ func TestLockOnce(t *testing.T) {
 	for i := range tests {
 		ok, err := tests[i].unlock.Unlock(context.Background())
 		if err != nil {
-			t.Logf("==> 解锁 error : %v\n", err)
+			t.Logf("unlock[%d] error : %v\n", i+1, err)
 		}
 		if !ok {
-			t.Logf("==> 解锁 status : %v\n", ok)
+			t.Logf("unlock[%d] status : %v\n", i+1, ok)
 		}
 	}
 }
@@ -95,7 +95,12 @@ func TestLockMutex(t *testing.T) {
 			isLockFailed: false,
 		},
 		{
-			name:         "#加锁失败",
+			name:         "#加锁失败#1",
+			lockerStatus: false,
+			isLockFailed: true,
+		},
+		{
+			name:         "#加锁失败$#2",
 			lockerStatus: false,
 			isLockFailed: true,
 		},
@@ -128,10 +133,10 @@ func TestLockMutex(t *testing.T) {
 	for i := range tests {
 		ok, err := tests[i].unlock.Unlock(context.Background())
 		if err != nil {
-			t.Logf("unlock error : %v\n", err)
+			t.Logf("unlock[%d] error : %v\n", i+1, err)
 		}
 		if !ok {
-			t.Logf("unlock status : %v\n", ok)
+			t.Logf("unlock[%d] status : %v\n", i+1, ok)
 		}
 	}
 }

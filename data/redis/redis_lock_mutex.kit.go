@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redsync/redsync/v4"
+
 	lockerutil "github.com/ikaiguang/go-srv-kit/kit/locker"
 )
 
