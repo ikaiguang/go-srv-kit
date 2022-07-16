@@ -59,7 +59,7 @@ func (s *Locker) Mutex(ctx context.Context, lockName string) (locker lockerutil.
 	}
 
 	// 续期锁，防止锁自动过期
-	m.extendChannel = make(chan bool)
+	m.stopExtend = make(chan bool)
 	go m.extend(ctx)
 
 	return m, err

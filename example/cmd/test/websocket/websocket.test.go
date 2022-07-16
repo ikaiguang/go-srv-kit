@@ -6,11 +6,13 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+
 	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	websocketutil "github.com/ikaiguang/go-srv-kit/kratos/websocket"
-	loghelper "github.com/ikaiguang/go-srv-kit/log/helper"
+	logutil "github.com/ikaiguang/go-srv-kit/log"
+
 	pkgerrors "github.com/pkg/errors"
 )
 
@@ -46,16 +48,16 @@ func TestWebsocket() (processResp interface{}, err error) {
 			messageType, messageBytes, wsErr := c.ReadMessage()
 			if wsErr != nil {
 				if websocketutil.IsCloseError(wsErr) {
-					loghelper.Infow("websocket close", wsErr.Error())
+					logutil.Infow("websocket close", wsErr.Error())
 					break
 				}
 				err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws读取信息失败", wsErr)
-				loghelper.Error(err)
+				logutil.Error(err)
 				return
 			}
 
-			loghelper.Infow("ws-message type", messageType)
-			loghelper.Infow("ws-message message", string(messageBytes))
+			logutil.Infow("ws-message type", messageType)
+			logutil.Infow("ws-message message", string(messageBytes))
 		}
 	}()
 
@@ -82,11 +84,11 @@ func TestWebsocket() (processResp interface{}, err error) {
 			wsErr := c.WriteMessage(websocket.TextMessage, []byte(messageSlice[counter]))
 			if wsErr != nil {
 				if websocketutil.IsCloseError(wsErr) {
-					loghelper.Infow("websocket close", wsErr.Error())
+					logutil.Infow("websocket close", wsErr.Error())
 					break
 				}
 				err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws读取信息失败", err)
-				loghelper.Error(err)
+				logutil.Error(err)
 				return
 			}
 		}

@@ -3,8 +3,8 @@ server:
   http:
     network:
     addr: 0.0.0.0:8081
-    timeout: 30s
+    timeout: 60s
   grpc:
     network:
     addr: 0.0.0.0:9091
-    timeout: 30s
+    timeout: 60s

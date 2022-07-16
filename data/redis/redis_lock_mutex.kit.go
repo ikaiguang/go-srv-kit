@@ -12,16 +12,16 @@ import (
 
 // mutexLock ...
 type mutexLock struct {
-	mutex         *redsync.Mutex
-	extendChannel chan bool
+	mutex      *redsync.Mutex
+	stopExtend chan bool
 }
 
 // Unlock ...
 func (s *mutexLock) Unlock(ctx context.Context) (ok bool, err error) {
 	// 防止panic 信道
-	if s.extendChannel != nil {
-		s.extendChannel <- true
-		close(s.extendChannel)
+	if s.stopExtend != nil {
+		s.stopExtend <- true
+		close(s.stopExtend)
 	}
 
 	// 取锁的有效期。在获取锁之前，该值将为零值。
@@ -53,7 +53,7 @@ func (s *mutexLock) extend(ctx context.Context) {
 		//fmt.Println("redis mutex 续期成功")
 		// 再次续期
 		s.extend(ctx)
-	case <-s.extendChannel: // 停止
+	case <-s.stopExtend: // 停止
 		timer.Stop()
 		// 调试
 		//fmt.Println("redis mutex 停止续期")
