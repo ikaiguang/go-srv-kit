@@ -3,7 +3,6 @@ module github.com/ikaiguang/go-srv-kit
 go 1.16
 
 require (
-	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/go-kratos/kratos/v2 v2.4.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-redsync/redsync/v4 v4.5.1
@@ -16,7 +15,6 @@ require (
 	github.com/lestrrat-go/strftime v1.0.6 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rs/xid v1.4.0
-	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.7.1
 	go.opentelemetry.io/otel/trace v1.7.0
 	go.uber.org/zap v1.21.0
