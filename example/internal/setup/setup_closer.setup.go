@@ -72,7 +72,7 @@ func (s *engines) Close() (err error) {
 		stdlog.Println("|*** 退出程序：关闭调试工具debugutil")
 	}
 	for i := range s.debugHelperCloseFnSlice {
-		err := s.debugHelperCloseFnSlice[i]()
+		err = s.debugHelperCloseFnSlice[i].Close()
 		if err != nil {
 			errorPrefix := fmt.Sprintf("debugHelperCloseFnSlice[%d] error : ", i+1)
 			errInfos = append(errInfos, errorPrefix+err.Error())
@@ -84,7 +84,7 @@ func (s *engines) Close() (err error) {
 		stdlog.Println("|*** 退出程序：关闭日志输出实例")
 	}
 	for i := range s.loggerCloseFnSlice {
-		err := s.loggerCloseFnSlice[i]()
+		err = s.loggerCloseFnSlice[i].Close()
 		if err != nil {
 			errorPrefix := fmt.Sprintf("loggerCloseFnSlice[%d] error : ", i+1)
 			errInfos = append(errInfos, errorPrefix+err.Error())
@@ -96,7 +96,7 @@ func (s *engines) Close() (err error) {
 		stdlog.Println("|*** 退出程序：关闭日志输出工具")
 	}
 	for i := range s.loggerHelperCloseFnSlice {
-		err := s.loggerHelperCloseFnSlice[i]()
+		err := s.loggerHelperCloseFnSlice[i].Close()
 		if err != nil {
 			errorPrefix := fmt.Sprintf("loggerHelperCloseFnSlice[%d] error : ", i+1)
 			errInfos = append(errInfos, errorPrefix+err.Error())
@@ -108,7 +108,7 @@ func (s *engines) Close() (err error) {
 		stdlog.Println("|*** 退出程序：关闭中间件日志输出工具")
 	}
 	for i := range s.loggerMiddlewareCloseFnSlice {
-		err := s.loggerMiddlewareCloseFnSlice[i]()
+		err = s.loggerMiddlewareCloseFnSlice[i].Close()
 		if err != nil {
 			errorPrefix := fmt.Sprintf("loggerMiddlewareCloseFnSlice[%d] error : ", i+1)
 			errInfos = append(errInfos, errorPrefix+err.Error())

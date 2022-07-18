@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"io"
 	stdlog "log"
 	"sync"
 
@@ -10,7 +11,7 @@ import (
 )
 
 // Logger 日志处理示例
-func (s *engines) Logger() (log.Logger, []func() error, error) {
+func (s *engines) Logger() (log.Logger, []io.Closer, error) {
 	var (
 		err error
 	)
@@ -25,7 +26,7 @@ func (s *engines) Logger() (log.Logger, []func() error, error) {
 }
 
 // LoggerHelper 日志处理示例
-func (s *engines) LoggerHelper() (log.Logger, []func() error, error) {
+func (s *engines) LoggerHelper() (log.Logger, []io.Closer, error) {
 	var err error
 	s.loggerHelperMutex.Do(func() {
 		s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.loadingLoggerHelper()
@@ -38,7 +39,7 @@ func (s *engines) LoggerHelper() (log.Logger, []func() error, error) {
 }
 
 // LoggerMiddleware 中间件的日志处理示例
-func (s *engines) LoggerMiddleware() (log.Logger, []func() error, error) {
+func (s *engines) LoggerMiddleware() (log.Logger, []io.Closer, error) {
 	var err error
 	s.loggerMiddlewareMutex.Do(func() {
 		s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.loadingLoggerMiddleware()
@@ -51,7 +52,7 @@ func (s *engines) LoggerMiddleware() (log.Logger, []func() error, error) {
 }
 
 // loadingLogHelper 加载日志工具
-func (s *engines) loadingLogHelper() (closeFnSlice []func() error, err error) {
+func (s *engines) loadingLogHelper() (closeFnSlice []io.Closer, err error) {
 	loggerInstance, closeFnSlice, err := s.LoggerHelper()
 	if err != nil {
 		return closeFnSlice, err
@@ -74,7 +75,7 @@ func (s *engines) loadingLogHelper() (closeFnSlice []func() error, err error) {
 }
 
 // loadingLogger 初始化日志输出实例
-func (s *engines) loadingLogger() (logger log.Logger, closeFnSlice []func() error, err error) {
+func (s *engines) loadingLogger() (logger log.Logger, closeFnSlice []io.Closer, err error) {
 	skip := logutil.CallerSkipForLogger
 	//return s.loadingLoggerWithCallerSkip(skip)
 	logger, closeFnSlice, err = s.loadingLoggerWithCallerSkip(skip)
@@ -86,7 +87,7 @@ func (s *engines) loadingLogger() (logger log.Logger, closeFnSlice []func() erro
 }
 
 // loadingLoggerHelper 初始化日志工具输出实例
-func (s *engines) loadingLoggerHelper() (logger log.Logger, closeFnSlice []func() error, err error) {
+func (s *engines) loadingLoggerHelper() (logger log.Logger, closeFnSlice []io.Closer, err error) {
 	skip := logutil.CallerSkipForHelper
 	//return s.loadingLoggerWithCallerSkip(skip)
 	logger, closeFnSlice, err = s.loadingLoggerWithCallerSkip(skip)
@@ -98,7 +99,7 @@ func (s *engines) loadingLoggerHelper() (logger log.Logger, closeFnSlice []func(
 }
 
 // loadingLoggerMiddleware 初始化中间价的日志输出实例
-func (s *engines) loadingLoggerMiddleware() (logger log.Logger, closeFnSlice []func() error, err error) {
+func (s *engines) loadingLoggerMiddleware() (logger log.Logger, closeFnSlice []io.Closer, err error) {
 	skip := logutil.CallerSkipForMiddleware
 	//return s.loadingLoggerWithCallerSkip(skip)
 	logger, closeFnSlice, err = s.loadingLoggerWithCallerSkip(skip)
@@ -110,7 +111,7 @@ func (s *engines) loadingLoggerMiddleware() (logger log.Logger, closeFnSlice []f
 }
 
 // loadingLoggerWithCallerSkip 初始化日志输出实例
-func (s *engines) loadingLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlice []func() error, err error) {
+func (s *engines) loadingLoggerWithCallerSkip(skip int) (logger log.Logger, closeFnSlice []io.Closer, err error) {
 	// loggers
 	var loggers []log.Logger
 
@@ -137,7 +138,7 @@ func (s *engines) loadingLoggerWithCallerSkip(skip int) (logger log.Logger, clos
 		if err != nil {
 			return logger, closeFnSlice, err
 		}
-		closeFnSlice = append(closeFnSlice, stdLoggerImpl.Sync)
+		closeFnSlice = append(closeFnSlice, stdLoggerImpl)
 		stdLogger = stdLoggerImpl
 	}
 	loggers = append(loggers, stdLogger)
@@ -167,7 +168,7 @@ func (s *engines) loadingLoggerWithCallerSkip(skip int) (logger log.Logger, clos
 			fileLoggerConfig,
 			logutil.WithWriter(writer),
 		)
-		closeFnSlice = append(closeFnSlice, fileLogger.Sync)
+		closeFnSlice = append(closeFnSlice, fileLogger)
 		if err != nil {
 			return logger, closeFnSlice, err
 		}

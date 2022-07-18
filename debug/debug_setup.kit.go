@@ -2,6 +2,8 @@ package debugutil
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
+	"io"
+
 	logutil "github.com/ikaiguang/go-srv-kit/log"
 )
 
@@ -12,7 +14,7 @@ var (
 )
 
 // Setup 启动
-func Setup() (syncFn func() error, err error) {
+func Setup() (closer io.Closer, err error) {
 	// std logger
 	stdLoggerConfig := &logutil.ConfigStd{
 		Level:      log.LevelDebug,
@@ -20,12 +22,12 @@ func Setup() (syncFn func() error, err error) {
 	}
 	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
 	if err != nil {
-		return syncFn, err
+		return closer, err
 	}
-	syncFn = stdLogger.Sync
+	closer = stdLogger
 	handler = log.NewHelper(stdLogger)
 
-	return syncFn, err
+	return closer, err
 }
 
 // defaultHandler .

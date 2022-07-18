@@ -22,18 +22,18 @@ type engines struct {
 	loggerFileWriter      io.Writer
 
 	// debugHelperCloseFnSlice debug工具
-	debugHelperCloseFnSlice []func() error
+	debugHelperCloseFnSlice []io.Closer
 
 	// loggerMutex 日志
 	loggerMutex                  sync.Once
 	logger                       log.Logger
-	loggerCloseFnSlice           []func() error
+	loggerCloseFnSlice           []io.Closer
 	loggerHelperMutex            sync.Once
 	loggerHelper                 log.Logger
-	loggerHelperCloseFnSlice     []func() error
+	loggerHelperCloseFnSlice     []io.Closer
 	loggerMiddlewareMutex        sync.Once
 	loggerMiddleware             log.Logger
-	loggerMiddlewareCloseFnSlice []func() error
+	loggerMiddlewareCloseFnSlice []io.Closer
 
 	// mysqlGormMutex mysql gorm
 	mysqlGormMutex sync.Once

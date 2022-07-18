@@ -33,8 +33,13 @@ func NewStdLogger(conf *ConfigStd) (*Std, error) {
 	return handler, nil
 }
 
-// Sync zap.Logger.Sync
-func (s *Std) Sync() error {
+// sync zap.Logger.Sync
+func (s *Std) sync() error {
+	return s.loggerHandler.Sync()
+}
+
+// Close zap.Logger.Sync
+func (s *Std) Close() error {
 	return s.loggerHandler.Sync()
 }
 

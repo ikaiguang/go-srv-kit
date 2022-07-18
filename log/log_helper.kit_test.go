@@ -1,6 +1,7 @@
 package logutil
 
 import (
+	"io"
 	"testing"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -47,7 +48,7 @@ func TestSetup_Xxx(t *testing.T) {
 	}
 
 	var (
-		oneLoggerFn = func(addSkip int) (log.Logger, func() error, error) {
+		oneLoggerFn = func(addSkip int) (log.Logger, io.Closer, error) {
 			stdLoggerConfig := &ConfigStd{
 				Level:      log.LevelDebug,
 				CallerSkip: DefaultCallerSkip + addSkip,
@@ -57,10 +58,10 @@ func TestSetup_Xxx(t *testing.T) {
 			if err != nil {
 				return logger, nil, err
 			}
-			return logger, logger.Sync, err
+			return logger, logger, err
 		}
-		multiLoggerFn = func(addSkip int) (log.Logger, []func() error, error) {
-			var closeFnSlice []func() error
+		multiLoggerFn = func(addSkip int) (log.Logger, []io.Closer, error) {
+			var closeFnSlice []io.Closer
 			logger1, syncFn1, err := oneLoggerFn(addSkip)
 			if err != nil {
 				return logger1, closeFnSlice, err
@@ -80,8 +81,8 @@ func TestSetup_Xxx(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var (
 				logger      log.Logger
-				syncFn      func() error
-				syncFnSlice []func() error
+				syncFn      io.Closer
+				syncFnSlice []io.Closer
 				err         error
 			)
 			if tt.isMulti {
@@ -115,7 +116,7 @@ func TestSetup_OneLogger_Xxx(t *testing.T) {
 	}
 	stdLogger, err := NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
-	defer func() { _ = stdLogger.Sync() }()
+	defer func() { _ = stdLogger.Close() }()
 
 	// CallerSkip: DefaultCallerSkip + 2,
 	//stdLogger = log.With(stdLogger, "caller", log.Caller(DefaultCallerValuer+2))
@@ -133,7 +134,7 @@ func TestSetup_OneLogger_With(t *testing.T) {
 	}
 	stdLoggerHandler, err := NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
-	defer func() { _ = stdLoggerHandler.Sync() }()
+	defer func() { _ = stdLoggerHandler.Close() }()
 
 	// CallerSkip: DefaultCallerSkip + 2,
 	var stdLogger log.Logger = stdLoggerHandler
@@ -152,7 +153,7 @@ func TestSetup_MultiLogger(t *testing.T) {
 	}
 	stdLogger, err := NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
-	defer func() { _ = stdLogger.Sync() }()
+	defer func() { _ = stdLogger.Close() }()
 
 	// two
 	stdLoggerConfig2 := &ConfigStd{
@@ -161,7 +162,7 @@ func TestSetup_MultiLogger(t *testing.T) {
 	}
 	stdLogger2, err := NewStdLogger(stdLoggerConfig2)
 	require.Nil(t, err)
-	defer func() { _ = stdLogger2.Sync() }()
+	defer func() { _ = stdLogger2.Close() }()
 
 	multiLogger := NewMultiLogger(stdLogger, stdLogger2)
 	multiLogger = log.With(multiLogger, "caller", log.Caller(DefaultCallerValuer+2))

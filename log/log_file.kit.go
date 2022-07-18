@@ -6,9 +6,10 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
 // 轮转日志参数
@@ -60,8 +61,13 @@ func NewFileLogger(conf *ConfigFile, opts ...Option) (*File, error) {
 	return handler, nil
 }
 
-// Sync zap.Logger.Sync
-func (s *File) Sync() error {
+// sync zap.Logger.Sync
+func (s *File) sync() error {
+	return s.loggerHandler.Sync()
+}
+
+// Close zap.Logger.Sync
+func (s *File) Close() error {
 	return s.loggerHandler.Sync()
 }
 
