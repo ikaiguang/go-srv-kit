@@ -1,9 +1,6 @@
 package mysqlutil
 
 import (
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
-	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
-	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/driver/mysql"
@@ -13,6 +10,10 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
+	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
+	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
 var (

@@ -1,7 +1,9 @@
 package gormutil
 
 import (
+	"github.com/stretchr/testify/require"
 	"testing"
+	"time"
 
 	pagev1 "github.com/ikaiguang/go-srv-kit/api/page/v1"
 	pageutil "github.com/ikaiguang/go-srv-kit/kit/page"
@@ -206,4 +208,20 @@ func TestPaging(t *testing.T) {
 			t.Log("==> idList", idList)
 		})
 	}
+}
+
+// go test -v ./data/gorm/ -count=1 -test.run=TestTest_CreateUser
+func TestTest_CreateUser(t *testing.T) {
+	userModel := &User{
+		Id:   0,
+		Name: "😊_" + time.Now().Format(time.RFC3339),
+		Age:  30,
+	}
+	err := dbConn.Create(userModel).Error
+	require.Nil(t, err)
+
+	var dataModel = &User{}
+	err = dbConn.Where("id = ?", userModel.Id).First(dataModel).Error
+	require.Nil(t, err)
+	t.Logf("==> dataModel : %#v\n", dataModel)
 }

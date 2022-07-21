@@ -11,13 +11,17 @@ info:
 	@echo "==> GIT_BRANCH: $(GIT_BRANCH)"
 	@echo "==> GIT_VERSION: $(GIT_VERSION)"
 
-.PHONY: proto_xxx
-proto_user:
-	go run ./cmd/proto/... -path=./api/xxx
-
 .PHONY: run
 run:
 	go run ./cmd/main/... -conf=./configs
+
+.PHONY: migrate
+migrate:
+	go run ./cmd/migration/... -conf=./configs
+
+.PHONY: proto_xxx
+proto_xxx:
+	go run ./cmd/proto/... -path=./api/xxx
 
 .PHONY: ping
 ping:

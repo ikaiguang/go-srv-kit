@@ -125,7 +125,7 @@ func (s *UserSlice) ConflictActionForPostgres() *BatchInsertConflictActionReq {
 func initMySQLDB() {
 	var (
 		err error
-		dsn = "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True"
+		dsn = "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&timeout=30s&parseTime=True"
 		opt = &gorm.Config{
 			PrepareStmt:                              true,
 			SkipDefaultTransaction:                   true,

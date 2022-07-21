@@ -17,6 +17,16 @@ import (
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
+var (
+	// _maxRequestArgs 设置最大请求参数
+	_maxRequestArgs uint = 1024 * 1024
+)
+
+// SetMaxRequestArgSize 设置最大请求参数
+func SetMaxRequestArgSize(size uint) {
+	_maxRequestArgs = size
+}
+
 // RequestMessage 请求信息
 type RequestMessage struct {
 	Kind      string
@@ -172,6 +182,9 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 				}
 				// 请求参数
 				errMessage.RequestArgs = extractArgs(req)
+				if len(errMessage.RequestArgs) > int(_maxRequestArgs) {
+					errMessage.RequestArgs = errMessage.RequestArgs[:_maxRequestArgs]
+				}
 
 				// 打印日志
 				kv = append(kv,

@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package kit.api.auth.authv1;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/api/auth/v1;authv1";
+option java_multiple_files = true;
+option java_package = "kit.api.auth.authv1";
+option java_outer_classname = "KitApiAuthAuthV1";
+
+// Payload 授权信息
+message Payload {
+  // id 唯一id
+  uint64 id = 1;
+  // uuid 唯一id
+  string uuid = 2;
+  // key 数据key、缓存key、...
+  string key = 3;
+  // platform 平台信息
+  PlatformEnum.Platform platform = 4;
+  // limit 登录限制类型
+  LimitTypeEnum.LimitType limit = 5;
+}
+
+// UserStatusEnum 用户状态
+message UserStatusEnum {
+  // UserStatus 枚举值
+  enum UserStatus {
+    // UNSPECIFIED 未指定
+    UNSPECIFIED = 0;
+
+    // INITIAL 初始状态
+    INITIAL = 1;
+    // ENABLE 启用
+    ENABLE = 2;
+    // DISABLE 禁用
+    DISABLE = 3;
+    // WHITELIST 白名单
+    WHITELIST = 4;
+    // BLACKLIST 黑名单
+    BLACKLIST = 5;
+    // DELETED 已删除
+    DELETED = 6;
+  }
+}
+
+// Platform 平台标识
+message PlatformEnum {
+  enum Platform {
+    // UNKNOWN 未知
+    UNKNOWN = 0;
+
+    // COMPUTER 电脑端
+    COMPUTER = 1;
+    // MOBILE 移动端
+    MOBILE = 2;
+
+    // ANDROID 安卓系统
+    ANDROID = 100;
+    // IOS 苹果系统
+    IOS = 101;
+
+    // WEB 网页
+    WEB = 200;
+    // H5 网页
+    H5 = 201;
+    // APPLET 小程序
+    APPLET = 203;
+    // APP 应用
+    APP = 204;
+    // ANDROID_APP 安卓应用
+    ANDROID_APP = 205;
+    // IOS_APP 苹果应用
+    IOS_APP = 206;
+    // IPAD_APP 平板应用
+    IPAD_APP = 207;
+  }
+}
+
+// LimitTypeEnum 登录限制类型
+message LimitTypeEnum {
+  // LimitType 登录限制类型
+  enum LimitType {
+    // UNKNOWN 未知
+    UNKNOWN = 0;
+
+    // UNLIMITED 无限制
+    UNLIMITED = 1;
+    // ONLY_ONE 同一账户仅允许登录一次(验证码...可强制登录)
+    ONLY_ONE = 2;
+    // SAME_PLATFORM 同一账户每个平台都可登录一次(验证码...可强制登录)
+    SAME_PLATFORM = 3;
+  }
+}
