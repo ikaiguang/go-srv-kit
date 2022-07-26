@@ -2,6 +2,7 @@ package authutil
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
@@ -100,6 +101,57 @@ func Server(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 					}
 				}
 				ctx = NewJWTContext(ctx, tokenInfo.Claims)
+				return handler(ctx, req)
+			}
+			return nil, ErrWrongContext
+		}
+	}
+}
+
+// Client is a client jwt middleware.
+func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
+	claims := jwt.RegisteredClaims{}
+	o := &options{
+		signingMethod: jwt.SigningMethodHS256,
+		claims:        func() jwt.Claims { return claims },
+	}
+	for _, opt := range opts {
+		opt(o)
+	}
+	return func(handler middleware.Handler) middleware.Handler {
+		return func(ctx context.Context, req interface{}) (interface{}, error) {
+			var keyProvider jwt.Keyfunc
+			if customKeyFunc == nil {
+				return nil, ErrMissingKeyFunc
+			}
+			ctx, keyProvider = customKeyFunc(ctx)
+			if keyProvider == nil {
+				return nil, ErrMissingKeyFunc
+			}
+			if keyProvider == nil {
+				return nil, ErrNeedTokenProvider
+			}
+			token := jwt.NewWithClaims(o.signingMethod, o.claims())
+			if o.tokenHeader != nil {
+				for k, v := range o.tokenHeader {
+					token.Header[k] = v
+				}
+			}
+			key, err := keyProvider(token)
+			if err != nil {
+				return nil, ErrGetKey
+			}
+			tokenStr, err := token.SignedString(key)
+			if err != nil {
+				return nil, ErrSignToken
+			}
+			if o.validator != nil {
+				if err = o.validator(token); err != nil {
+					return nil, err
+				}
+			}
+			if clientContext, ok := transport.FromClientContext(ctx); ok {
+				clientContext.RequestHeader().Set(AuthorizationKey, fmt.Sprintf(BearerFormat, tokenStr))
 				return handler(ctx, req)
 			}
 			return nil, ErrWrongContext
