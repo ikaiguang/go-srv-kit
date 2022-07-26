@@ -12,7 +12,6 @@ func Is(err, target error) bool {
 	}
 	errCause := FromError(err)
 	targetCause := FromError(target)
-	pkgerrors.Is()
 
 	return errors.Is(errCause, targetCause)
 }
