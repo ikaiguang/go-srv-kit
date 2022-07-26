@@ -1,5 +1,4 @@
-// Package jwtutil 摘自kratos子项目
-package jwtutil
+package authutil
 
 import "github.com/golang-jwt/jwt/v4"
 

@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package kit.api.error.errorv1;
+
+import "errors/errors.proto";
+
+// 多语言特定包名，用于源代码引用
+option go_package = "github.com/ikaiguang/go-srv-kit/api/base/error;errorv1";
+option java_multiple_files = true;
+option java_package = "kit.api.error.errorv1";
+option java_outer_classname = "KitApiErrorErrorV1";
+
+// ERROR .
+enum ERROR {
+  option (errors.default_code) = 500;
+
+  // UNKNOWN 常规
+  UNKNOWN = 0 [ (errors.code) = 404 ];
+  REQUEST_FAILURE = 1 [ (errors.code) = 503 ];
+  RECORD_NOT_FOUND = 2 [ (errors.code) = 404 ];
+  RECORD_ALREADY_EXISTS = 3 [ (errors.code) = 400 ];
+
+  // CONTINUE Continue
+  CONTINUE = 100 [ (errors.code) = 100 ];
+  PROCESSING = 102 [ (errors.code) = 102 ];
+
+  // OK OK
+  OK = 200 [ (errors.code) = 200 ];
+  CREATED = 201 [ (errors.code) = 201 ];
+  ACCEPTED = 202 [ (errors.code) = 202 ];
+  NO_CONTENT = 204 [ (errors.code) = 204 ];
+
+  // MULTIPLE_CHOICES MultipleChoices
+  MULTIPLE_CHOICES = 300 [ (errors.code) = 300 ];
+
+  // BAD_REQUEST Bad Request
+  BAD_REQUEST = 400 [ (errors.code) = 400 ];
+  UNAUTHORIZED = 401 [ (errors.code) = 401 ];
+  FORBIDDEN = 403 [ (errors.code) = 403 ];
+  NOT_FOUND = 404 [ (errors.code) = 404 ];
+  METHOD_NOT_ALLOWED = 405 [ (errors.code) = 405 ];
+  REQUEST_TIMEOUT = 408 [ (errors.code) = 408 ];
+  TOO_MANY_REQUESTS = 429 [ (errors.code) = 429 ];
+
+  // INTERNAL_SERVER Internal Server Error
+  INTERNAL_SERVER = 500 [ (errors.code) = 500 ];
+  NOT_IMPLEMENTED = 501 [ (errors.code) = 501 ];
+  BAD_GATEWAY = 502 [ (errors.code) = 502 ];
+  SERVICE_UNAVAILABLE = 503 [ (errors.code) = 503 ];
+  GATEWAY_TIMEOUT = 504 [ (errors.code) = 504 ];
+}

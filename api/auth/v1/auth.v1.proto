@@ -7,6 +7,9 @@ option java_multiple_files = true;
 option java_package = "kit.api.auth.authv1";
 option java_outer_classname = "KitApiAuthAuthV1";
 
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
 // Payload 授权信息
 message Payload {
   // id 唯一id
@@ -19,6 +22,19 @@ message Payload {
   PlatformEnum.Platform platform = 4;
   // limit 登录限制类型
   LimitTypeEnum.LimitType limit = 5;
+  // time 授权时间
+  // 用途1：可用于判断： 强制登录，登出其他账户
+  google.protobuf.Timestamp time = 6;
+}
+
+// Auth 验证数据、缓存数据、...
+message Auth {
+  // data 存储 用户数据、其他数据
+  google.protobuf.Any data = 1;
+  // payload 授权信息
+  Payload payload = 2;
+  // secret 密码
+  string secret = 3;
 }
 
 // UserStatusEnum 用户状态
@@ -85,9 +101,13 @@ message LimitTypeEnum {
 
     // UNLIMITED 无限制
     UNLIMITED = 1;
-    // ONLY_ONE 同一账户仅允许登录一次(验证码...可强制登录)
+    // ONLY_ONE 同一账户仅允许登录一次
+    // 方案1：验证码...可强制登录
+    // 方案2：强制登录，然后提示"强制下线/在其他终端登录"
     ONLY_ONE = 2;
-    // SAME_PLATFORM 同一账户每个平台都可登录一次(验证码...可强制登录)
+    // SAME_PLATFORM 同一账户每个平台都可登录一次
+    // 方案1：验证码...可强制登录
+    // 方案2：强制登录，然后提示"强制下线/在其他终端登录"
     SAME_PLATFORM = 3;
   }
 }

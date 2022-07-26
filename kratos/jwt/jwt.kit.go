@@ -4,51 +4,27 @@ package jwtutil
 import (
 	"context"
 	"fmt"
-	"strings"
-	"time"
-
 	"github.com/golang-jwt/jwt/v4"
+	"strings"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
 
-	authv1 "github.com/ikaiguang/go-srv-kit/api/auth/v1"
+	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
+	authutil "github.com/ikaiguang/go-srv-kit/kratos/auth"
 )
-
-// authKey context.Context key
-type authKey struct{}
 
 // KeyFunc 自定义 jwt.Keyfunc
-type KeyFunc func(context.Context) func(*jwt.Token) (interface{}, error)
+type KeyFunc func(context.Context) jwt.Keyfunc
 
-const (
-	// ExpireDuration 过期时间
-	ExpireDuration = time.Hour * 24 * 7
-
-	// BearerWord the bearer key word for authorization
-	BearerWord string = "Bearer"
-	// BearerFormat authorization token format
-	BearerFormat string = "Bearer %s"
-
-	// AuthorizationKey holds the key used to store the JWT Token in the request tokenHeader.
-	AuthorizationKey string = "Authorization"
-
-	// Reason holds the error reason.
-	Reason string = "UNAUTHORIZED"
-)
-
-// Claims jwt.Claims
-// 查看更多信息 jwt.RegisteredClaims
-type Claims struct {
-	jwt.RegisteredClaims
-
-	AuthPayload *authv1.Payload `json:"a_p,omitempty"`
-}
-
-// DefaultExpireTime 令牌过期时间
-func DefaultExpireTime() *jwt.NumericDate {
-	return jwt.NewNumericDate(time.Now().Add(ExpireDuration))
+// DefaultKeyFunc 默认 KeyFunc == jwt.Keyfunc
+func DefaultKeyFunc(secret string) KeyFunc {
+	return func(ctx context.Context) jwt.Keyfunc {
+		return func(token *jwt.Token) (interface{}, error) {
+			return []byte(secret), nil
+		}
+	}
 }
 
 // Server is a server auth middleware. Check the token and extract the info from token.
@@ -63,15 +39,15 @@ func Server(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
 			if header, ok := transport.FromServerContext(ctx); ok {
 				if jwtKeyFunc == nil {
-					return nil, ErrMissingKeyFunc
+					return nil, authutil.ErrMissingKeyFunc
 				}
 				keyFunc := jwtKeyFunc(ctx)
 				if keyFunc == nil {
-					return nil, ErrMissingKeyFunc
+					return nil, authutil.ErrMissingKeyFunc
 				}
-				auths := strings.SplitN(header.RequestHeader().Get(AuthorizationKey), " ", 2)
-				if len(auths) != 2 || !strings.EqualFold(auths[0], BearerWord) {
-					return nil, ErrMissingJwtToken
+				auths := strings.SplitN(header.RequestHeader().Get(authutil.AuthorizationKey), " ", 2)
+				if len(auths) != 2 || !strings.EqualFold(auths[0], authutil.BearerWord) {
+					return nil, authutil.ErrMissingJwtToken
 				}
 				jwtToken := auths[1]
 				var (
@@ -86,33 +62,38 @@ func Server(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				if err != nil {
 					ve, ok := err.(*jwt.ValidationError)
 					if !ok {
-						return nil, errors.Unauthorized(Reason, err.Error())
+						return nil, errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), err.Error())
 					}
 					if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-						return nil, ErrTokenInvalid
+						return nil, authutil.ErrTokenInvalid
 					}
 					if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-						return nil, ErrTokenExpired
+						return nil, authutil.ErrTokenExpired
 					}
-					return nil, ErrTokenParseFail
+					return nil, authutil.ErrTokenParseFail
 				}
 				if !tokenInfo.Valid {
-					return nil, ErrTokenInvalid
+					return nil, authutil.ErrTokenInvalid
 				}
 				if tokenInfo.Method != o.signingMethod {
-					return nil, ErrUnSupportSigningMethod
+					return nil, authutil.ErrUnSupportSigningMethod
 				}
 				if o.validator != nil {
 					if err = o.validator(tokenInfo); err != nil {
 						return nil, err
 					}
 				}
-				ctx = NewContext(ctx, tokenInfo.Claims)
+				ctx = authutil.NewJWTContext(ctx, tokenInfo.Claims)
 				return handler(ctx, req)
 			}
-			return nil, ErrWrongContext
+			return nil, authutil.ErrWrongContext
 		}
 	}
+}
+
+// FromContext ...
+func FromContext(ctx context.Context) (token jwt.Claims, ok bool) {
+	return authutil.FromJWTContext(ctx)
 }
 
 // Client is a client jwt middleware.
@@ -128,11 +109,11 @@ func Client(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
 			if jwtKeyFunc == nil {
-				return nil, ErrMissingKeyFunc
+				return nil, authutil.ErrMissingKeyFunc
 			}
 			keyProvider := jwtKeyFunc(ctx)
 			if keyProvider == nil {
-				return nil, ErrNeedTokenProvider
+				return nil, authutil.ErrNeedTokenProvider
 			}
 			token := jwt.NewWithClaims(o.signingMethod, o.claims())
 			if o.tokenHeader != nil {
@@ -142,11 +123,11 @@ func Client(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 			}
 			key, err := keyProvider(token)
 			if err != nil {
-				return nil, ErrGetKey
+				return nil, authutil.ErrGetKey
 			}
 			tokenStr, err := token.SignedString(key)
 			if err != nil {
-				return nil, ErrSignToken
+				return nil, authutil.ErrSignToken
 			}
 			if o.validator != nil {
 				if err = o.validator(token); err != nil {
@@ -154,21 +135,10 @@ func Client(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				}
 			}
 			if clientContext, ok := transport.FromClientContext(ctx); ok {
-				clientContext.RequestHeader().Set(AuthorizationKey, fmt.Sprintf(BearerFormat, tokenStr))
+				clientContext.RequestHeader().Set(authutil.AuthorizationKey, fmt.Sprintf(authutil.BearerFormat, tokenStr))
 				return handler(ctx, req)
 			}
-			return nil, ErrWrongContext
+			return nil, authutil.ErrWrongContext
 		}
 	}
-}
-
-// NewContext put auth info into context
-func NewContext(ctx context.Context, info jwt.Claims) context.Context {
-	return context.WithValue(ctx, authKey{}, info)
-}
-
-// FromContext extract auth info from context
-func FromContext(ctx context.Context) (token jwt.Claims, ok bool) {
-	token, ok = ctx.Value(authKey{}).(jwt.Claims)
-	return
 }

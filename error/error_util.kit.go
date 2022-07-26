@@ -5,6 +5,18 @@ import (
 	pkgerrors "github.com/pkg/errors"
 )
 
+// Is ...
+func Is(err, target error) bool {
+	if err == nil {
+		return false
+	}
+	errCause := FromError(err)
+	targetCause := FromError(target)
+	pkgerrors.Is()
+
+	return errors.Is(errCause, targetCause)
+}
+
 // Cause returns the underlying cause of the error
 func Cause(err error) error {
 	return pkgerrors.Cause(err)
