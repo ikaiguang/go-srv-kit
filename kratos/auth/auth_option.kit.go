@@ -1,6 +1,12 @@
 package authutil
 
-import "github.com/golang-jwt/jwt/v4"
+import (
+	"context"
+	"github.com/golang-jwt/jwt/v4"
+)
+
+// ValidateFunc 自定义
+type ValidateFunc func(context.Context, *jwt.Token) error
 
 // Option is jwt option.
 type Option func(*options)
@@ -10,7 +16,7 @@ type options struct {
 	signingMethod jwt.SigningMethod
 	claims        func() jwt.Claims
 	tokenHeader   map[string]interface{}
-	validator     func(*jwt.Token) error
+	validator     ValidateFunc
 }
 
 // WithSigningMethod with signing method option.
@@ -37,7 +43,7 @@ func WithTokenHeader(header map[string]interface{}) Option {
 }
 
 // WithValidator 自定义验证
-func WithValidator(validator func(*jwt.Token) error) Option {
+func WithValidator(validator ValidateFunc) Option {
 	return func(o *options) {
 		o.validator = validator
 	}

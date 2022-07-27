@@ -15,7 +15,7 @@ var (
 // Init 启动与配置与设置存储Packages
 func Init(opts ...Option) (err error) {
 	initEngineMutex.Do(func() {
-		engineInstance, err = Setup(opts...)
+		engineInstance, err = New(opts...)
 	})
 	if err != nil {
 		initEngineMutex = sync.Once{}
@@ -40,8 +40,8 @@ func Close() error {
 	return engineInstance.Close()
 }
 
-// Setup 启动与配置
-func Setup(opts ...Option) (engineHandler Engine, err error) {
+// New 启动与配置
+func New(opts ...Option) (engineHandler Engine, err error) {
 	// parses the command-line flags
 	flag.Parse()
 

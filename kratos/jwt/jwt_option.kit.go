@@ -1,7 +1,11 @@
 // Package jwtutil 摘自kratos子项目
 package jwtutil
 
-import "github.com/golang-jwt/jwt/v4"
+import (
+	"github.com/golang-jwt/jwt/v4"
+
+	authutil "github.com/ikaiguang/go-srv-kit/kratos/auth"
+)
 
 // Option is jwt option.
 type Option func(*options)
@@ -11,7 +15,7 @@ type options struct {
 	signingMethod jwt.SigningMethod
 	claims        func() jwt.Claims
 	tokenHeader   map[string]interface{}
-	validator     func(*jwt.Token) error
+	validator     authutil.ValidateFunc
 }
 
 // WithSigningMethod with signing method option.
@@ -38,7 +42,7 @@ func WithTokenHeader(header map[string]interface{}) Option {
 }
 
 // WithValidator 自定义验证
-func WithValidator(validator func(*jwt.Token) error) Option {
+func WithValidator(validator authutil.ValidateFunc) Option {
 	return func(o *options) {
 		o.validator = validator
 	}

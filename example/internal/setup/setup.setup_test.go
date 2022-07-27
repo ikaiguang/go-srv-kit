@@ -12,7 +12,7 @@ import (
 
 // go test -v ./example/internal/setup/ -count=1 -test.run=TestSetup -conf=./../../configs
 func TestSetup(t *testing.T) {
-	engineHandler, err := Setup()
+	engineHandler, err := New()
 	if err != nil {
 		t.Errorf("%+v\n", err)
 		t.FailNow()

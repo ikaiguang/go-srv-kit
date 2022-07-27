@@ -8,11 +8,12 @@ import (
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
+
 	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
 	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ResponseEncoder http.DefaultResponseEncoder
@@ -72,10 +73,6 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 
 	// return
 	codec, _ := http.CodecForRequest(r, "Accept")
-	dataBytes, err := codec.Marshal(respData)
-	if err != nil {
-		return err
-	}
 	switch codec.Name() {
 	case json.Name:
 		w.Header().Set("Content-Type", headerutil.ContentTypeJSONUtf8)
@@ -83,6 +80,12 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 		w.Header().Set("Content-Type", ContentType(codec.Name()))
 	}
 	w.WriteHeader(stdhttp.StatusOK)
+
+	// return
+	dataBytes, err := codec.Marshal(respData)
+	if err != nil {
+		return err
+	}
 	_, err = w.Write(dataBytes)
 	if err != nil {
 		return err
@@ -113,17 +116,20 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 	}
 
 	codec, _ := http.CodecForRequest(r, "Accept")
-	//body, err := codec.Marshal(se)
-	body, err := codec.Marshal(data)
-	if err != nil {
-		w.WriteHeader(stdhttp.StatusInternalServerError)
-		return
-	}
 	switch codec.Name() {
 	case json.Name:
 		w.Header().Set("Content-Type", headerutil.ContentTypeJSONUtf8)
 	default:
 		w.Header().Set("Content-Type", ContentType(codec.Name()))
+	}
+
+	// // return
+	//body, err := codec.Marshal(se)
+	body, err := codec.Marshal(data)
+	if err != nil {
+		w.WriteHeader(stdhttp.StatusInternalServerError)
+		_, _ = w.Write([]byte(err.Error()))
+		return
 	}
 	w.WriteHeader(stdhttp.StatusOK)
 	//w.WriteHeader(int(se.Code))

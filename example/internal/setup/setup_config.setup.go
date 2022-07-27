@@ -187,7 +187,7 @@ func (s *configuration) AppConfig() *confv1.App {
 
 // LoggerConfigForConsole 日志配置 控制台
 func (s *configuration) LoggerConfigForConsole() *confv1.Log_Console {
-	if s.conf.Log.Console == nil {
+	if s.conf.Log == nil {
 		return nil
 	}
 	return s.conf.Log.Console
@@ -195,7 +195,7 @@ func (s *configuration) LoggerConfigForConsole() *confv1.Log_Console {
 
 // LoggerConfigForFile 日志配置 文件
 func (s *configuration) LoggerConfigForFile() *confv1.Log_File {
-	if s.conf.Log.File == nil {
+	if s.conf.Log == nil {
 		return nil
 	}
 	return s.conf.Log.File

@@ -1,4 +1,4 @@
-package migrationuitl
+package migrationutil
 
 import (
 	"gorm.io/gorm"

@@ -30,14 +30,14 @@ func (s *engines) Close() (err error) {
 
 		// Panic
 		if len(errInfos) > 0 {
-			stdlog.Printf("|*** 退出程序 发生Panic：\n%s\n", strings.Join(errInfos, "\n"))
+			stdlog.Printf("|*** 退出程序：发生Panic：\n%s\n", strings.Join(errInfos, "\n"))
 		}
-		stdlog.Printf("|*** 退出程序 发生Panic：%v\n", panicRecover)
+		stdlog.Printf("|*** 退出程序：发生Panic：%v\n", panicRecover)
 	}()
 
 	// 缓存
 	if s.redisClient != nil {
-		stdlog.Println("|*** 退出程序：关闭Redis客户端")
+		stdlog.Println("|*** 退出程序：关闭：Redis客户端")
 		err := s.redisClient.Close()
 		if err != nil {
 			errorPrefix := "redisClient.Close error : "
@@ -47,7 +47,7 @@ func (s *engines) Close() (err error) {
 
 	// 数据库
 	if s.mysqlGormDB != nil {
-		stdlog.Println("|*** 退出程序：关闭MySQL-GORM")
+		stdlog.Println("|*** 退出程序：关闭：MySQL-GORM")
 		errorPrefix := "mysqlGormDB.Close error : "
 		connPool, err := s.mysqlGormDB.DB()
 		if err != nil {
@@ -57,7 +57,7 @@ func (s *engines) Close() (err error) {
 		}
 	}
 	if s.postgresGormDB != nil {
-		stdlog.Println("|*** 退出程序：关闭Postgres-GORM")
+		stdlog.Println("|*** 退出程序：关闭：Postgres-GORM")
 		errorPrefix := "postgresGormDB.Close error : "
 		connPool, err := s.postgresGormDB.DB()
 		if err != nil {
@@ -69,7 +69,7 @@ func (s *engines) Close() (err error) {
 
 	// debug
 	if len(s.debugHelperCloseFnSlice) > 0 {
-		stdlog.Println("|*** 退出程序：关闭调试工具debugutil")
+		stdlog.Println("|*** 退出程序：关闭：调试工具debugutil")
 	}
 	for i := range s.debugHelperCloseFnSlice {
 		err = s.debugHelperCloseFnSlice[i].Close()
@@ -81,7 +81,7 @@ func (s *engines) Close() (err error) {
 
 	// 日志
 	if len(s.loggerCloseFnSlice) > 0 {
-		stdlog.Println("|*** 退出程序：关闭日志输出实例")
+		stdlog.Println("|*** 退出程序：关闭：日志输出实例")
 	}
 	for i := range s.loggerCloseFnSlice {
 		err = s.loggerCloseFnSlice[i].Close()
@@ -93,7 +93,7 @@ func (s *engines) Close() (err error) {
 
 	// 日志工具
 	if len(s.loggerHelperCloseFnSlice) > 0 {
-		stdlog.Println("|*** 退出程序：关闭日志输出工具")
+		stdlog.Println("|*** 退出程序：关闭：日志输出工具")
 	}
 	for i := range s.loggerHelperCloseFnSlice {
 		err := s.loggerHelperCloseFnSlice[i].Close()
@@ -105,7 +105,7 @@ func (s *engines) Close() (err error) {
 
 	// 中间件日志工具
 	if len(s.loggerMiddlewareCloseFnSlice) > 0 {
-		stdlog.Println("|*** 退出程序：关闭中间件日志输出工具")
+		stdlog.Println("|*** 退出程序：关闭：中间件日志输出工具")
 	}
 	for i := range s.loggerMiddlewareCloseFnSlice {
 		err = s.loggerMiddlewareCloseFnSlice[i].Close()
@@ -120,7 +120,7 @@ func (s *engines) Close() (err error) {
 		Close() error
 	}
 	if writerCloser, ok := s.loggerFileWriter.(closer); ok {
-		stdlog.Println("|*** 退出程序：关闭Writer")
+		stdlog.Println("|*** 退出程序：关闭：日志Writer")
 		if err := writerCloser.Close(); err != nil {
 			errorPrefix := "loggerFileWriter.Close error : "
 			errInfos = append(errInfos, errorPrefix+err.Error())

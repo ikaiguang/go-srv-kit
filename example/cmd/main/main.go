@@ -24,6 +24,13 @@ func newApp(engineHandler setup.Engine) (app *kratos.App, err error) {
 		return app, err
 	}
 	log.SetLogger(logger)
+	//errorutil.DefaultStackTracerDepth += 2
+
+	// 加载程序运行环境
+	err = LoadingAppEnv(engineHandler)
+	if err != nil {
+		return app, err
+	}
 
 	// 服务
 	hs, err := servers.NewHTTPServer(engineHandler)
@@ -52,6 +59,12 @@ func newApp(engineHandler setup.Engine) (app *kratos.App, err error) {
 		kratos.Server(hs, gs),
 	)
 	return app, err
+}
+
+// LoadingAppEnv 加载程序运行环境
+func LoadingAppEnv(engineHandler setup.Engine) error {
+	//stdlog.Printf("|*** 加载程序运行环境：XXX")
+	return nil
 }
 
 // go run ./example/cmd/main/... -conf=./example/configs

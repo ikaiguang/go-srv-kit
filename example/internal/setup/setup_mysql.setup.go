@@ -17,21 +17,20 @@ func (s *engines) GetMySQLGormDB() (*gorm.DB, error) {
 	var err error
 	s.mysqlGormMutex.Do(func() {
 		s.mysqlGormDB, err = s.loadingMysqlGormDB()
+		if err != nil {
+			s.mysqlGormMutex = sync.Once{}
+		}
 	})
-	if err != nil {
-		s.mysqlGormMutex = sync.Once{}
-		return nil, err
-	}
 	return s.mysqlGormDB, err
 }
 
 // loadingMysqlGormDB mysql gorm 数据库
 func (s *engines) loadingMysqlGormDB() (*gorm.DB, error) {
 	if s.Config.MySQLConfig() == nil {
-		stdlog.Println("|*** 加载MySQL-GORM：未初始化")
+		stdlog.Println("|*** 加载：MySQL-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
-	stdlog.Println("|*** 加载MySQL-GORM：...")
+	stdlog.Println("|*** 加载：MySQL-GORM：...")
 
 	// logger writer
 	var (

@@ -1,29 +1,8 @@
-package migrationuitl
+package migrationutil
 
 import (
 	"time"
 )
-
-// Migration 数据库迁移
-// 文档地址：https://gorm.io/docs/models.html
-// MySQL 支持 unsigned
-// Postgres 不支持 unsigned
-// MySQL 支持 auto_increment
-// Postgres : serial or bigserial
-type Migration struct {
-	Id                 uint64    `gorm:"column:id;primaryKey;type:uint;autoIncrement;comment:ID"`
-	MigrationKey       string    `gorm:"column:migration_key;uniqueIndex;type:string;size:255;not null;default:'';comment:迁移key：唯一"`
-	MigrationBatch     uint      `gorm:"column:migration_batch;type:uint;not null;default:0;comment:迁移批次"`
-	MigrationDesc      string    `gorm:"column:migration_desc;type:text;not null;comment:迁移描述"`
-	MigrationExtraInfo string    `gorm:"column:migration_extra_info;type:json;not null;comment:迁移：额外信息"`
-	CreatedTime        time.Time `gorm:"column:created_time;type:time;not null;autoCreateTime:milli;comment:创建时间"`
-	UpdatedTime        time.Time `gorm:"column:updated_time;type:time;not null;autoUpdateTime:milli;comment:更新时间"`
-}
-
-// TableName 表名
-func (s *Migration) TableName() string {
-	return DefaultMigrationTableName
-}
 
 // TestMigration test
 // 文档地址：https://gorm.io/docs/models.html

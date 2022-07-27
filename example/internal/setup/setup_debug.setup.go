@@ -11,7 +11,7 @@ func (s *engines) loadingDebugUtil() error {
 	if !s.Config.IsDebugMode() {
 		return nil
 	}
-	stdlog.Printf("|*** 加载调试工具debugutil")
+	stdlog.Printf("|*** 加载：调试工具debugutil")
 	syncFn, err := debugutil.Setup()
 	if err != nil {
 		return err

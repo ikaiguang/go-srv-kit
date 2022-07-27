@@ -1,4 +1,4 @@
-package migrationuitl
+package migrationutil
 
 import (
 	"fmt"
@@ -7,11 +7,12 @@ import (
 	"testing"
 	"time"
 
-	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 )
 
 // go test -v -count=1 ./data/migration -test.run=TestMigrateALL_MySQL
@@ -37,24 +38,14 @@ func TestMigrateALL_MySQL(t *testing.T) {
 		},
 	}
 
-	for i := range args {
-		MustRegisterMigrate(args[i].repo)
+	for _, data := range args {
+		t.Run(data.name, func(t *testing.T) {
+			err := data.repo.Up()
+			require.Nil(t, err)
+			err = data.repo.Down()
+			require.Nil(t, err)
+		})
 	}
-
-	// 迁移
-	err = MigrateALL()
-	require.Nil(t, err)
-	err = Migrate(testMg.Identifier(), normalMg.Identifier())
-	require.Nil(t, err)
-	err = MigrateRepos(testMg, normalMg)
-	require.Nil(t, err)
-	// 回滚
-	err = RollbackALL()
-	require.Nil(t, err)
-	err = Rollback(testMg.Identifier(), normalMg.Identifier())
-	require.Nil(t, err)
-	err = RollbackRepos(testMg, normalMg)
-	require.Nil(t, err)
 }
 
 // newMysqlDB ...

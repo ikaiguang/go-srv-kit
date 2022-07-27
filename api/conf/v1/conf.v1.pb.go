@@ -113,6 +113,10 @@ type App struct {
 	Endpoints []string `protobuf:"bytes,4,rep,name=endpoints,proto3" json:"endpoints,omitempty"`
 	// metadata 元数据
 	Metadata map[string]string `protobuf:"bytes,5,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// setting 设置
+	Auth *App_Auth `protobuf:"bytes,6,opt,name=auth,proto3" json:"auth,omitempty"`
+	// setting 设置
+	Setting *App_Setting `protobuf:"bytes,7,opt,name=setting,proto3" json:"setting,omitempty"`
 }
 
 func (x *App) Reset() {
@@ -178,6 +182,20 @@ func (x *App) GetEndpoints() []string {
 func (x *App) GetMetadata() map[string]string {
 	if x != nil {
 		return x.Metadata
+	}
+	return nil
+}
+
+func (x *App) GetAuth() *App_Auth {
+	if x != nil {
+		return x.Auth
+	}
+	return nil
+}
+
+func (x *App) GetSetting() *App_Setting {
+	if x != nil {
+		return x.Setting
 	}
 	return nil
 }
@@ -362,6 +380,136 @@ func (x *Server) GetGrpc() *Server_GRPC {
 	return nil
 }
 
+// Setting 设置
+type App_Setting struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// enable_db_migrate 启用数据库迁移
+	EnableDbMigrate bool `protobuf:"varint,1,opt,name=enable_db_migrate,json=enableDbMigrate,proto3" json:"enable_db_migrate,omitempty"`
+	// enable_schedule_task 启用定时任务、计划任务
+	EnableScheduleTask bool `protobuf:"varint,2,opt,name=enable_schedule_task,json=enableScheduleTask,proto3" json:"enable_schedule_task,omitempty"`
+}
+
+func (x *App_Setting) Reset() {
+	*x = App_Setting{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *App_Setting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*App_Setting) ProtoMessage() {}
+
+func (x *App_Setting) ProtoReflect() protoreflect.Message {
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use App_Setting.ProtoReflect.Descriptor instead.
+func (*App_Setting) Descriptor() ([]byte, []int) {
+	return file_api_conf_v1_conf_v1_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *App_Setting) GetEnableDbMigrate() bool {
+	if x != nil {
+		return x.EnableDbMigrate
+	}
+	return false
+}
+
+func (x *App_Setting) GetEnableScheduleTask() bool {
+	if x != nil {
+		return x.EnableScheduleTask
+	}
+	return false
+}
+
+// Auth 验证
+type App_Auth struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	AdminKey   string `protobuf:"bytes,1,opt,name=admin_key,json=adminKey,proto3" json:"admin_key,omitempty"`
+	ApiKey     string `protobuf:"bytes,2,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	WebKey     string `protobuf:"bytes,3,opt,name=web_key,json=webKey,proto3" json:"web_key,omitempty"`
+	ServiceKey string `protobuf:"bytes,4,opt,name=service_key,json=serviceKey,proto3" json:"service_key,omitempty"`
+}
+
+func (x *App_Auth) Reset() {
+	*x = App_Auth{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *App_Auth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*App_Auth) ProtoMessage() {}
+
+func (x *App_Auth) ProtoReflect() protoreflect.Message {
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use App_Auth.ProtoReflect.Descriptor instead.
+func (*App_Auth) Descriptor() ([]byte, []int) {
+	return file_api_conf_v1_conf_v1_proto_rawDescGZIP(), []int{1, 1}
+}
+
+func (x *App_Auth) GetAdminKey() string {
+	if x != nil {
+		return x.AdminKey
+	}
+	return ""
+}
+
+func (x *App_Auth) GetApiKey() string {
+	if x != nil {
+		return x.ApiKey
+	}
+	return ""
+}
+
+func (x *App_Auth) GetWebKey() string {
+	if x != nil {
+		return x.WebKey
+	}
+	return ""
+}
+
+func (x *App_Auth) GetServiceKey() string {
+	if x != nil {
+		return x.ServiceKey
+	}
+	return ""
+}
+
 // Console 输出到控制台
 type Log_Console struct {
 	state         protoimpl.MessageState
@@ -377,7 +525,7 @@ type Log_Console struct {
 func (x *Log_Console) Reset() {
 	*x = Log_Console{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[6]
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -390,7 +538,7 @@ func (x *Log_Console) String() string {
 func (*Log_Console) ProtoMessage() {}
 
 func (x *Log_Console) ProtoReflect() protoreflect.Message {
-	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[6]
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -451,7 +599,7 @@ type Log_File struct {
 func (x *Log_File) Reset() {
 	*x = Log_File{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[7]
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -464,7 +612,7 @@ func (x *Log_File) String() string {
 func (*Log_File) ProtoMessage() {}
 
 func (x *Log_File) ProtoReflect() protoreflect.Message {
-	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[7]
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -562,7 +710,7 @@ type Data_MySQL struct {
 func (x *Data_MySQL) Reset() {
 	*x = Data_MySQL{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[8]
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -575,7 +723,7 @@ func (x *Data_MySQL) String() string {
 func (*Data_MySQL) ProtoMessage() {}
 
 func (x *Data_MySQL) ProtoReflect() protoreflect.Message {
-	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[8]
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +828,7 @@ type Data_Redis struct {
 func (x *Data_Redis) Reset() {
 	*x = Data_Redis{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[9]
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -693,7 +841,7 @@ func (x *Data_Redis) String() string {
 func (*Data_Redis) ProtoMessage() {}
 
 func (x *Data_Redis) ProtoReflect() protoreflect.Message {
-	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[9]
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -812,7 +960,7 @@ type Data_PSQL struct {
 func (x *Data_PSQL) Reset() {
 	*x = Data_PSQL{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[10]
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -825,7 +973,7 @@ func (x *Data_PSQL) String() string {
 func (*Data_PSQL) ProtoMessage() {}
 
 func (x *Data_PSQL) ProtoReflect() protoreflect.Message {
-	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[10]
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -921,7 +1069,7 @@ type Server_HTTP struct {
 func (x *Server_HTTP) Reset() {
 	*x = Server_HTTP{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[11]
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -934,7 +1082,7 @@ func (x *Server_HTTP) String() string {
 func (*Server_HTTP) ProtoMessage() {}
 
 func (x *Server_HTTP) ProtoReflect() protoreflect.Message {
-	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[11]
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -988,7 +1136,7 @@ type Server_GRPC struct {
 func (x *Server_GRPC) Reset() {
 	*x = Server_GRPC{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[12]
+		mi := &file_api_conf_v1_conf_v1_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1001,7 +1149,7 @@ func (x *Server_GRPC) String() string {
 func (*Server_GRPC) ProtoMessage() {}
 
 func (x *Server_GRPC) ProtoReflect() protoreflect.Message {
-	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[12]
+	mi := &file_api_conf_v1_conf_v1_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1058,7 +1206,7 @@ var file_api_conf_v1_conf_v1_proto_rawDesc = []byte{
 	0x04, 0x64, 0x61, 0x74, 0x61, 0x12, 0x33, 0x0a, 0x06, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x18,
 	0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x6b, 0x69, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e,
 	0x63, 0x6f, 0x6e, 0x66, 0x2e, 0x63, 0x6f, 0x6e, 0x66, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x72, 0x76,
-	0x65, 0x72, 0x52, 0x06, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x22, 0xe4, 0x01, 0x0a, 0x03, 0x41,
+	0x65, 0x72, 0x52, 0x06, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x22, 0xb4, 0x04, 0x0a, 0x03, 0x41,
 	0x70, 0x70, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
 	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e,
@@ -1069,7 +1217,28 @@ var file_api_conf_v1_conf_v1_proto_rawDesc = []byte{
 	0x28, 0x0b, 0x32, 0x26, 0x2e, 0x6b, 0x69, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x63, 0x6f, 0x6e,
 	0x66, 0x2e, 0x63, 0x6f, 0x6e, 0x66, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70, 0x2e, 0x4d, 0x65, 0x74,
 	0x61, 0x64, 0x61, 0x74, 0x61, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x1a, 0x3b, 0x0a, 0x0d, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0x12, 0x31, 0x0a, 0x04, 0x61, 0x75, 0x74, 0x68, 0x18, 0x06, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x6b, 0x69, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x63, 0x6f, 0x6e,
+	0x66, 0x2e, 0x63, 0x6f, 0x6e, 0x66, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70, 0x2e, 0x41, 0x75, 0x74,
+	0x68, 0x52, 0x04, 0x61, 0x75, 0x74, 0x68, 0x12, 0x3a, 0x0a, 0x07, 0x73, 0x65, 0x74, 0x74, 0x69,
+	0x6e, 0x67, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x6b, 0x69, 0x74, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x63, 0x6f, 0x6e, 0x66, 0x2e, 0x63, 0x6f, 0x6e, 0x66, 0x76, 0x31, 0x2e, 0x41,
+	0x70, 0x70, 0x2e, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x73, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x1a, 0x67, 0x0a, 0x07, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x12, 0x2a,
+	0x0a, 0x11, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x64, 0x62, 0x5f, 0x6d, 0x69, 0x67, 0x72,
+	0x61, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x65, 0x6e, 0x61, 0x62, 0x6c,
+	0x65, 0x44, 0x62, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x30, 0x0a, 0x14, 0x65, 0x6e,
+	0x61, 0x62, 0x6c, 0x65, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x5f, 0x74, 0x61,
+	0x73, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x12, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65,
+	0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x54, 0x61, 0x73, 0x6b, 0x1a, 0x76, 0x0a, 0x04,
+	0x41, 0x75, 0x74, 0x68, 0x12, 0x1b, 0x0a, 0x09, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x6b, 0x65,
+	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x4b, 0x65,
+	0x79, 0x12, 0x17, 0x0a, 0x07, 0x61, 0x70, 0x69, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x06, 0x61, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x12, 0x17, 0x0a, 0x07, 0x77, 0x65,
+	0x62, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x77, 0x65, 0x62,
+	0x4b, 0x65, 0x79, 0x12, 0x1f, 0x0a, 0x0b, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x6b,
+	0x65, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x4b, 0x65, 0x79, 0x1a, 0x3b, 0x0a, 0x0d, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
 	0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38,
@@ -1240,56 +1409,60 @@ func file_api_conf_v1_conf_v1_proto_rawDescGZIP() []byte {
 	return file_api_conf_v1_conf_v1_proto_rawDescData
 }
 
-var file_api_conf_v1_conf_v1_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_api_conf_v1_conf_v1_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_api_conf_v1_conf_v1_proto_goTypes = []interface{}{
 	(*Bootstrap)(nil),           // 0: kit.api.conf.confv1.Bootstrap
 	(*App)(nil),                 // 1: kit.api.conf.confv1.App
 	(*Log)(nil),                 // 2: kit.api.conf.confv1.Log
 	(*Data)(nil),                // 3: kit.api.conf.confv1.Data
 	(*Server)(nil),              // 4: kit.api.conf.confv1.Server
-	nil,                         // 5: kit.api.conf.confv1.App.MetadataEntry
-	(*Log_Console)(nil),         // 6: kit.api.conf.confv1.Log.Console
-	(*Log_File)(nil),            // 7: kit.api.conf.confv1.Log.File
-	(*Data_MySQL)(nil),          // 8: kit.api.conf.confv1.Data.MySQL
-	(*Data_Redis)(nil),          // 9: kit.api.conf.confv1.Data.Redis
-	(*Data_PSQL)(nil),           // 10: kit.api.conf.confv1.Data.PSQL
-	(*Server_HTTP)(nil),         // 11: kit.api.conf.confv1.Server.HTTP
-	(*Server_GRPC)(nil),         // 12: kit.api.conf.confv1.Server.GRPC
-	(*durationpb.Duration)(nil), // 13: google.protobuf.Duration
+	(*App_Setting)(nil),         // 5: kit.api.conf.confv1.App.Setting
+	(*App_Auth)(nil),            // 6: kit.api.conf.confv1.App.Auth
+	nil,                         // 7: kit.api.conf.confv1.App.MetadataEntry
+	(*Log_Console)(nil),         // 8: kit.api.conf.confv1.Log.Console
+	(*Log_File)(nil),            // 9: kit.api.conf.confv1.Log.File
+	(*Data_MySQL)(nil),          // 10: kit.api.conf.confv1.Data.MySQL
+	(*Data_Redis)(nil),          // 11: kit.api.conf.confv1.Data.Redis
+	(*Data_PSQL)(nil),           // 12: kit.api.conf.confv1.Data.PSQL
+	(*Server_HTTP)(nil),         // 13: kit.api.conf.confv1.Server.HTTP
+	(*Server_GRPC)(nil),         // 14: kit.api.conf.confv1.Server.GRPC
+	(*durationpb.Duration)(nil), // 15: google.protobuf.Duration
 }
 var file_api_conf_v1_conf_v1_proto_depIdxs = []int32{
 	1,  // 0: kit.api.conf.confv1.Bootstrap.app:type_name -> kit.api.conf.confv1.App
 	2,  // 1: kit.api.conf.confv1.Bootstrap.log:type_name -> kit.api.conf.confv1.Log
 	3,  // 2: kit.api.conf.confv1.Bootstrap.data:type_name -> kit.api.conf.confv1.Data
 	4,  // 3: kit.api.conf.confv1.Bootstrap.server:type_name -> kit.api.conf.confv1.Server
-	5,  // 4: kit.api.conf.confv1.App.metadata:type_name -> kit.api.conf.confv1.App.MetadataEntry
-	6,  // 5: kit.api.conf.confv1.Log.console:type_name -> kit.api.conf.confv1.Log.Console
-	7,  // 6: kit.api.conf.confv1.Log.file:type_name -> kit.api.conf.confv1.Log.File
-	8,  // 7: kit.api.conf.confv1.Data.mysql:type_name -> kit.api.conf.confv1.Data.MySQL
-	9,  // 8: kit.api.conf.confv1.Data.redis:type_name -> kit.api.conf.confv1.Data.Redis
-	10, // 9: kit.api.conf.confv1.Data.psql:type_name -> kit.api.conf.confv1.Data.PSQL
-	11, // 10: kit.api.conf.confv1.Server.http:type_name -> kit.api.conf.confv1.Server.HTTP
-	12, // 11: kit.api.conf.confv1.Server.grpc:type_name -> kit.api.conf.confv1.Server.GRPC
-	13, // 12: kit.api.conf.confv1.Log.File.rotate_time:type_name -> google.protobuf.Duration
-	13, // 13: kit.api.conf.confv1.Log.File.storage_age:type_name -> google.protobuf.Duration
-	13, // 14: kit.api.conf.confv1.Data.MySQL.slow_threshold:type_name -> google.protobuf.Duration
-	13, // 15: kit.api.conf.confv1.Data.MySQL.conn_max_lifetime:type_name -> google.protobuf.Duration
-	13, // 16: kit.api.conf.confv1.Data.MySQL.conn_max_idle_time:type_name -> google.protobuf.Duration
-	13, // 17: kit.api.conf.confv1.Data.Redis.dial_timeout:type_name -> google.protobuf.Duration
-	13, // 18: kit.api.conf.confv1.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
-	13, // 19: kit.api.conf.confv1.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
-	13, // 20: kit.api.conf.confv1.Data.Redis.conn_max_lifetime:type_name -> google.protobuf.Duration
-	13, // 21: kit.api.conf.confv1.Data.Redis.conn_max_idle_time:type_name -> google.protobuf.Duration
-	13, // 22: kit.api.conf.confv1.Data.PSQL.slow_threshold:type_name -> google.protobuf.Duration
-	13, // 23: kit.api.conf.confv1.Data.PSQL.conn_max_lifetime:type_name -> google.protobuf.Duration
-	13, // 24: kit.api.conf.confv1.Data.PSQL.conn_max_idle_time:type_name -> google.protobuf.Duration
-	13, // 25: kit.api.conf.confv1.Server.HTTP.timeout:type_name -> google.protobuf.Duration
-	13, // 26: kit.api.conf.confv1.Server.GRPC.timeout:type_name -> google.protobuf.Duration
-	27, // [27:27] is the sub-list for method output_type
-	27, // [27:27] is the sub-list for method input_type
-	27, // [27:27] is the sub-list for extension type_name
-	27, // [27:27] is the sub-list for extension extendee
-	0,  // [0:27] is the sub-list for field type_name
+	7,  // 4: kit.api.conf.confv1.App.metadata:type_name -> kit.api.conf.confv1.App.MetadataEntry
+	6,  // 5: kit.api.conf.confv1.App.auth:type_name -> kit.api.conf.confv1.App.Auth
+	5,  // 6: kit.api.conf.confv1.App.setting:type_name -> kit.api.conf.confv1.App.Setting
+	8,  // 7: kit.api.conf.confv1.Log.console:type_name -> kit.api.conf.confv1.Log.Console
+	9,  // 8: kit.api.conf.confv1.Log.file:type_name -> kit.api.conf.confv1.Log.File
+	10, // 9: kit.api.conf.confv1.Data.mysql:type_name -> kit.api.conf.confv1.Data.MySQL
+	11, // 10: kit.api.conf.confv1.Data.redis:type_name -> kit.api.conf.confv1.Data.Redis
+	12, // 11: kit.api.conf.confv1.Data.psql:type_name -> kit.api.conf.confv1.Data.PSQL
+	13, // 12: kit.api.conf.confv1.Server.http:type_name -> kit.api.conf.confv1.Server.HTTP
+	14, // 13: kit.api.conf.confv1.Server.grpc:type_name -> kit.api.conf.confv1.Server.GRPC
+	15, // 14: kit.api.conf.confv1.Log.File.rotate_time:type_name -> google.protobuf.Duration
+	15, // 15: kit.api.conf.confv1.Log.File.storage_age:type_name -> google.protobuf.Duration
+	15, // 16: kit.api.conf.confv1.Data.MySQL.slow_threshold:type_name -> google.protobuf.Duration
+	15, // 17: kit.api.conf.confv1.Data.MySQL.conn_max_lifetime:type_name -> google.protobuf.Duration
+	15, // 18: kit.api.conf.confv1.Data.MySQL.conn_max_idle_time:type_name -> google.protobuf.Duration
+	15, // 19: kit.api.conf.confv1.Data.Redis.dial_timeout:type_name -> google.protobuf.Duration
+	15, // 20: kit.api.conf.confv1.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
+	15, // 21: kit.api.conf.confv1.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
+	15, // 22: kit.api.conf.confv1.Data.Redis.conn_max_lifetime:type_name -> google.protobuf.Duration
+	15, // 23: kit.api.conf.confv1.Data.Redis.conn_max_idle_time:type_name -> google.protobuf.Duration
+	15, // 24: kit.api.conf.confv1.Data.PSQL.slow_threshold:type_name -> google.protobuf.Duration
+	15, // 25: kit.api.conf.confv1.Data.PSQL.conn_max_lifetime:type_name -> google.protobuf.Duration
+	15, // 26: kit.api.conf.confv1.Data.PSQL.conn_max_idle_time:type_name -> google.protobuf.Duration
+	15, // 27: kit.api.conf.confv1.Server.HTTP.timeout:type_name -> google.protobuf.Duration
+	15, // 28: kit.api.conf.confv1.Server.GRPC.timeout:type_name -> google.protobuf.Duration
+	29, // [29:29] is the sub-list for method output_type
+	29, // [29:29] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_api_conf_v1_conf_v1_proto_init() }
@@ -1358,8 +1531,8 @@ func file_api_conf_v1_conf_v1_proto_init() {
 				return nil
 			}
 		}
-		file_api_conf_v1_conf_v1_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Log_Console); i {
+		file_api_conf_v1_conf_v1_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*App_Setting); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1370,8 +1543,8 @@ func file_api_conf_v1_conf_v1_proto_init() {
 				return nil
 			}
 		}
-		file_api_conf_v1_conf_v1_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Log_File); i {
+		file_api_conf_v1_conf_v1_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*App_Auth); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1383,7 +1556,7 @@ func file_api_conf_v1_conf_v1_proto_init() {
 			}
 		}
 		file_api_conf_v1_conf_v1_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Data_MySQL); i {
+			switch v := v.(*Log_Console); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1395,7 +1568,7 @@ func file_api_conf_v1_conf_v1_proto_init() {
 			}
 		}
 		file_api_conf_v1_conf_v1_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Data_Redis); i {
+			switch v := v.(*Log_File); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1407,7 +1580,7 @@ func file_api_conf_v1_conf_v1_proto_init() {
 			}
 		}
 		file_api_conf_v1_conf_v1_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Data_PSQL); i {
+			switch v := v.(*Data_MySQL); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1419,7 +1592,7 @@ func file_api_conf_v1_conf_v1_proto_init() {
 			}
 		}
 		file_api_conf_v1_conf_v1_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Server_HTTP); i {
+			switch v := v.(*Data_Redis); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1431,6 +1604,30 @@ func file_api_conf_v1_conf_v1_proto_init() {
 			}
 		}
 		file_api_conf_v1_conf_v1_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Data_PSQL); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_conf_v1_conf_v1_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Server_HTTP); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_conf_v1_conf_v1_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Server_GRPC); i {
 			case 0:
 				return &v.state
@@ -1449,7 +1646,7 @@ func file_api_conf_v1_conf_v1_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_conf_v1_conf_v1_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

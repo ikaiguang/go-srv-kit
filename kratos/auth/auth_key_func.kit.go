@@ -12,21 +12,45 @@ import (
 	logutil "github.com/ikaiguang/go-srv-kit/log"
 )
 
+// KeyFuncOption is jwt option.
+type KeyFuncOption func(*keyFuncOptions)
+
+// CustomSecretFunc 自定义密码
+type CustomSecretFunc func(ctx context.Context, secret string) string
+
+// keyFuncOptions Parser is a jwt parser
+type keyFuncOptions struct {
+	customSecretFunc CustomSecretFunc
+}
+
+// WithSecretPrefix 密码前缀；用于区分特定的环境；例如：admin/user
+func WithSecretPrefix(customSecretFunc CustomSecretFunc) KeyFuncOption {
+	return func(o *keyFuncOptions) {
+		o.customSecretFunc = customSecretFunc
+	}
+}
+
 // RedisKeyFuncRepo ...
 type RedisKeyFuncRepo interface {
 	KeyFunc(ctx context.Context) (context.Context, jwt.Keyfunc)
 }
 
-// NewRedisKeyFunc ...
-func NewRedisKeyFunc(redisCC *redis.Client) RedisKeyFuncRepo {
-	return &redisKeyFunc{
-		redisCC: redisCC,
-	}
-}
-
 // redisKeyFunc ...
 type redisKeyFunc struct {
-	redisCC *redis.Client
+	redisCC          *redis.Client
+	customSecretFunc CustomSecretFunc
+}
+
+// NewRedisKeyFunc ...
+func NewRedisKeyFunc(redisCC *redis.Client, opts ...KeyFuncOption) RedisKeyFuncRepo {
+	o := &keyFuncOptions{}
+	for i := range opts {
+		opts[i](o)
+	}
+	return &redisKeyFunc{
+		redisCC:          redisCC,
+		customSecretFunc: o.customSecretFunc,
+	}
 }
 
 // KeyFunc 默认 KeyFunc == jwt.Keyfunc
@@ -53,8 +77,12 @@ func (s *redisKeyFunc) KeyFunc(ctx context.Context) (context.Context, jwt.Keyfun
 			err := errorutil.WithStack(ErrInvalidKeyFunc)
 			return []byte(""), err
 		}
+		secret := authInfo.Payload.Key
+		if s.customSecretFunc != nil {
+			secret = s.customSecretFunc(ctx, secret)
+		}
 		ctx = NewRedisContext(ctx, authInfo)
-		return []byte(authInfo.Payload.Key), nil
+		return []byte(secret), nil
 	}
 	return ctx, keyFunc
 }

@@ -79,7 +79,7 @@ func Server(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 					return nil, authutil.ErrUnSupportSigningMethod
 				}
 				if o.validator != nil {
-					if err = o.validator(tokenInfo); err != nil {
+					if err = o.validator(ctx, tokenInfo); err != nil {
 						return nil, err
 					}
 				}
@@ -130,7 +130,7 @@ func Client(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				return nil, authutil.ErrSignToken
 			}
 			if o.validator != nil {
-				if err = o.validator(token); err != nil {
+				if err = o.validator(ctx, token); err != nil {
 					return nil, err
 				}
 			}

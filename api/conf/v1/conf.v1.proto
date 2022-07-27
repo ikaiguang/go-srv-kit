@@ -23,6 +23,20 @@ message Bootstrap {
 
 // App application
 message App {
+  // Setting 设置
+  message Setting {
+    // enable_db_migrate 启用数据库迁移
+    bool enable_db_migrate = 1;
+    // enable_schedule_task 启用定时任务、计划任务
+    bool enable_schedule_task = 2;
+  }
+  // Auth 验证
+  message Auth {
+    string admin_key = 1;
+    string api_key = 2;
+    string web_key = 3;
+    string service_key = 4;
+  }
   // name app名字
   string name = 1;
   // version app版本
@@ -33,6 +47,10 @@ message App {
   repeated string endpoints = 4;
   // metadata 元数据
   map<string, string> metadata = 5;
+  // setting 设置
+  Auth auth = 6;
+  // setting 设置
+  Setting setting = 7;
 }
 
 // Log 日志
@@ -83,19 +101,19 @@ message Data {
   message MySQL {
     string dsn = 1;
     // conn_max_idle_time 设置连接空闲的最长时间
-    google.protobuf.Duration  slow_threshold = 2;
+    google.protobuf.Duration slow_threshold = 2;
     bool logger_enable = 3;
     bool logger_colorful = 4;
     // logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
     string logger_level = 5;
     // conn_max_active 连接可复用的最大时间
-    uint32  conn_max_active = 6;
+    uint32 conn_max_active = 6;
     // conn_max_lifetime 可复用的最大时间
-    google.protobuf.Duration  conn_max_lifetime = 7;
+    google.protobuf.Duration conn_max_lifetime = 7;
     // conn_max_idle 连接池中空闲连接的最大数量
-    uint32  conn_max_idle = 8;
+    uint32 conn_max_idle = 8;
     // conn_max_idle_time 设置连接空闲的最长时间
-    google.protobuf.Duration  conn_max_idle_time = 9;
+    google.protobuf.Duration conn_max_idle_time = 9;
   }
   // Redis redis
   message Redis {
@@ -107,31 +125,31 @@ message Data {
     google.protobuf.Duration read_timeout = 6;
     google.protobuf.Duration write_timeout = 7;
     // conn_max_active 连接的最大数量
-    uint32  conn_max_active = 8;
+    uint32 conn_max_active = 8;
     // conn_max_lifetime 连接可复用的最大时间
-    google.protobuf.Duration  conn_max_lifetime = 9;
+    google.protobuf.Duration conn_max_lifetime = 9;
     // conn_max_idle 连接池中空闲连接的最大数量
-    uint32  conn_max_idle = 10;
+    uint32 conn_max_idle = 10;
     // conn_max_idle_time 设置连接空闲的最长时间
-    google.protobuf.Duration  conn_max_idle_time = 11;
+    google.protobuf.Duration conn_max_idle_time = 11;
   }
   // PSQL postgres
   message PSQL {
     string dsn = 1;
     // conn_max_idle_time 设置连接空闲的最长时间
-    google.protobuf.Duration  slow_threshold = 2;
+    google.protobuf.Duration slow_threshold = 2;
     bool logger_enable = 3;
     bool logger_colorful = 4;
     // logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
     string logger_level = 5;
     // conn_max_active 连接可复用的最大时间
-    uint32  conn_max_active = 6;
+    uint32 conn_max_active = 6;
     // conn_max_lifetime 可复用的最大时间
-    google.protobuf.Duration  conn_max_lifetime = 7;
+    google.protobuf.Duration conn_max_lifetime = 7;
     // conn_max_idle 连接池中空闲连接的最大数量
-    uint32  conn_max_idle = 8;
+    uint32 conn_max_idle = 8;
     // conn_max_idle_time 设置连接空闲的最长时间
-    google.protobuf.Duration  conn_max_idle_time = 9;
+    google.protobuf.Duration conn_max_idle_time = 9;
   }
   MySQL mysql = 1;
   Redis redis = 2;

@@ -96,7 +96,7 @@ func Server(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 					return nil, ErrUnSupportSigningMethod
 				}
 				if o.validator != nil {
-					if err = o.validator(tokenInfo); err != nil {
+					if err = o.validator(ctx, tokenInfo); err != nil {
 						return nil, err
 					}
 				}
@@ -146,7 +146,7 @@ func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				return nil, ErrSignToken
 			}
 			if o.validator != nil {
-				if err = o.validator(token); err != nil {
+				if err = o.validator(ctx, token); err != nil {
 					return nil, err
 				}
 			}

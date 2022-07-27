@@ -6,6 +6,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+
 	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
 
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
@@ -14,7 +15,7 @@ import (
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 	grpcConfig := engineHandler.GRPCConfig()
-	stdlog.Printf("|*** 加载GRPC服务：%s\n", grpcConfig.Addr)
+	stdlog.Printf("|*** 加载：GRPC服务：%s\n", grpcConfig.Addr)
 
 	// 日志
 	//logger, _, err := engineHandler.Logger()

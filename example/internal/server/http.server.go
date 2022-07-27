@@ -6,6 +6,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
+
 	headermiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/header"
 	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
 
@@ -16,7 +17,7 @@ import (
 // NewHTTPServer new HTTP server.
 func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	httpConfig := engineHandler.HTTPConfig()
-	stdlog.Printf("|*** 加载HTTP服务：%s\n", httpConfig.Addr)
+	stdlog.Printf("|*** 加载：HTTP服务：%s\n", httpConfig.Addr)
 
 	// 日志
 	//logger, _, err := engineHandler.Logger()

@@ -17,21 +17,20 @@ func (s *engines) GetPostgresGormDB() (*gorm.DB, error) {
 	var err error
 	s.postgresGormMutex.Do(func() {
 		s.postgresGormDB, err = s.loadingPostgresGormDB()
+		if err != nil {
+			s.postgresGormMutex = sync.Once{}
+		}
 	})
-	if err != nil {
-		s.postgresGormMutex = sync.Once{}
-		return nil, err
-	}
 	return s.postgresGormDB, err
 }
 
 // loadingPostgresGormDB postgres gorm 数据库
 func (s *engines) loadingPostgresGormDB() (*gorm.DB, error) {
 	if s.Config.PostgresConfig() == nil {
-		stdlog.Println("|*** 加载Postgres-GORM：未初始化")
+		stdlog.Println("|*** 加载：Postgres-GORM：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
-	stdlog.Println("|*** 加载Postgres-GORM：...")
+	stdlog.Println("|*** 加载：Postgres-GORM：...")
 
 	// logger writer
 	var (

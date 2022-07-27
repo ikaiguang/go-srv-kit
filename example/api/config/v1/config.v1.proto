@@ -6,7 +6,7 @@ package example.api.config.configv1;
 option go_package = "github.com/ikaiguang/go-srv-kit/example/api/config/v1;configv1";
 option java_multiple_files = true;
 option java_package = "example.api.config.configv1";
-option java_outer_classname = "ExampleApiConfigV1";
+option java_outer_classname = "ExampleApiConfigConfigV1";
 
 import "github.com/ikaiguang/go-srv-kit/api/conf/v1/conf.v1.proto";
 
