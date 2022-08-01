@@ -15,7 +15,7 @@ func DefaultValidateFunc() ValidateFunc {
 	return func(ctx context.Context, token *jwt.Token) error {
 		// 转换Claim
 		myClaims, ok := token.Claims.(*Claims)
-		if !ok || myClaims.AuthPayload == nil || myClaims.AuthPayload.Key == "" {
+		if !ok || myClaims.Payload == nil || myClaims.Payload.Key == "" {
 			logutil.WarnwWithContext(ctx,
 				"error", ErrInvalidRedisKey,
 				"token.Claims.(*Claims):OK", ok,
@@ -37,14 +37,14 @@ func DefaultValidateFunc() ValidateFunc {
 			return nil
 		case authv1.LimitTypeEnum_ONLY_ONE:
 			// 仅一个
-			if myClaims.AuthPayload.Time.AsTime().UnixNano() != authInfo.Payload.Time.AsTime().UnixNano() {
+			if myClaims.Payload.Time.AsTime().UnixNano() != authInfo.Payload.Time.AsTime().UnixNano() {
 				err := errorutil.WithStack(ErrLoginLimit)
 				return err
 			}
 		case authv1.LimitTypeEnum_SAME_PLATFORM:
 			// 平台限制一个
-			if myClaims.AuthPayload.Platform == authInfo.Payload.Platform &&
-				myClaims.AuthPayload.Time.AsTime().UnixNano() != authInfo.Payload.Time.AsTime().UnixNano() {
+			if myClaims.Payload.Platform == authInfo.Payload.Platform &&
+				myClaims.Payload.Time.AsTime().UnixNano() != authInfo.Payload.Time.AsTime().UnixNano() {
 				err := errorutil.WithStack(ErrLoginLimit)
 				return err
 			}

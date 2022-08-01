@@ -23,8 +23,8 @@ type keyFuncOptions struct {
 	customSecretFunc CustomSecretFunc
 }
 
-// WithSecretPrefix 密码前缀；用于区分特定的环境；例如：admin/user
-func WithSecretPrefix(customSecretFunc CustomSecretFunc) KeyFuncOption {
+// WithCustomSecretFunc 用途：密码前缀；用于区分特定的环境；例如：admin/user
+func WithCustomSecretFunc(customSecretFunc CustomSecretFunc) KeyFuncOption {
 	return func(o *keyFuncOptions) {
 		o.customSecretFunc = customSecretFunc
 	}
@@ -37,8 +37,8 @@ type RedisKeyFuncRepo interface {
 
 // redisKeyFunc ...
 type redisKeyFunc struct {
-	redisCC          *redis.Client
-	customSecretFunc CustomSecretFunc
+	redisCC *redis.Client
+	opt     keyFuncOptions
 }
 
 // NewRedisKeyFunc ...
@@ -48,8 +48,8 @@ func NewRedisKeyFunc(redisCC *redis.Client, opts ...KeyFuncOption) RedisKeyFuncR
 		opts[i](o)
 	}
 	return &redisKeyFunc{
-		redisCC:          redisCC,
-		customSecretFunc: o.customSecretFunc,
+		redisCC: redisCC,
+		opt:     *o,
 	}
 }
 
@@ -57,7 +57,7 @@ func NewRedisKeyFunc(redisCC *redis.Client, opts ...KeyFuncOption) RedisKeyFuncR
 func (s *redisKeyFunc) KeyFunc(ctx context.Context) (context.Context, jwt.Keyfunc) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		myClaims, ok := token.Claims.(*Claims)
-		if !ok || myClaims.AuthPayload == nil || myClaims.AuthPayload.Key == "" {
+		if !ok || myClaims.Payload == nil || myClaims.Payload.Key == "" {
 			logutil.WarnwWithContext(ctx,
 				"error", ErrInvalidRedisKey,
 				"token.Claims.(*Claims):OK", ok,
@@ -78,8 +78,8 @@ func (s *redisKeyFunc) KeyFunc(ctx context.Context) (context.Context, jwt.Keyfun
 			return []byte(""), err
 		}
 		secret := authInfo.Payload.Key
-		if s.customSecretFunc != nil {
-			secret = s.customSecretFunc(ctx, secret)
+		if s.opt.customSecretFunc != nil {
+			secret = s.opt.customSecretFunc(ctx, secret)
 		}
 		ctx = NewRedisContext(ctx, authInfo)
 		return []byte(secret), nil
@@ -89,7 +89,7 @@ func (s *redisKeyFunc) KeyFunc(ctx context.Context) (context.Context, jwt.Keyfun
 
 // getCacheData 获取缓存数据
 func (s *redisKeyFunc) getCacheData(ctx context.Context, claims *Claims) (*authv1.Auth, error) {
-	cacheBytes, cacheErr := s.redisCC.Get(ctx, claims.AuthPayload.Key).Bytes()
+	cacheBytes, cacheErr := s.redisCC.Get(ctx, claims.Payload.Key).Bytes()
 	if cacheErr != nil {
 		err := ErrGetRedisData
 		err.Metadata = map[string]string{"error": cacheErr.Error()}

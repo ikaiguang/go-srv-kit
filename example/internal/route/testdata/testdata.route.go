@@ -13,10 +13,9 @@ import (
 
 // RegisterRoutes 注册路由
 func RegisterRoutes(hs *http.Server, gs *grpc.Server, logger log.Logger) {
-	stdlog.Println("|*** 注册路由：testdata")
 
-	testdata := testdatasrv.NewTestService(logger)
-
+	testdata := testdatasrv.NewTestdataService(logger)
+	stdlog.Println("|*** 注册路由：NewTestdataService")
 	v1.RegisterSrvTestdataHTTPServer(hs, testdata)
 	v1.RegisterSrvTestdataServer(gs, testdata)
 }

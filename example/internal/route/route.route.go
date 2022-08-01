@@ -7,6 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 
 	pingroute "github.com/ikaiguang/go-srv-kit/example/internal/route/ping"
+	rootroute "github.com/ikaiguang/go-srv-kit/example/internal/route/root"
 	testdataroute "github.com/ikaiguang/go-srv-kit/example/internal/route/testdata"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 )
@@ -21,6 +22,13 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 		return err
 	}
 
+	// root
+	err = rootroute.RegisterRoutes(hs, gs, logger)
+	if err != nil {
+		return err
+	}
+
+	// testdata
 	pingroute.RegisterRoutes(hs, gs, logger)
 	testdataroute.RegisterRoutes(hs, gs, logger)
 

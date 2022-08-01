@@ -21,8 +21,8 @@ type testdata struct {
 	log *log.Helper
 }
 
-// NewTestService .
-func NewTestService(logger log.Logger) v1.SrvTestdataServer {
+// NewTestdataService .
+func NewTestdataService(logger log.Logger) v1.SrvTestdataServer {
 	return &testdata{
 		log: log.NewHelper(logger),
 	}

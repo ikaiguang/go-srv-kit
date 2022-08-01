@@ -13,10 +13,9 @@ import (
 
 // RegisterRoutes 注册路由
 func RegisterRoutes(hs *http.Server, gs *grpc.Server, logger log.Logger) {
-	stdlog.Println("|*** 注册路由：ping")
 
 	ping := pingsrv.NewPingService(logger)
-
+	stdlog.Println("|*** 注册路由：NewPingService")
 	pingv1.RegisterSrvPingHTTPServer(hs, ping)
 	pingv1.RegisterSrvPingServer(gs, ping)
 }

@@ -25,8 +25,8 @@ message Bootstrap {
 message App {
   // Setting 设置
   message Setting {
-    // enable_db_migrate 启用数据库迁移
-    bool enable_db_migrate = 1;
+    // enable_migrate_db 启用数据库迁移
+    bool enable_migrate_db = 1;
     // enable_schedule_task 启用定时任务、计划任务
     bool enable_schedule_task = 2;
   }

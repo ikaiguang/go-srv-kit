@@ -27,17 +27,17 @@ const (
 	BearerFormat string = "Bearer %s"
 )
 
+// DefaultExpireTime 令牌过期时间
+func DefaultExpireTime() *jwt.NumericDate {
+	return jwt.NewNumericDate(time.Now().Add(ExpireDuration))
+}
+
 // Claims jwt.Claims
 // 查看更多信息 jwt.RegisteredClaims
 type Claims struct {
 	jwt.RegisteredClaims
 
-	AuthPayload *authv1.Payload `json:"a_p,omitempty"`
-}
-
-// DefaultExpireTime 令牌过期时间
-func DefaultExpireTime() *jwt.NumericDate {
-	return jwt.NewNumericDate(time.Now().Add(ExpireDuration))
+	Payload *authv1.Payload `json:"p,omitempty"`
 }
 
 // KeyFunc 自定义 jwt.Keyfunc
