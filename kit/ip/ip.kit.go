@@ -23,6 +23,11 @@ func LocalIP() string {
 	return _localIP
 }
 
+// NewLocalIP ...
+func NewLocalIP() string {
+	return PrivateIPv4().String()
+}
+
 // IsValidIP 有效的ip
 func IsValidIP(ip string) bool {
 	return net.ParseIP(ip) != nil

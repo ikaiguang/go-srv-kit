@@ -3,6 +3,7 @@ package logmiddle
 import (
 	"context"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"strconv"
 	"strings"
 	"time"
@@ -119,9 +120,10 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 			)
 
 			// 信息
-			if info, ok := transport.FromServerContext(ctx); ok {
-				requestMessage.Component = info.Kind().String()
-				requestMessage.Operation = info.Operation()
+			tr, ok := transport.FromServerContext(ctx)
+			if ok {
+				requestMessage.Component = tr.Kind().String()
+				requestMessage.Operation = tr.Operation()
 			}
 
 			// 时间
@@ -136,14 +138,14 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 			requestMessage.ExecTime = time.Since(startTime)
 
 			// request
-			if httpContext, isHTTP := contextutil.MatchHTTPContext(ctx); isHTTP {
-				requestMessage.Method = httpContext.Request().Method
-				requestMessage.Operation = httpContext.Request().URL.String()
-				if headerutil.GetIsWebsocket(httpContext.Request().Header) {
+			if httpTr, isHTTP := tr.(http.Transporter); isHTTP {
+				requestMessage.Method = httpTr.Request().Method
+				requestMessage.Operation = httpTr.Request().URL.String()
+				if headerutil.GetIsWebsocket(httpTr.Request().Header) {
 					isWebsocket = true
 					requestMessage.Method = "WS"
 				}
-				requestMessage.ClientIP = contextutil.ClientIPFromHTTP(httpContext)
+				requestMessage.ClientIP = contextutil.ClientIPFromHTTP(ctx, httpTr.Request())
 			} else {
 				requestMessage.Method = "GRPC"
 				requestMessage.ClientIP = contextutil.ClientIPFromGRPC(ctx)
