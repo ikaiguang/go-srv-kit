@@ -9,6 +9,7 @@ import (
 	pingroute "github.com/ikaiguang/go-srv-kit/example/internal/route/ping"
 	rootroute "github.com/ikaiguang/go-srv-kit/example/internal/route/root"
 	testdataroute "github.com/ikaiguang/go-srv-kit/example/internal/route/testdata"
+	websocketroute "github.com/ikaiguang/go-srv-kit/example/internal/route/websocket"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 )
 
@@ -24,6 +25,12 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 
 	// root
 	err = rootroute.RegisterRoutes(hs, gs, logger)
+	if err != nil {
+		return err
+	}
+
+	// websocket
+	err = websocketroute.RegisterRoutes(hs, gs, logger)
 	if err != nil {
 		return err
 	}

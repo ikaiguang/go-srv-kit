@@ -1,47 +1,51 @@
-package websockettest
+package testwebsocket
 
 import (
-	stdlog "log"
-	"net/url"
-	"time"
-
 	"github.com/gorilla/websocket"
+	"github.com/stretchr/testify/require"
+	"net/url"
+	"testing"
+	"time"
 
 	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
-	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	websocketutil "github.com/ikaiguang/go-srv-kit/kratos/websocket"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
-
-	pkgerrors "github.com/pkg/errors"
 )
 
-// RunTestWebsocket 测试websocket
-func RunTestWebsocket() {
-	processResp, err := TestWebsocket()
-	if err != nil {
-		stdlog.Printf("%+v\n", err)
-		return
-	}
-	jsonContent, _ := apputil.JSON(processResp)
-	stdlog.Println("==> RunTestWebsocket result :", string(jsonContent))
-}
-
-// TestWebsocket 测试websocket
-func TestWebsocket() (processResp interface{}, err error) {
+// go test -v -count=1 ./example/integration-test/websocket -test.run=TestApi_Websocket
+func TestApi_Websocket(t *testing.T) {
 	urlPath := "/api/v1/testdata/websocket"
 
 	// 开启ws
 	u := url.URL{Scheme: "ws", Host: "127.0.0.1:8081", Path: urlPath}
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	if err != nil {
-		err = pkgerrors.WithStack(err)
-		return processResp, err
-	}
+	require.Nil(t, err)
 	defer func() { _ = c.Close() }()
 
+	runTestWebsocket(c)
+}
+
+// go test -v -count=1 ./example/integration-test/websocket -test.run=TestWs_Websocket
+func TestWs_Websocket(t *testing.T) {
+	urlPath := "/ws/v1/websocket"
+
+	// 开启ws
+	u := url.URL{Scheme: "ws", Host: "127.0.0.1:8081", Path: urlPath}
+	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	require.Nil(t, err)
+	defer func() { _ = c.Close() }()
+
+	runTestWebsocket(c)
+}
+
+// runTestWebsocket ...
+func runTestWebsocket(c *websocket.Conn) {
 	// 读取信息
-	done := make(chan struct{})
+	var (
+		err  error
+		done = make(chan struct{})
+	)
 	go func() {
 		defer close(done)
 		for {
@@ -94,5 +98,4 @@ func TestWebsocket() (processResp interface{}, err error) {
 		}
 		counter++
 	}
-	//return processResp, err
 }

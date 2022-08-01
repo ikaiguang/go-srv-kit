@@ -9,7 +9,7 @@ log:
     # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
     level: DEBUG
     # dir: ./runtime/logs
-    dir: ./
+    dir: ./runtime/logs
     filename: go-srv-kit-example
     # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
     # 轮询规则：默认为：RotateTime
