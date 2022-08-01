@@ -2,7 +2,6 @@ package headermiddle
 
 import (
 	"context"
-
 	"github.com/go-kratos/kratos/v2/middleware"
 	"go.opentelemetry.io/otel/trace"
 

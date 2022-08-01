@@ -8,7 +8,6 @@ api
 
 # 生成 client 源码
 kratos proto client api/auth/v1/auth.v1.proto
-kratos proto client api/base/error/base.error.proto
 kratos proto client api/conf/v1/conf.v1.proto
 kratos proto client api/env/v1/env.v1.proto
 kratos proto client api/error/v1/error.v1.proto

@@ -5,7 +5,9 @@ import (
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
+
+	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
+
 	"google.golang.org/grpc/codes"
 )
 
@@ -59,7 +61,7 @@ func HTTPError(code int, message string) *errors.Error {
 	return &errors.Error{
 		Status: errors.Status{
 			Code:    int32(code),
-			Reason:  baseerror.ERROR_STATUS_REQUEST_FAILURE.String(),
+			Reason:  errorv1.ERROR_REQUEST_FAILED.String(),
 			Message: message,
 			Metadata: map[string]string{
 				"status": stdhttp.StatusText(code),

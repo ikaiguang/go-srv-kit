@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	baseerror "github.com/ikaiguang/go-srv-kit/api/base/error"
+	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	websocketutil "github.com/ikaiguang/go-srv-kit/kratos/websocket"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
@@ -55,7 +55,7 @@ func runTestWebsocket(c *websocket.Conn) {
 					logutil.Infow("websocket close", wsErr.Error())
 					break
 				}
-				err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws读取信息失败", wsErr)
+				err = errorutil.InternalServer(errorv1.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", wsErr)
 				logutil.Error(err)
 				return
 			}
@@ -91,7 +91,7 @@ func runTestWebsocket(c *websocket.Conn) {
 					logutil.Infow("websocket close", wsErr.Error())
 					break
 				}
-				err = errorutil.InternalServer(baseerror.ERROR_STATUS_INTERNAL_SERVER.String(), "ws读取信息失败", err)
+				err = errorutil.InternalServer(errorv1.ERROR_INTERNAL_SERVER.String(), "ws读取信息失败", err)
 				logutil.Error(err)
 				return
 			}

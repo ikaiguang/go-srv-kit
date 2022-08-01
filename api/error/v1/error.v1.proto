@@ -16,31 +16,69 @@ enum ERROR {
 
   // UNKNOWN 常规
   UNKNOWN = 0 [ (errors.code) = 404 ];
-  REQUEST_FAILURE = 1 [ (errors.code) = 503 ];
+  REQUEST_FAILED = 1 [ (errors.code) = 424 ];
   RECORD_NOT_FOUND = 2 [ (errors.code) = 404 ];
   RECORD_ALREADY_EXISTS = 3 [ (errors.code) = 400 ];
 
   // CONTINUE Continue
   CONTINUE = 100 [ (errors.code) = 100 ];
+  SWITCHING_PROTOCOLS = 101 [ (errors.code) = 101 ];
   PROCESSING = 102 [ (errors.code) = 102 ];
+  EARLY_HINTS = 103 [ (errors.code) = 103 ];
 
   // OK OK
   OK = 200 [ (errors.code) = 200 ];
   CREATED = 201 [ (errors.code) = 201 ];
   ACCEPTED = 202 [ (errors.code) = 202 ];
+  NON_AUTHORITATIVE_INFO = 203 [ (errors.code) = 203 ];
   NO_CONTENT = 204 [ (errors.code) = 204 ];
+  RESET_CONTENT = 205 [ (errors.code) = 205 ];
+  PARTIAL_CONTENT = 206 [ (errors.code) = 206 ];
+  MULTI_STATUS = 207 [ (errors.code) = 207 ];
+  ALREADY_REPORTED = 208 [ (errors.code) = 208 ];
+  I_M_USED = 226 [ (errors.code) = 226 ];
 
   // MULTIPLE_CHOICES MultipleChoices
   MULTIPLE_CHOICES = 300 [ (errors.code) = 300 ];
+  MOVED_PERMANENTLY = 301 [ (errors.code) = 301 ];
+  FOUND = 302 [ (errors.code) = 302 ];
+  SEE_OTHER = 303 [ (errors.code) = 303 ];
+  NOT_MODIFIED = 304 [ (errors.code) = 304 ];
+  USE_PROXY = 305 [ (errors.code) = 305 ];
+  EMPTY306 = 306 [ (errors.code) = 306 ];
+  TEMPORARY_REDIRECT = 307 [ (errors.code) = 307 ];
+  PERMANENT_REDIRECT = 308 [ (errors.code) = 308 ];
 
   // BAD_REQUEST Bad Request
   BAD_REQUEST = 400 [ (errors.code) = 400 ];
   UNAUTHORIZED = 401 [ (errors.code) = 401 ];
+  PAYMENT_REQUIRED = 402 [ (errors.code) = 402 ];
   FORBIDDEN = 403 [ (errors.code) = 403 ];
   NOT_FOUND = 404 [ (errors.code) = 404 ];
   METHOD_NOT_ALLOWED = 405 [ (errors.code) = 405 ];
+  NOT_ACCEPTABLE = 406 [ (errors.code) = 406 ];
+  PROXY_AUTH_REQUIRED = 407 [ (errors.code) = 407 ];
   REQUEST_TIMEOUT = 408 [ (errors.code) = 408 ];
+  CONFLICT = 409 [ (errors.code) = 409 ];
+  GONE = 410 [ (errors.code) = 410 ];
+  LENGTH_REQUIRED = 411 [ (errors.code) = 411 ];
+  PRECONDITION_FAILED = 412 [ (errors.code) = 412 ];
+  REQUEST_ENTITY_TOO_LARGE = 413 [ (errors.code) = 413 ];
+  REQUEST_URI_TOO_LONG = 414 [ (errors.code) = 414 ];
+  UNSUPPORTED_MEDIA_TYPE = 415 [ (errors.code) = 415 ];
+  REQUESTED_RANGE_NOT_SATISFIABLE = 416 [ (errors.code) = 416 ];
+  EXPECTATION_FAILED = 417 [ (errors.code) = 417 ];
+  TEAPOT = 418 [ (errors.code) = 418 ];
+  MISDIRECTED_REQUEST = 421 [ (errors.code) = 421 ];
+  UNPROCESSABLE_ENTITY = 422 [ (errors.code) = 422 ];
+  LOCKED = 423 [ (errors.code) = 423 ];
+  FAILED_DEPENDENCY = 424 [ (errors.code) = 424 ];
+  TOO_EARLY = 425 [ (errors.code) = 425 ];
+  UPGRADE_REQUIRED = 426 [ (errors.code) = 426 ];
+  PRECONDITION_REQUIRED = 428 [ (errors.code) = 428 ];
   TOO_MANY_REQUESTS = 429 [ (errors.code) = 429 ];
+  REQUEST_HEADER_FIELDS_TOO_LARGE = 431 [ (errors.code) = 431 ];
+  UNAVAILABLE_FOR_LEGAL_REASONS = 451 [ (errors.code) = 451 ];
 
   // INTERNAL_SERVER Internal Server Error
   INTERNAL_SERVER = 500 [ (errors.code) = 500 ];
@@ -48,4 +86,10 @@ enum ERROR {
   BAD_GATEWAY = 502 [ (errors.code) = 502 ];
   SERVICE_UNAVAILABLE = 503 [ (errors.code) = 503 ];
   GATEWAY_TIMEOUT = 504 [ (errors.code) = 504 ];
+  HTTP_VERSION_NOT_SUPPORTED = 505 [ (errors.code) = 505 ];
+  VARIANT_ALSO_NEGOTIATES = 506 [ (errors.code) = 506 ];
+  INSUFFICIENT_STORAGE = 507 [ (errors.code) = 507 ];
+  LOOP_DETECTED = 508 [ (errors.code) = 508 ];
+  NOT_EXTENDED = 510 [ (errors.code) = 510 ];
+  NETWORK_AUTHENTICATION_REQUIRED = 511 [ (errors.code) = 511 ];
 }
