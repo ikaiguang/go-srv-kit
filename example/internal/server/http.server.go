@@ -45,13 +45,13 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	var middlewareSlice = []middleware.Middleware{
 		recovery.Recovery(),
 	}
+	// 请求头
+	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())
 	// 中间件日志
 	loggerMiddle, _, err := engineHandler.LoggerMiddleware()
 	if err != nil {
 		return srv, err
 	}
-	// 请求头
-	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())
 	// 日志输出
 	middlewareSlice = append(middlewareSlice, logmiddle.ServerLog(loggerMiddle))
 

@@ -6,6 +6,8 @@ import (
 
 // Date Format
 const (
+	RFC3339           = time.RFC3339               // 例子：2022-08-03T16:40:58+08:00
+	YmdHmsTZ          = "2006-01-02T15:04:05-0700" // 例子：2022-08-03T16:40:58+0800
 	YmdHms            = "2006-01-02 15:04:05"
 	YmdHm             = "2006-01-02 15:04"
 	YmdH              = "2006-01-02 15"
@@ -20,7 +22,6 @@ const (
 	YMillisecond      = "20060102150405.999"
 	YMicrosecond      = "20060102150405.999999"
 	YNanosecond       = "20060102150405.999999999"
-	RFC3339           = time.RFC3339
 	YmdHmsMLogger     = "2006-01-02T15:04:05.999"
 )
 
@@ -29,7 +30,7 @@ func now() time.Time {
 	return time.Now()
 }
 
-// Today today
+// Today 今天0时
 func Today() time.Time {
 	t := time.Now()
 

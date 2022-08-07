@@ -14,17 +14,15 @@ import "google/protobuf/timestamp.proto";
 message Payload {
   // id 唯一id
   uint64 id = 1;
-  // uuid 唯一id
-  string uuid = 2;
-  // key 数据key、缓存key、...
-  string key = 3;
-  // platform 平台信息
-  PlatformEnum.Platform platform = 4;
-  // limit 登录限制类型
-  LimitTypeEnum.LimitType limit = 5;
-  // time 授权时间
+  // uid 唯一id
+  string uid = 2;
+  // p : platform 平台信息
+  PlatformEnum.Platform p = 4;
+  // l : limit 登录限制类型
+  LimitTypeEnum.LimitType l = 5;
+  // t : time 授权时间
   // 用途1：可用于判断： 强制登录，登出其他账户
-  google.protobuf.Timestamp time = 6;
+  google.protobuf.Timestamp t = 6;
 }
 
 // Auth 验证数据、缓存数据、...

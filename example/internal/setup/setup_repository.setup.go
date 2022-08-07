@@ -60,6 +60,10 @@ func (s *LoggerPrefixField) String() string {
 type Config interface {
 	// AppConfig APP配置
 	AppConfig() *confv1.App
+	// AppAuthConfig APP验证配置
+	AppAuthConfig() *confv1.App_Auth
+	// AppSettingConfig APP设置配置
+	AppSettingConfig() *confv1.App_Setting
 
 	// Env app环境
 	Env() envv1.Env

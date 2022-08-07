@@ -185,6 +185,22 @@ func (s *configuration) AppConfig() *confv1.App {
 	return s.conf.App
 }
 
+// AppAuthConfig APP验证配置
+func (s *configuration) AppAuthConfig() *confv1.App_Auth {
+	if s.conf.App == nil {
+		return nil
+	}
+	return s.conf.App.Auth
+}
+
+// AppSettingConfig APP设置配置
+func (s *configuration) AppSettingConfig() *confv1.App_Setting {
+	if s.conf.App == nil {
+		return nil
+	}
+	return s.conf.App.Setting
+}
+
 // LoggerConfigForConsole 日志配置 控制台
 func (s *configuration) LoggerConfigForConsole() *confv1.Log_Console {
 	if s.conf.Log == nil {

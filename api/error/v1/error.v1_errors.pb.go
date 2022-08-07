@@ -54,11 +54,11 @@ func IsRecordAlreadyExists(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_RECORD_ALREADY_EXISTS.String() && e.Code == 400
+	return e.Reason == ERROR_RECORD_ALREADY_EXISTS.String() && e.Code == 409
 }
 
 func ErrorRecordAlreadyExists(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ERROR_RECORD_ALREADY_EXISTS.String(), fmt.Sprintf(format, args...))
+	return errors.New(409, ERROR_RECORD_ALREADY_EXISTS.String(), fmt.Sprintf(format, args...))
 }
 
 // CONTINUE Continue

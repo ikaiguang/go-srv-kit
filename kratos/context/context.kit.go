@@ -40,7 +40,8 @@ func FromClientContext(ctx context.Context) (tr transport.Transporter, ok bool) 
 }
 
 // MatchHTTPContext 匹配
-// Deprecated: 丢弃；不应该使用此方法
+// Deprecated: 不建议使用此方法
+// 建议使用： contextutil.MatchHTTPServerContext or contextutil.MatchGRPCServerContext
 func MatchHTTPContext(ctx context.Context) (http.Context, bool) {
 	httpCtx, ok := ctx.(http.Context)
 	return httpCtx, ok

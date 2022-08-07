@@ -10,9 +10,6 @@ import (
 // jwtAuthKey context.Context key
 type jwtAuthKey struct{}
 
-// redisAuthKey context.Context key
-type redisAuthKey struct{}
-
 // NewJWTContext put auth info into context
 func NewJWTContext(ctx context.Context, info jwt.Claims) context.Context {
 	return context.WithValue(ctx, jwtAuthKey{}, info)
@@ -23,6 +20,9 @@ func FromJWTContext(ctx context.Context) (token jwt.Claims, ok bool) {
 	token, ok = ctx.Value(jwtAuthKey{}).(jwt.Claims)
 	return
 }
+
+// redisAuthKey context.Context key
+type redisAuthKey struct{}
 
 // NewRedisContext ...
 func NewRedisContext(ctx context.Context, info *authv1.Auth) context.Context {
