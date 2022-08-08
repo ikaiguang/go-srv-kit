@@ -32,10 +32,13 @@ message App {
   }
   // Auth 验证
   message Auth {
-    string admin_key = 1;
-    string api_key = 2;
-    string web_key = 3;
-    string service_key = 4;
+    string default_key = 1;
+    string service_key = 2;
+    string admin_key = 3;
+    string api_key = 4;
+    string web_key = 5;
+    string app_key = 6;
+    string h5_key = 7;
   }
   // name app名字
   string name = 1;

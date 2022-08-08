@@ -91,7 +91,6 @@ func newApp(engineHandler setup.Engine) (app *kratos.App, err error) {
 		return app, err
 	}
 	log.SetLogger(logger)
-	//errorutil.DefaultStackTracerDepth += 2
 
 	// 加载程序运行环境
 	err = loadingAppDependentEnv(engineHandler)

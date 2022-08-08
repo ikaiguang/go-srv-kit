@@ -48,12 +48,16 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	// 请求头
 	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())
 	// 中间件日志
-	loggerMiddle, _, err := engineHandler.LoggerMiddleware()
+	middleLogger, _, err := engineHandler.LoggerMiddleware()
 	if err != nil {
 		return srv, err
 	}
 	// 日志输出
-	middlewareSlice = append(middlewareSlice, logmiddle.ServerLog(loggerMiddle))
+	//errorutil.DefaultStackTracerDepth += 2
+	middlewareSlice = append(middlewareSlice, logmiddle.ServerLog(
+		middleLogger,
+		//logmiddle.WithDefaultSkip(),
+	))
 
 	// 中间件选项
 	opts = append(opts, http.Middleware(middlewareSlice...))
