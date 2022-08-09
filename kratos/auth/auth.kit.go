@@ -42,7 +42,7 @@ type Claims struct {
 }
 
 // KeyFunc 自定义 jwt.Keyfunc
-type KeyFunc func(ctx context.Context) (context.Context, jwt.Keyfunc)
+type KeyFunc func(context.Context) (context.Context, jwt.Keyfunc)
 
 // Server is a server auth middleware. Check the token and extract the info from token.
 func Server(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
@@ -88,7 +88,9 @@ func Server(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 					if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
 						return nil, errorutil.WithStack(ErrTokenExpired)
 					}
-					return nil, errorutil.WithStack(ErrTokenParseFail)
+					e := ErrTokenParseFail
+					e.Metadata = map[string]string{"error": err.Error()}
+					return nil, errorutil.WithStack(e)
 				}
 				if !tokenInfo.Valid {
 					return nil, errorutil.WithStack(ErrTokenInvalid)

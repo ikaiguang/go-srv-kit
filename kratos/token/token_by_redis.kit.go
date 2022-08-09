@@ -83,6 +83,11 @@ func (s *redisToken) SaveCacheData(ctx context.Context, authClaims *authutil.Cla
 	return s.saveCacheData(ctx, cacheKey, authCache, expiration)
 }
 
+// DeleteCacheData 删除缓存
+func (s *redisToken) DeleteCacheData(ctx context.Context, authClaims *authutil.Claims) error {
+	return s.deleteCacheData(ctx, s.CacheKey(ctx, authClaims))
+}
+
 // SetTokenType 设置令牌类型
 func (s *redisToken) SetTokenType(operation string, tokenType authv1.TokenTypeEnum_TokenType) {
 	// 写锁
@@ -110,7 +115,7 @@ func (s *redisToken) JWTKeyFunc() authutil.KeyFunc {
 		if s.opt.tokenTypeFunc != nil {
 			tokenType = s.opt.tokenTypeFunc(ctx, s.opt.tokenTypeMap)
 		} else {
-			tokenType = GetTokenType(ctx, s.opt.tokenTypeMap)
+			tokenType = s.GetTokenType(GetRequestOperation(ctx))
 		}
 
 		// jwt key func
@@ -193,6 +198,17 @@ func (s *redisToken) saveCacheData(ctx context.Context, cacheKey string, authInf
 	}
 
 	cacheErr := s.redisCC.Set(ctx, cacheKey, cacheData, expiration).Err()
+	if cacheErr != nil {
+		err := authutil.ErrSetRedisData
+		err.Metadata = map[string]string{"error": cacheErr.Error()}
+		return errorutil.WithStack(err)
+	}
+	return nil
+}
+
+// deleteCacheData 删除 缓存数据
+func (s *redisToken) deleteCacheData(ctx context.Context, cacheKey string) error {
+	cacheErr := s.redisCC.Del(ctx, cacheKey).Err()
 	if cacheErr != nil {
 		err := authutil.ErrSetRedisData
 		err.Metadata = map[string]string{"error": cacheErr.Error()}

@@ -21,6 +21,12 @@ func FromJWTContext(ctx context.Context) (token jwt.Claims, ok bool) {
 	return
 }
 
+// FromAuthContext extract auth info from context
+func FromAuthContext(ctx context.Context) (token *Claims, ok bool) {
+	token, ok = ctx.Value(jwtAuthKey{}).(*Claims)
+	return
+}
+
 // redisAuthKey context.Context key
 type redisAuthKey struct{}
 
@@ -31,6 +37,6 @@ func NewRedisContext(ctx context.Context, info *authv1.Auth) context.Context {
 
 // FromRedisContext extract auth info from context
 func FromRedisContext(ctx context.Context) (info *authv1.Auth, ok bool) {
-	info, ok = ctx.Value(jwtAuthKey{}).(*authv1.Auth)
+	info, ok = ctx.Value(redisAuthKey{}).(*authv1.Auth)
 	return
 }

@@ -32,13 +32,13 @@ var (
 
 	// _tokenTypeMutex token类型
 	_tokenTypeMap = TokenTypeMap{
-		"":             authv1.TokenTypeEnum_DEFAULT,
-		"/service/v1/": authv1.TokenTypeEnum_SERVICE,
-		"/admin/v1/":   authv1.TokenTypeEnum_ADMIN,
-		"/api/v1/":     authv1.TokenTypeEnum_API,
-		"/web/v1/":     authv1.TokenTypeEnum_WEB,
-		"/app/v1/":     authv1.TokenTypeEnum_APP,
-		"/h5/v1/":      authv1.TokenTypeEnum_H5,
+		"":            authv1.TokenTypeEnum_DEFAULT,
+		"/service/v1": authv1.TokenTypeEnum_SERVICE,
+		"/admin/v1":   authv1.TokenTypeEnum_ADMIN,
+		"/api/v1":     authv1.TokenTypeEnum_API,
+		"/web/v1":     authv1.TokenTypeEnum_WEB,
+		"/app/v1":     authv1.TokenTypeEnum_APP,
+		"/h5/v1":      authv1.TokenTypeEnum_H5,
 	}
 )
 
@@ -69,6 +69,8 @@ type AuthTokenRepo interface {
 	CacheKey(context.Context, *authutil.Claims) string
 	// SaveCacheData 存储缓存
 	SaveCacheData(ctx context.Context, authClaims *authutil.Claims, authInfo *authv1.Auth) error
+	// DeleteCacheData 删除缓存
+	DeleteCacheData(ctx context.Context, authClaims *authutil.Claims) error
 	// SetTokenType 设置令牌类型
 	SetTokenType(operation string, tokenType authv1.TokenTypeEnum_TokenType)
 	// GetTokenType 获取令牌类型
@@ -148,11 +150,8 @@ func newTokenTypeMap() TokenTypeMap {
 	return m
 }
 
-// GetTokenType ...
-func GetTokenType(ctx context.Context, tokenTypeMap TokenTypeMap) authv1.TokenTypeEnum_TokenType {
-	var (
-		operation string
-	)
+// GetRequestOperation 请求路径
+func GetRequestOperation(ctx context.Context) (operation string) {
 	kratosTr, ok := contextutil.FromServerContext(ctx)
 	if ok {
 		operation = kratosTr.Operation()
@@ -169,5 +168,5 @@ func GetTokenType(ctx context.Context, tokenTypeMap TokenTypeMap) authv1.TokenTy
 			operation = strings.Join(urlPathSlice, "/")
 		}
 	}
-	return tokenTypeMap[operation]
+	return operation
 }

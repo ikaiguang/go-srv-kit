@@ -6,13 +6,13 @@ import (
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/encoding/json"
-	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
 	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
+	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
@@ -106,7 +106,7 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 	}
 
 	// 响应错误
-	se := errors.FromError(err)
+	se := errorutil.FromError(err)
 	data := &responsev1.Response{
 		Code:      se.Code,
 		Reason:    se.Reason,
