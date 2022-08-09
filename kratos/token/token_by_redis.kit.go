@@ -5,6 +5,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt/v4"
 	"google.golang.org/protobuf/proto"
+	"sync"
 	"time"
 
 	authv1 "github.com/ikaiguang/go-srv-kit/api/auth/v1"
@@ -17,16 +18,12 @@ import (
 
 // redisToken ...
 type redisToken struct {
-	redisCC *redis.Client
-	opt     options
+	redisCC        *redis.Client
+	tokenTypeMutex sync.Mutex
+	opt            options
 }
 
 // NewRedisTokenRepo ...
-// 1. 生产签名密码 SigningSecret
-// 2. 确定签名方法 JWTSigningMethod
-// 3. 签证令牌 SignedToken
-// 4. 生产缓存key CacheKey
-// 5. 存储令牌 SaveCacheData
 func NewRedisTokenRepo(redisCC *redis.Client, opts ...Option) AuthTokenRepo {
 	o := &options{}
 	for i := range opts {
@@ -35,6 +32,9 @@ func NewRedisTokenRepo(redisCC *redis.Client, opts ...Option) AuthTokenRepo {
 	if o.authConfig == nil {
 		o.authConfig = &confv1.App_Auth{}
 	}
+	if o.tokenTypeMap == nil {
+		o.tokenTypeMap = newTokenTypeMap()
+	}
 	return &redisToken{
 		redisCC: redisCC,
 		opt:     *o,
@@ -42,32 +42,15 @@ func NewRedisTokenRepo(redisCC *redis.Client, opts ...Option) AuthTokenRepo {
 }
 
 // SigningSecret 签名密码
-func (s *redisToken) SigningSecret(ctx context.Context, authClaims *authutil.Claims, passwordHash string) string {
+func (s *redisToken) SigningSecret(ctx context.Context, tokenType authv1.TokenTypeEnum_TokenType, passwordHash string) string {
 	if passwordHash == "" {
 		passwordHash = uuidutil.New()
 		logutil.Warn("SignedString secret is empty; new secret = " + passwordHash)
 	}
 	if s.opt.signingSecretFunc != nil {
-		return s.opt.signingSecretFunc(ctx, authClaims, passwordHash)
+		return s.opt.signingSecretFunc(ctx, tokenType, passwordHash)
 	}
-	switch authClaims.Payload.Tt {
-	case authv1.TokenTypeEnum_DEFAULT:
-		return NewSecret(s.opt.authConfig.DefaultKey, passwordHash)
-	case authv1.TokenTypeEnum_SERVICE:
-		return NewSecret(s.opt.authConfig.ServiceKey, passwordHash)
-	case authv1.TokenTypeEnum_ADMIN:
-		return NewSecret(s.opt.authConfig.AdminKey, passwordHash)
-	case authv1.TokenTypeEnum_API:
-		return NewSecret(s.opt.authConfig.ApiKey, passwordHash)
-	case authv1.TokenTypeEnum_WEB:
-		return NewSecret(s.opt.authConfig.WebKey, passwordHash)
-	case authv1.TokenTypeEnum_APP:
-		return NewSecret(s.opt.authConfig.AppKey, passwordHash)
-	case authv1.TokenTypeEnum_H5:
-		return NewSecret(s.opt.authConfig.H5Key, passwordHash)
-	default:
-		return NewSecret(s.opt.authConfig.DefaultKey, passwordHash)
-	}
+	return NewSecret(s.opt.authConfig, tokenType, passwordHash)
 }
 
 // JWTSigningMethod jwt 签名方法
@@ -85,24 +68,7 @@ func (s *redisToken) CacheKey(ctx context.Context, authClaims *authutil.Claims) 
 	if s.opt.cacheKeyFunc != nil {
 		return s.opt.cacheKeyFunc(ctx, authClaims)
 	}
-	switch authClaims.Payload.Tt {
-	case authv1.TokenTypeEnum_DEFAULT:
-		return AuthKeyForDefault(authClaims.Payload)
-	case authv1.TokenTypeEnum_SERVICE:
-		return AuthKeyForService(authClaims.Payload)
-	case authv1.TokenTypeEnum_ADMIN:
-		return AuthKeyForAdmin(authClaims.Payload)
-	case authv1.TokenTypeEnum_API:
-		return AuthKeyForApi(authClaims.Payload)
-	case authv1.TokenTypeEnum_WEB:
-		return AuthKeyForWeb(authClaims.Payload)
-	case authv1.TokenTypeEnum_APP:
-		return AuthKeyForApp(authClaims.Payload)
-	case authv1.TokenTypeEnum_H5:
-		return AuthKeyForH5(authClaims.Payload)
-	default:
-		return AuthKeyForDefault(authClaims.Payload)
-	}
+	return NewCacheKey(authClaims.Payload)
 }
 
 // SaveCacheData 存储缓存
@@ -117,29 +83,61 @@ func (s *redisToken) SaveCacheData(ctx context.Context, authClaims *authutil.Cla
 	return s.saveCacheData(ctx, cacheKey, authCache, expiration)
 }
 
-// JWTKeyFunc KeyFunc == jwt.Keyfunc
-func (s *redisToken) JWTKeyFunc(ctx context.Context) (context.Context, jwt.Keyfunc) {
-	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		myClaims, ok := token.Claims.(*authutil.Claims)
-		if !ok || myClaims.Payload == nil {
-			err := errorutil.WithStack(authutil.ErrInvalidAuthInfo)
-			return []byte(""), err
+// SetTokenType 设置令牌类型
+func (s *redisToken) SetTokenType(operation string, tokenType authv1.TokenTypeEnum_TokenType) {
+	// 写锁
+	s.tokenTypeMutex.Lock()
+	defer s.tokenTypeMutex.Unlock()
+
+	s.opt.tokenTypeMap[operation] = tokenType
+}
+
+// GetTokenType 获取令牌类型
+func (s *redisToken) GetTokenType(operation string) authv1.TokenTypeEnum_TokenType {
+	// 暂不加锁：不考虑动态增加令牌，并发读
+	//s.tokenTypeRWMutex.RLock()
+	//defer s.tokenTypeRWMutex.RUnlock()
+
+	return s.opt.tokenTypeMap[operation]
+}
+
+// JWTKeyFunc 验证工具： authutil.KeyFunc，提供最终的 jwt.Keyfunc
+func (s *redisToken) JWTKeyFunc() authutil.KeyFunc {
+	// authutil.KeyFunc
+	authKeyFunc := func(ctx context.Context) (context.Context, jwt.Keyfunc) {
+		// 令牌类型
+		tokenType := authv1.TokenTypeEnum_DEFAULT
+		if s.opt.tokenTypeFunc != nil {
+			tokenType = s.opt.tokenTypeFunc(ctx, s.opt.tokenTypeMap)
+		} else {
+			tokenType = GetTokenType(ctx, s.opt.tokenTypeMap)
 		}
 
-		// key
-		key := s.CacheKey(ctx, myClaims)
-		authInfo, err := s.getCacheData(ctx, key)
-		if err != nil {
-			return nil, err
+		// jwt key func
+		jwtKeyFunc := func(token *jwt.Token) (interface{}, error) {
+			myClaims, ok := token.Claims.(*authutil.Claims)
+			if !ok || myClaims.Payload == nil {
+				err := errorutil.WithStack(authutil.ErrInvalidAuthInfo)
+				return []byte(""), err
+			}
+
+			// key
+			key := s.CacheKey(ctx, myClaims)
+			authInfo, err := s.getCacheData(ctx, key)
+			if err != nil {
+				return nil, err
+			}
+
+			// 存储
+			ctx = authutil.NewRedisContext(ctx, authInfo)
+
+			// 密码
+			signingSecret := s.SigningSecret(ctx, tokenType, authInfo.Secret)
+			return []byte(signingSecret), nil
 		}
-
-		// 存储
-		ctx = authutil.NewRedisContext(ctx, authInfo)
-
-		// 密码
-		return []byte(authInfo.Secret), nil
+		return ctx, jwtKeyFunc
 	}
-	return ctx, keyFunc
+	return authKeyFunc
 }
 
 // ValidateAuthInfo 校验：验证信息

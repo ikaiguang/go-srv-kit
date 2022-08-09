@@ -27,6 +27,9 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 
 	// options
 	var opts []http.ServerOption
+	//var opts = []http.ServerOption{
+	//	http.Filter(NewCORS()),
+	//}
 	if httpConfig.Network != "" {
 		opts = append(opts, http.Network(httpConfig.Network))
 	}
@@ -58,6 +61,12 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 		middleLogger,
 		//logmiddle.WithDefaultSkip(),
 	))
+	// jwt
+	//jwtMiddleware, err := NewJWTMiddleware(engineHandler)
+	//if err != nil {
+	//	return srv, err
+	//}
+	//middlewareSlice = append(middlewareSlice, jwtMiddleware)
 
 	// 中间件选项
 	opts = append(opts, http.Middleware(middlewareSlice...))

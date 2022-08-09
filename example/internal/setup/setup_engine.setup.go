@@ -7,6 +7,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
+
+	tokenutil "github.com/ikaiguang/go-srv-kit/kratos/token"
 )
 
 // engines 引擎模块
@@ -46,6 +48,10 @@ type engines struct {
 	// redisClientMutex redis客户端
 	redisClientMutex sync.Once
 	redisClient      *redis.Client
+
+	// authTokenRepoMutex 验证Token工具
+	authTokenRepoMutex sync.Once
+	authTokenRepo      tokenutil.AuthTokenRepo
 }
 
 // NewEngine ...

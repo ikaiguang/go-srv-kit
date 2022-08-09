@@ -4,9 +4,12 @@ import (
 	"context"
 	"github.com/golang-jwt/jwt/v4"
 	"strconv"
+	"strings"
 
 	authv1 "github.com/ikaiguang/go-srv-kit/api/auth/v1"
+	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	authutil "github.com/ikaiguang/go-srv-kit/kratos/auth"
+	contextutil "github.com/ikaiguang/go-srv-kit/kratos/context"
 )
 
 const (
@@ -20,10 +23,44 @@ const (
 	KeyPrefixH5      = "h5_"
 )
 
-// AuthTokenRepo ...
+// TokenTypeMap 令牌类型映射
+type TokenTypeMap map[string]authv1.TokenTypeEnum_TokenType
+
+var (
+	// DefaultCachePrefix 默认key前缀；防止与其他缓存冲突；
+	DefaultCachePrefix = "token:"
+
+	// _tokenTypeMutex token类型
+	_tokenTypeMap = TokenTypeMap{
+		"":             authv1.TokenTypeEnum_DEFAULT,
+		"/service/v1/": authv1.TokenTypeEnum_SERVICE,
+		"/admin/v1/":   authv1.TokenTypeEnum_ADMIN,
+		"/api/v1/":     authv1.TokenTypeEnum_API,
+		"/web/v1/":     authv1.TokenTypeEnum_WEB,
+		"/app/v1/":     authv1.TokenTypeEnum_APP,
+		"/h5/v1/":      authv1.TokenTypeEnum_H5,
+	}
+)
+
+// AuthTokenRepo 验证令牌
+//
+// =====
+// 生产令牌步骤
+// =====
+// 1. 生产签名密码 SigningSecret
+// 2. 确定签名方法 JWTSigningMethod
+// 3. 签证令牌 SignedToken
+// 4. 生产缓存key CacheKey
+// 5. 存储令牌 SaveCacheData
+//
+// =====
+// 验证令牌步骤
+// =====
+// 1. 设置令牌类型 SetTokenType
+// 2. 获取令牌类型 GetTokenType
 type AuthTokenRepo interface {
 	// SigningSecret 签名密码
-	SigningSecret(ctx context.Context, authClaims *authutil.Claims, passwordHash string) string
+	SigningSecret(ctx context.Context, tokenType authv1.TokenTypeEnum_TokenType, passwordHash string) string
 	// JWTSigningMethod jwt 签名方法
 	JWTSigningMethod() *jwt.SigningMethodHMAC
 	// SignedToken 签证Token
@@ -32,137 +69,105 @@ type AuthTokenRepo interface {
 	CacheKey(context.Context, *authutil.Claims) string
 	// SaveCacheData 存储缓存
 	SaveCacheData(ctx context.Context, authClaims *authutil.Claims, authInfo *authv1.Auth) error
-	// JWTKeyFunc 响应 jwt.Keyfunc
-	JWTKeyFunc(context.Context) (context.Context, jwt.Keyfunc)
+	// SetTokenType 设置令牌类型
+	SetTokenType(operation string, tokenType authv1.TokenTypeEnum_TokenType)
+	// GetTokenType 获取令牌类型
+	GetTokenType(operation string) authv1.TokenTypeEnum_TokenType
+	// JWTKeyFunc 验证工具： authutil.KeyFunc，提供最终的 jwt.Keyfunc
+	JWTKeyFunc() authutil.KeyFunc
 }
 
-var (
-	// DefaultCachePrefix 默认key前缀；防止与其他缓存冲突；
-	DefaultCachePrefix = "token:"
-)
+// NewCacheKey ...
+func NewCacheKey(authPayload *authv1.Payload) string {
+	var (
+		prefix     = ""
+		identifier = "null"
+	)
 
-// NewAuthKey ...
-func NewAuthKey(prefix string, payload *authv1.Payload) string {
-	if payload.Uid != "" {
-		return NewCacheKey(prefix, payload.Uid)
+	// identifier
+	if authPayload.Uid != "" {
+		identifier = authPayload.Uid
+	} else if authPayload.Id > 0 {
+		identifier = strconv.FormatUint(authPayload.Id, 10)
 	}
-	if payload.Id > 0 {
-		return NewCacheKey(prefix, strconv.FormatUint(payload.Id, 10))
-	}
-	return NewCacheKey(prefix, "null")
-}
 
-// NewCacheKey 例子：token:xxx_xxx
-func NewCacheKey(prefix, identifier string) string {
+	// prefix
+	switch authPayload.Tt {
+	case authv1.TokenTypeEnum_DEFAULT:
+		prefix = KeyPrefixDefault
+	case authv1.TokenTypeEnum_SERVICE:
+		prefix = KeyPrefixService
+	case authv1.TokenTypeEnum_ADMIN:
+		prefix = KeyPrefixAdmin
+	case authv1.TokenTypeEnum_API:
+		prefix = KeyPrefixApi
+	case authv1.TokenTypeEnum_WEB:
+		prefix = KeyPrefixWeb
+	case authv1.TokenTypeEnum_APP:
+		prefix = KeyPrefixApp
+	case authv1.TokenTypeEnum_H5:
+		prefix = KeyPrefixH5
+	default:
+		prefix = KeyPrefixDefault
+	}
 	return DefaultCachePrefix + prefix + identifier
 }
 
 // NewSecret ...
-func NewSecret(prefix, secret string) string {
-	return prefix + secret
+func NewSecret(authConfig *confv1.App_Auth, tokenType authv1.TokenTypeEnum_TokenType, passwordHash string) string {
+	var (
+		prefix = ""
+	)
+	switch tokenType {
+	case authv1.TokenTypeEnum_DEFAULT:
+		prefix = authConfig.DefaultKey
+	case authv1.TokenTypeEnum_SERVICE:
+		prefix = authConfig.ServiceKey
+	case authv1.TokenTypeEnum_ADMIN:
+		prefix = authConfig.AdminKey
+	case authv1.TokenTypeEnum_API:
+		prefix = authConfig.ApiKey
+	case authv1.TokenTypeEnum_WEB:
+		prefix = authConfig.WebKey
+	case authv1.TokenTypeEnum_APP:
+		prefix = authConfig.AppKey
+	case authv1.TokenTypeEnum_H5:
+		prefix = authConfig.H5Key
+	default:
+		prefix = authConfig.DefaultKey
+	}
+	return prefix + passwordHash
 }
 
-// CacheKeyForDefault 例子：token:xxx_xxx
-func CacheKeyForDefault(identifier string) string {
-	return NewCacheKey(KeyPrefixDefault, identifier)
+// newTokenTypeMap 令牌类型映射
+func newTokenTypeMap() TokenTypeMap {
+	m := TokenTypeMap{}
+	for key, value := range _tokenTypeMap {
+		m[key] = value
+	}
+	return m
 }
 
-// CacheIDForDefault 例子：token:xxx_xxx
-func CacheIDForDefault(id uint64) string {
-	return NewCacheKey(KeyPrefixDefault, strconv.FormatUint(id, 10))
-}
-
-// AuthKeyForDefault ...
-func AuthKeyForDefault(payload *authv1.Payload) string {
-	return NewAuthKey(KeyPrefixDefault, payload)
-}
-
-// CacheKeyForService 例子：token:xxx_xxx
-func CacheKeyForService(identifier string) string {
-	return NewCacheKey(KeyPrefixService, identifier)
-}
-
-// CacheIDForService 例子：token:xxx_xxx
-func CacheIDForService(id uint64) string {
-	return NewCacheKey(KeyPrefixService, strconv.FormatUint(id, 10))
-}
-
-// AuthKeyForService ...
-func AuthKeyForService(payload *authv1.Payload) string {
-	return NewAuthKey(KeyPrefixService, payload)
-}
-
-// CacheKeyForAdmin 例子：token:xxx_xxx
-func CacheKeyForAdmin(identifier string) string {
-	return NewCacheKey(KeyPrefixAdmin, identifier)
-}
-
-// CacheIDForAdmin 例子：token:xxx_xxx
-func CacheIDForAdmin(id uint64) string {
-	return NewCacheKey(KeyPrefixAdmin, strconv.FormatUint(id, 10))
-}
-
-// AuthKeyForAdmin ...
-func AuthKeyForAdmin(payload *authv1.Payload) string {
-	return NewAuthKey(KeyPrefixAdmin, payload)
-}
-
-// CacheKeyForApi 例子：token:xxx_xxx
-func CacheKeyForApi(identifier string) string {
-	return NewCacheKey(KeyPrefixApi, identifier)
-}
-
-// CacheIDForApi 例子：token:xxx_xxx
-func CacheIDForApi(id uint64) string {
-	return NewCacheKey(KeyPrefixApi, strconv.FormatUint(id, 10))
-}
-
-// AuthKeyForApi ...
-func AuthKeyForApi(payload *authv1.Payload) string {
-	return NewAuthKey(KeyPrefixApi, payload)
-}
-
-// CacheKeyForWeb 例子：token:xxx_xxx
-func CacheKeyForWeb(identifier string) string {
-	return NewCacheKey(KeyPrefixWeb, identifier)
-}
-
-// CacheIDForWeb 例子：token:xxx_xxx
-func CacheIDForWeb(id uint64) string {
-	return NewCacheKey(KeyPrefixWeb, strconv.FormatUint(id, 10))
-}
-
-// AuthKeyForWeb ...
-func AuthKeyForWeb(payload *authv1.Payload) string {
-	return NewAuthKey(KeyPrefixWeb, payload)
-}
-
-// CacheKeyForApp 例子：token:xxx_xxx
-func CacheKeyForApp(identifier string) string {
-	return NewCacheKey(KeyPrefixApp, identifier)
-}
-
-// CacheIDForApp 例子：token:xxx_xxx
-func CacheIDForApp(id uint64) string {
-	return NewCacheKey(KeyPrefixApp, strconv.FormatUint(id, 10))
-}
-
-// AuthKeyForApp ...
-func AuthKeyForApp(payload *authv1.Payload) string {
-	return NewAuthKey(KeyPrefixApp, payload)
-}
-
-// CacheKeyForH5 例子：token:xxx_xxx
-func CacheKeyForH5(identifier string) string {
-	return NewCacheKey(KeyPrefixH5, identifier)
-}
-
-// CacheIDForH5 例子：token:xxx_xxx
-func CacheIDForH5(id uint64) string {
-	return NewCacheKey(KeyPrefixH5, strconv.FormatUint(id, 10))
-}
-
-// AuthKeyForH5 ...
-func AuthKeyForH5(payload *authv1.Payload) string {
-	return NewAuthKey(KeyPrefixH5, payload)
+// GetTokenType ...
+func GetTokenType(ctx context.Context, tokenTypeMap TokenTypeMap) authv1.TokenTypeEnum_TokenType {
+	var (
+		operation string
+	)
+	kratosTr, ok := contextutil.FromServerContext(ctx)
+	if ok {
+		operation = kratosTr.Operation()
+	}
+	if httpTr, ok := contextutil.IsHTTPTransporter(kratosTr); ok {
+		var (
+			pathSeparator = "/"
+			splitN        = 4
+			urlPathSlice  = strings.SplitN(httpTr.Request().URL.Path, pathSeparator, splitN)
+		)
+		if len(urlPathSlice) >= splitN {
+			operation = strings.Join(urlPathSlice[:splitN-1], "/")
+		} else {
+			operation = strings.Join(urlPathSlice, "/")
+		}
+	}
+	return tokenTypeMap[operation]
 }

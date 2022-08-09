@@ -12,6 +12,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport"
 
 	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
+	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	authutil "github.com/ikaiguang/go-srv-kit/kratos/auth"
 )
 
@@ -39,15 +40,15 @@ func Server(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
 			if header, ok := transport.FromServerContext(ctx); ok {
 				if jwtKeyFunc == nil {
-					return nil, authutil.ErrMissingKeyFunc
+					return nil, errorutil.WithStack(authutil.ErrMissingKeyFunc)
 				}
 				keyFunc := jwtKeyFunc(ctx)
 				if keyFunc == nil {
-					return nil, authutil.ErrMissingKeyFunc
+					return nil, errorutil.WithStack(authutil.ErrMissingKeyFunc)
 				}
 				auths := strings.SplitN(header.RequestHeader().Get(authutil.AuthorizationKey), " ", 2)
 				if len(auths) != 2 || !strings.EqualFold(auths[0], authutil.BearerWord) {
-					return nil, authutil.ErrMissingJwtToken
+					return nil, errorutil.WithStack(authutil.ErrMissingJwtToken)
 				}
 				jwtToken := auths[1]
 				var (
@@ -62,21 +63,22 @@ func Server(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				if err != nil {
 					ve, ok := err.(*jwt.ValidationError)
 					if !ok {
-						return nil, errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), err.Error())
+						err = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), err.Error())
+						return nil, errorutil.WithStack(err)
 					}
 					if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-						return nil, authutil.ErrTokenInvalid
+						return nil, errorutil.WithStack(authutil.ErrTokenInvalid)
 					}
 					if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-						return nil, authutil.ErrTokenExpired
+						return nil, errorutil.WithStack(authutil.ErrTokenExpired)
 					}
-					return nil, authutil.ErrTokenParseFail
+					return nil, errorutil.WithStack(authutil.ErrTokenParseFail)
 				}
 				if !tokenInfo.Valid {
-					return nil, authutil.ErrTokenInvalid
+					return nil, errorutil.WithStack(authutil.ErrTokenInvalid)
 				}
 				if tokenInfo.Method != o.signingMethod {
-					return nil, authutil.ErrUnSupportSigningMethod
+					return nil, errorutil.WithStack(authutil.ErrUnSupportSigningMethod)
 				}
 				if o.validator != nil {
 					if err = o.validator(ctx, tokenInfo); err != nil {
@@ -86,7 +88,7 @@ func Server(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				ctx = authutil.NewJWTContext(ctx, tokenInfo.Claims)
 				return handler(ctx, req)
 			}
-			return nil, authutil.ErrWrongContext
+			return nil, errorutil.WithStack(authutil.ErrWrongContext)
 		}
 	}
 }
@@ -109,11 +111,11 @@ func Client(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
 			if jwtKeyFunc == nil {
-				return nil, authutil.ErrMissingKeyFunc
+				return nil, errorutil.WithStack(authutil.ErrMissingKeyFunc)
 			}
 			keyProvider := jwtKeyFunc(ctx)
 			if keyProvider == nil {
-				return nil, authutil.ErrNeedTokenProvider
+				return nil, errorutil.WithStack(authutil.ErrNeedTokenProvider)
 			}
 			token := jwt.NewWithClaims(o.signingMethod, o.claims())
 			if o.tokenHeader != nil {
@@ -123,11 +125,11 @@ func Client(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 			}
 			key, err := keyProvider(token)
 			if err != nil {
-				return nil, authutil.ErrGetKey
+				return nil, errorutil.WithStack(authutil.ErrGetKey)
 			}
 			tokenStr, err := token.SignedString(key)
 			if err != nil {
-				return nil, authutil.ErrSignToken
+				return nil, errorutil.WithStack(authutil.ErrSignToken)
 			}
 			if o.validator != nil {
 				if err = o.validator(ctx, token); err != nil {
@@ -138,7 +140,7 @@ func Client(jwtKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				clientContext.RequestHeader().Set(authutil.AuthorizationKey, fmt.Sprintf(authutil.BearerFormat, tokenStr))
 				return handler(ctx, req)
 			}
-			return nil, authutil.ErrWrongContext
+			return nil, errorutil.WithStack(authutil.ErrWrongContext)
 		}
 	}
 }

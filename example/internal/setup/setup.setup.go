@@ -79,8 +79,13 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	//}
 
 	// redis 客户端
-	//if _, err = setupHandler.GetRedisClient(); err != nil {
+	//redisCC, err := setupHandler.GetRedisClient();
+	//if  err != nil {
 	//	return engineHandler, err
 	//}
+
+	// 验证Token工具
+	//_ = setupHandler.GetAuthTokenRepo(redisCC)
+
 	return setupHandler, err
 }

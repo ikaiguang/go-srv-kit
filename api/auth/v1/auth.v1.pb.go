@@ -241,28 +241,28 @@ func (LimitTypeEnum_LimitType) EnumDescriptor() ([]byte, []int) {
 }
 
 // TokenType 令牌类型
-type TokenTypeEnum_LimitType int32
+type TokenTypeEnum_TokenType int32
 
 const (
 	// DEFAULT 默认
-	TokenTypeEnum_DEFAULT TokenTypeEnum_LimitType = 0
+	TokenTypeEnum_DEFAULT TokenTypeEnum_TokenType = 0
 	// SERVICE 服务直连
-	TokenTypeEnum_SERVICE TokenTypeEnum_LimitType = 1
+	TokenTypeEnum_SERVICE TokenTypeEnum_TokenType = 1
 	// ADMIN 管理后台
-	TokenTypeEnum_ADMIN TokenTypeEnum_LimitType = 2
+	TokenTypeEnum_ADMIN TokenTypeEnum_TokenType = 2
 	// API 通用api
-	TokenTypeEnum_API TokenTypeEnum_LimitType = 3
+	TokenTypeEnum_API TokenTypeEnum_TokenType = 3
 	// WEB 通用web
-	TokenTypeEnum_WEB TokenTypeEnum_LimitType = 4
+	TokenTypeEnum_WEB TokenTypeEnum_TokenType = 4
 	// APP 应用
-	TokenTypeEnum_APP TokenTypeEnum_LimitType = 5
+	TokenTypeEnum_APP TokenTypeEnum_TokenType = 5
 	// H5 h5应用
-	TokenTypeEnum_H5 TokenTypeEnum_LimitType = 6
+	TokenTypeEnum_H5 TokenTypeEnum_TokenType = 6
 )
 
-// Enum value maps for TokenTypeEnum_LimitType.
+// Enum value maps for TokenTypeEnum_TokenType.
 var (
-	TokenTypeEnum_LimitType_name = map[int32]string{
+	TokenTypeEnum_TokenType_name = map[int32]string{
 		0: "DEFAULT",
 		1: "SERVICE",
 		2: "ADMIN",
@@ -271,7 +271,7 @@ var (
 		5: "APP",
 		6: "H5",
 	}
-	TokenTypeEnum_LimitType_value = map[string]int32{
+	TokenTypeEnum_TokenType_value = map[string]int32{
 		"DEFAULT": 0,
 		"SERVICE": 1,
 		"ADMIN":   2,
@@ -282,30 +282,30 @@ var (
 	}
 )
 
-func (x TokenTypeEnum_LimitType) Enum() *TokenTypeEnum_LimitType {
-	p := new(TokenTypeEnum_LimitType)
+func (x TokenTypeEnum_TokenType) Enum() *TokenTypeEnum_TokenType {
+	p := new(TokenTypeEnum_TokenType)
 	*p = x
 	return p
 }
 
-func (x TokenTypeEnum_LimitType) String() string {
+func (x TokenTypeEnum_TokenType) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (TokenTypeEnum_LimitType) Descriptor() protoreflect.EnumDescriptor {
+func (TokenTypeEnum_TokenType) Descriptor() protoreflect.EnumDescriptor {
 	return file_api_auth_v1_auth_v1_proto_enumTypes[3].Descriptor()
 }
 
-func (TokenTypeEnum_LimitType) Type() protoreflect.EnumType {
+func (TokenTypeEnum_TokenType) Type() protoreflect.EnumType {
 	return &file_api_auth_v1_auth_v1_proto_enumTypes[3]
 }
 
-func (x TokenTypeEnum_LimitType) Number() protoreflect.EnumNumber {
+func (x TokenTypeEnum_TokenType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use TokenTypeEnum_LimitType.Descriptor instead.
-func (TokenTypeEnum_LimitType) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use TokenTypeEnum_TokenType.Descriptor instead.
+func (TokenTypeEnum_TokenType) EnumDescriptor() ([]byte, []int) {
 	return file_api_auth_v1_auth_v1_proto_rawDescGZIP(), []int{5, 0}
 }
 
@@ -320,7 +320,7 @@ type Payload struct {
 	// uid 唯一id
 	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	// tt : token type 令牌类型
-	Tt TokenTypeEnum_LimitType `protobuf:"varint,3,opt,name=tt,proto3,enum=kit.api.auth.authv1.TokenTypeEnum_LimitType" json:"tt,omitempty"`
+	Tt TokenTypeEnum_TokenType `protobuf:"varint,3,opt,name=tt,proto3,enum=kit.api.auth.authv1.TokenTypeEnum_TokenType" json:"tt,omitempty"`
 	// lp : login platform 平台信息
 	Lp PlatformEnum_Platform `protobuf:"varint,4,opt,name=lp,proto3,enum=kit.api.auth.authv1.PlatformEnum_Platform" json:"lp,omitempty"`
 	// lt : limit type 登录限制类型
@@ -376,7 +376,7 @@ func (x *Payload) GetUid() string {
 	return ""
 }
 
-func (x *Payload) GetTt() TokenTypeEnum_LimitType {
+func (x *Payload) GetTt() TokenTypeEnum_TokenType {
 	if x != nil {
 		return x.Tt
 	}
@@ -642,7 +642,7 @@ var file_api_auth_v1_auth_v1_proto_rawDesc = []byte{
 	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x69, 0x64, 0x12, 0x3c, 0x0a, 0x02, 0x74, 0x74,
 	0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x2c, 0x2e, 0x6b, 0x69, 0x74, 0x2e, 0x61, 0x70, 0x69,
 	0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x76, 0x31, 0x2e, 0x54, 0x6f, 0x6b,
-	0x65, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x45, 0x6e, 0x75, 0x6d, 0x2e, 0x4c, 0x69, 0x6d, 0x69, 0x74,
+	0x65, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x45, 0x6e, 0x75, 0x6d, 0x2e, 0x54, 0x6f, 0x6b, 0x65, 0x6e,
 	0x54, 0x79, 0x70, 0x65, 0x52, 0x02, 0x74, 0x74, 0x12, 0x3a, 0x0a, 0x02, 0x6c, 0x70, 0x18, 0x04,
 	0x20, 0x01, 0x28, 0x0e, 0x32, 0x2a, 0x2e, 0x6b, 0x69, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x61,
 	0x75, 0x74, 0x68, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x76, 0x31, 0x2e, 0x50, 0x6c, 0x61, 0x74, 0x66,
@@ -688,7 +688,7 @@ var file_api_auth_v1_auth_v1_proto_rawDesc = []byte{
 	0x10, 0x01, 0x12, 0x0c, 0x0a, 0x08, 0x4f, 0x4e, 0x4c, 0x59, 0x5f, 0x4f, 0x4e, 0x45, 0x10, 0x02,
 	0x12, 0x11, 0x0a, 0x0d, 0x53, 0x41, 0x4d, 0x45, 0x5f, 0x50, 0x4c, 0x41, 0x54, 0x46, 0x4f, 0x52,
 	0x4d, 0x10, 0x03, 0x22, 0x64, 0x0a, 0x0d, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x54, 0x79, 0x70, 0x65,
-	0x45, 0x6e, 0x75, 0x6d, 0x22, 0x53, 0x0a, 0x09, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x54, 0x79, 0x70,
+	0x45, 0x6e, 0x75, 0x6d, 0x22, 0x53, 0x0a, 0x09, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x54, 0x79, 0x70,
 	0x65, 0x12, 0x0b, 0x0a, 0x07, 0x44, 0x45, 0x46, 0x41, 0x55, 0x4c, 0x54, 0x10, 0x00, 0x12, 0x0b,
 	0x0a, 0x07, 0x53, 0x45, 0x52, 0x56, 0x49, 0x43, 0x45, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x41,
 	0x44, 0x4d, 0x49, 0x4e, 0x10, 0x02, 0x12, 0x07, 0x0a, 0x03, 0x41, 0x50, 0x49, 0x10, 0x03, 0x12,
@@ -720,7 +720,7 @@ var file_api_auth_v1_auth_v1_proto_goTypes = []interface{}{
 	(UserStatusEnum_UserStatus)(0), // 0: kit.api.auth.authv1.UserStatusEnum.UserStatus
 	(PlatformEnum_Platform)(0),     // 1: kit.api.auth.authv1.PlatformEnum.Platform
 	(LimitTypeEnum_LimitType)(0),   // 2: kit.api.auth.authv1.LimitTypeEnum.LimitType
-	(TokenTypeEnum_LimitType)(0),   // 3: kit.api.auth.authv1.TokenTypeEnum.LimitType
+	(TokenTypeEnum_TokenType)(0),   // 3: kit.api.auth.authv1.TokenTypeEnum.TokenType
 	(*Payload)(nil),                // 4: kit.api.auth.authv1.Payload
 	(*Auth)(nil),                   // 5: kit.api.auth.authv1.Auth
 	(*UserStatusEnum)(nil),         // 6: kit.api.auth.authv1.UserStatusEnum
@@ -731,7 +731,7 @@ var file_api_auth_v1_auth_v1_proto_goTypes = []interface{}{
 	(*anypb.Any)(nil),              // 11: google.protobuf.Any
 }
 var file_api_auth_v1_auth_v1_proto_depIdxs = []int32{
-	3,  // 0: kit.api.auth.authv1.Payload.tt:type_name -> kit.api.auth.authv1.TokenTypeEnum.LimitType
+	3,  // 0: kit.api.auth.authv1.Payload.tt:type_name -> kit.api.auth.authv1.TokenTypeEnum.TokenType
 	1,  // 1: kit.api.auth.authv1.Payload.lp:type_name -> kit.api.auth.authv1.PlatformEnum.Platform
 	2,  // 2: kit.api.auth.authv1.Payload.lt:type_name -> kit.api.auth.authv1.LimitTypeEnum.LimitType
 	10, // 3: kit.api.auth.authv1.Payload.st:type_name -> google.protobuf.Timestamp

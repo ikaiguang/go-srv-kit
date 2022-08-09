@@ -10,10 +10,13 @@ app:
     id: "${app.name}_${app.version}_${app.env}"
   # auth 验证
   auth:
-    admin_key: nN8H6ySVpqwfKUITG7zaF5xuCEvhtbgJ
-    api_key: POHU9qtjTL4h3yRZIB05DxzKnSgowVfF
-    web_key: Qsar09wIJjKfD7RSybzOPpFould15TvX
-    service_key: hJnS58CbF4NXKD6WIdBOqlfPUpyizVoe
+    default_key: 2MJRyKnANhtezTrD
+    service_key: 6EZ5y7YBdv3KqAP0
+    admin_key: IqD6bQvJodkLUa92
+    api_key: WgxqFMe4VGBJU1Th
+    web_key: QhqJvKm8cCXgLzaE
+    app_key: WH5GNvPDlsIn3SEM
+    h5_key: Z2tjUumyS8cbgdzJ
   # setting 设置
   setting:
     enable_migrate_db: true

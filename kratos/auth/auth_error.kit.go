@@ -10,7 +10,6 @@ import (
 var (
 	ErrMissingJwtToken        = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "JWT token is missing")
 	ErrMissingKeyFunc         = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "keyFunc is missing")
-	ErrInvalidKeyFunc         = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "keyFunc is invalid")
 	ErrTokenInvalid           = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "Token is invalid")
 	ErrTokenExpired           = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "JWT token has expired")
 	ErrTokenParseFail         = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "Fail to parse JWT token ")

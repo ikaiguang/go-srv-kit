@@ -13,6 +13,7 @@ import (
 
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
+	tokenutil "github.com/ikaiguang/go-srv-kit/kratos/token"
 )
 
 var (
@@ -115,6 +116,9 @@ type Engine interface {
 	GetPostgresGormDB() (*gorm.DB, error)
 	// GetRedisClient redis 客户端
 	GetRedisClient() (*redis.Client, error)
+
+	// GetAuthTokenRepo 验证Token工具
+	GetAuthTokenRepo(redisCC *redis.Client) tokenutil.AuthTokenRepo
 
 	// Close 关闭
 	Close() error

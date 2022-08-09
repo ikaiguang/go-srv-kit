@@ -17,7 +17,7 @@ message Payload {
   // uid 唯一id
   string uid = 2;
   // tt : token type 令牌类型
-  TokenTypeEnum.LimitType tt = 3;
+  TokenTypeEnum.TokenType tt = 3;
   // lp : login platform 平台信息
   PlatformEnum.Platform lp = 4;
   // lt : limit type 登录限制类型
@@ -115,7 +115,7 @@ message LimitTypeEnum {
 // TokenTypeEnum 令牌类型
 message TokenTypeEnum {
   // TokenType 令牌类型
-  enum LimitType {
+  enum TokenType {
     // DEFAULT 默认
     DEFAULT = 0;
 
