@@ -47,6 +47,7 @@ func NewJWTMiddleware(engineHandler setup.Engine) (m middleware.Middleware, err 
 			authTokenRepo.JWTKeyFunc(),
 			authutil.WithSigningMethod(authTokenRepo.JWTSigningMethod()),
 			authutil.WithClaims(func() jwt.Claims { return &authutil.Claims{} }),
+			authutil.WithValidator(authTokenRepo.ValidateFunc()),
 		),
 	).
 		Match(NewWhiteListMatcher()).

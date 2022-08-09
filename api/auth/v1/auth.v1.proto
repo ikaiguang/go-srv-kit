@@ -96,19 +96,16 @@ message PlatformEnum {
 message LimitTypeEnum {
   // LimitType 登录限制类型
   enum LimitType {
-    // UNKNOWN 未知
-    UNKNOWN = 0;
-
     // UNLIMITED 无限制
-    UNLIMITED = 1;
+    UNLIMITED = 0;
     // ONLY_ONE 同一账户仅允许登录一次
     // 方案1：验证码...可强制登录
     // 方案2：强制登录，然后提示"强制下线/在其他终端登录"
-    ONLY_ONE = 2;
-    // SAME_PLATFORM 同一账户每个平台都可登录一次
+    ONLY_ONE = 1;
+    // PLATFORM_ONE 同一账户每个平台都可登录一次
     // 方案1：验证码...可强制登录
     // 方案2：强制登录，然后提示"强制下线/在其他终端登录"
-    SAME_PLATFORM = 3;
+    PLATFORM_ONE = 2;
   }
 }
 

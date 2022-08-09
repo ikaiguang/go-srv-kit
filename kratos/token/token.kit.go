@@ -58,6 +58,11 @@ var (
 // =====
 // 1. 设置令牌类型 SetTokenType
 // 2. 获取令牌类型 GetTokenType
+// 3. 获取解密密码 JWTKeyFunc
+// =====
+// 删除令牌：退出登录、修改密码
+// =====
+// 1. 删除令牌类型 DeleteCacheData
 type AuthTokenRepo interface {
 	// SigningSecret 签名密码
 	SigningSecret(ctx context.Context, tokenType authv1.TokenTypeEnum_TokenType, passwordHash string) string
@@ -77,6 +82,8 @@ type AuthTokenRepo interface {
 	GetTokenType(operation string) authv1.TokenTypeEnum_TokenType
 	// JWTKeyFunc 验证工具： authutil.KeyFunc，提供最终的 jwt.Keyfunc
 	JWTKeyFunc() authutil.KeyFunc
+	// ValidateFunc 自定义验证
+	ValidateFunc() authutil.ValidateFunc
 }
 
 // NewCacheKey ...

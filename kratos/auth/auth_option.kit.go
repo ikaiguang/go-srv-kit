@@ -5,7 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// ValidateFunc 自定义
+// ValidateFunc 自定义验证
 type ValidateFunc func(context.Context, *jwt.Token) error
 
 // Option is jwt option.

@@ -10,7 +10,6 @@ import (
 
 	authv1 "github.com/ikaiguang/go-srv-kit/api/auth/v1"
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
-	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	uuidutil "github.com/ikaiguang/go-srv-kit/kit/uuid"
 	authutil "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
@@ -122,8 +121,7 @@ func (s *redisToken) JWTKeyFunc() authutil.KeyFunc {
 		jwtKeyFunc := func(token *jwt.Token) (interface{}, error) {
 			myClaims, ok := token.Claims.(*authutil.Claims)
 			if !ok || myClaims.Payload == nil {
-				err := errorutil.WithStack(authutil.ErrInvalidAuthInfo)
-				return []byte(""), err
+				return []byte(""), authutil.ErrInvalidAuthInfo
 			}
 
 			// key
@@ -145,24 +143,38 @@ func (s *redisToken) JWTKeyFunc() authutil.KeyFunc {
 	return authKeyFunc
 }
 
-// ValidateAuthInfo 校验：验证信息
-func (s *redisToken) ValidateAuthInfo(authClaims *authutil.Claims, authInfo *authv1.Auth) (err error) {
+// ValidateFunc 自定义验证
+func (s *redisToken) ValidateFunc() authutil.ValidateFunc {
+	validator := func(ctx context.Context, jwtToken *jwt.Token) error {
+		authClaims, ok := jwtToken.Claims.(*authutil.Claims)
+		if !ok {
+			return authutil.ErrInvalidAuthInfo
+		}
+		authInfo, ok := authutil.GetAuthInfo(jwtToken.Header)
+		if !ok {
+			return authutil.ErrInvalidAuthInfo
+		}
+		return s.validateAuthInfo(authClaims, authInfo)
+	}
+	return validator
+}
+
+// validateAuthInfo 校验：验证信息
+func (s *redisToken) validateAuthInfo(authClaims *authutil.Claims, authInfo *authv1.Auth) (err error) {
 	// 无限制
 	switch authInfo.Payload.Lt {
-	case authv1.LimitTypeEnum_UNKNOWN, authv1.LimitTypeEnum_UNLIMITED:
+	case authv1.LimitTypeEnum_UNLIMITED:
 		return err
 	case authv1.LimitTypeEnum_ONLY_ONE:
 		// 仅一个
 		if authClaims.Payload.St.AsTime().UnixNano() != authInfo.Payload.St.AsTime().UnixNano() {
-			err = errorutil.WithStack(authutil.ErrLoginLimit)
-			return err
+			return authutil.ErrLoginLimit
 		}
-	case authv1.LimitTypeEnum_SAME_PLATFORM:
+	case authv1.LimitTypeEnum_PLATFORM_ONE:
 		// 平台限制一个
 		if authClaims.Payload.Lp == authInfo.Payload.Lp &&
 			authClaims.Payload.St.AsTime().UnixNano() != authInfo.Payload.St.AsTime().UnixNano() {
-			err = errorutil.WithStack(authutil.ErrLoginLimit)
-			return err
+			return authutil.ErrLoginLimit
 		}
 	}
 	return err
@@ -174,7 +186,7 @@ func (s *redisToken) getCacheData(ctx context.Context, cacheKey string) (*authv1
 	if cacheErr != nil {
 		err := authutil.ErrGetRedisData
 		err.Metadata = map[string]string{"error": cacheErr.Error()}
-		return nil, errorutil.WithStack(err)
+		return nil, err
 	}
 
 	// cache
@@ -183,7 +195,7 @@ func (s *redisToken) getCacheData(ctx context.Context, cacheKey string) (*authv1
 	if unmarshalErr != nil {
 		err := authutil.ErrUnmarshalRedisData
 		err.Metadata = map[string]string{"error": unmarshalErr.Error()}
-		return cacheData, errorutil.WithStack(err)
+		return cacheData, err
 	}
 	return cacheData, nil
 }
@@ -194,14 +206,14 @@ func (s *redisToken) saveCacheData(ctx context.Context, cacheKey string, authInf
 	if marshalErr != nil {
 		err := authutil.ErrMarshalRedisData
 		err.Metadata = map[string]string{"error": marshalErr.Error()}
-		return errorutil.WithStack(err)
+		return err
 	}
 
 	cacheErr := s.redisCC.Set(ctx, cacheKey, cacheData, expiration).Err()
 	if cacheErr != nil {
 		err := authutil.ErrSetRedisData
 		err.Metadata = map[string]string{"error": cacheErr.Error()}
-		return errorutil.WithStack(err)
+		return err
 	}
 	return nil
 }
@@ -212,7 +224,7 @@ func (s *redisToken) deleteCacheData(ctx context.Context, cacheKey string) error
 	if cacheErr != nil {
 		err := authutil.ErrSetRedisData
 		err.Metadata = map[string]string{"error": cacheErr.Error()}
-		return errorutil.WithStack(err)
+		return err
 	}
 	return nil
 }
