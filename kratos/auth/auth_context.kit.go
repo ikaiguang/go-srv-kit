@@ -30,6 +30,26 @@ func FromAuthContext(ctx context.Context) (token *Claims, ok bool) {
 // redisAuthKey context.Context key
 type redisAuthKey struct{}
 
+const (
+	// _authInfoKey 存储验证信息到Token.Header中
+	_authInfoKey = "kit:auth:v1:auth_info"
+)
+
+// SaveAuthInfo 存储 验证信息到Token.Header
+func SaveAuthInfo(tokenHeader map[string]interface{}, data interface{}) {
+	tokenHeader[_authInfoKey] = data
+}
+
+// GetAuthInfo 获取 Token.Header中的验证信息
+func GetAuthInfo(tokenHeader map[string]interface{}) (info *authv1.Auth, ok bool) {
+	i, ok := tokenHeader[_authInfoKey]
+	if !ok {
+		return info, ok
+	}
+	info, ok = i.(*authv1.Auth)
+	return info, ok
+}
+
 // NewRedisContext ...
 func NewRedisContext(ctx context.Context, info *authv1.Auth) context.Context {
 	return context.WithValue(ctx, redisAuthKey{}, info)

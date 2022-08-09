@@ -42,7 +42,7 @@ type Claims struct {
 }
 
 // KeyFunc 自定义 jwt.Keyfunc
-type KeyFunc func(context.Context) (context.Context, jwt.Keyfunc)
+type KeyFunc func(context.Context) jwt.Keyfunc
 
 // Server is a server auth middleware. Check the token and extract the info from token.
 func Server(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
@@ -59,7 +59,7 @@ func Server(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				if customKeyFunc == nil {
 					return nil, errorutil.WithStack(ErrMissingKeyFunc)
 				}
-				ctx, keyFunc = customKeyFunc(ctx)
+				keyFunc = customKeyFunc(ctx)
 				if keyFunc == nil {
 					return nil, errorutil.WithStack(ErrMissingKeyFunc)
 				}
@@ -104,6 +104,9 @@ func Server(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 					}
 				}
 				ctx = NewJWTContext(ctx, tokenInfo.Claims)
+				if authInfo, ok := GetAuthInfo(tokenInfo.Header); ok {
+					ctx = NewRedisContext(ctx, authInfo)
+				}
 				return handler(ctx, req)
 			}
 			return nil, errorutil.WithStack(ErrWrongContext)
@@ -127,7 +130,7 @@ func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 			if customKeyFunc == nil {
 				return nil, errorutil.WithStack(ErrMissingKeyFunc)
 			}
-			ctx, keyProvider = customKeyFunc(ctx)
+			keyProvider = customKeyFunc(ctx)
 			if keyProvider == nil {
 				return nil, errorutil.WithStack(ErrMissingKeyFunc)
 			}

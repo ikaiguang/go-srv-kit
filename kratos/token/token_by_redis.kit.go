@@ -109,7 +109,7 @@ func (s *redisToken) GetTokenType(operation string) authv1.TokenTypeEnum_TokenTy
 // JWTKeyFunc 验证工具： authutil.KeyFunc，提供最终的 jwt.Keyfunc
 func (s *redisToken) JWTKeyFunc() authutil.KeyFunc {
 	// authutil.KeyFunc
-	authKeyFunc := func(ctx context.Context) (context.Context, jwt.Keyfunc) {
+	authKeyFunc := func(ctx context.Context) jwt.Keyfunc {
 		// 令牌类型
 		tokenType := authv1.TokenTypeEnum_DEFAULT
 		if s.opt.tokenTypeFunc != nil {
@@ -133,14 +133,14 @@ func (s *redisToken) JWTKeyFunc() authutil.KeyFunc {
 				return nil, err
 			}
 
-			// 存储
-			ctx = authutil.NewRedisContext(ctx, authInfo)
+			// 存储信息
+			authutil.SaveAuthInfo(token.Header, authInfo)
 
 			// 密码
 			signingSecret := s.SigningSecret(ctx, tokenType, authInfo.Secret)
 			return []byte(signingSecret), nil
 		}
-		return ctx, jwtKeyFunc
+		return jwtKeyFunc
 	}
 	return authKeyFunc
 }
