@@ -2,12 +2,13 @@
 // versions:
 // protoc-gen-go-http v2.3.1
 
-package pingv1
+package pingservicev1
 
 import (
 	context "context"
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
+	resources "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -17,10 +18,10 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationSrvPingPing = "/kit.api.ping.pingv1.SrvPing/Ping"
+const OperationSrvPingPing = "/kit.api.pingservicev1.SrvPing/Ping"
 
 type SrvPingHTTPServer interface {
-	Ping(context.Context, *PingReq) (*PingResp, error)
+	Ping(context.Context, *resources.PingReq) (*resources.PingResp, error)
 }
 
 func RegisterSrvPingHTTPServer(s *http.Server, srv SrvPingHTTPServer) {
@@ -30,7 +31,7 @@ func RegisterSrvPingHTTPServer(s *http.Server, srv SrvPingHTTPServer) {
 
 func _SrvPing_Ping0_HTTP_Handler(srv SrvPingHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in PingReq
+		var in resources.PingReq
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
@@ -39,19 +40,19 @@ func _SrvPing_Ping0_HTTP_Handler(srv SrvPingHTTPServer) func(ctx http.Context) e
 		}
 		http.SetOperation(ctx, OperationSrvPingPing)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Ping(ctx, req.(*PingReq))
+			return srv.Ping(ctx, req.(*resources.PingReq))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*PingResp)
+		reply := out.(*resources.PingResp)
 		return ctx.Result(200, reply)
 	}
 }
 
 type SrvPingHTTPClient interface {
-	Ping(ctx context.Context, req *PingReq, opts ...http.CallOption) (rsp *PingResp, err error)
+	Ping(ctx context.Context, req *resources.PingReq, opts ...http.CallOption) (rsp *resources.PingResp, err error)
 }
 
 type SrvPingHTTPClientImpl struct {
@@ -62,8 +63,8 @@ func NewSrvPingHTTPClient(client *http.Client) SrvPingHTTPClient {
 	return &SrvPingHTTPClientImpl{client}
 }
 
-func (c *SrvPingHTTPClientImpl) Ping(ctx context.Context, in *PingReq, opts ...http.CallOption) (*PingResp, error) {
-	var out PingResp
+func (c *SrvPingHTTPClientImpl) Ping(ctx context.Context, in *resources.PingReq, opts ...http.CallOption) (*resources.PingResp, error) {
+	var out resources.PingResp
 	pattern := "/api/v1/ping/{message}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSrvPingPing))

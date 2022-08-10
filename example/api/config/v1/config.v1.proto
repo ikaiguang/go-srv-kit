@@ -1,23 +1,23 @@
 syntax = "proto3";
 
-package example.api.config.configv1;
+package example.api.configv1;
 
 // 多语言特定包名，用于源代码引用
 option go_package = "github.com/ikaiguang/go-srv-kit/example/api/config/v1;configv1";
 option java_multiple_files = true;
-option java_package = "example.api.config.configv1";
-option java_outer_classname = "ExampleApiConfigConfigV1";
+option java_package = "example.api.configv1";
+option java_outer_classname = "ExampleApiConfigV1";
 
 import "github.com/ikaiguang/go-srv-kit/api/conf/v1/conf.v1.proto";
 
 // Bootstrap 配置引导
 message Bootstrap {
   // app application
-  kit.api.conf.confv1.App app = 1;
+  kit.api.confv1.App app = 1;
   // log 日志
-  kit.api.conf.confv1.Log log = 2;
+  kit.api.confv1.Log log = 2;
   // data 数据
-  kit.api.conf.confv1.Data data = 3;
+  kit.api.confv1.Data data = 3;
   // server 服务
-  kit.api.conf.confv1.Server server = 4;
+  kit.api.confv1.Server server = 4;
 }

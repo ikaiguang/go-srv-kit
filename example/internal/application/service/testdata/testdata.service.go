@@ -8,7 +8,8 @@ import (
 	"github.com/rs/xid"
 
 	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
-	v1 "github.com/ikaiguang/go-srv-kit/api/testdata/v1"
+	testdatav1 "github.com/ikaiguang/go-srv-kit/api/testdata/v1/resources"
+	testdataservicev1 "github.com/ikaiguang/go-srv-kit/api/testdata/v1/services"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	contextutil "github.com/ikaiguang/go-srv-kit/kratos/context"
 	websocketutil "github.com/ikaiguang/go-srv-kit/kratos/websocket"
@@ -16,20 +17,20 @@ import (
 
 // testdata .
 type testdata struct {
-	v1.UnimplementedSrvTestdataServer
+	testdataservicev1.UnimplementedSrvTestdataServer
 
 	log *log.Helper
 }
 
 // NewTestdataService .
-func NewTestdataService(logger log.Logger) v1.SrvTestdataServer {
+func NewTestdataService(logger log.Logger) testdataservicev1.SrvTestdataServer {
 	return &testdata{
 		log: log.NewHelper(logger),
 	}
 }
 
 // Websocket websocket
-func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.TestResp, err error) {
+func (s *testdata) Websocket(ctx context.Context, in *testdatav1.TestReq) (resp *testdatav1.TestResp, err error) {
 	//err = errorutil.NotImplemented(errorv1.ERROR_NOT_IMPLEMENTED.String(), "未实现")
 	//return &v1.TestResp{}, err
 
@@ -38,7 +39,7 @@ func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.Test
 	if isHTTPContext {
 		//return s.exportApp(httpContext, req)
 		s.ws(httpContext, in)
-		resp = &v1.TestResp{
+		resp = &testdatav1.TestResp{
 			Message: xid.New().String(),
 		}
 		err = errorutil.NotImplemented(errorv1.ERROR_NOT_IMPLEMENTED.String(), "未实现")
@@ -46,7 +47,7 @@ func (s *testdata) Websocket(ctx context.Context, in *v1.TestReq) (resp *v1.Test
 	}
 
 	err = errorutil.NotImplemented(errorv1.ERROR_NOT_IMPLEMENTED.String(), "未实现")
-	return &v1.TestResp{}, err
+	return &testdatav1.TestResp{}, err
 }
 
 // WsMessage ws
@@ -56,7 +57,7 @@ type WsMessage struct {
 }
 
 // ws ws
-func (s *testdata) ws(ctx http.Context, in *v1.TestReq) {
+func (s *testdata) ws(ctx http.Context, in *testdatav1.TestReq) {
 	// 升级连接
 	c, err := websocketutil.UpgradeConn(ctx.Response(), ctx.Request(), ctx.Response().Header())
 	if err != nil {

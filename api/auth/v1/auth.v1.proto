@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.api.auth.authv1;
+package kit.api.authv1;
 
 option go_package = "github.com/ikaiguang/go-srv-kit/api/auth/v1;authv1";
 option java_multiple_files = true;
-option java_package = "kit.api.auth.authv1";
-option java_outer_classname = "KitApiAuthAuthV1";
+option java_package = "kit.api.authv1";
+option java_outer_classname = "KitApiAuthV1";
 
 import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";

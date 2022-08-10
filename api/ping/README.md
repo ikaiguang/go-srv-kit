@@ -8,7 +8,8 @@ proto
 
 ```shell
 
-kratos proto client api/ping/error/ping.error.proto
-kratos proto client api/ping/v1/ping.v1.proto
+kratos proto client --proto_path=. --proto_path=$GOPATH/src api/ping/v1/errors/ping.error.v1.proto
+kratos proto client --proto_path=. --proto_path=$GOPATH/src api/ping/v1/resources/ping.resource.v1.proto
+kratos proto client --proto_path=. --proto_path=$GOPATH/src api/ping/v1/services/ping.service.v1.proto
 
 ```

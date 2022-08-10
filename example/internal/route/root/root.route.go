@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	stdlog "log"
 
-	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1"
+	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 )
 

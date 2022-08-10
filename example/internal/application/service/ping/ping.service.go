@@ -4,8 +4,10 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pingerror "github.com/ikaiguang/go-srv-kit/api/ping/error"
-	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1"
+
+	pingerrorv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/errors"
+	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources"
+	pingservicev1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/services"
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
@@ -13,13 +15,13 @@ import (
 
 // ping .
 type ping struct {
-	pingv1.UnimplementedSrvPingServer
+	pingservicev1.UnimplementedSrvPingServer
 
 	log *log.Helper
 }
 
 // NewPingService .
-func NewPingService(logger log.Logger) pingv1.SrvPingServer {
+func NewPingService(logger log.Logger) pingservicev1.SrvPingServer {
 	return &ping{
 		log: log.NewHelper(logger),
 	}
@@ -30,7 +32,7 @@ func (s *ping) Ping(ctx context.Context, in *pingv1.PingReq) (out *pingv1.PingRe
 
 	// 空
 	if in.GetMessage() == "" {
-		err = pingerror.ErrorContentMissing("content missing")
+		err = pingerrorv1.ErrorContentMissing("content missing")
 		return out, errorutil.WithStack(err)
 	}
 	// logger
@@ -39,7 +41,7 @@ func (s *ping) Ping(ctx context.Context, in *pingv1.PingReq) (out *pingv1.PingRe
 	}
 	// error
 	if in.GetMessage() == "error" {
-		e := pingerror.ErrorContentError("testing error")
+		e := pingerrorv1.ErrorContentError("testing error")
 		e.Metadata = map[string]string{
 			"testdata": "testdata",
 		}

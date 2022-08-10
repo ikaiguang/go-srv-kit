@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package kit.api.testdataservicev1;
+
+// 多语言特定包名，用于源代码引用
+option go_package = "github.com/ikaiguang/go-srv-kit/api/testdata/v1/services;testdataservicev1";
+option java_multiple_files = true;
+option java_package = "kit.api.testdataservicev1";
+option java_outer_classname = "KitApiTestdataServiceV1";
+
+import "google/api/annotations.proto";
+import "github.com/ikaiguang/go-srv-kit/api/testdata/v1/resources/testdata.resource.v1.proto";
+
+// SrvTestdata 测试
+service SrvTestdata {
+
+  // Websocket websocket
+  rpc Websocket(kit.api.testdatav1.TestReq) returns (kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      get : "/api/v1/testdata/websocket"
+    };
+  }
+
+  // Get Get
+  rpc Get(kit.api.testdatav1.TestReq) returns (kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      get : "/api/v1/testdata/get"
+      // body:"*" // WARN: GET xxx body should not be declared.
+    };
+  }
+
+  // Put Put
+  rpc Put(kit.api.testdatav1.TestReq) returns (kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      put : "/api/v1/testdata/put"
+      body : "*"
+    };
+  }
+
+  // Post Post
+  rpc Post(kit.api.testdatav1.TestReq) returns (kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      post : "/api/v1/testdata/post"
+      body : "*"
+    };
+  }
+
+  // Delete Delete
+  rpc Delete(kit.api.testdatav1.TestReq) returns (kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      delete : "/api/v1/testdata/post"
+      // body:"*" // WARN: DELETE xxx body should not be declared.
+    };
+  }
+
+  // Patch Patch
+  rpc Patch(kit.api.testdatav1.TestReq) returns (kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      patch : "/api/v1/testdata/post"
+      body : "*"
+    };
+  }
+
+  // ServerToClient A server-to-client streaming RPC.
+  rpc ServerToClient(kit.api.testdatav1.TestReq) returns (stream kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      get : "/api/v1/testdata/server-to-client"
+    };
+  }
+
+  // ClientToServer A client-to-server streaming RPC.
+  rpc ClientToServer(stream kit.api.testdatav1.TestReq) returns (kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      get : "/api/v1/testdata/client-to-server"
+    };
+  }
+
+  // BidirectionalStream A Bidirectional streaming RPC.
+  rpc BidirectionalStream(stream kit.api.testdatav1.TestReq) returns (stream kit.api.testdatav1.TestResp) {
+    option (google.api.http) = {
+      get : "/api/v1/testdata/bidirectional-stream"
+    };
+  }
+}

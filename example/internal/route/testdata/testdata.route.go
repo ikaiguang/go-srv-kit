@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
-	v1 "github.com/ikaiguang/go-srv-kit/api/testdata/v1"
+	testdataservicev1 "github.com/ikaiguang/go-srv-kit/api/testdata/v1/services"
 	testdatasrv "github.com/ikaiguang/go-srv-kit/example/internal/application/service/testdata"
 )
 
@@ -16,6 +16,6 @@ func RegisterRoutes(hs *http.Server, gs *grpc.Server, logger log.Logger) {
 
 	testdata := testdatasrv.NewTestdataService(logger)
 	stdlog.Println("|*** 注册路由：NewTestdataService")
-	v1.RegisterSrvTestdataHTTPServer(hs, testdata)
-	v1.RegisterSrvTestdataServer(gs, testdata)
+	testdataservicev1.RegisterSrvTestdataHTTPServer(hs, testdata)
+	testdataservicev1.RegisterSrvTestdataServer(gs, testdata)
 }

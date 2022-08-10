@@ -2,12 +2,13 @@
 // versions:
 // protoc-gen-go-http v2.3.1
 
-package testdatav1
+package testdataservicev1
 
 import (
 	context "context"
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
+	resources "github.com/ikaiguang/go-srv-kit/api/testdata/v1/resources"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -17,20 +18,20 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationSrvTestdataDelete = "/kit.api.testdata.testdatav1.SrvTestdata/Delete"
-const OperationSrvTestdataGet = "/kit.api.testdata.testdatav1.SrvTestdata/Get"
-const OperationSrvTestdataPatch = "/kit.api.testdata.testdatav1.SrvTestdata/Patch"
-const OperationSrvTestdataPost = "/kit.api.testdata.testdatav1.SrvTestdata/Post"
-const OperationSrvTestdataPut = "/kit.api.testdata.testdatav1.SrvTestdata/Put"
-const OperationSrvTestdataWebsocket = "/kit.api.testdata.testdatav1.SrvTestdata/Websocket"
+const OperationSrvTestdataDelete = "/kit.api.testdataservicev1.SrvTestdata/Delete"
+const OperationSrvTestdataGet = "/kit.api.testdataservicev1.SrvTestdata/Get"
+const OperationSrvTestdataPatch = "/kit.api.testdataservicev1.SrvTestdata/Patch"
+const OperationSrvTestdataPost = "/kit.api.testdataservicev1.SrvTestdata/Post"
+const OperationSrvTestdataPut = "/kit.api.testdataservicev1.SrvTestdata/Put"
+const OperationSrvTestdataWebsocket = "/kit.api.testdataservicev1.SrvTestdata/Websocket"
 
 type SrvTestdataHTTPServer interface {
-	Delete(context.Context, *TestReq) (*TestResp, error)
-	Get(context.Context, *TestReq) (*TestResp, error)
-	Patch(context.Context, *TestReq) (*TestResp, error)
-	Post(context.Context, *TestReq) (*TestResp, error)
-	Put(context.Context, *TestReq) (*TestResp, error)
-	Websocket(context.Context, *TestReq) (*TestResp, error)
+	Delete(context.Context, *resources.TestReq) (*resources.TestResp, error)
+	Get(context.Context, *resources.TestReq) (*resources.TestResp, error)
+	Patch(context.Context, *resources.TestReq) (*resources.TestResp, error)
+	Post(context.Context, *resources.TestReq) (*resources.TestResp, error)
+	Put(context.Context, *resources.TestReq) (*resources.TestResp, error)
+	Websocket(context.Context, *resources.TestReq) (*resources.TestResp, error)
 }
 
 func RegisterSrvTestdataHTTPServer(s *http.Server, srv SrvTestdataHTTPServer) {
@@ -45,125 +46,125 @@ func RegisterSrvTestdataHTTPServer(s *http.Server, srv SrvTestdataHTTPServer) {
 
 func _SrvTestdata_Websocket0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in TestReq
+		var in resources.TestReq
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationSrvTestdataWebsocket)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Websocket(ctx, req.(*TestReq))
+			return srv.Websocket(ctx, req.(*resources.TestReq))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*TestResp)
+		reply := out.(*resources.TestResp)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _SrvTestdata_Get0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in TestReq
+		var in resources.TestReq
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationSrvTestdataGet)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Get(ctx, req.(*TestReq))
+			return srv.Get(ctx, req.(*resources.TestReq))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*TestResp)
+		reply := out.(*resources.TestResp)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _SrvTestdata_Put0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in TestReq
+		var in resources.TestReq
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationSrvTestdataPut)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Put(ctx, req.(*TestReq))
+			return srv.Put(ctx, req.(*resources.TestReq))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*TestResp)
+		reply := out.(*resources.TestResp)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _SrvTestdata_Post0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in TestReq
+		var in resources.TestReq
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationSrvTestdataPost)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Post(ctx, req.(*TestReq))
+			return srv.Post(ctx, req.(*resources.TestReq))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*TestResp)
+		reply := out.(*resources.TestResp)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _SrvTestdata_Delete0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in TestReq
+		var in resources.TestReq
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationSrvTestdataDelete)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Delete(ctx, req.(*TestReq))
+			return srv.Delete(ctx, req.(*resources.TestReq))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*TestResp)
+		reply := out.(*resources.TestResp)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _SrvTestdata_Patch0_HTTP_Handler(srv SrvTestdataHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in TestReq
+		var in resources.TestReq
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationSrvTestdataPatch)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Patch(ctx, req.(*TestReq))
+			return srv.Patch(ctx, req.(*resources.TestReq))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*TestResp)
+		reply := out.(*resources.TestResp)
 		return ctx.Result(200, reply)
 	}
 }
 
 type SrvTestdataHTTPClient interface {
-	Delete(ctx context.Context, req *TestReq, opts ...http.CallOption) (rsp *TestResp, err error)
-	Get(ctx context.Context, req *TestReq, opts ...http.CallOption) (rsp *TestResp, err error)
-	Patch(ctx context.Context, req *TestReq, opts ...http.CallOption) (rsp *TestResp, err error)
-	Post(ctx context.Context, req *TestReq, opts ...http.CallOption) (rsp *TestResp, err error)
-	Put(ctx context.Context, req *TestReq, opts ...http.CallOption) (rsp *TestResp, err error)
-	Websocket(ctx context.Context, req *TestReq, opts ...http.CallOption) (rsp *TestResp, err error)
+	Delete(ctx context.Context, req *resources.TestReq, opts ...http.CallOption) (rsp *resources.TestResp, err error)
+	Get(ctx context.Context, req *resources.TestReq, opts ...http.CallOption) (rsp *resources.TestResp, err error)
+	Patch(ctx context.Context, req *resources.TestReq, opts ...http.CallOption) (rsp *resources.TestResp, err error)
+	Post(ctx context.Context, req *resources.TestReq, opts ...http.CallOption) (rsp *resources.TestResp, err error)
+	Put(ctx context.Context, req *resources.TestReq, opts ...http.CallOption) (rsp *resources.TestResp, err error)
+	Websocket(ctx context.Context, req *resources.TestReq, opts ...http.CallOption) (rsp *resources.TestResp, err error)
 }
 
 type SrvTestdataHTTPClientImpl struct {
@@ -174,8 +175,8 @@ func NewSrvTestdataHTTPClient(client *http.Client) SrvTestdataHTTPClient {
 	return &SrvTestdataHTTPClientImpl{client}
 }
 
-func (c *SrvTestdataHTTPClientImpl) Delete(ctx context.Context, in *TestReq, opts ...http.CallOption) (*TestResp, error) {
-	var out TestResp
+func (c *SrvTestdataHTTPClientImpl) Delete(ctx context.Context, in *resources.TestReq, opts ...http.CallOption) (*resources.TestResp, error) {
+	var out resources.TestResp
 	pattern := "/api/v1/testdata/post"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSrvTestdataDelete))
@@ -187,8 +188,8 @@ func (c *SrvTestdataHTTPClientImpl) Delete(ctx context.Context, in *TestReq, opt
 	return &out, err
 }
 
-func (c *SrvTestdataHTTPClientImpl) Get(ctx context.Context, in *TestReq, opts ...http.CallOption) (*TestResp, error) {
-	var out TestResp
+func (c *SrvTestdataHTTPClientImpl) Get(ctx context.Context, in *resources.TestReq, opts ...http.CallOption) (*resources.TestResp, error) {
+	var out resources.TestResp
 	pattern := "/api/v1/testdata/get"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSrvTestdataGet))
@@ -200,8 +201,8 @@ func (c *SrvTestdataHTTPClientImpl) Get(ctx context.Context, in *TestReq, opts .
 	return &out, err
 }
 
-func (c *SrvTestdataHTTPClientImpl) Patch(ctx context.Context, in *TestReq, opts ...http.CallOption) (*TestResp, error) {
-	var out TestResp
+func (c *SrvTestdataHTTPClientImpl) Patch(ctx context.Context, in *resources.TestReq, opts ...http.CallOption) (*resources.TestResp, error) {
+	var out resources.TestResp
 	pattern := "/api/v1/testdata/post"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationSrvTestdataPatch))
@@ -213,8 +214,8 @@ func (c *SrvTestdataHTTPClientImpl) Patch(ctx context.Context, in *TestReq, opts
 	return &out, err
 }
 
-func (c *SrvTestdataHTTPClientImpl) Post(ctx context.Context, in *TestReq, opts ...http.CallOption) (*TestResp, error) {
-	var out TestResp
+func (c *SrvTestdataHTTPClientImpl) Post(ctx context.Context, in *resources.TestReq, opts ...http.CallOption) (*resources.TestResp, error) {
+	var out resources.TestResp
 	pattern := "/api/v1/testdata/post"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationSrvTestdataPost))
@@ -226,8 +227,8 @@ func (c *SrvTestdataHTTPClientImpl) Post(ctx context.Context, in *TestReq, opts 
 	return &out, err
 }
 
-func (c *SrvTestdataHTTPClientImpl) Put(ctx context.Context, in *TestReq, opts ...http.CallOption) (*TestResp, error) {
-	var out TestResp
+func (c *SrvTestdataHTTPClientImpl) Put(ctx context.Context, in *resources.TestReq, opts ...http.CallOption) (*resources.TestResp, error) {
+	var out resources.TestResp
 	pattern := "/api/v1/testdata/put"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationSrvTestdataPut))
@@ -239,8 +240,8 @@ func (c *SrvTestdataHTTPClientImpl) Put(ctx context.Context, in *TestReq, opts .
 	return &out, err
 }
 
-func (c *SrvTestdataHTTPClientImpl) Websocket(ctx context.Context, in *TestReq, opts ...http.CallOption) (*TestResp, error) {
-	var out TestResp
+func (c *SrvTestdataHTTPClientImpl) Websocket(ctx context.Context, in *resources.TestReq, opts ...http.CallOption) (*resources.TestResp, error) {
+	var out resources.TestResp
 	pattern := "/api/v1/testdata/websocket"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSrvTestdataWebsocket))

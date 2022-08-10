@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-package kit.api.response.responsev1;
-
-import "google/protobuf/any.proto";
+package kit.api.responsev1;
 
 // 多语言特定包名，用于源代码引用
 option go_package = "github.com/ikaiguang/go-srv-kit/api/response/v1;responsev1";
 option java_multiple_files = true;
-option java_package = "kit.api.response.responsev1";
-option java_outer_classname = "KitApiResponseResponseV1";
+option java_package = "kit.api.responsev1";
+option java_outer_classname = "KitApiResponseV1";
+
+import "google/protobuf/any.proto";
 
 // Response 响应
 message Response {
@@ -22,6 +22,4 @@ message Response {
 };
 
 // Data data
-message Data {
-  string data = 1;
-}
+message Data { string data = 1; }
