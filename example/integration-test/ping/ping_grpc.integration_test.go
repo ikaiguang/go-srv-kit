@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1"
-	"github.com/ikaiguang/go-srv-kit/example/integration-test/testdata"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/status"
+
+	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources"
+	pingservicev1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/services"
+	"github.com/ikaiguang/go-srv-kit/example/integration-test/testdata"
 )
 
 // go test -v -count=1 ./example/integration-test/ping -test.run=TestGRPC_Ping_Hello
@@ -30,7 +32,7 @@ func TestGRPC_Ping_Hello(t *testing.T) {
 	}()
 
 	// 客户端
-	cc := pingv1.NewSrvPingClient(grpcConn)
+	cc := pingservicev1.NewSrvPingClient(grpcConn)
 
 	// ping
 	pingReq := &pingv1.PingReq{
