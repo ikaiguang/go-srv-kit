@@ -7,7 +7,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1"
+	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources"
 	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 )
 
