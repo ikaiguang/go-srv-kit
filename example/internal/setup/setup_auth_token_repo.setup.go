@@ -13,10 +13,10 @@ func (s *engines) GetAuthTokenRepo(redisCC *redis.Client) tokenutil.AuthTokenRep
 	var err error
 	s.authTokenRepoMutex.Do(func() {
 		s.authTokenRepo = s.loadingAuthTokenRepo(redisCC)
-		if err != nil {
-			s.authTokenRepoMutex = sync.Once{}
-		}
 	})
+	if err != nil {
+		s.authTokenRepoMutex = sync.Once{}
+	}
 	return s.authTokenRepo
 }
 

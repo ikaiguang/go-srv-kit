@@ -12,7 +12,7 @@ const (
 var (
 	_IP           = net.ParseIP(_ip)
 	_localIP      = "127.0.0.1"
-	_localIpMutex = &sync.Once{}
+	_localIpMutex = sync.Once{}
 )
 
 // LocalIP 本地IP

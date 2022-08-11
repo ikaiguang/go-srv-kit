@@ -23,13 +23,13 @@ var (
 )
 
 func init() {
+	var err error
 	_idNodeOnce.Do(func() {
-		var err error
 		_idNode, err = snowflake.NewNode(_nodeID)
-		if err != nil {
-			_idNodeOnce = sync.Once{}
-		}
 	})
+	if err != nil {
+		_idNodeOnce = sync.Once{}
+	}
 }
 
 // SetNode 设置节点

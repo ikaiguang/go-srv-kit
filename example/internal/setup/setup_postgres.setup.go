@@ -17,10 +17,10 @@ func (s *engines) GetPostgresGormDB() (*gorm.DB, error) {
 	var err error
 	s.postgresGormMutex.Do(func() {
 		s.postgresGormDB, err = s.loadingPostgresGormDB()
-		if err != nil {
-			s.postgresGormMutex = sync.Once{}
-		}
 	})
+	if err != nil {
+		s.postgresGormMutex = sync.Once{}
+	}
 	return s.postgresGormDB, err
 }
 

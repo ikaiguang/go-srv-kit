@@ -15,10 +15,10 @@ func (s *engines) Logger() (log.Logger, []io.Closer, error) {
 	var err error
 	s.loggerMutex.Do(func() {
 		s.logger, s.loggerCloseFnSlice, err = s.loadingLogger()
-		if err != nil {
-			s.loggerMutex = sync.Once{}
-		}
 	})
+	if err != nil {
+		s.loggerMutex = sync.Once{}
+	}
 	return s.logger, s.loggerCloseFnSlice, err
 }
 
@@ -27,10 +27,10 @@ func (s *engines) LoggerHelper() (log.Logger, []io.Closer, error) {
 	var err error
 	s.loggerHelperMutex.Do(func() {
 		s.loggerHelper, s.loggerHelperCloseFnSlice, err = s.loadingLoggerHelper()
-		if err != nil {
-			s.loggerHelperMutex = sync.Once{}
-		}
 	})
+	if err != nil {
+		s.loggerHelperMutex = sync.Once{}
+	}
 	return s.loggerHelper, s.loggerHelperCloseFnSlice, err
 }
 
@@ -39,10 +39,10 @@ func (s *engines) LoggerMiddleware() (log.Logger, []io.Closer, error) {
 	var err error
 	s.loggerMiddlewareMutex.Do(func() {
 		s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err = s.loadingLoggerMiddleware()
-		if err != nil {
-			s.loggerMiddlewareMutex = sync.Once{}
-		}
 	})
+	if err != nil {
+		s.loggerMiddlewareMutex = sync.Once{}
+	}
 	return s.loggerMiddleware, s.loggerMiddlewareCloseFnSlice, err
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
-	"github.com/golang-jwt/jwt/v4"
+	jwt "github.com/golang-jwt/jwt/v4"
 
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
@@ -18,7 +18,7 @@ func NewWhiteListMatcher() selector.MatchFunc {
 	whiteList := make(map[string]bool)
 
 	// 测试
-	whiteList["/kit.api.ping.pingv1.SrvPing/Ping"] = true
+	whiteList["/kit.api.pingv1.SrvPing/Ping"] = true
 
 	return func(ctx context.Context, operation string) bool {
 		//if tr, ok := contextutil.MatchHTTPServerContext(ctx); ok {

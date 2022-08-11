@@ -13,10 +13,10 @@ func (s *engines) LoggerFileWriter() (io.Writer, error) {
 	var err error
 	s.loggerFileWriterMutex.Do(func() {
 		s.loggerFileWriter, err = s.loadingLoggerFileWriter()
-		if err != nil {
-			s.loggerFileWriterMutex = sync.Once{}
-		}
 	})
+	if err != nil {
+		s.loggerFileWriterMutex = sync.Once{}
+	}
 	return s.loggerFileWriter, err
 }
 

@@ -17,10 +17,10 @@ func (s *engines) GetMySQLGormDB() (*gorm.DB, error) {
 	var err error
 	s.mysqlGormMutex.Do(func() {
 		s.mysqlGormDB, err = s.loadingMysqlGormDB()
-		if err != nil {
-			s.mysqlGormMutex = sync.Once{}
-		}
 	})
+	if err != nil {
+		s.mysqlGormMutex = sync.Once{}
+	}
 	return s.mysqlGormDB, err
 }
 

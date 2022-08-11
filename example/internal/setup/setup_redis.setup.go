@@ -14,10 +14,10 @@ func (s *engines) GetRedisClient() (*redis.Client, error) {
 	var err error
 	s.redisClientMutex.Do(func() {
 		s.redisClient, err = s.loadingRedisClient()
-		if err != nil {
-			s.redisClientMutex = sync.Once{}
-		}
 	})
+	if err != nil {
+		s.redisClientMutex = sync.Once{}
+	}
 	return s.redisClient, err
 }
 
