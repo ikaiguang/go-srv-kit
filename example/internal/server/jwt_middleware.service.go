@@ -18,7 +18,7 @@ func NewWhiteListMatcher() selector.MatchFunc {
 	whiteList := make(map[string]bool)
 
 	// 测试
-	whiteList["/kit.api.pingv1.SrvPing/Ping"] = true
+	whiteList["/kit.api.pingservicev1.SrvPing/Ping"] = true
 
 	return func(ctx context.Context, operation string) bool {
 		//if tr, ok := contextutil.MatchHTTPServerContext(ctx); ok {
