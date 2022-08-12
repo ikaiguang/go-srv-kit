@@ -12,6 +12,9 @@ import (
 	contextutil "github.com/ikaiguang/go-srv-kit/kratos/context"
 )
 
+// TokenTypeMap 令牌类型映射
+type TokenTypeMap map[string]authv1.TokenTypeEnum_TokenType
+
 const (
 	// KeyPrefixDefault 密码前缀、缓存key前缀
 	KeyPrefixDefault = "default_"
@@ -21,10 +24,8 @@ const (
 	KeyPrefixWeb     = "web_"
 	KeyPrefixApp     = "app_"
 	KeyPrefixH5      = "h5_"
+	KeyPrefixManager = "manager_"
 )
-
-// TokenTypeMap 令牌类型映射
-type TokenTypeMap map[string]authv1.TokenTypeEnum_TokenType
 
 var (
 	// DefaultCachePrefix 默认key前缀；防止与其他缓存冲突；
@@ -39,6 +40,7 @@ var (
 		"/web/v1":     authv1.TokenTypeEnum_WEB,
 		"/app/v1":     authv1.TokenTypeEnum_APP,
 		"/h5/v1":      authv1.TokenTypeEnum_H5,
+		"/manager/v1": authv1.TokenTypeEnum_MANAGER,
 	}
 )
 
@@ -116,6 +118,8 @@ func NewCacheKey(authPayload *authv1.Payload) string {
 		prefix = KeyPrefixApp
 	case authv1.TokenTypeEnum_H5:
 		prefix = KeyPrefixH5
+	case authv1.TokenTypeEnum_MANAGER:
+		prefix = KeyPrefixManager
 	default:
 		prefix = KeyPrefixDefault
 	}
@@ -142,6 +146,8 @@ func NewSecret(authConfig *confv1.App_Auth, tokenType authv1.TokenTypeEnum_Token
 		prefix = authConfig.AppKey
 	case authv1.TokenTypeEnum_H5:
 		prefix = authConfig.H5Key
+	case authv1.TokenTypeEnum_MANAGER:
+		prefix = authConfig.ManagerKey
 	default:
 		prefix = authConfig.DefaultKey
 	}

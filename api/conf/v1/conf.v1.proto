@@ -39,6 +39,7 @@ message App {
     string web_key = 5;
     string app_key = 6;
     string h5_key = 7;
+    string manager_key = 8;
   }
   // name app名字
   string name = 1;

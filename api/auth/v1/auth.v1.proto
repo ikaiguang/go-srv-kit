@@ -128,5 +128,7 @@ message TokenTypeEnum {
     APP = 5;
     // H5 h5应用
     H5 = 6;
+    // MANAGER 管理员
+    MANAGER = 7;
   }
 }

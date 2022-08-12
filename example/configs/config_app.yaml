@@ -17,6 +17,7 @@ app:
     web_key: QhqJvKm8cCXgLzaE
     app_key: WH5GNvPDlsIn3SEM
     h5_key: Z2tjUumyS8cbgdzJ
+    manager_key: re5CDJcnhEB1lpzY
   # setting 设置
   setting:
     enable_migrate_db: true
