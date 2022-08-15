@@ -35,6 +35,8 @@ message Auth {
   Payload payload = 2;
   // secret 密码
   string secret = 3;
+  // status 状态
+  UserStatusEnum.UserStatus status = 4;
 }
 
 // UserStatusEnum 用户状态

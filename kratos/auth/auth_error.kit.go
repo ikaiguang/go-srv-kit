@@ -19,13 +19,13 @@ var (
 	ErrSignToken              = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "Can not sign token.Is the key correct?")
 	ErrGetKey                 = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "Can not get key while signing token")
 
-	ErrLoginLimit         = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "ValidateFunc : Token is invalid")
-	ErrInvalidRedisKey    = errors.BadRequest(errorv1.ERROR_BAD_REQUEST.String(), "RedisSecretFunc : invalid redis key")
 	ErrInvalidAuthInfo    = errors.BadRequest(errorv1.ERROR_BAD_REQUEST.String(), "ValidateFunc : invalid auth info")
-	ErrGetRedisData       = errors.BadRequest(errorv1.ERROR_EXPECTATION_FAILED.String(), "RedisSecretFunc : get redis data failed")
-	ErrSetRedisData       = errors.BadRequest(errorv1.ERROR_EXPECTATION_FAILED.String(), "RedisSecretFunc : set redis data failed")
-	ErrUnmarshalRedisData = errors.BadRequest(errorv1.ERROR_EXPECTATION_FAILED.String(), "RedisSecretFunc : unmarshal redis data failed")
-	ErrMarshalRedisData   = errors.BadRequest(errorv1.ERROR_EXPECTATION_FAILED.String(), "RedisSecretFunc : marshal redis data failed")
+	ErrInvalidAuthUser    = errors.BadRequest(errorv1.ERROR_UNAUTHORIZED.String(), "ValidateFunc : invalid auth user")
+	ErrLoginLimit         = errors.Unauthorized(errorv1.ERROR_UNAUTHORIZED.String(), "ValidateFunc : Token is invalid")
+	ErrGetRedisData       = errors.BadRequest(errorv1.ERROR_EXPECTATION_FAILED.String(), "RedisCacheData : get redis data failed")
+	ErrSetRedisData       = errors.BadRequest(errorv1.ERROR_EXPECTATION_FAILED.String(), "RedisCacheData : set redis data failed")
+	ErrUnmarshalRedisData = errors.BadRequest(errorv1.ERROR_EXPECTATION_FAILED.String(), "RedisCacheData : unmarshal redis data failed")
+	ErrMarshalRedisData   = errors.BadRequest(errorv1.ERROR_EXPECTATION_FAILED.String(), "RedisCacheData : marshal redis data failed")
 )
 
 // Is ...
