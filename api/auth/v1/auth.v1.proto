@@ -36,13 +36,13 @@ message Auth {
   // secret 密码
   string secret = 3;
   // status 状态
-  UserStatusEnum.UserStatus status = 4;
+  StatusEnum.Status status = 4;
 }
 
-// UserStatusEnum 用户状态
-message UserStatusEnum {
-  // UserStatus 枚举值
-  enum UserStatus {
+// StatusEnum 用户状态
+message StatusEnum {
+  // Status 枚举值
+  enum Status {
     // UNSPECIFIED 未指定
     UNSPECIFIED = 0;
 

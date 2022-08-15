@@ -155,7 +155,7 @@ func (s *redisToken) ValidateFunc() authutil.ValidateFunc {
 			return authutil.ErrInvalidAuthInfo
 		}
 		switch authInfo.Status {
-		case authv1.UserStatusEnum_DISABLE, authv1.UserStatusEnum_BLACKLIST, authv1.UserStatusEnum_DELETED:
+		case authv1.StatusEnum_DISABLE, authv1.StatusEnum_BLACKLIST, authv1.StatusEnum_DELETED:
 			// 禁用、黑名单、已删除
 			return authutil.ErrInvalidAuthUser
 		}
