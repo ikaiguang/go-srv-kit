@@ -87,5 +87,15 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	// 验证Token工具
 	//_ = setupHandler.GetAuthTokenRepo(redisCC)
 
+	// 监听配置 app
+	if err = setupHandler.watchConfigApp(); err != nil {
+		return engineHandler, err
+	}
+
+	// 监听配置 data
+	if err = setupHandler.watchConfigData(); err != nil {
+		return engineHandler, err
+	}
+
 	return setupHandler, err
 }

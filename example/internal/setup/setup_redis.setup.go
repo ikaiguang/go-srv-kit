@@ -21,6 +21,19 @@ func (s *engines) GetRedisClient() (*redis.Client, error) {
 	return s.redisClient, err
 }
 
+// reloadRedisClient 重新加载 redis 客户端
+func (s *engines) reloadRedisClient() error {
+	if s.Config.RedisConfig() == nil {
+		return nil
+	}
+	redisClient, err := s.loadingRedisClient()
+	if err != nil {
+		return err
+	}
+	*s.redisClient = *redisClient
+	return nil
+}
+
 // loadingRedisClient redis 客户端
 func (s *engines) loadingRedisClient() (*redis.Client, error) {
 	if s.Config.RedisConfig() == nil {

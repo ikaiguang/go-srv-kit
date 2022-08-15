@@ -160,6 +160,11 @@ func (s *configuration) IsEnvDebug(appEnv envv1.Env) bool {
 	}
 }
 
+// Watch 监听
+func (s *configuration) Watch(key string, o config.Observer) error {
+	return s.handler.Watch(key, o)
+}
+
 // Close 关闭
 func (s *configuration) Close() error {
 	return s.handler.Close()
@@ -220,6 +225,11 @@ func (s *configuration) LoggerConfigForFile() *confv1.Log_File {
 		return nil
 	}
 	return s.conf.Log.File
+}
+
+// DataConfig data配置
+func (s *configuration) DataConfig() *confv1.Data {
+	return s.conf.Data
 }
 
 // MySQLConfig mysql配置

@@ -24,6 +24,19 @@ func (s *engines) GetMySQLGormDB() (*gorm.DB, error) {
 	return s.mysqlGormDB, err
 }
 
+// reloadMysqlGormDB 重新加载 mysql gorm 数据库
+func (s *engines) reloadMysqlGormDB() error {
+	if s.Config.MySQLConfig() == nil {
+		return nil
+	}
+	dbConn, err := s.loadingMysqlGormDB()
+	if err != nil {
+		return err
+	}
+	*s.mysqlGormDB = *dbConn
+	return nil
+}
+
 // loadingMysqlGormDB mysql gorm 数据库
 func (s *engines) loadingMysqlGormDB() (*gorm.DB, error) {
 	if s.Config.MySQLConfig() == nil {

@@ -24,6 +24,19 @@ func (s *engines) GetPostgresGormDB() (*gorm.DB, error) {
 	return s.postgresGormDB, err
 }
 
+// reloadPostgresGormDB 重新加载 postgres gorm 数据库
+func (s *engines) reloadPostgresGormDB() error {
+	if s.Config.PostgresConfig() == nil {
+		return nil
+	}
+	dbConn, err := s.loadingPostgresGormDB()
+	if err != nil {
+		return err
+	}
+	*s.postgresGormDB = *dbConn
+	return nil
+}
+
 // loadingPostgresGormDB postgres gorm 数据库
 func (s *engines) loadingPostgresGormDB() (*gorm.DB, error) {
 	if s.Config.PostgresConfig() == nil {

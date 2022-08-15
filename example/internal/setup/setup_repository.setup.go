@@ -3,6 +3,7 @@ package setup
 import (
 	strerrors "errors"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/config"
 	"io"
 	"strings"
 
@@ -59,6 +60,8 @@ func (s *LoggerPrefixField) String() string {
 
 // Config 配置
 type Config interface {
+	Watch(key string, o config.Observer) error
+
 	// AppConfig APP配置
 	AppConfig() *confv1.App
 	// AppAuthConfig APP验证配置
@@ -79,6 +82,8 @@ type Config interface {
 	LoggerConfigForConsole() *confv1.Log_Console
 	// LoggerConfigForFile 日志配置 文件
 	LoggerConfigForFile() *confv1.Log_File
+	// DataConfig data配置
+	DataConfig() *confv1.Data
 	// MySQLConfig mysql配置
 	MySQLConfig() *confv1.Data_MySQL
 	// PostgresConfig postgres配置
