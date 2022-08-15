@@ -35,6 +35,13 @@ func (s *engines) Close() (err error) {
 		stdlog.Printf("|*** 退出程序：发生Panic：%v\n", panicRecover)
 	}()
 
+	// 关闭配置
+	stdlog.Println("|*** 退出程序：关闭：配置处理手柄")
+	if err = s.Config.Close(); err != nil {
+		errorPrefix := "Config.Close error : "
+		errInfos = append(errInfos, errorPrefix+err.Error())
+	}
+
 	// 缓存
 	if s.redisClient != nil {
 		stdlog.Println("|*** 退出程序：关闭：Redis客户端")

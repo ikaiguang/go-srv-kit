@@ -89,6 +89,9 @@ type Config interface {
 	HTTPConfig() *confv1.Server_HTTP
 	// GRPCConfig grpc配置
 	GRPCConfig() *confv1.Server_GRPC
+
+	// Close 关闭
+	Close() error
 }
 
 // Engine 引擎模块、组件、单元

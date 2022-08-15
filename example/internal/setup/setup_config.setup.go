@@ -160,6 +160,11 @@ func (s *configuration) IsEnvDebug(appEnv envv1.Env) bool {
 	}
 }
 
+// Close 关闭
+func (s *configuration) Close() error {
+	return s.handler.Close()
+}
+
 // Env app环境
 func (s *configuration) Env() envv1.Env {
 	return s.env
