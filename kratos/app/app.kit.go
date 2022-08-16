@@ -22,8 +22,9 @@ const (
 
 var (
 	_ = http.DefaultRequestDecoder
-	_ = http.DefaultResponseEncoder
 	_ = http.DefaultErrorEncoder
+	_ = http.DefaultResponseEncoder
+	_ = http.DefaultResponseDecoder
 )
 
 // ID ...

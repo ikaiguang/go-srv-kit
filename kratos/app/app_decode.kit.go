@@ -1,8 +1,13 @@
 package apputil
 
 import (
+	"context"
+	stdjson "encoding/json"
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	"io"
+	stdhttp "net/http"
 
 	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 )
@@ -46,4 +51,36 @@ func DecodeError(contentBody []byte) (response *responsev1.Response, err error) 
 		return response, err
 	}
 	return response, err
+}
+
+// ResponseDecoder http.DefaultResponseDecoder
+func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) error {
+	defer func() { _ = res.Body.Close() }()
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	// 解析数据
+	data := &responsev1.Response{}
+	if err = http.CodecForResponse(res).Unmarshal(bodyBytes, data); err != nil {
+		return err
+	}
+
+	// 解密
+	if data.Data == nil {
+		return nil
+	}
+	switch m := v.(type) {
+	case proto.Message:
+		return data.Data.UnmarshalTo(m)
+	default:
+		unknownData := &responsev1.Data{}
+		if err = data.Data.UnmarshalTo(unknownData); err != nil {
+			return err
+		}
+		return stdjson.Unmarshal([]byte(unknownData.Data), v)
+	}
+
+	//return http.CodecForResponse(res).Unmarshal(data, v)
 }

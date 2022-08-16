@@ -2,7 +2,6 @@ package testregistry
 
 import (
 	"context"
-	"fmt"
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
@@ -57,6 +56,8 @@ func Test_RegistryDiscovery(t *testing.T) {
 		),
 		http.WithEndpoint(endpoint),
 		http.WithDiscovery(r),
+		// 解析
+		http.WithResponseDecoder(apputil.ResponseDecoder),
 	)
 	if err != nil {
 		logutil.Fatal(err)
@@ -69,11 +70,6 @@ func Test_RegistryDiscovery(t *testing.T) {
 	//	callGRPC(gClient)
 	//	callHTTP(hClient)
 	//}
-	callGRPC(gClient)
-	callHTTP(hClient)
-	fmt.Println("=====")
-	fmt.Println("=====")
-	fmt.Println("=====")
 	callGRPC(gClient)
 	callHTTP(hClient)
 }
