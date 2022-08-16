@@ -63,5 +63,23 @@ func NewClient(conf *confv1.Data_Consul, opts ...Option) (*api.Client, error) {
 		defConfig.TLSConfig.KeyPEM = []byte(conf.TlsKeyPem)
 	}
 
-	return api.NewClient(defConfig)
+	// new client
+	consulCC, err := api.NewClient(defConfig)
+	if err != nil {
+		return consulCC, err
+	}
+
+	// ping
+	kv := &api.KVPair{Key: "ping", Value: []byte("pong")}
+	_, err = consulCC.KV().Put(kv, nil)
+	if err != nil {
+		return consulCC, err
+	}
+	//newKv, _, err := consulCC.KV().Get(kv.Key, nil)
+	//if err != nil {
+	//	return consulCC, err
+	//}
+	//_ = newKv
+
+	return consulCC, err
 }

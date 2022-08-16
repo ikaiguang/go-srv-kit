@@ -88,10 +88,10 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	//_ = setupHandler.GetAuthTokenRepo(redisCC)
 
 	// consul 客户端
-	_, err = setupHandler.GetConsulClient()
-	if err != nil {
-		return engineHandler, err
-	}
+	//_, err = setupHandler.GetConsulClient()
+	//if err != nil {
+	//	return engineHandler, err
+	//}
 
 	// 监听配置 app
 	if err = setupHandler.watchConfigApp(); err != nil {
