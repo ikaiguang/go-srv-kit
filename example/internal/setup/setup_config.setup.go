@@ -2,17 +2,16 @@ package setup
 
 import (
 	"flag"
-	stdlog "log"
-	"strings"
-
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	pkgerrors "github.com/pkg/errors"
+	stdlog "log"
 
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
 	configv1 "github.com/ikaiguang/go-srv-kit/example/api/config/v1"
+	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 )
 
 const (
@@ -136,28 +135,12 @@ func (s *configuration) initialization() {
 
 // ParseEnv 解析环境
 func (s *configuration) ParseEnv(appEnv string) envv1.Env {
-	switch strings.ToUpper(appEnv) {
-	case envv1.Env_DEVELOP.String():
-		return envv1.Env_DEVELOP
-	case envv1.Env_TESTING.String():
-		return envv1.Env_TESTING
-	case envv1.Env_PREVIEW.String():
-		return envv1.Env_PREVIEW
-	case envv1.Env_PRODUCTION.String():
-		return envv1.Env_PRODUCTION
-	default:
-		return envv1.Env_PRODUCTION
-	}
+	return apputil.ParseEnv(appEnv)
 }
 
 // IsEnvDebug 是否调试模式
 func (s *configuration) IsEnvDebug(appEnv envv1.Env) bool {
-	switch appEnv {
-	case envv1.Env_DEVELOP, envv1.Env_TESTING:
-		return true
-	default:
-		return false
-	}
+	return apputil.IsDebugMode(appEnv)
 }
 
 // Watch 监听

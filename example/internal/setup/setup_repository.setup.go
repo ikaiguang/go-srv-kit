@@ -4,13 +4,13 @@ import (
 	strerrors "errors"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/config"
-	"io"
-	"strings"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
+	"github.com/hashicorp/consul/api"
 	pkgerrors "github.com/pkg/errors"
 	"gorm.io/gorm"
+	"io"
+	"strings"
 
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
@@ -126,6 +126,8 @@ type Engine interface {
 	GetPostgresGormDB() (*gorm.DB, error)
 	// GetRedisClient redis 客户端
 	GetRedisClient() (*redis.Client, error)
+	// GetConsulClient consul 客户端
+	GetConsulClient() (*api.Client, error)
 
 	// GetAuthTokenRepo 验证Token工具
 	GetAuthTokenRepo(redisCC *redis.Client) tokenutil.AuthTokenRepo

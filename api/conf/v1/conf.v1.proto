@@ -25,10 +25,12 @@ message Bootstrap {
 message App {
   // Setting 设置
   message Setting {
+    // enable_service_registry 启用服务注册中心
+    bool enable_service_registry = 1;
     // enable_migrate_db 启用数据库迁移
-    bool enable_migrate_db = 1;
+    bool enable_migrate_db = 2;
     // enable_schedule_task 启用定时任务、计划任务
-    bool enable_schedule_task = 2;
+    bool enable_schedule_task = 3;
   }
   // Auth 验证
   message Auth {
@@ -47,14 +49,16 @@ message App {
   string version = 2;
   // env app 环境
   string env = 3;
+  // env_branch 环境分支
+  string env_branch = 4;
   // endpoints app站点
-  repeated string endpoints = 4;
+  repeated string endpoints = 5;
   // metadata 元数据
-  map<string, string> metadata = 5;
+  map<string, string> metadata = 6;
   // setting 设置
-  Auth auth = 6;
+  Auth auth = 7;
   // setting 设置
-  Setting setting = 7;
+  Setting setting = 8;
 }
 
 // Log 日志

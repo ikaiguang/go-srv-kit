@@ -1,16 +1,16 @@
 package main
 
 import (
-	stdlog "log"
-	"os"
-
+	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
+	stdlog "log"
 
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
 	routes "github.com/ikaiguang/go-srv-kit/example/internal/route"
 	servers "github.com/ikaiguang/go-srv-kit/example/internal/server"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 )
 
 // go run ./example/cmd/main/... -conf=./example/configs
@@ -82,9 +82,6 @@ func loadingAppSettingEnv(engineHandler setup.Engine) error {
 
 // newApp .
 func newApp(engineHandler setup.Engine) (app *kratos.App, err error) {
-	// 主机
-	hostname, _ := os.Hostname()
-
 	// 日志
 	logger, _, err := engineHandler.Logger()
 	if err != nil {
@@ -115,15 +112,30 @@ func newApp(engineHandler setup.Engine) (app *kratos.App, err error) {
 	}
 
 	// app
-	appConfig := engineHandler.AppConfig()
-	app = kratos.New(
-		kratos.ID(hostname),
-		kratos.Name(appConfig.Name),
-		kratos.Version(appConfig.Version),
-		kratos.Metadata(appConfig.Metadata),
-		kratos.Logger(logger),
-		kratos.Server(hs, gs),
+	var (
+		appConfig  = engineHandler.AppConfig()
+		appID      = apputil.ID(appConfig)
+		appOptions = []kratos.Option{
+			kratos.ID(appID),
+			kratos.Name(appID),
+			kratos.Version(appConfig.Version),
+			kratos.Metadata(appConfig.Metadata),
+			kratos.Logger(logger),
+			kratos.Server(hs, gs),
+		}
 	)
+
+	// 启用服务注册中心
+	if appConfig.Setting != nil && appConfig.Setting.EnableServiceRegistry {
+		consulClient, err := engineHandler.GetConsulClient()
+		if err != nil {
+			return app, err
+		}
+		r := consul.New(consulClient)
+		appOptions = append(appOptions, kratos.Registrar(r))
+	}
+
+	app = kratos.New(appOptions...)
 	return app, err
 }
 
