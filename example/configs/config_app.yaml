@@ -24,7 +24,7 @@ app:
   # setting 设置
   setting:
     # enable_service_registry 服务注册
-    enable_service_registry: true
+    enable_service_registry: false
     # enable_migrate_db 数据库迁移
     enable_migrate_db: true
     # enable_schedule_task 定时任务
