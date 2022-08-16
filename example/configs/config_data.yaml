@@ -69,4 +69,9 @@ data:
     tls_ca_pem:
     tls_cert_pem:
     tls_key_pem:
+  # jaeger_trace 服务追踪
+  jaeger_trace:
+    endpoint: http://127.0.0.1:14268/api/traces
+    username:
+    password:
 

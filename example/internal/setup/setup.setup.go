@@ -93,6 +93,12 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	//	return engineHandler, err
 	//}
 
+	// jaeger trace
+	//_, err = setupHandler.GetJaegerTraceExporter()
+	//if err != nil {
+	//	return engineHandler, err
+	//}
+
 	// 监听配置 app
 	if err = setupHandler.watchConfigApp(); err != nil {
 		return engineHandler, err

@@ -178,10 +178,17 @@ message Data {
     string tls_cert_pem = 15;
     string tls_key_pem = 16;
   }
+  // JaegerTrace jaeger
+  message JaegerTrace {
+    string endpoint = 1;
+    string username = 2;
+    string password = 3;
+  }
   MySQL mysql = 1;
   Redis redis = 2;
   PSQL psql = 3;
   Consul consul = 4;
+  JaegerTrace jaeger_trace = 5;
 }
 
 // Server 服务

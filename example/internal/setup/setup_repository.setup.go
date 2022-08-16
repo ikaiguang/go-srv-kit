@@ -8,6 +8,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hashicorp/consul/api"
 	pkgerrors "github.com/pkg/errors"
+	"go.opentelemetry.io/otel/exporters/jaeger"
 	"gorm.io/gorm"
 	"io"
 	"strings"
@@ -92,6 +93,8 @@ type Config interface {
 	RedisConfig() *confv1.Data_Redis
 	// ConsulConfig consul配置
 	ConsulConfig() *confv1.Data_Consul
+	// JaegerTraceConfig jaeger trace 配置
+	JaegerTraceConfig() *confv1.Data_JaegerTrace
 	// HTTPConfig http配置
 	HTTPConfig() *confv1.Server_HTTP
 	// GRPCConfig grpc配置
@@ -128,6 +131,8 @@ type Engine interface {
 	GetRedisClient() (*redis.Client, error)
 	// GetConsulClient consul 客户端
 	GetConsulClient() (*api.Client, error)
+	// GetJaegerTraceExporter jaegerTrace
+	GetJaegerTraceExporter() (*jaeger.Exporter, error)
 
 	// GetAuthTokenRepo 验证Token工具
 	GetAuthTokenRepo(redisCC *redis.Client) tokenutil.AuthTokenRepo

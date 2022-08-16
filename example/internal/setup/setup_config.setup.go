@@ -247,6 +247,14 @@ func (s *configuration) ConsulConfig() *confv1.Data_Consul {
 	return s.conf.Data.Consul
 }
 
+// JaegerTraceConfig jaeger trace 配置
+func (s *configuration) JaegerTraceConfig() *confv1.Data_JaegerTrace {
+	if s.conf.Data == nil {
+		return nil
+	}
+	return s.conf.Data.JaegerTrace
+}
+
 // HTTPConfig http配置
 func (s *configuration) HTTPConfig() *confv1.Server_HTTP {
 	if s.conf.Server == nil {

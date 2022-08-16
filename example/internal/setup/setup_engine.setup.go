@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"go.opentelemetry.io/otel/exporters/jaeger"
 	"io"
 	"sync"
 
@@ -53,6 +54,10 @@ type engines struct {
 	// consulClientMutex consul客户端
 	consulClientMutex sync.Once
 	consulClient      *api.Client
+
+	// jaegerTraceExporterMutex jaeger trace
+	jaegerTraceExporterMutex sync.Once
+	jaegerTraceExporter      *jaeger.Exporter
 
 	// authTokenRepoMutex 验证Token工具
 	authTokenRepoMutex sync.Once
