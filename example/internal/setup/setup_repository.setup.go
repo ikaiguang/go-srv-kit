@@ -90,6 +90,8 @@ type Config interface {
 	PostgresConfig() *confv1.Data_PSQL
 	// RedisConfig redis配置
 	RedisConfig() *confv1.Data_Redis
+	// ConsulConfig consul配置
+	ConsulConfig() *confv1.Data_Consul
 	// HTTPConfig http配置
 	HTTPConfig() *confv1.Server_HTTP
 	// GRPCConfig grpc配置

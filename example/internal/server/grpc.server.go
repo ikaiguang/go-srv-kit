@@ -1,16 +1,17 @@
 package servers
 
 import (
-	stdlog "log"
-
 	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-
-	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
+	stdlog "log"
 
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
 )
+
+var _ metadata.Option
 
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
@@ -38,6 +39,7 @@ func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 	// ===== 中间件 =====
 	var middlewareSlice = []middleware.Middleware{
 		recovery.Recovery(),
+		//metadata.Server(),
 	}
 	// 中间件日志
 	middleLogger, _, err := engineHandler.LoggerMiddleware()

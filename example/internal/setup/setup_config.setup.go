@@ -256,6 +256,14 @@ func (s *configuration) RedisConfig() *confv1.Data_Redis {
 	return s.conf.Data.Redis
 }
 
+// ConsulConfig consul配置
+func (s *configuration) ConsulConfig() *confv1.Data_Consul {
+	if s.conf.Data == nil {
+		return nil
+	}
+	return s.conf.Data.Consul
+}
+
 // HTTPConfig http配置
 func (s *configuration) HTTPConfig() *confv1.Server_HTTP {
 	if s.conf.Server == nil {

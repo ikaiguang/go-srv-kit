@@ -1,18 +1,19 @@
 package servers
 
 import (
-	stdlog "log"
-
 	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
-
-	headermiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/header"
-	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
+	stdlog "log"
 
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
+	headermiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/header"
+	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
 )
+
+var _ metadata.Option
 
 // NewHTTPServer new HTTP server.
 func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
@@ -47,6 +48,7 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	// ===== 中间件 =====
 	var middlewareSlice = []middleware.Middleware{
 		recovery.Recovery(),
+		//metadata.Server(),
 	}
 	// 请求头
 	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())

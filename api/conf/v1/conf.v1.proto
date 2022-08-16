@@ -155,9 +155,29 @@ message Data {
     // conn_max_idle_time 设置连接空闲的最长时间
     google.protobuf.Duration conn_max_idle_time = 9;
   }
+  // Consul consul
+  message Consul {
+    string scheme = 1;
+    string address = 2;
+    string path_prefix = 3;
+    string datacenter = 4;
+    google.protobuf.Duration wait_time = 5;
+    string token = 6;
+    string namespace = 7;
+    string partition = 8;
+    bool with_http_basic_auth = 9;
+    string auth_username = 10;
+    string auth_password = 11;
+    bool insecure_skip_verify = 12;
+    string tls_address = 13;
+    string tls_ca_pem = 14;
+    string tls_cert_pem = 15;
+    string tls_key_pem = 16;
+  }
   MySQL mysql = 1;
   Redis redis = 2;
   PSQL psql = 3;
+  Consul consul = 4;
 }
 
 // Server 服务

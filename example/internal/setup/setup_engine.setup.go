@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
+	"github.com/hashicorp/consul/api"
 	"gorm.io/gorm"
 
 	tokenutil "github.com/ikaiguang/go-srv-kit/kratos/token"
@@ -48,6 +49,10 @@ type engines struct {
 	// redisClientMutex redis客户端
 	redisClientMutex sync.Once
 	redisClient      *redis.Client
+
+	// consulClientMutex consul客户端
+	consulClientMutex sync.Once
+	consulClient      *api.Client
 
 	// authTokenRepoMutex 验证Token工具
 	authTokenRepoMutex sync.Once
