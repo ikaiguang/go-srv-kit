@@ -6,10 +6,11 @@ app:
   env: develop
   # env_branch 环境分支；main、feature/xxx、fix/xxx
   env_branch: main
+  # endpoints 自定义的endpoint
   endpoints:
     - https://uufff.com
   metadata:
-    id: "${app.name}_${app.version}_${app.env}"
+    id: "${app.name}_${app.env}_${app.env_branch}_${app.version}"
   # auth 验证
   auth:
     default_key: 2MJRyKnANhtezTrD
@@ -23,7 +24,7 @@ app:
   # setting 设置
   setting:
     # enable_service_registry 服务注册
-    enable_service_registry: false
+    enable_service_registry: true
     # enable_migrate_db 数据库迁移
     enable_migrate_db: true
     # enable_schedule_task 定时任务

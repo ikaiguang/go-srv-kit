@@ -31,6 +31,26 @@ func Log(level log.Level, keyvals ...interface{}) {
 	helper.Log(level, keyvals...)
 }
 
+// Print logs a message at info level.
+func Print(a ...interface{}) {
+	helper.Info(a...)
+}
+
+// Println logs a message at info level.
+func Println(a ...interface{}) {
+	helper.Info(a...)
+}
+
+// Printf logs a message at info level.
+func Printf(format string, a ...interface{}) {
+	helper.Infof(format, a...)
+}
+
+// Printw logs a message at info level.
+func Printw(keyvals ...interface{}) {
+	helper.Infow(keyvals...)
+}
+
 // Debug logs a message at debug level.
 func Debug(a ...interface{}) {
 	helper.Debug(a...)

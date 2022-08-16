@@ -3,6 +3,7 @@ package setup
 import (
 	"io"
 	stdlog "log"
+	"strings"
 	"sync"
 
 	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
@@ -36,11 +37,18 @@ func (s *engines) loadingLoggerFileWriter() (io.Writer, error) {
 		StorageAge:     fileLoggerConfig.StorageAge.AsDuration(),
 	}
 	if appConfig := s.Config.AppConfig(); appConfig != nil {
+		replaceHandler := strings.NewReplacer(
+			" ", "-",
+			"/", "--",
+		)
 		if appConfig.Env != "" {
-			rotateConfig.Filename += "_" + appConfig.Env
+			rotateConfig.Filename += "_" + replaceHandler.Replace(appConfig.Env)
+		}
+		if appConfig.EnvBranch != "" {
+			rotateConfig.Filename += "_" + replaceHandler.Replace(appConfig.EnvBranch)
 		}
 		if appConfig.Version != "" {
-			rotateConfig.Filename += "_" + appConfig.Version
+			rotateConfig.Filename += "_" + replaceHandler.Replace(appConfig.Version)
 		}
 	}
 	return writerutil.NewRotateFile(rotateConfig)
