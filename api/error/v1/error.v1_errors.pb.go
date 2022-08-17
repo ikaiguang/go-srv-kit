@@ -61,6 +61,42 @@ func ErrorRecordAlreadyExists(format string, args ...interface{}) *errors.Error 
 	return errors.New(409, ERROR_RECORD_ALREADY_EXISTS.String(), fmt.Sprintf(format, args...))
 }
 
+func IsNetworkError(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_NETWORK_ERROR.String() && e.Code == 502
+}
+
+func ErrorNetworkError(format string, args ...interface{}) *errors.Error {
+	return errors.New(502, ERROR_NETWORK_ERROR.String(), fmt.Sprintf(format, args...))
+}
+
+func IsNetworkTimeout(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_NETWORK_TIMEOUT.String() && e.Code == 504
+}
+
+func ErrorNetworkTimeout(format string, args ...interface{}) *errors.Error {
+	return errors.New(504, ERROR_NETWORK_TIMEOUT.String(), fmt.Sprintf(format, args...))
+}
+
+func IsRequestNotSupport(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_REQUEST_NOT_SUPPORT.String() && e.Code == 505
+}
+
+func ErrorRequestNotSupport(format string, args ...interface{}) *errors.Error {
+	return errors.New(505, ERROR_REQUEST_NOT_SUPPORT.String(), fmt.Sprintf(format, args...))
+}
+
 // CONTINUE Continue
 func IsContinue(err error) bool {
 	if err == nil {

@@ -1,4 +1,4 @@
-package servers
+package middlewares
 
 import (
 	"github.com/gorilla/handlers"

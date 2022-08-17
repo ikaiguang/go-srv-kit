@@ -19,6 +19,9 @@ enum ERROR {
   REQUEST_FAILED = 1 [ (errors.code) = 424 ];
   RECORD_NOT_FOUND = 2 [ (errors.code) = 404 ];
   RECORD_ALREADY_EXISTS = 3 [ (errors.code) = 409 ];
+  NETWORK_ERROR = 4 [ (errors.code) = 502 ];
+  NETWORK_TIMEOUT = 5 [ (errors.code) = 504 ];
+  REQUEST_NOT_SUPPORT = 10 [ (errors.code) = 505 ];
 
   // CONTINUE Continue
   CONTINUE = 100 [ (errors.code) = 100 ];

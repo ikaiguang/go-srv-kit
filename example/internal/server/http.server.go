@@ -4,9 +4,11 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	stdlog "log"
 
+	middlewares "github.com/ikaiguang/go-srv-kit/example/internal/server/middleware"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	headermiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/header"
@@ -18,6 +20,7 @@ var _ metadata.Option
 // NewHTTPServer new HTTP server.
 func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	httpConfig := engineHandler.HTTPConfig()
+	appConfig := engineHandler.AppConfig()
 	stdlog.Printf("|*** 加载：HTTP服务：%s\n", httpConfig.Addr)
 
 	// 日志
@@ -29,7 +32,7 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	// options
 	var opts []http.ServerOption
 	//var opts = []http.ServerOption{
-	//	http.Filter(NewCORS()),
+	//	http.Filter(middlewares.NewCORS()),
 	//}
 	if httpConfig.Network != "" {
 		opts = append(opts, http.Network(httpConfig.Network))
@@ -52,6 +55,14 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	}
 	// 请求头
 	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())
+	// tracer
+	if appConfig.Setting != nil && appConfig.Setting.EnableServiceRegistry {
+		stdlog.Println("|*** 加载：服务追踪：HTTP")
+		if err = middlewares.SetTracerProvider(engineHandler); err != nil {
+			return srv, err
+		}
+		middlewareSlice = append(middlewareSlice, tracing.Server())
+	}
 	// 中间件日志
 	middleLogger, _, err := engineHandler.LoggerMiddleware()
 	if err != nil {
@@ -64,7 +75,8 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 		//logmiddle.WithDefaultSkip(),
 	))
 	// jwt
-	//jwtMiddleware, err := NewJWTMiddleware(engineHandler)
+	//stdlog.Println("|*** 加载：JWT中间件：HTTP")
+	//jwtMiddleware, err := middlewares.NewJWTMiddleware(engineHandler)
 	//if err != nil {
 	//	return srv, err
 	//}

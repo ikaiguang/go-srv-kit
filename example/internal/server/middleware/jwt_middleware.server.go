@@ -1,4 +1,4 @@
-package servers
+package middlewares
 
 import (
 	"context"
@@ -36,6 +36,7 @@ func NewWhiteListMatcher() selector.MatchFunc {
 
 // NewJWTMiddleware jwt中间
 func NewJWTMiddleware(engineHandler setup.Engine) (m middleware.Middleware, err error) {
+	// redis
 	redisCC, err := engineHandler.GetRedisClient()
 	if err != nil {
 		return m, errorutil.WithStack(err)
