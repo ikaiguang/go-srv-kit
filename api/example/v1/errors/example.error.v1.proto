@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package kit.api.exampleerrorv1;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/api/example/v1/errors;exampleerrorv1";
+option java_multiple_files = true;
+option java_package = "kit.api.exampleerrorv1";
+option java_outer_classname = "KitApiExampleErrorV1";
+
+// ERROR example error
+enum ERROR {
+  // EXAMPLE_UNKNOWN 未知错误
+  EXAMPLE_UNKNOWN = 0;
+
+  // EXAMPLE_NOT_EXIST 不存在
+  EXAMPLE_NOT_EXIST = 10001;
+  // EXAMPLE_EXIST 已存在
+  EXAMPLE_EXIST = 10002;
+}

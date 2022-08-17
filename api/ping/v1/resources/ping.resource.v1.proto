@@ -8,18 +8,20 @@ option java_multiple_files = true;
 option java_package = "kit.api.pingv1";
 option java_outer_classname = "KitApiPingV1";
 
+import "google/api/field_behavior.proto";
+
 // PingReq ping请求
 //
 // ping请求
 message PingReq {
-  // 请求消息
-  string message = 1;
+  // message 请求消息
+  string message = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // PingResp ping响应
 //
 // ping响应
 message PingResp {
-  // 响应消息
+  // message 响应消息
   string message = 1;
 }

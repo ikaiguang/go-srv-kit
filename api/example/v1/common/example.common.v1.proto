@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package kit.api.examplecommonv1;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/api/example/v1/common;examplecommonv1";
+option java_multiple_files = true;
+option java_package = "kit.api.examplecommonv1";
+option java_outer_classname = "KitApiExampleCommonV1";
+
+/**
+ *
+ * @apiDefine ExampleCommonEnum ExampleCommonEnum
+ *
+ */
+
+/**
+ *
+ * @apiDefine ExampleCommon ExampleCommon
+ *
+ */
+
+// ExampleCommonEnum ExampleCommonEnum enum
+message ExampleCommonEnum {
+  // ExampleCommon ExampleCommon enum
+  enum ExampleCommon {
+    // UNSPECIFIED 未指定
+    UNSPECIFIED = 0;
+  }
+}
