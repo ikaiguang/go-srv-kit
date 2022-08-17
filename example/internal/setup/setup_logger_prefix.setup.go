@@ -1,6 +1,8 @@
 package setup
 
 import (
+	"context"
+	"go.opentelemetry.io/otel/trace"
 	"os"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -24,6 +26,7 @@ func (s *engines) assemblyLoggerPrefixField() *LoggerPrefixField {
 		AppName:    appConfig.Name,
 		AppVersion: appConfig.Version,
 		AppEnv:     appConfig.Env,
+		AppBranch:  appConfig.EnvBranch,
 		ServerIP:   iputil.LocalIP(),
 	}
 	fields.Hostname, _ = os.Hostname()
@@ -32,9 +35,24 @@ func (s *engines) assemblyLoggerPrefixField() *LoggerPrefixField {
 
 // withLoggerPrefix ...
 func (s *engines) withLoggerPrefix(logger log.Logger) log.Logger {
-	var (
-		prefixKey   = "app"
-		prefixField = s.LoggerPrefixField()
-	)
-	return log.With(logger, prefixKey, prefixField.String())
+	var kvs = []interface{}{
+		"app",
+		s.LoggerPrefixField().String(),
+	}
+	kvs = append(kvs, "tracer", s.withLoggerTracer())
+	return log.With(logger, kvs...)
+}
+
+// withLoggerTracer returns a traceid valuer.
+func (s *engines) withLoggerTracer() log.Valuer {
+	return func(ctx context.Context) interface{} {
+		var res string
+		if span := trace.SpanContextFromContext(ctx); span.HasTraceID() {
+			res += `traceId="` + span.TraceID().String() + `"`
+		}
+		if span := trace.SpanContextFromContext(ctx); span.HasSpanID() {
+			res += ` spanId="` + span.SpanID().String() + `"`
+		}
+		return res
+	}
 }

@@ -53,8 +53,6 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 		recovery.Recovery(),
 		//metadata.Server(),
 	}
-	// 请求头
-	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())
 	// tracer
 	if appConfig.Setting != nil && appConfig.Setting.EnableServiceRegistry {
 		stdlog.Println("|*** 加载：服务追踪：HTTP")
@@ -63,6 +61,8 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 		}
 		middlewareSlice = append(middlewareSlice, tracing.Server())
 	}
+	// 请求头
+	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())
 	// 中间件日志
 	middleLogger, _, err := engineHandler.LoggerMiddleware()
 	if err != nil {

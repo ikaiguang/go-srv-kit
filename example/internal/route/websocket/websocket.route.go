@@ -21,7 +21,7 @@ func RegisterRoutes(hs *http.Server, gs *grpc.Server, logger log.Logger) (err er
 	router := mux.NewRouter()
 	router.HandleFunc("/ws/v1/websocket", wsHandler.TestWebsocket)
 
-	stdlog.Println("|*** 注册路由：websocket")
+	stdlog.Println("|*** 注册路由：Websocket")
 	hs.Handle("/ws/v1/websocket", router)
 	return err
 }

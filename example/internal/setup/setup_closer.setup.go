@@ -74,6 +74,9 @@ func (s *engines) Close() (err error) {
 		}
 	}
 
+	//s.consulClient
+	//s.jaegerTraceExporter
+
 	// debug
 	if len(s.debugHelperCloseFnSlice) > 0 {
 		stdlog.Println("|*** 退出程序：关闭：调试工具debugutil")

@@ -43,6 +43,7 @@ type LoggerPrefixField struct {
 	AppName    string `json:"name"`
 	AppVersion string `json:"version"`
 	AppEnv     string `json:"env"`
+	AppBranch  string `json:"envBranch"`
 	Hostname   string `json:"hostname"`
 	ServerIP   string `json:"serverIP"`
 }
@@ -53,7 +54,7 @@ func (s *LoggerPrefixField) String() string {
 		"name:" + fmt.Sprintf("%q", s.AppName),
 		"version:" + fmt.Sprintf("%q", s.AppVersion),
 		"env:" + fmt.Sprintf("%q", s.AppEnv),
-		"hostname:" + fmt.Sprintf("%q", s.Hostname),
+		"envBranch:" + fmt.Sprintf("%q", s.AppBranch),
 		"serverIP:" + fmt.Sprintf("%q", s.ServerIP),
 	}
 	return strings.Join(strSlice, " ")
