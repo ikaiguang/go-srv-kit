@@ -186,6 +186,8 @@ message Data {
     string username = 2;
     string password = 3;
   }
+  // RabbitMQ rabbitmq
+  message Rabbitmq { string Url = 1; }
   MySQL mysql = 1;
   Redis redis = 2;
   PSQL psql = 3;

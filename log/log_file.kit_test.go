@@ -18,7 +18,7 @@ func TestNewFileLogger_Xxx(t *testing.T) {
 		Level:      log.LevelDebug,
 		CallerSkip: DefaultCallerSkip,
 
-		Dir:      "./../bin/",
+		Dir:      "./runtime/logs",
 		Filename: "rotation",
 
 		RotateTime: time.Second * 1,

@@ -10,6 +10,11 @@ func New() string {
 	return xid.New().String()
 }
 
+// NewUUID ...
+func NewUUID() string {
+	return xid.New().String()
+}
+
 // NewWithTime ...
 func NewWithTime(t time.Time) string {
 	return xid.NewWithTime(t).String()
