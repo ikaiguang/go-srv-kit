@@ -1,6 +1,8 @@
 package stringutil
 
 import (
+	stdjson "encoding/json"
+	"strconv"
 	"strings"
 )
 
@@ -44,4 +46,46 @@ func ToCamel(s string) string {
 		data = append(data, d)
 	}
 	return string(data[:])
+}
+
+// ToString 任意类型转string
+func ToString(v interface{}) string {
+	var key string
+	if v == nil {
+		return key
+	}
+	switch v := v.(type) {
+	case float64:
+		key = strconv.FormatFloat(v, 'f', -1, 64)
+	case float32:
+		key = strconv.FormatFloat(float64(v), 'f', -1, 64)
+	case int:
+		key = strconv.Itoa(v)
+	case uint:
+		key = strconv.Itoa(int(v))
+	case int8:
+		key = strconv.Itoa(int(v))
+	case uint8:
+		key = strconv.Itoa(int(v))
+	case int16:
+		key = strconv.Itoa(int(v))
+	case uint16:
+		key = strconv.Itoa(int(v))
+	case int32:
+		key = strconv.Itoa(int(v))
+	case uint32:
+		key = strconv.Itoa(int(v))
+	case int64:
+		key = strconv.FormatInt(v, 10)
+	case uint64:
+		key = strconv.FormatUint(v, 10)
+	case string:
+		key = v
+	case []byte:
+		key = string(v)
+	default:
+		newValue, _ := stdjson.Marshal(v)
+		key = string(newValue)
+	}
+	return key
 }
