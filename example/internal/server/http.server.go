@@ -54,7 +54,7 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 		//metadata.Server(),
 	}
 	// tracer
-	if appConfig.Setting != nil && appConfig.Setting.EnableServiceRegistry {
+	if appConfig.Setting != nil && appConfig.Setting.EnableServiceTrace {
 		stdlog.Println("|*** 加载：服务追踪：HTTP")
 		if err = middlewares.SetTracerProvider(engineHandler); err != nil {
 			return srv, err
