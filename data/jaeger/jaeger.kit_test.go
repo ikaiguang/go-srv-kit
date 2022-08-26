@@ -10,6 +10,8 @@ import (
 )
 
 // go test -v ./data/jaeger/ -count=1 -test.run=TestNewJaegerExporter_Xxx
+// jaeger.kit_test.go:51: ==> httpResp StatusCode : 400
+// jaeger.kit_test.go:55: ==> httpResp Body : Cannot parse content type: mime: no media type
 func TestNewJaegerExporter_Xxx(t *testing.T) {
 	var tests = []struct {
 		name string
