@@ -183,12 +183,13 @@ message Data {
   // JaegerTrace jaeger
   message JaegerTrace {
     string endpoint = 1;
-    string username = 2;
-    string password = 3;
+    bool with_http_basic_auth = 2;
+    string username = 3;
+    string password = 4;
   }
   // RabbitMQ rabbitmq
   message Rabbitmq {
-    string Url = 1;
+    string url = 1;
     string tls_address = 2;
     string tls_ca_pem = 3;
     string tls_cert_pem = 4;
