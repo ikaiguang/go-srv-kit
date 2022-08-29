@@ -61,6 +61,7 @@ var (
 // 1. 设置令牌类型 SetTokenType
 // 2. 获取令牌类型 GetTokenType
 // 3. 获取解密密码 JWTKeyFunc
+// 4. 额外验证方法 ValidateFunc
 // =====
 // 删除令牌：退出登录、修改密码
 // =====

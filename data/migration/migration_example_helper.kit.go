@@ -67,7 +67,7 @@ func (s *migrate) InitializeMigrationSchema() (err error) {
 	// 记录
 	var (
 		serverVersion     = "v0.0.1"
-		migrateIdentifier = serverVersion + "init:create:migration_schema"
+		migrateIdentifier = serverVersion + ":init:create:migration_schema"
 	)
 	return s.CreateDefaultRecord(serverVersion, migrateIdentifier)
 }

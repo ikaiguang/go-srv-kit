@@ -27,7 +27,8 @@ var (
 	_ = http.DefaultResponseDecoder
 )
 
-// ID ...
+// ID 程序ID
+// @result = app.Name + app.Env + app.Branch + app.Version
 func ID(appConfig *confv1.App) string {
 	identifier := appConfig.Name
 	identifier += ":" + ParseEnv(appConfig.Env).String()
