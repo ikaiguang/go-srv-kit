@@ -97,6 +97,7 @@ func (s *redisToken) SetTokenType(operation string, tokenType authv1.TokenTypeEn
 }
 
 // GetTokenType 获取令牌类型
+// 默认值 : 0 : authv1.TokenTypeEnum_DEFAULT
 func (s *redisToken) GetTokenType(operation string) authv1.TokenTypeEnum_TokenType {
 	// 暂不加锁：不考虑动态增加令牌，并发读
 	//s.tokenTypeRWMutex.RLock()

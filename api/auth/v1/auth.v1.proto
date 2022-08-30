@@ -71,6 +71,8 @@ message PlatformEnum {
     COMPUTER = 1;
     // MOBILE 移动端
     MOBILE = 2;
+    // SERVICE 服务端
+    SERVICE = 3;
 
     // ANDROID 安卓系统
     ANDROID = 100;
