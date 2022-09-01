@@ -66,9 +66,9 @@ curl http://127.0.0.1:8081/api/v1/ping/error
 ```shell
 
 # 执行生成脚本 与 编译proto
-# make proto_user
-# make proto_xxx
 # kratos proto client api/ping/v1/ping.v1.proto
+#  make proto path=api/user
+#  make proto path=api/xxx
 go run ./cmd/proto/... -path=./api/user
 go run ./cmd/proto/... -path=./api/xxx
     

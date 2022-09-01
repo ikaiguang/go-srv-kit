@@ -19,9 +19,9 @@ run:
 migrate:
 	go run ./cmd/migration/... -conf=./configs
 
-.PHONY: proto_xxx
-proto_xxx:
-	go run ./cmd/proto/... -path=./api/xxx
+.PHONY: proto
+proto:
+	go run ./cmd/proto/... -path=${path}
 
 .PHONY: ping
 ping:
