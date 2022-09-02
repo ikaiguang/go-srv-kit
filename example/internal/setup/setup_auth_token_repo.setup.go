@@ -25,6 +25,6 @@ func (s *engines) loadingAuthTokenRepo(redisCC *redis.Client) tokenutil.AuthToke
 	stdlog.Println("|*** 加载：验证Token工具：...")
 	return tokenutil.NewRedisTokenRepo(
 		redisCC,
-		tokenutil.WithAuthConfig(s.AppConfig().Auth),
+		tokenutil.WithAuthConfig(s.ServerAuthConfig()),
 	)
 }

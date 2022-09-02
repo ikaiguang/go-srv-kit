@@ -11,19 +11,3 @@ app:
     - https://uufff.com
   metadata:
     id: "${app.name}_${app.env}_${app.env_branch}_${app.version}"
-  # auth 验证
-  auth:
-    default_key: 2MJRyKnANhtezTrD
-    service_key: 6EZ5y7YBdv3KqAP0
-    admin_key: IqD6bQvJodkLUa92
-    api_key: WgxqFMe4VGBJU1Th
-    web_key: QhqJvKm8cCXgLzaE
-    app_key: WH5GNvPDlsIn3SEM
-    h5_key: Z2tjUumyS8cbgdzJ
-    manager_key: re5CDJcnhEB1lpzY
-  # setting 设置
-  setting:
-    # enable_migrate_db 数据库迁移
-    enable_migrate_db: false
-    # enable_schedule_task 定时任务
-    enable_schedule_task: false

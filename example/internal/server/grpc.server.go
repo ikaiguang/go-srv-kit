@@ -18,7 +18,6 @@ var _ metadata.Option
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 	grpcConfig := engineHandler.GRPCConfig()
-	appConfig := engineHandler.AppConfig()
 	stdlog.Printf("|*** 加载：GRPC服务：%s\n", grpcConfig.Addr)
 
 	// 日志
@@ -45,7 +44,8 @@ func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 		//metadata.Server(),
 	}
 	// tracer
-	if appConfig.Setting != nil && appConfig.Setting.EnableServiceTrace {
+	settingConfig := engineHandler.ServerSettingConfig()
+	if settingConfig != nil && settingConfig.EnableServiceTracer {
 		stdlog.Println("|*** 加载：服务追踪：GRPC")
 		if err = middlewares.SetTracerProvider(engineHandler); err != nil {
 			return srv, err

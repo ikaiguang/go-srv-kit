@@ -66,10 +66,17 @@ type Config interface {
 
 	// AppConfig APP配置
 	AppConfig() *confv1.App
-	// AppAuthConfig APP验证配置
-	AppAuthConfig() *confv1.App_Auth
-	// AppSettingConfig APP设置配置
-	AppSettingConfig() *confv1.App_Setting
+
+	// ServerConfig 服务配置
+	ServerConfig() *confv1.Server
+	// HTTPConfig http配置
+	HTTPConfig() *confv1.Server_HTTP
+	// GRPCConfig grpc配置
+	GRPCConfig() *confv1.Server_GRPC
+	// ServerAuthConfig APP验证配置
+	ServerAuthConfig() *confv1.Server_Auth
+	// ServerSettingConfig APP设置配置
+	ServerSettingConfig() *confv1.Server_Setting
 
 	// Env app环境
 	Env() envv1.Env
@@ -96,10 +103,6 @@ type Config interface {
 	ConsulConfig() *confv1.Data_Consul
 	// JaegerTraceConfig jaeger trace 配置
 	JaegerTraceConfig() *confv1.Data_JaegerTrace
-	// HTTPConfig http配置
-	HTTPConfig() *confv1.Server_HTTP
-	// GRPCConfig grpc配置
-	GRPCConfig() *confv1.Server_GRPC
 
 	// Close 关闭
 	Close() error

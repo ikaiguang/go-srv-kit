@@ -29,11 +29,15 @@ func (UnimplementedEngine) AppConfig() *confv1.App {
 	return nil
 }
 
-func (UnimplementedEngine) AppAuthConfig() *confv1.App_Auth {
+func (UnimplementedEngine) ServerConfig() *confv1.Server {
 	return nil
 }
 
-func (UnimplementedEngine) AppSettingConfig() *confv1.App_Setting {
+func (UnimplementedEngine) ServerAuthConfig() *confv1.Server_Auth {
+	return nil
+}
+
+func (UnimplementedEngine) ServerSettingConfig() *confv1.Server_Setting {
 	return nil
 }
 

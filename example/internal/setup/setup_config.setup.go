@@ -178,20 +178,25 @@ func (s *configuration) AppConfig() *confv1.App {
 	return s.conf.App
 }
 
-// AppAuthConfig APP验证配置
-func (s *configuration) AppAuthConfig() *confv1.App_Auth {
-	if s.conf.App == nil {
-		return nil
-	}
-	return s.conf.App.Auth
+// ServerConfig 服务配置
+func (s *configuration) ServerConfig() *confv1.Server {
+	return s.conf.Server
 }
 
-// AppSettingConfig APP设置配置
-func (s *configuration) AppSettingConfig() *confv1.App_Setting {
+// ServerAuthConfig APP验证配置
+func (s *configuration) ServerAuthConfig() *confv1.Server_Auth {
 	if s.conf.App == nil {
 		return nil
 	}
-	return s.conf.App.Setting
+	return s.conf.Server.Auth
+}
+
+// ServerSettingConfig APP设置配置
+func (s *configuration) ServerSettingConfig() *confv1.Server_Setting {
+	if s.conf.App == nil {
+		return nil
+	}
+	return s.conf.Server.Setting
 }
 
 // LoggerConfigForConsole 日志配置 控制台

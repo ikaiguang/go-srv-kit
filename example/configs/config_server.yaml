@@ -10,3 +10,23 @@ server:
     network:
     addr: 0.0.0.0:9091
     timeout: 60s
+  # setting 设置
+  setting:
+    # enable_service_registry 服务注册与发现
+    enable_service_registry: false
+    # enable_service_tracer 服务追踪
+    enable_service_tracer: false
+    # enable_migrate_db 数据库迁移
+    enable_migrate_db: false
+    # enable_schedule_task 定时任务
+    enable_schedule_task: false
+  # auth 验证
+  auth:
+    default_key: 2MJRyKnANhtezTrD
+    service_key: 6EZ5y7YBdv3KqAP0
+    admin_key: IqD6bQvJodkLUa92
+    api_key: WgxqFMe4VGBJU1Th
+    web_key: QhqJvKm8cCXgLzaE
+    app_key: WH5GNvPDlsIn3SEM
+    h5_key: Z2tjUumyS8cbgdzJ
+    manager_key: re5CDJcnhEB1lpzY

@@ -20,7 +20,6 @@ var _ metadata.Option
 // NewHTTPServer new HTTP server.
 func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	httpConfig := engineHandler.HTTPConfig()
-	appConfig := engineHandler.AppConfig()
 	stdlog.Printf("|*** 加载：HTTP服务：%s\n", httpConfig.Addr)
 
 	// 日志
@@ -54,7 +53,8 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 		//metadata.Server(),
 	}
 	// tracer
-	if appConfig.Setting != nil && appConfig.Setting.EnableServiceTrace {
+	settingConfig := engineHandler.ServerSettingConfig()
+	if settingConfig != nil && settingConfig.EnableServiceTracer {
 		stdlog.Println("|*** 加载：服务追踪：HTTP")
 		if err = middlewares.SetTracerProvider(engineHandler); err != nil {
 			return srv, err

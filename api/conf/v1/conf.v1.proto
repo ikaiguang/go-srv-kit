@@ -23,12 +23,50 @@ message Bootstrap {
 
 // App application
 message App {
+  // name app名字
+  string name = 1;
+  // version app版本
+  string version = 2;
+  // env app 环境
+  string env = 3;
+  // env_branch 环境分支
+  string env_branch = 4;
+  // endpoints app站点
+  repeated string endpoints = 5;
+  // metadata 元数据
+  map<string, string> metadata = 6;
+}
+
+// Server 服务
+message Server {
+  // HTTP http服务配置
+  message HTTP {
+    // enable 是否启动
+    bool enable = 100;
+    // network 网络
+    string network = 1;
+    // addr 地址
+    string addr = 2;
+    // timeout 超时时间
+    google.protobuf.Duration timeout = 3;
+  }
+  // GRPC grpc服务配置
+  message GRPC {
+    // enable 是否启动
+    bool enable = 100;
+    // network 网络
+    string network = 1;
+    // addr 地址
+    string addr = 2;
+    // timeout 超时时间
+    google.protobuf.Duration timeout = 3;
+  }
   // Setting 设置
   message Setting {
     // enable_service_registry 启用服务注册与发现
     bool enable_service_registry = 1;
-    // enable_service_trace 启用服务追踪
-    bool enable_service_trace = 2;
+    // enable_service_tracer 启用服务追踪
+    bool enable_service_tracer = 2;
     // enable_migrate_db 启用数据库迁移
     bool enable_migrate_db = 3;
     // enable_schedule_task 启用定时任务、计划任务
@@ -45,22 +83,14 @@ message App {
     string h5_key = 7;
     string manager_key = 8;
   }
-  // name app名字
-  string name = 1;
-  // version app版本
-  string version = 2;
-  // env app 环境
-  string env = 3;
-  // env_branch 环境分支
-  string env_branch = 4;
-  // endpoints app站点
-  repeated string endpoints = 5;
-  // metadata 元数据
-  map<string, string> metadata = 6;
+  // http http服务配置
+  HTTP http = 1;
+  // grpc grpc服务配置
+  GRPC grpc = 2;
   // setting 设置
-  Auth auth = 7;
-  // setting 设置
-  Setting setting = 8;
+  Setting setting = 3;
+  // auth 认证
+  Auth auth = 4;
 }
 
 // Log 日志
@@ -212,34 +242,4 @@ message Data {
   PSQL psql = 3;
   Consul consul = 4;
   JaegerTrace jaeger_trace = 5;
-}
-
-// Server 服务
-message Server {
-  // HTTP http服务配置
-  message HTTP {
-    // enable 是否启动
-    bool enable = 100;
-    // network 网络
-    string network = 1;
-    // addr 地址
-    string addr = 2;
-    // timeout 超时时间
-    google.protobuf.Duration timeout = 3;
-  }
-  // GRPC grpc服务配置
-  message GRPC {
-    // enable 是否启动
-    bool enable = 100;
-    // network 网络
-    string network = 1;
-    // addr 地址
-    string addr = 2;
-    // timeout 超时时间
-    google.protobuf.Duration timeout = 3;
-  }
-  // http http服务配置
-  HTTP http = 1;
-  // grpc grpc服务配置
-  GRPC grpc = 2;
 }

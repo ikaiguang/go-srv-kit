@@ -128,7 +128,7 @@ func NewCacheKey(authPayload *authv1.Payload) string {
 }
 
 // NewSecret ...
-func NewSecret(authConfig *confv1.App_Auth, tokenType authv1.TokenTypeEnum_TokenType, passwordHash string) string {
+func NewSecret(authConfig *confv1.Server_Auth, tokenType authv1.TokenTypeEnum_TokenType, passwordHash string) string {
 	var (
 		prefix = ""
 	)
