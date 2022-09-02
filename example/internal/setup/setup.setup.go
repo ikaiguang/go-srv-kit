@@ -102,8 +102,16 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	}
 
 	// jaeger trace
-	if cfg := setupHandler.Config.JaegerTraceConfig(); cfg != nil && cfg.Enable {
+	if cfg := setupHandler.Config.JaegerTracerConfig(); cfg != nil && cfg.Enable {
 		_, err = setupHandler.GetJaegerTraceExporter()
+		if err != nil {
+			return engineHandler, err
+		}
+	}
+
+	// 雪花算法
+	if cfg := setupHandler.Config.ServerSettingConfig(); cfg != nil && cfg.EnableSnowflakeWorker {
+		err = setupHandler.loadingSnowflakeWorker()
 		if err != nil {
 			return engineHandler, err
 		}

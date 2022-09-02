@@ -67,6 +67,8 @@ message Server {
     bool enable_service_registry = 1;
     // enable_service_tracer 启用服务追踪
     bool enable_service_tracer = 2;
+    // enable_snowflake_worker 启用雪花算法
+    bool enable_snowflake_worker = 5;
     // enable_migrate_db 启用数据库迁移
     bool enable_migrate_db = 3;
     // enable_schedule_task 启用定时任务、计划任务
@@ -218,8 +220,8 @@ message Data {
     string tls_cert_pem = 15;
     string tls_key_pem = 16;
   }
-  // JaegerTrace jaeger
-  message JaegerTrace {
+  // JaegerTracer jaeger
+  message JaegerTracer {
     // enable 是否启动
     bool enable = 100;
     string endpoint = 1;
@@ -237,9 +239,20 @@ message Data {
     string tls_cert_pem = 4;
     string tls_key_pem = 5;
   }
+  // SnowflakeWorker snowflake
+  message SnowflakeWorker {
+    // enable 是否启动
+    bool enable = 100;
+    string endpoint = 1;
+    bool with_discovery = 2;
+    bool with_http_basic_auth = 3;
+    string username = 4;
+    string password = 5;
+  }
   MySQL mysql = 1;
   Redis redis = 2;
   PSQL psql = 3;
   Consul consul = 4;
-  JaegerTrace jaeger_trace = 5;
+  JaegerTracer jaeger_tracer = 5;
+  SnowflakeWorker snowflake_worker = 6;
 }

@@ -23,11 +23,11 @@ func (s *engines) GetJaegerTraceExporter() (*jaeger.Exporter, error) {
 
 // loadingJaegerTraceExporter jaegerTrace
 func (s *engines) loadingJaegerTraceExporter() (*jaeger.Exporter, error) {
-	if s.Config.JaegerTraceConfig() == nil {
+	if s.Config.JaegerTracerConfig() == nil {
 		stdlog.Println("|*** 加载：JaegerTrace：未初始化")
 		return nil, pkgerrors.WithStack(ErrUninitialized)
 	}
 	stdlog.Println("|*** 加载：JaegerTrace：...")
 
-	return jaegerutil.NewJaegerExporter(s.Config.JaegerTraceConfig())
+	return jaegerutil.NewJaegerExporter(s.Config.JaegerTracerConfig())
 }

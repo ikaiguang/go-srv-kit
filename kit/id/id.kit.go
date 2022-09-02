@@ -28,6 +28,7 @@ func init() {
 		_idNode, err = snowflake.NewNode(_nodeID)
 	})
 	if err != nil {
+		_idNode = nil
 		_idNodeOnce = sync.Once{}
 	}
 }

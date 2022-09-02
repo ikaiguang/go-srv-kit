@@ -16,6 +16,8 @@ server:
     enable_service_registry: false
     # enable_service_tracer 服务追踪
     enable_service_tracer: false
+    # enable_snowflake_worker 雪花算法
+    enable_snowflake_worker: true
     # enable_migrate_db 数据库迁移
     enable_migrate_db: false
     # enable_schedule_task 定时任务

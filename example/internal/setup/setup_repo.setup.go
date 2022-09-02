@@ -101,8 +101,10 @@ type Config interface {
 	RedisConfig() *confv1.Data_Redis
 	// ConsulConfig consul配置
 	ConsulConfig() *confv1.Data_Consul
-	// JaegerTraceConfig jaeger trace 配置
-	JaegerTraceConfig() *confv1.Data_JaegerTrace
+	// JaegerTracerConfig jaeger tracer 配置
+	JaegerTracerConfig() *confv1.Data_JaegerTracer
+	// SnowflakeWorkerConfig snowflake worker 配置
+	SnowflakeWorkerConfig() *confv1.Data_SnowflakeWorker
 
 	// Close 关闭
 	Close() error

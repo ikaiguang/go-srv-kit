@@ -280,10 +280,18 @@ func (s *configuration) ConsulConfig() *confv1.Data_Consul {
 	return s.conf.Data.Consul
 }
 
-// JaegerTraceConfig jaeger trace 配置
-func (s *configuration) JaegerTraceConfig() *confv1.Data_JaegerTrace {
+// JaegerTracerConfig jaeger tracer 配置
+func (s *configuration) JaegerTracerConfig() *confv1.Data_JaegerTracer {
 	if s.conf.Data == nil {
 		return nil
 	}
-	return s.conf.Data.JaegerTrace
+	return s.conf.Data.JaegerTracer
+}
+
+// SnowflakeWorkerConfig snowflake worker 配置
+func (s *configuration) SnowflakeWorkerConfig() *confv1.Data_SnowflakeWorker {
+	if s.conf.Data == nil {
+		return nil
+	}
+	return s.conf.Data.SnowflakeWorker
 }

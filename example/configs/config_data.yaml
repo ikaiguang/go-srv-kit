@@ -74,7 +74,7 @@ data:
     tls_cert_pem:
     tls_key_pem:
   # jaeger_trace 服务追踪
-  jaeger_trace:
+  jaeger_tracer:
     enable: false
     endpoint: http://127.0.0.1:14268/api/traces
     with_http_basic_auth: false
@@ -88,4 +88,12 @@ data:
     tls_ca_pem:
     tls_cert_pem:
     tls_key_pem:
+  # snowflake_worker 雪花算法
+  snowflake_worker:
+    enable: false
+    with_discovery: false
+    endpoint: http://127.0.0.1:50627
+    with_http_basic_auth: false
+    username:
+    password:
 

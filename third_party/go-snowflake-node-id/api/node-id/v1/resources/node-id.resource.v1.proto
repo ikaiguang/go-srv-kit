@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package node.id.api.apiv1;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/third_party/go-snowflake-node-id/api/node-id/v1/resources;apiv1";
+option java_multiple_files = true;
+option java_package = "node.id.api.apiv1";
+option java_outer_classname = "NodeIdApiApiV1";
+
+// SnowflakeWorkerNode ENGINE InnoDB CHARSET utf8mb4 COMMENT '雪花算法节点ID'
+message SnowflakeWorkerNode {
+  // id 数据库ID
+  uint64 id = 1;
+  // instance_launch_time 实例启动时间
+  //  string instance_launch_time = 2;
+  // instance_extend_time 实例续期时间
+  string instance_extend_time = 3;
+  // instance_id 实例ID
+  string instance_id = 4;
+  // node_id 雪花算法节点id
+  int64 node_id = 5;
+  // instance_name 实例名称
+  string instance_name = 6;
+  // instance_endpoint_list 实例端点数组
+  string instance_endpoint_list = 7;
+  // instance_metadata 实例元数据
+  string instance_metadata = 8;
+  // created_time 创建时间
+  //  string created_time = 9;
+}
+
+// Result process result
+message Result {
+  // success true or false
+  bool success = 1;
+}
+
+// GetNodeIdReq 获取节点请求
+message GetNodeIdReq {
+  // instance_id 实例ID
+  string instance_id = 1;
+  // instance_name 实例名称
+  string instance_name = 2;
+  // endpoints 实例端点列表
+  repeated string endpoints = 3;
+  // metadata 实例元数据
+  map<string, string> metadata = 4;
+}
+
+// ExtendNodeIdReq 节点需求请求
+message ExtendNodeIdReq {
+  // id 数据库ID
+  uint64 id = 1;
+  // instance_id 实例ID
+  string instance_id = 2;
+  // node_id 雪花算法节点id
+  int64 node_id = 3;
+}

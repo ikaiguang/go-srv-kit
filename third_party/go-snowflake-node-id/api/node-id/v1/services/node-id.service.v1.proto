@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package node.id.api.servicev1;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/third_party/go-snowflake-node-id/api/node-id/v1/services;servicev1";
+option java_multiple_files = true;
+option java_package = "node.id.api.servicev1";
+option java_outer_classname = "NodeIdApiServiceV1";
+
+import "google/api/annotations.proto";
+import "github.com/ikaiguang/go-srv-kit/third_party/go-snowflake-node-id/api/node-id/v1/resources/node-id.resource.v1.proto";
+
+// SrvWorker 服务
+service SrvWorker {
+  rpc GetNodeId(node.id.api.apiv1.GetNodeIdReq) returns (node.id.api.apiv1.SnowflakeWorkerNode) {
+    option (google.api.http) = {
+      post : "/api/v1/node-id/get-node-id"
+      body : "*"
+    };
+  }
+
+  rpc ExtendNodeId(node.id.api.apiv1.ExtendNodeIdReq) returns (node.id.api.apiv1.Result) {
+    option (google.api.http) = {
+      post : "/api/v1/node-id/extend-node-id"
+      body : "*"
+    };
+  }
+}
