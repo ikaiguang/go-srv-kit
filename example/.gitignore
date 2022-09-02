@@ -108,6 +108,6 @@ dist
 /cache
 .cache
 /openapi.yaml
-mytest
-_testdata
+openapi.yaml
 _output
+mytest

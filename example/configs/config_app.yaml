@@ -23,10 +23,6 @@ app:
     manager_key: re5CDJcnhEB1lpzY
   # setting 设置
   setting:
-    # enable_service_registry 服务注册与发现
-    enable_service_registry: false
-    # enable_service_trace 服务追踪
-    enable_service_trace: false
     # enable_migrate_db 数据库迁移
     enable_migrate_db: false
     # enable_schedule_task 定时任务

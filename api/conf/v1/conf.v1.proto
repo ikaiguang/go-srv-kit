@@ -25,10 +25,6 @@ message Bootstrap {
 message App {
   // Setting 设置
   message Setting {
-    // enable_service_registry 启用服务注册与发现
-    bool enable_service_registry = 1;
-    // enable_service_trace 启用服务追踪
-    bool enable_service_trace = 2;
     // enable_migrate_db 启用数据库迁移
     bool enable_migrate_db = 3;
     // enable_schedule_task 启用定时任务、计划任务
@@ -109,6 +105,8 @@ message Log {
 message Data {
   // MySQL MySQL
   message MySQL {
+    // enable 是否启动
+    bool enable = 100;
     string dsn = 1;
     // conn_max_idle_time 设置连接空闲的最长时间
     google.protobuf.Duration slow_threshold = 2;
@@ -127,6 +125,8 @@ message Data {
   }
   // Redis redis
   message Redis {
+    // enable 是否启动
+    bool enable = 100;
     string addr = 1;
     string username = 2;
     string password = 3;
@@ -145,6 +145,8 @@ message Data {
   }
   // PSQL postgres
   message PSQL {
+    // enable 是否启动
+    bool enable = 100;
     string dsn = 1;
     // conn_max_idle_time 设置连接空闲的最长时间
     google.protobuf.Duration slow_threshold = 2;
@@ -163,6 +165,8 @@ message Data {
   }
   // Consul consul
   message Consul {
+    // enable 是否启动
+    bool enable = 100;
     string scheme = 1;
     string address = 2;
     string path_prefix = 3;
@@ -182,6 +186,8 @@ message Data {
   }
   // JaegerTrace jaeger
   message JaegerTrace {
+    // enable 是否启动
+    bool enable = 100;
     string endpoint = 1;
     bool with_http_basic_auth = 2;
     string username = 3;
@@ -189,6 +195,8 @@ message Data {
   }
   // RabbitMQ rabbitmq
   message Rabbitmq {
+    // enable 是否启动
+    bool enable = 100;
     string url = 1;
     string tls_address = 2;
     string tls_ca_pem = 3;
@@ -206,6 +214,8 @@ message Data {
 message Server {
   // HTTP http服务配置
   message HTTP {
+    // enable 是否启动
+    bool enable = 100;
     // network 网络
     string network = 1;
     // addr 地址
@@ -215,6 +225,8 @@ message Server {
   }
   // GRPC grpc服务配置
   message GRPC {
+    // enable 是否启动
+    bool enable = 100;
     // network 网络
     string network = 1;
     // addr 地址
