@@ -69,35 +69,44 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	}
 
 	// mysql gorm 数据库
-	//if _, err = setupHandler.GetMySQLGormDB(); err != nil {
-	//	return engineHandler, err
-	//}
+	if cfg := setupHandler.Config.MySQLConfig(); cfg != nil && cfg.Enable {
+		if _, err = setupHandler.GetMySQLGormDB(); err != nil {
+			return engineHandler, err
+		}
+	}
 
 	// postgres gorm 数据库
-	//if _, err = setupHandler.GetPostgresGormDB(); err != nil {
-	//	return engineHandler, err
-	//}
+	if cfg := setupHandler.Config.PostgresConfig(); cfg != nil && cfg.Enable {
+		if _, err = setupHandler.GetPostgresGormDB(); err != nil {
+			return engineHandler, err
+		}
+	}
 
 	// redis 客户端
-	//redisCC, err := setupHandler.GetRedisClient()
-	//if  err != nil {
-	//	return engineHandler, err
-	//}
-
-	// 验证Token工具
-	//_ = setupHandler.GetAuthTokenRepo(redisCC)
+	if cfg := setupHandler.Config.RedisConfig(); cfg != nil && cfg.Enable {
+		redisCC, err := setupHandler.GetRedisClient()
+		if err != nil {
+			return engineHandler, err
+		}
+		// 验证Token工具
+		_ = setupHandler.GetAuthTokenRepo(redisCC)
+	}
 
 	// consul 客户端
-	//_, err = setupHandler.GetConsulClient()
-	//if err != nil {
-	//	return engineHandler, err
-	//}
+	if cfg := setupHandler.Config.ConsulConfig(); cfg != nil && cfg.Enable {
+		_, err = setupHandler.GetConsulClient()
+		if err != nil {
+			return engineHandler, err
+		}
+	}
 
 	// jaeger trace
-	//_, err = setupHandler.GetJaegerTraceExporter()
-	//if err != nil {
-	//	return engineHandler, err
-	//}
+	if cfg := setupHandler.Config.JaegerTraceConfig(); cfg != nil && cfg.Enable {
+		_, err = setupHandler.GetJaegerTraceExporter()
+		if err != nil {
+			return engineHandler, err
+		}
+	}
 
 	// 监听配置 app
 	if err = setupHandler.watchConfigApp(); err != nil {

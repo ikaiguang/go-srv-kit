@@ -2,6 +2,7 @@
 data:
   # mysql MySQL
   mysql:
+    enable: false
     dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
     # slow_threshold 慢查询时间
     slow_threshold: 0.1s
@@ -19,6 +20,7 @@ data:
     conn_max_idle_time: 600s
   # psql postgres
   psql:
+    enable: false
     dsn: "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
     # slow_threshold 慢查询时间
     slow_threshold: 0.1s
@@ -36,6 +38,7 @@ data:
     conn_max_idle_time: 600s
   # redis
   redis:
+    enable: false
     addr: 127.0.0.1:6379
     username:
     password:
@@ -53,6 +56,7 @@ data:
     conn_max_idle_time: 600s
   # consul 服务注册与发现
   consul:
+    enable: false
     scheme:
     address: 127.0.0.1:8500
     path_prefix:
@@ -71,12 +75,14 @@ data:
     tls_key_pem:
   # jaeger_trace 服务追踪
   jaeger_trace:
+    enable: false
     endpoint: http://127.0.0.1:14268/api/traces
     with_http_basic_auth: false
     username:
     password:
   # rabbitmq 消息队列rabbitmq
   rabbitmq:
+    enable: false
     url: amqp://guest:guest@127.0.0.1:5672/
     tls_address:
     tls_ca_pem:

@@ -45,6 +45,10 @@ func main() {
 	stdlog.Println()
 	stdlog.Println("|==================== 加载程序 开始 ====================|")
 	app, err := servers.NewApp(engineHandler)
+	if err != nil {
+		stdlog.Fatalf("loadingAppDependentEnv : %+v\n", err)
+		return
+	}
 	stdlog.Println("|==================== 加载程序 结束 ====================|")
 	if err = app.Run(); err != nil {
 		stdlog.Fatalf("app.Run %+v\n", err)

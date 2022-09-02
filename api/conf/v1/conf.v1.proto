@@ -25,6 +25,10 @@ message Bootstrap {
 message App {
   // Setting 设置
   message Setting {
+    // enable_service_registry 启用服务注册与发现
+    bool enable_service_registry = 1;
+    // enable_service_trace 启用服务追踪
+    bool enable_service_trace = 2;
     // enable_migrate_db 启用数据库迁移
     bool enable_migrate_db = 3;
     // enable_schedule_task 启用定时任务、计划任务

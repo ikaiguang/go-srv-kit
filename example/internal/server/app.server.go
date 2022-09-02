@@ -4,6 +4,8 @@ import (
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/transport"
+	pkgerrors "github.com/pkg/errors"
 	stdlog "log"
 
 	routes "github.com/ikaiguang/go-srv-kit/example/internal/route"
@@ -36,6 +38,19 @@ func NewApp(engineHandler setup.Engine) (app *kratos.App, err error) {
 		return app, err
 	}
 
+	// 服务
+	var servers []transport.Server
+	if cfg := engineHandler.HTTPConfig(); cfg != nil && cfg.Enable {
+		servers = append(servers, hs)
+	}
+	if cfg := engineHandler.GRPCConfig(); cfg != nil && cfg.Enable {
+		servers = append(servers, gs)
+	}
+	if len(servers) == 0 {
+		err = pkgerrors.New("服务列表为空")
+		return app, err
+	}
+
 	// app
 	var (
 		appConfig  = engineHandler.AppConfig()
@@ -46,7 +61,7 @@ func NewApp(engineHandler setup.Engine) (app *kratos.App, err error) {
 			kratos.Version(appConfig.Version),
 			kratos.Metadata(appConfig.Metadata),
 			kratos.Logger(logger),
-			kratos.Server(hs, gs),
+			kratos.Server(servers...),
 		}
 	)
 
