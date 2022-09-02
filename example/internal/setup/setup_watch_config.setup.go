@@ -3,6 +3,7 @@ package setup
 import (
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/log"
+	pkgerrors "github.com/pkg/errors"
 	stdlog "log"
 )
 
@@ -25,13 +26,18 @@ func (s *engines) watchConfigApp() (err error) {
 		}
 	}
 	if err = s.Watch("app", observer); err != nil {
-		return err
+		return pkgerrors.WithStack(err)
 	}
 	return
 }
 
 // watchConfigData 监听配置 data
 func (s *engines) watchConfigData() (err error) {
+	if s.Config.DataConfig() == nil {
+		err = pkgerrors.New("[请配置服务再启动] config key : data")
+		return err
+	}
+
 	stdlog.Println("|*** 加载：监听配置：Data")
 	var observer = func(k string, v config.Value) {
 		_ = s.logger.Log(log.LevelInfo,
@@ -73,7 +79,7 @@ func (s *engines) watchConfigData() (err error) {
 		//}
 	}
 	if err = s.Watch("data", observer); err != nil {
-		return err
+		return pkgerrors.WithStack(err)
 	}
 	return
 }

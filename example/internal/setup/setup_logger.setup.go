@@ -1,6 +1,7 @@
 package setup
 
 import (
+	pkgerrors "github.com/pkg/errors"
 	"io"
 	stdlog "log"
 	"sync"
@@ -50,7 +51,7 @@ func (s *engines) LoggerMiddleware() (log.Logger, []io.Closer, error) {
 func (s *engines) loadingLogHelper() (closeFnSlice []io.Closer, err error) {
 	loggerInstance, closeFnSlice, err := s.LoggerHelper()
 	if err != nil {
-		return closeFnSlice, err
+		return closeFnSlice, pkgerrors.WithStack(err)
 	}
 	if loggerInstance == nil {
 		stdlog.Println("|*** 未加载日志工具")

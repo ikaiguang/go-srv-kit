@@ -106,6 +106,18 @@ func (s *configuration) New(opts ...config.Option) (err error) {
 	// 初始化
 	s.initialization()
 
+	// App配置
+	if s.conf.App == nil {
+		err = pkgerrors.New("[请配置服务再启动] config key : app")
+		return err
+	}
+
+	// 服务配置
+	if s.conf.Server == nil {
+		err = pkgerrors.New("[请配置服务再启动] config key : server")
+		return err
+	}
+
 	return
 }
 
@@ -183,6 +195,22 @@ func (s *configuration) ServerConfig() *confv1.Server {
 	return s.conf.Server
 }
 
+// HTTPConfig http配置
+func (s *configuration) HTTPConfig() *confv1.Server_HTTP {
+	if s.conf.Server == nil {
+		return nil
+	}
+	return s.conf.Server.Http
+}
+
+// GRPCConfig grpc配置
+func (s *configuration) GRPCConfig() *confv1.Server_GRPC {
+	if s.conf.Server == nil {
+		return nil
+	}
+	return s.conf.Server.Grpc
+}
+
 // ServerAuthConfig APP验证配置
 func (s *configuration) ServerAuthConfig() *confv1.Server_Auth {
 	if s.conf.App == nil {
@@ -258,20 +286,4 @@ func (s *configuration) JaegerTraceConfig() *confv1.Data_JaegerTrace {
 		return nil
 	}
 	return s.conf.Data.JaegerTrace
-}
-
-// HTTPConfig http配置
-func (s *configuration) HTTPConfig() *confv1.Server_HTTP {
-	if s.conf.Server == nil {
-		return nil
-	}
-	return s.conf.Server.Http
-}
-
-// GRPCConfig grpc配置
-func (s *configuration) GRPCConfig() *confv1.Server_GRPC {
-	if s.conf.Server == nil {
-		return nil
-	}
-	return s.conf.Server.Grpc
 }

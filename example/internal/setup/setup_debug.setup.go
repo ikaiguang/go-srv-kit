@@ -1,6 +1,7 @@
 package setup
 
 import (
+	pkgerrors "github.com/pkg/errors"
 	stdlog "log"
 
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
@@ -14,7 +15,7 @@ func (s *engines) loadingDebugUtil() error {
 	stdlog.Printf("|*** 加载：调试工具debugutil")
 	syncFn, err := debugutil.Setup()
 	if err != nil {
-		return err
+		return pkgerrors.WithStack(err)
 	}
 	s.debugHelperCloseFnSlice = append(s.debugHelperCloseFnSlice, syncFn)
 	return err

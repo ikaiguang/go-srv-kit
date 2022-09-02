@@ -21,6 +21,11 @@ func (s *engines) LoggerPrefixField() *LoggerPrefixField {
 // assemblyLoggerPrefixField 组装日志前缀
 func (s *engines) assemblyLoggerPrefixField() *LoggerPrefixField {
 	appConfig := s.AppConfig()
+	if appConfig == nil {
+		return &LoggerPrefixField{
+			ServerIP: iputil.LocalIP(),
+		}
+	}
 
 	fields := &LoggerPrefixField{
 		AppName:    appConfig.Name,

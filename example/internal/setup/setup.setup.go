@@ -2,6 +2,7 @@ package setup
 
 import (
 	"flag"
+	pkgerrors "github.com/pkg/errors"
 	stdlog "log"
 	"sync"
 )
@@ -48,7 +49,7 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	// 初始化配置手柄
 	configHandler, err := newConfigHandler(opts...)
 	if err != nil {
-		return engineHandler, err
+		return engineHandler, pkgerrors.WithStack(err)
 	}
 
 	// 开始配置
@@ -109,14 +110,14 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	}
 
 	// 监听配置 app
-	if err = setupHandler.watchConfigApp(); err != nil {
-		return engineHandler, err
-	}
+	//if err = setupHandler.watchConfigApp(); err != nil {
+	//	return engineHandler, err
+	//}
 
 	// 监听配置 data
-	if err = setupHandler.watchConfigData(); err != nil {
-		return engineHandler, err
-	}
+	//if err = setupHandler.watchConfigData(); err != nil {
+	//	return engineHandler, err
+	//}
 
 	return setupHandler, err
 }
