@@ -87,8 +87,10 @@ data:
     tls_key_pem:
   # snowflake_worker 雪花算法
   snowflake_worker:
-    with_discovery: false
     endpoint: http://127.0.0.1:50627
+    # with_discovery 服务注册与发现；调用 apputil.ID 可获取 discovery.endpoint
+    #with_discovery: false
+    #endpoint: "discovery:///snowflake-node-id:PRODUCTION:ckgmac:v1.0.0"
     with_http_basic_auth: false
     username:
     password:

@@ -79,6 +79,7 @@ func (s *engines) loadingSnowflakeWorker() error {
 	s.snowflakeStopChannel = make(chan int)
 	go func() {
 		ticker := time.NewTicker(time.Second * 3)
+		defer ticker.Stop()
 		for {
 			select {
 			case <-ticker.C:
