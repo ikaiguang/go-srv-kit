@@ -10,7 +10,6 @@ import (
 	stdlog "log"
 	"time"
 
-	debugutil "github.com/ikaiguang/go-srv-kit/debug"
 	idutil "github.com/ikaiguang/go-srv-kit/kit/id"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	clientutil "github.com/ikaiguang/go-srv-kit/kratos/client"
@@ -83,7 +82,7 @@ func (s *engines) loadingSnowflakeWorker() error {
 		for {
 			select {
 			case <-ticker.C:
-				debugutil.Println("雪花算法：续期：", extendReq.String())
+				//debugutil.Println("雪花算法：续期：", extendReq.String())
 				_, _ = httpClient.ExtendNodeId(context.Background(), extendReq)
 			case <-s.snowflakeStopChannel:
 				return
