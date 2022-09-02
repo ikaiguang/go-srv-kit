@@ -56,7 +56,6 @@ data:
     conn_max_idle_time: 600s
   # consul 服务注册与发现
   consul:
-    enable: false
     scheme:
     address: 127.0.0.1:8500
     path_prefix:
@@ -75,14 +74,12 @@ data:
     tls_key_pem:
   # jaeger_trace 服务追踪
   jaeger_tracer:
-    enable: false
     endpoint: http://127.0.0.1:14268/api/traces
     with_http_basic_auth: false
     username:
     password:
   # rabbitmq 消息队列rabbitmq
   rabbitmq:
-    enable: false
     url: amqp://guest:guest@127.0.0.1:5672/
     tls_address:
     tls_ca_pem:
@@ -90,7 +87,6 @@ data:
     tls_key_pem:
   # snowflake_worker 雪花算法
   snowflake_worker:
-    enable: false
     with_discovery: false
     endpoint: http://127.0.0.1:50627
     with_http_basic_auth: false

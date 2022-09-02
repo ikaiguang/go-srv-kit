@@ -59,6 +59,9 @@ type engines struct {
 	jaegerTraceExporterMutex sync.Once
 	jaegerTraceExporter      *jaeger.Exporter
 
+	// snowflakeStopChannel 雪花算法
+	snowflakeStopChannel chan int
+
 	// authTokenRepoMutex 验证Token工具
 	authTokenRepoMutex sync.Once
 	authTokenRepo      tokenutil.AuthTokenRepo

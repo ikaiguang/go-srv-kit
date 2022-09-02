@@ -8,7 +8,9 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	pkgerrors "github.com/pkg/errors"
 	stdlog "log"
+	"time"
 
+	debugutil "github.com/ikaiguang/go-srv-kit/debug"
 	idutil "github.com/ikaiguang/go-srv-kit/kit/id"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	clientutil "github.com/ikaiguang/go-srv-kit/kratos/client"
@@ -68,6 +70,26 @@ func (s *engines) loadingSnowflakeWorker() error {
 		return pkgerrors.WithStack(err)
 	}
 	idutil.SetNode(snowflakeNode)
+
+	// 续期
+	extendReq := &apiv1.ExtendNodeIdReq{
+		Id:         workerResp.Id,
+		InstanceId: workerReq.InstanceId,
+		NodeId:     workerResp.NodeId,
+	}
+	s.snowflakeStopChannel = make(chan int)
+	go func() {
+		ticker := time.NewTicker(time.Second * 3)
+		for {
+			select {
+			case <-ticker.C:
+				debugutil.Println("雪花算法：续期：", extendReq.String())
+				_, _ = httpClient.ExtendNodeId(context.Background(), extendReq)
+			case <-s.snowflakeStopChannel:
+				return
+			}
+		}
+	}()
 
 	return err
 }

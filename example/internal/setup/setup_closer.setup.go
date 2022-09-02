@@ -77,6 +77,13 @@ func (s *engines) Close() (err error) {
 	//s.consulClient
 	//s.jaegerTraceExporter
 
+	// 雪花算法
+	if s.snowflakeStopChannel != nil {
+		stdlog.Println("|*** 退出程序：关闭：雪花算法")
+		s.snowflakeStopChannel <- 1
+		close(s.snowflakeStopChannel)
+	}
+
 	// debug
 	if len(s.debugHelperCloseFnSlice) > 0 {
 		stdlog.Println("|*** 退出程序：关闭：调试工具debugutil")
