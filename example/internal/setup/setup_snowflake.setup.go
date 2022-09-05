@@ -64,6 +64,7 @@ func (s *engines) loadingSnowflakeWorker() error {
 	}
 
 	// 雪花算法
+	stdlog.Printf("|*** 加载：雪花算法：nodeId = %d", workerResp.NodeId)
 	snowflakeNode, err := snowflake.NewNode(workerResp.NodeId)
 	if err != nil {
 		return pkgerrors.WithStack(err)

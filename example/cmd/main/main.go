@@ -50,6 +50,7 @@ func main() {
 		return
 	}
 	stdlog.Println("|==================== 加载程序 结束 ====================|")
+	stdlog.Println("|==================== 程序运行中... ====================|")
 	if err = app.Run(); err != nil {
 		stdlog.Fatalf("app.Run %+v\n", err)
 		return
