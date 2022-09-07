@@ -48,3 +48,6 @@ curl -X GET \
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
 | [JETBRAINS](https://www.jetbrains.com) | <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg"  width="120" alt="JetBrains Logo"> | Open Source Development License |
 
+## Give a star! ⭐
+
+If you think this project is interesting, or helpful to you, please give a star!

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	pkgerrors "github.com/pkg/errors"
 	stdlog "log"
 
 	"github.com/go-kratos/kratos/v2/transport/grpc"
@@ -26,13 +27,13 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 	// root
 	err = rootroute.RegisterRoutes(hs, gs, logger)
 	if err != nil {
-		return err
+		return pkgerrors.WithStack(err)
 	}
 
 	// websocket
 	err = websocketroute.RegisterRoutes(hs, gs, logger)
 	if err != nil {
-		return err
+		return pkgerrors.WithStack(err)
 	}
 
 	// testdata

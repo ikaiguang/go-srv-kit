@@ -8,6 +8,7 @@ import (
 )
 
 // go run ./example/cmd/main/... -conf=./example/configs
+// go run ./cmd/main/... -conf=./configs
 func main() {
 	var err error
 

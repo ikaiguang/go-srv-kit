@@ -4,10 +4,12 @@ import (
 	"context"
 	"go.opentelemetry.io/otel/trace"
 	"os"
+	"strconv"
 
 	"github.com/go-kratos/kratos/v2/log"
 
 	iputil "github.com/ikaiguang/go-srv-kit/kit/ip"
+	authutil "github.com/ikaiguang/go-srv-kit/kratos/auth"
 )
 
 // LoggerPrefixField .
@@ -44,7 +46,9 @@ func (s *engines) withLoggerPrefix(logger log.Logger) log.Logger {
 		"app",
 		s.LoggerPrefixField().String(),
 	}
-	kvs = append(kvs, "tracer", s.withLoggerTracer())
+	if cfg := s.ServerSettingConfig(); cfg != nil && cfg.EnableServiceTracer {
+		kvs = append(kvs, "tracer", s.withLoggerTracer())
+	}
 	return log.With(logger, kvs...)
 }
 
@@ -57,6 +61,13 @@ func (s *engines) withLoggerTracer() log.Valuer {
 		}
 		if span := trace.SpanContextFromContext(ctx); span.HasSpanID() {
 			res += ` spanId="` + span.SpanID().String() + `"`
+		}
+		if claims, ok := authutil.FromAuthContext(ctx); ok && claims.Payload != nil {
+			if claims.Payload.Id > 0 {
+				res += ` userId="` + strconv.FormatUint(claims.Payload.Id, 10) + `"`
+			} else {
+				res += ` userId="` + claims.Payload.Uid + `"`
+			}
 		}
 		return res
 	}
