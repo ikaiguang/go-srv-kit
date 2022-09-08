@@ -1,4 +1,4 @@
-package setup
+package setuppkg
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	debugutil "github.com/ikaiguang/go-srv-kit/debug"
 )
 
-// go test -v ./example/internal/setup/ -count=1 -test.run=TestSetup -conf=./../../configs
+// go test -v ./example/pkg/setup/ -count=1 -test.run=TestSetup -conf=./../../configs
 func TestSetup(t *testing.T) {
 	engineHandler, err := New()
 	if err != nil {
@@ -55,23 +55,4 @@ func TestSetup(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, redisValue, redisGotValue)
 	t.Logf("redis res : %+v\n", redisGotValue)
-}
-
-// go test -v ./example/internal/setup/ -count=1 -test.run=TestGetEngine -conf=./../../configs
-func TestGetEngine(t *testing.T) {
-	engineHandler, err := GetEngine()
-	require.Nil(t, err)
-	require.NotNil(t, engineHandler)
-	engineHandler, err = GetEngine()
-	require.Nil(t, err)
-	require.NotNil(t, engineHandler)
-
-	// env
-	logutil.Infof("env = %v", engineHandler.Env())
-
-	// debug
-	debugutil.Println("*** | ==> debug util print")
-
-	// 日志
-	logutil.Info("*** | ==> log helper info")
 }

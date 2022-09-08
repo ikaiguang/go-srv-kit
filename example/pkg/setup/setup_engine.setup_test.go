@@ -1,4 +1,4 @@
-package setup
+package setuppkg
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./example/internal/setup/ -count=1 -test.run=TestNewUpPackages
+// go test -v ./example/pkg/setup/ -count=1 -test.run=TestNewUpPackages
 func TestNewUpPackages(t *testing.T) {
 	// config
 	confPath := "./../../configs"

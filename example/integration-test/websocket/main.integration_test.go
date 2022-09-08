@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	setup2 "github.com/ikaiguang/go-srv-kit/example/setup"
+
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 )
 
@@ -12,7 +14,7 @@ func TestMain(m *testing.M) {
 	var err error
 
 	configPath := "../../configs"
-	err = setup.Init(setup.WithConfigPath(configPath))
+	err = setup.Init(setup2.WithConfigPath(configPath))
 	if err != nil {
 		stdlog.Fatalf("%+v\n", err)
 		return

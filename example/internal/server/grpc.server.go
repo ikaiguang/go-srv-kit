@@ -9,14 +9,14 @@ import (
 	stdlog "log"
 
 	middlewares "github.com/ikaiguang/go-srv-kit/example/internal/server/middleware"
-	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	setuppkg "github.com/ikaiguang/go-srv-kit/example/pkg/setup"
 	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
 )
 
 var _ metadata.Option
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
+func NewGRPCServer(engineHandler setuppkg.Engine) (srv *grpc.Server, err error) {
 	grpcConfig := engineHandler.GRPCConfig()
 	stdlog.Printf("|*** 加载：GRPC服务：%s\n", grpcConfig.Addr)
 
@@ -82,7 +82,7 @@ func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 }
 
 // RegisterGRPCRoute 注册路由
-func RegisterGRPCRoute(engineHandler setup.Engine, srv *grpc.Server) (err error) {
+func RegisterGRPCRoute(engineHandler setuppkg.Engine, srv *grpc.Server) (err error) {
 	stdlog.Println("|*** 注册GRPC路由：...")
 	return err
 }

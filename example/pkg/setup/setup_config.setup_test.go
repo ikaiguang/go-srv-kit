@@ -1,4 +1,4 @@
-package setup
+package setuppkg
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/config/file"
 )
 
-// go test -v ./example/internal/setup/ -count=1 -test.run=TestNewConfiguration
+// go test -v ./example/pkg/setup/ -count=1 -test.run=TestNewConfiguration
 func TestNewConfiguration(t *testing.T) {
 	confPath := "./../../configs"
 	var opts []config.Option

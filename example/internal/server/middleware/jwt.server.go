@@ -7,7 +7,7 @@ import (
 	jwt "github.com/golang-jwt/jwt/v4"
 
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
-	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	setuppkg "github.com/ikaiguang/go-srv-kit/example/pkg/setup"
 	authutil "github.com/ikaiguang/go-srv-kit/kratos/auth"
 )
 
@@ -35,7 +35,7 @@ func NewWhiteListMatcher() selector.MatchFunc {
 }
 
 // NewJWTMiddleware jwt中间
-func NewJWTMiddleware(engineHandler setup.Engine) (m middleware.Middleware, err error) {
+func NewJWTMiddleware(engineHandler setuppkg.Engine) (m middleware.Middleware, err error) {
 	// redis
 	redisCC, err := engineHandler.GetRedisClient()
 	if err != nil {

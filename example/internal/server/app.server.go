@@ -9,12 +9,12 @@ import (
 	stdlog "log"
 
 	routes "github.com/ikaiguang/go-srv-kit/example/internal/route"
-	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	setuppkg "github.com/ikaiguang/go-srv-kit/example/pkg/setup"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 )
 
 // NewApp .
-func NewApp(engineHandler setup.Engine) (app *kratos.App, err error) {
+func NewApp(engineHandler setuppkg.Engine) (app *kratos.App, err error) {
 	// 日志
 	logger, _, err := engineHandler.Logger()
 	if err != nil {

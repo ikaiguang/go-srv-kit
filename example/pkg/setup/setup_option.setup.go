@@ -1,4 +1,4 @@
-package setup
+package setuppkg
 
 // options 配置可选项
 type options struct {

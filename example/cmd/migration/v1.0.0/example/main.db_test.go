@@ -4,6 +4,8 @@ import (
 	migrationuitl "github.com/ikaiguang/go-srv-kit/data/migration"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 
+	setup2 "github.com/ikaiguang/go-srv-kit/example/setup"
+
 	stdlog "log"
 	"os"
 	"testing"
@@ -15,7 +17,7 @@ var upHandler *migrate
 func TestMain(m *testing.M) {
 	// 初始化
 	configPath := "./../../../../configs"
-	if err := setup.Init(setup.WithConfigPath(configPath)); err != nil {
+	if err := setup.Init(setup2.WithConfigPath(configPath)); err != nil {
 		stdlog.Fatalf("%+v\n", err)
 		return
 	}

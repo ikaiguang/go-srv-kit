@@ -1,4 +1,4 @@
-package setup
+package setuppkg
 
 import (
 	strerrors "errors"
