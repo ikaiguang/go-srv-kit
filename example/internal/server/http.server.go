@@ -8,8 +8,8 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	stdlog "log"
 
-	middlewares "github.com/ikaiguang/go-srv-kit/example/internal/server/middleware"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	middlewarepkg "github.com/ikaiguang/go-srv-kit/example/pkg/middleware"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	headermiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/header"
 	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
@@ -31,7 +31,7 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	// options
 	var opts []http.ServerOption
 	//var opts = []http.ServerOption{
-	//	http.Filter(middlewares.NewCORS()),
+	//	http.Filter(middlewarepkg.NewCORS()),
 	//}
 	if httpConfig.Network != "" {
 		opts = append(opts, http.Network(httpConfig.Network))
@@ -56,7 +56,7 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	settingConfig := engineHandler.ServerSettingConfig()
 	if settingConfig != nil && settingConfig.EnableServiceTracer {
 		stdlog.Println("|*** 加载：服务追踪：HTTP")
-		if err = middlewares.SetTracerProvider(engineHandler); err != nil {
+		if err = middlewarepkg.SetTracerProvider(engineHandler); err != nil {
 			return srv, err
 		}
 		middlewareSlice = append(middlewareSlice, tracing.Server())
@@ -76,7 +76,7 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	))
 	// jwt
 	//stdlog.Println("|*** 加载：JWT中间件：HTTP")
-	//jwtMiddleware, err := middlewares.NewJWTMiddleware(engineHandler)
+	//jwtMiddleware, err := middlewarepkg.NewJWTMiddleware(engineHandler)
 	//if err != nil {
 	//	return srv, err
 	//}

@@ -8,8 +8,8 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	stdlog "log"
 
-	middlewares "github.com/ikaiguang/go-srv-kit/example/internal/server/middleware"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	middlewarepkg "github.com/ikaiguang/go-srv-kit/example/pkg/middleware"
 	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
 )
 
@@ -47,7 +47,7 @@ func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 	settingConfig := engineHandler.ServerSettingConfig()
 	if settingConfig != nil && settingConfig.EnableServiceTracer {
 		stdlog.Println("|*** 加载：服务追踪：GRPC")
-		if err = middlewares.SetTracerProvider(engineHandler); err != nil {
+		if err = middlewarepkg.SetTracerProvider(engineHandler); err != nil {
 			return srv, err
 		}
 		middlewareSlice = append(middlewareSlice, tracing.Server())
