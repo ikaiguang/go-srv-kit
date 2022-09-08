@@ -1,6 +1,6 @@
-# 基于`Example`创建新项目
+# 创建新项目
 
-基于`go-srv-kit/example`创建新项目
+基于`go-srv-kit`创建新项目
 
 ## 安装必要的工具
 

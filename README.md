@@ -2,15 +2,12 @@
 
 为服务开发提供基础工具
 
+基于`Example`创建新项目: [README-new-project](./README-new-project.md)
+
 ## Overview
 
 - 基于[go-kratos](https://github.com/go-kratos/kratos)
 - Domain-Driven Design (DDD)
-
-## 文档地址
-
-- [kratos-github](https://github.com/go-kratos/kratos)
-- [kratos-docs](https://go-kratos.dev/docs/)
 
 ## 运行Example
 
@@ -19,12 +16,16 @@
 **Windows**系统，请使用`CMD`或`Git-Bash`运行。原因：某些命令行工具无法正确读取配置目录；例：`PowerShell`
 
 ```shell
+
+# 启动项目
 go run ./example/cmd/main/... -conf=./example/configs
 
+# 运行测试 HTTP JSON
 curl http://127.0.0.1:8081/api/v1/ping/hello
-curl http://127.0.0.1:8081/api/v1/ping/error
+# curl http://127.0.0.1:8081/api/v1/ping/error
+# curl http://127.0.0.1:8081/api/v1/ping/logger
 
-# 运行测试 PROTOBUF
+# 运行测试 HTTP PROTOBUF
 curl -X GET \
     -H "Content-Type: application/proto" \
     -H "Accept: application/proto" \
