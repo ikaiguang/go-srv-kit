@@ -1,4 +1,4 @@
-package setuputil
+package setuppkg
 
 import (
 	pkgerrors "github.com/pkg/errors"
