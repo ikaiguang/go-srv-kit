@@ -3,8 +3,7 @@ package dbv1_0_0_example
 import (
 	migrationuitl "github.com/ikaiguang/go-srv-kit/data/migration"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
-
-	setup2 "github.com/ikaiguang/go-srv-kit/example/setup"
+	setuputil "github.com/ikaiguang/go-srv-kit/setup"
 
 	stdlog "log"
 	"os"
@@ -17,7 +16,7 @@ var upHandler *migrate
 func TestMain(m *testing.M) {
 	// 初始化
 	configPath := "./../../../../configs"
-	if err := setup.Init(setup2.WithConfigPath(configPath)); err != nil {
+	if err := setup.Init(setuputil.WithConfigPath(configPath)); err != nil {
 		stdlog.Fatalf("%+v\n", err)
 		return
 	}

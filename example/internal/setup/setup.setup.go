@@ -3,21 +3,36 @@ package setup
 import (
 	"sync"
 
-	setuppkg "github.com/ikaiguang/go-srv-kit/example/pkg/setup"
+	setuputil "github.com/ikaiguang/go-srv-kit/setup"
 )
+
+// Engine ...
+type Engine interface {
+	setuputil.Engine
+}
+
+// engines ...
+type engines struct {
+	setuputil.Engine
+}
 
 var (
 	// initEngineMutex 初始化
 	initEngineMutex sync.Once
-	engineInstance  setuppkg.Engine
+	engineInstance  *engines
 )
 
 // Init 启动与配置与设置存储Packages
-func Init(opts ...setuppkg.Option) (err error) {
+func Init(opts ...setuputil.Option) (err error) {
 	initEngineMutex.Do(func() {
-		engineInstance, err = setuppkg.New(opts...)
+		var e setuputil.Engine
+		e, err = setuputil.New(opts...)
+		engineInstance = &engines{
+			Engine: e,
+		}
 	})
 	if err != nil {
+		engineInstance = nil
 		initEngineMutex = sync.Once{}
 		return err
 	}
@@ -25,7 +40,7 @@ func Init(opts ...setuppkg.Option) (err error) {
 }
 
 // GetEngine 获取初始化后的引擎模块
-func GetEngine() (setuppkg.Engine, error) {
+func GetEngine() (Engine, error) {
 	if err := Init(); err != nil {
 		return nil, err
 	}
@@ -37,5 +52,8 @@ func Close() error {
 	if engineInstance == nil {
 		return nil
 	}
-	return engineInstance.Close()
+	if err := engineInstance.Engine.Close(); err != nil {
+		return err
+	}
+	return nil
 }

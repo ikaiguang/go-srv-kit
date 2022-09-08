@@ -1,4 +1,4 @@
-package setuppkg
+package setuputil
 
 import (
 	"github.com/hashicorp/consul/api"

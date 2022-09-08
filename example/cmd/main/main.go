@@ -4,8 +4,7 @@ import (
 	stdlog "log"
 
 	servers "github.com/ikaiguang/go-srv-kit/example/internal/server"
-	setup2 "github.com/ikaiguang/go-srv-kit/example/internal/setup"
-	setuppkg "github.com/ikaiguang/go-srv-kit/example/pkg/setup"
+	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 )
 
 // go run ./example/cmd/main/... -conf=./example/configs
@@ -14,7 +13,7 @@ func main() {
 	var err error
 
 	// 初始化
-	err = setup2.Init()
+	err = setup.Init()
 	if err != nil {
 		stdlog.Fatalf("setup.Init : %+v\n", err)
 		return
@@ -22,13 +21,13 @@ func main() {
 	//defer func() { _ = setup.Close() }()
 
 	// 引擎模块
-	engineHandler, err := setup2.GetEngine()
+	engineHandler, err := setup.GetEngine()
 	if err != nil {
 		stdlog.Fatalf("setup.GetEngine : %+v\n", err)
 		return
 	}
 	// 关闭
-	defer func() { _ = setup2.Close() }()
+	defer func() { _ = setup.Close() }()
 
 	// loadingAppSettingEnv 加载程序配置
 	if err = loadingAppSettingEnv(engineHandler); err != nil {
@@ -60,7 +59,7 @@ func main() {
 }
 
 // loadingAppSettingEnv 加载计划任务
-func loadingAppSettingEnv(engineHandler setuppkg.Engine) error {
+func loadingAppSettingEnv(engineHandler setup.Engine) error {
 	// 计划任务
 	settingConfig := engineHandler.ServerSettingConfig()
 	stdlog.Println()
@@ -87,7 +86,7 @@ func loadingAppSettingEnv(engineHandler setuppkg.Engine) error {
 }
 
 // loadingAppDependentEnv 加载程序运行环境
-func loadingAppDependentEnv(engineHandler setuppkg.Engine) error {
+func loadingAppDependentEnv(engineHandler setup.Engine) error {
 	stdlog.Println()
 	stdlog.Println("|==================== 加载程序运行环境 开始 ====================|")
 	defer stdlog.Println("|==================== 加载程序运行环境 结束 ====================|")

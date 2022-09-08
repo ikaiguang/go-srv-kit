@@ -9,7 +9,7 @@ import (
 	stdlog "log"
 
 	middlewares "github.com/ikaiguang/go-srv-kit/example/internal/server/middleware"
-	setuppkg "github.com/ikaiguang/go-srv-kit/example/pkg/setup"
+	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	headermiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/header"
 	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
@@ -18,7 +18,7 @@ import (
 var _ metadata.Option
 
 // NewHTTPServer new HTTP server.
-func NewHTTPServer(engineHandler setuppkg.Engine) (srv *http.Server, err error) {
+func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	httpConfig := engineHandler.HTTPConfig()
 	stdlog.Printf("|*** 加载：HTTP服务：%s\n", httpConfig.Addr)
 
@@ -93,7 +93,7 @@ func NewHTTPServer(engineHandler setuppkg.Engine) (srv *http.Server, err error) 
 }
 
 // RegisterHTTPRoute 注册路由
-func RegisterHTTPRoute(engineHandler setuppkg.Engine, srv *http.Server) (err error) {
+func RegisterHTTPRoute(engineHandler setup.Engine, srv *http.Server) (err error) {
 	stdlog.Println("|*** 注册HTTP路由：...")
 	return err
 }

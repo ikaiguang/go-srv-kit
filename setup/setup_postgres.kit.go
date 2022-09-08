@@ -1,4 +1,4 @@
-package setuppkg
+package setuputil
 
 import (
 	stdlog "log"

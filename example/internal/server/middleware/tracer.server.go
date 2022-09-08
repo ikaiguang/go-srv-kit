@@ -6,12 +6,12 @@ import (
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 
-	setuppkg "github.com/ikaiguang/go-srv-kit/example/pkg/setup"
+	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 )
 
 // SetTracerProvider set trace provider
-func SetTracerProvider(engineHandler setuppkg.Engine) error {
+func SetTracerProvider(engineHandler setup.Engine) error {
 	appConfig := engineHandler.AppConfig()
 
 	// Create the Jaeger exporter

@@ -1,4 +1,4 @@
-package setuppkg
+package setuputil
 
 import (
 	"github.com/go-kratos/kratos/v2/config"

@@ -1,4 +1,4 @@
-package setuppkg
+package setuputil
 
 import (
 	"go.opentelemetry.io/otel/exporters/jaeger"
