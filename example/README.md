@@ -6,7 +6,44 @@ Example
 
 ```shell
 
-go run ./cmd/main/... -conf=./configs
+# 例子
+# go run ./cmd/main/... -conf=./configs
+# 运行 admin
+# make run app=admin
+go run ./app/admin/service/cmd/main/... -conf=./app/admin/service/configs
+# 运行 user
+# make run app=user
+go run ./app/user/service/cmd/main/... -conf=./app/user/service/configs
+
+```
+
+## 数据库迁移
+
+```shell
+
+# 例子
+# go run ./cmd/migration/... -conf=./configs
+# 运行 admin
+# make migrate app=admin
+go run ./app/admin/service/cmd/migration/... -conf=./app/admin/service/configs
+# 运行 user
+# make migrate app=user
+go run ./app/user/service/cmd/migration/... -conf=./app/user/service/configs
+
+```
+
+## 生成协议
+
+```shell
+
+# 例子
+# go run ./cmd/proto/... -path=api/admin
+# 运行 admin
+# make proto path=api/admin
+go run ./cmd/proto/... -path=api/admin
+# 运行 user
+# make proto path=api/user
+go run ./cmd/proto/... -path=api/user
 
 ```
 

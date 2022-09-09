@@ -3,6 +3,7 @@ package main
 import (
 	stdlog "log"
 
+	dbmigrate "github.com/ikaiguang/go-srv-kit/example/cmd/migration/migrate"
 	servers "github.com/ikaiguang/go-srv-kit/example/internal/server"
 	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
 )
@@ -68,8 +69,8 @@ func loadingAppSettingEnv(engineHandler setup.Engine) error {
 
 	// 数据库迁移
 	if settingConfig != nil && settingConfig.EnableMigrateDb {
-		//stdlog.Printf("|*** 加载程序计划任务：数据库迁移")
-		//dbmigrate.Run()
+		stdlog.Printf("|*** 加载程序计划任务：数据库迁移")
+		dbmigrate.Run()
 	}
 	// 定时任务
 	//if scheduleConfig != nil && scheduleConfig.EnableScheduleCron {

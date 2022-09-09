@@ -11,14 +11,20 @@ info:
 	@echo "==> GIT_BRANCH: $(GIT_BRANCH)"
 	@echo "==> GIT_VERSION: $(GIT_VERSION)"
 
+# make run app=xxx
+# go run ./app/${app}/service/cmd/main/... -conf=./app/${app}/service/configs
 .PHONY: run
 run:
 	go run ./cmd/main/... -conf=./configs
 
+# make migrate app=xxx
+# go run ./app/${app}/service/cmd/migration/... -conf=./app/${app}/service/configs
 .PHONY: migrate
 migrate:
 	go run ./cmd/migration/... -conf=./configs
 
+# make proto path=api/xxx
+# go run ./cmd/proto/... -path=${path}
 .PHONY: proto
 proto:
 	go run ./cmd/proto/... -path=${path}
