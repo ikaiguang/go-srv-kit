@@ -13,7 +13,7 @@ import (
 
 	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources"
 	pingservicev1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/services"
-	"github.com/ikaiguang/go-srv-kit/example/internal/setup"
+	setuppkg "github.com/ikaiguang/go-srv-kit/example/pkg/setup"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
 )
@@ -27,7 +27,7 @@ func Test_RegistryDiscovery(t *testing.T) {
 	r := consul.New(consulCli)
 
 	// 引擎模块
-	engineHandler, err := setup.GetEngine()
+	engineHandler, err := setuppkg.New()
 	if err != nil {
 		stdlog.Fatalf("%+v\n", err)
 		return
