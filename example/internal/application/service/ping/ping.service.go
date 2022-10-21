@@ -56,8 +56,8 @@ func (s *ping) Ping(ctx context.Context, in *pingv1.PingReq) (out *pingv1.PingRe
 func (s *ping) testLogger(ctx context.Context, in *pingv1.PingReq) {
 	s.log.WithContext(ctx).Infof("==> s.log.WithContext(ctx).Infof : Ping Received: %s", in.GetMessage())
 	s.log.Infow("==> s.log.Infow : Ping Received: ", in.GetMessage())
-	logutil.InfoWithContext(ctx, "==> loghelper.ContextInfo : Ping Received: ", in.GetMessage())
-	logutil.InfowWithContext(ctx, "==> loghelper.ContextInfow : Ping Received: ", in.GetMessage())
-	logutil.Info("==> loghelper.Info : Ping Received: ", in.GetMessage())
+	logutil.InfoWithContext(ctx, "==> logutil.ContextInfo : Ping Received: ", in.GetMessage())
+	logutil.InfowWithContext(ctx, "==> logutil.ContextInfow : Ping Received: ", in.GetMessage())
+	logutil.Info("==> logutil.Info : Ping Received: ", in.GetMessage())
 	debugutil.Printw("==> debugutil.Print : Ping Received: ", in.GetMessage())
 }
