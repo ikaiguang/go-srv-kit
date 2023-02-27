@@ -4,23 +4,26 @@
 
 ## 安装开发工具
 
-**安装开发工具:**
+## **安装开发工具:**
 
 ```shell
 # kratos
 go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
-**克隆两个项目:**
+## **克隆两个项目:**
 
-1. 克隆`go-kratos`项目；后续生成`protobuf`需要
-2. 克隆`go-srv-kit`项目；后续生成`protobuf`需要
+一、 克隆`go-kratos`项目；后续生成`protobuf`需要
 
 ```shell
 # kratos
 mkdir -p $GOPATH/src/github.com/go-kratos && cd $GOPATH/src/github.com/go-kratos
 git clone https://github.com/go-kratos/kratos.git
+```
 
+二、 克隆`go-srv-kit`项目；后续生成`protobuf`需要
+
+```shell
 # go-srv-kit
 mkdir -p $GOPATH/src/github.com/ikaiguang && $GOPATH/src/github.com/ikaiguang
 git clone https://github.com/ikaiguang/go-srv-kit.git
@@ -28,18 +31,18 @@ git clone https://github.com/ikaiguang/go-srv-kit.git
 
 ## 创建新项目
 
-- 创建目录: `mkdir my-server-protject && cd my-server-protject`
-- 初始化项目文件: 复制`go-srv-kit/example/`到`my-server-protject/`
+- 创建目录: `mkdir my-server-project && cd my-server-project`
+- 初始化项目文件: 复制`go-srv-kit/example/`到`my-server-project/`
 
 ```shell
 
 # 复制为新项目
-cp $GOPATH/src/github.com/ikaiguang/go-srv-kit/example/* path/to/my-server-protject/
+cp $GOPATH/src/github.com/ikaiguang/go-srv-kit/example/* path/to/my-server-project/
 # ===== 例子 =====
 # 创建目录
-mkdir -p $GOPATH/src/gitee.com/aircraft-group/aircraft-mall-admin && cd $GOPATH/src/gitee.com/aircraft-group/aircraft-mall-admin
-# 初始化项目文件: 复制`go-srv-kit/example/`到`my-server-protject/`
-cp -r $GOPATH/src/github.com/ikaiguang/go-srv-kit/example/ $GOPATH/src/gitee.com/aircraft-group/aircraft-mall-admin/
+mkdir -p $GOPATH/src/my-server-project && cd $GOPATH/src/my-server-project
+# 初始化项目文件: 复制`go-srv-kit/example/`到`my-server-project/`
+cp -r $GOPATH/src/github.com/ikaiguang/go-srv-kit/example/ $GOPATH/src/my-server-project/
 # 查看与确认文件
 ls -al
 
@@ -56,7 +59,7 @@ ls -al
 
 ==> 替换为
 
-`my-server-protject`路径(go-mod)：gitee.com/aircraft-group/aircraft-mall-admin
+`my-server-project`路径(go-mod)：my-server-project
 
 ```
 
