@@ -29,7 +29,7 @@ func NewRedisTokenRepo(redisCC *redis.Client, opts ...Option) AuthTokenRepo {
 		opts[i](o)
 	}
 	if o.authConfig == nil {
-		o.authConfig = &confv1.Server_Auth{}
+		o.authConfig = &confv1.Business_Auth{}
 	}
 	if o.tokenTypeMap == nil {
 		o.tokenTypeMap = newTokenTypeMap()

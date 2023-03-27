@@ -1,0 +1,26 @@
+# business 业务
+business:
+  # auth 验证
+  auth:
+    default_key: 2MJRyKnANhtezTrD
+    service_key: 6EZ5y7YBdv3KqAP0
+    admin_key: IqD6bQvJodkLUa92
+    api_key: WgxqFMe4VGBJU1Th
+    web_key: QhqJvKm8cCXgLzaE
+    app_key: WH5GNvPDlsIn3SEM
+    h5_key: Z2tjUumyS8cbgdzJ
+    manager_key: re5CDJcnhEB1lpzY
+  # captcha 验证码
+  captcha:
+    captcha_len: 4
+    ttl: 900s
+  # login 登录
+  login:
+    # 密码连续输错N次后短暂锁定账号
+    password_err_serial_times: 5
+    # N分钟内连续输出密码
+    password_err_serial_duration: 300s
+    # 密码连续错误后,锁定N分钟后重试
+    password_err_lock_duration: 180s
+    # 当日密码错误上限
+    password_err_daily_limit_times: 6

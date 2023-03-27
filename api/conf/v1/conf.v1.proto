@@ -19,6 +19,10 @@ message Bootstrap {
   Data data = 3;
   // server 服务
   Server server = 4;
+  // base 基础配置
+  Base base = 5;
+  // Business 业务配置
+  Business business = 6;
 }
 
 // App application
@@ -61,38 +65,10 @@ message Server {
     // timeout 超时时间
     google.protobuf.Duration timeout = 3;
   }
-  // Setting 设置
-  message Setting {
-    // enable_service_registry 启用服务注册与发现
-    bool enable_service_registry = 1;
-    // enable_service_tracer 启用服务追踪
-    bool enable_service_tracer = 2;
-    // enable_snowflake_worker 启用雪花算法
-    bool enable_snowflake_worker = 5;
-    // enable_migrate_db 启用数据库迁移
-    bool enable_migrate_db = 3;
-    // enable_schedule_task 启用定时任务、计划任务
-    bool enable_schedule_task = 4;
-  }
-  // Auth 验证
-  message Auth {
-    string default_key = 1;
-    string service_key = 2;
-    string admin_key = 3;
-    string api_key = 4;
-    string web_key = 5;
-    string app_key = 6;
-    string h5_key = 7;
-    string manager_key = 8;
-  }
   // http http服务配置
   HTTP http = 1;
   // grpc grpc服务配置
   GRPC grpc = 2;
-  // setting 设置
-  Setting setting = 3;
-  // auth 认证
-  Auth auth = 4;
 }
 
 // Log 日志
@@ -199,6 +175,60 @@ message Data {
     // conn_max_idle_time 设置连接空闲的最长时间
     google.protobuf.Duration conn_max_idle_time = 9;
   }
+  MySQL mysql = 1;
+  PSQL psql = 2;
+  Redis redis = 3;
+}
+
+// Business 业务配置
+message Business {
+  // Auth 验证
+  message Auth {
+    string default_key = 1;
+    string service_key = 2;
+    string admin_key = 3;
+    string api_key = 4;
+    string web_key = 5;
+    string app_key = 6;
+    string h5_key = 7;
+    string manager_key = 8;
+  }
+  // Captcha 验证码
+  message Captcha {
+    int32 captcha_len = 1;
+    google.protobuf.Duration ttl = 2;
+  }
+  // Login 登录
+  message Login {
+    // password_err_serial_times 密码连续输错N次后短暂锁定账号
+    int32 password_err_serial_times = 1;
+    // password_err_serial_duration N分钟内连续输出密码
+    google.protobuf.Duration password_err_serial_duration = 2;
+    // password_err_lock_duration 密码连续错误后,锁定N分钟后重试
+    google.protobuf.Duration password_err_lock_duration = 3;
+    // password_err_lock_duration 当日密码错误上限
+    int32 password_err_daily_limit_times = 4;
+  }
+  // auth 认证
+  Auth auth = 1;
+}
+
+// Base 基础设置
+message Base {
+  // Setting 设置
+  message Setting {
+    // enable_service_registry 启用服务注册与发现
+    bool enable_service_registry = 1;
+    // enable_service_tracer 启用服务追踪
+    bool enable_service_tracer = 2;
+    // enable_snowflake_worker 启用雪花算法
+    bool enable_snowflake_worker = 5;
+    // enable_migrate_db 启用数据库迁移
+    bool enable_migrate_db = 3;
+    // enable_schedule_task 启用定时任务、计划任务
+    bool enable_schedule_task = 4;
+  }
+
   // Consul consul
   message Consul {
     // enable 是否启动
@@ -249,10 +279,10 @@ message Data {
     string username = 4;
     string password = 5;
   }
-  MySQL mysql = 1;
-  Redis redis = 2;
-  PSQL psql = 3;
-  Consul consul = 4;
-  JaegerTracer jaeger_tracer = 5;
-  SnowflakeWorker snowflake_worker = 6;
+  // setting 设置
+  Setting setting = 1;
+  Consul consul = 2;
+  JaegerTracer jaeger_tracer = 3;
+  Rabbitmq rabbitmq = 4;
+  SnowflakeWorker snowflake_worker = 5;
 }

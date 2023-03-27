@@ -22,7 +22,7 @@ type TokenTypeFunc func(context.Context, TokenTypeMap) authv1.TokenTypeEnum_Toke
 
 // options Parser is a jwt parser
 type options struct {
-	authConfig        *confv1.Server_Auth
+	authConfig        *confv1.Business_Auth
 	tokenTypeMap      TokenTypeMap
 	cacheKeyFunc      CacheKeyFunc
 	signingSecretFunc SigningSecretFunc
@@ -30,7 +30,7 @@ type options struct {
 }
 
 // WithAuthConfig 签名密码
-func WithAuthConfig(authConfig *confv1.Server_Auth) Option {
+func WithAuthConfig(authConfig *confv1.Business_Auth) Option {
 	return func(o *options) {
 		o.authConfig = authConfig
 	}

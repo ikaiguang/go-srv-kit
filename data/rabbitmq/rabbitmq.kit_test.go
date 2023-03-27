@@ -24,7 +24,7 @@ func TestNewSubscriber(t *testing.T) {
 	)
 	logger := newMultiLogger()
 
-	conf := &confv1.Data_Rabbitmq{
+	conf := &confv1.Base_Rabbitmq{
 		Url: amqpURI,
 	}
 

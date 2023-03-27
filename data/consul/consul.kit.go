@@ -7,12 +7,12 @@ import (
 )
 
 // NewConsulClient .
-func NewConsulClient(conf *confv1.Data_Consul, opts ...Option) (*api.Client, error) {
+func NewConsulClient(conf *confv1.Base_Consul, opts ...Option) (*api.Client, error) {
 	return NewClient(conf, opts...)
 }
 
 // NewClient ...
-func NewClient(conf *confv1.Data_Consul, opts ...Option) (*api.Client, error) {
+func NewClient(conf *confv1.Base_Consul, opts ...Option) (*api.Client, error) {
 	defConfig := api.DefaultConfig()
 	// basic
 	if conf.Scheme != "" {

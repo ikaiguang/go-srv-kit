@@ -15,17 +15,17 @@ import (
 func TestNewJaegerExporter_Xxx(t *testing.T) {
 	var tests = []struct {
 		name string
-		conf *confv1.Data_JaegerTrace
+		conf *confv1.Base_JaegerTracer
 	}{
 		{
 			name: "#WithHttpBasicAuth:NO",
-			conf: &confv1.Data_JaegerTrace{
+			conf: &confv1.Base_JaegerTracer{
 				Endpoint: "http://127.0.0.1:14268/api/traces",
 			},
 		},
 		{
 			name: "#WithHttpBasicAuth:YES",
-			conf: &confv1.Data_JaegerTrace{
+			conf: &confv1.Base_JaegerTracer{
 				Endpoint:          "http://127.0.0.1:14268/api/traces",
 				WithHttpBasicAuth: true,
 				Username:          "ikaiguang",

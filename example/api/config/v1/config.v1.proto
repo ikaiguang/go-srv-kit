@@ -20,4 +20,8 @@ message Bootstrap {
   kit.api.confv1.Data data = 3;
   // server 服务
   kit.api.confv1.Server server = 4;
+  // base 基础配置
+  kit.api.confv1.Base base = 5;
+  // Business 业务配置
+  kit.api.confv1.Business business = 6;
 }

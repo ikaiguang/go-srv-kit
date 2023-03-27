@@ -1,0 +1,54 @@
+# base 基础
+base:
+  # setting 设置
+  setting:
+    # enable_service_registry 服务注册与发现
+    enable_service_registry: false
+    # enable_service_tracer 服务追踪
+    enable_service_tracer: false
+    # enable_snowflake_worker 雪花算法
+    enable_snowflake_worker: false
+    # enable_migrate_db 数据库迁移
+    enable_migrate_db: false
+    # enable_schedule_task 定时任务
+    enable_schedule_task: false
+  # consul 服务注册与发现
+  consul:
+    scheme:
+    address: 127.0.0.1:8500
+    path_prefix:
+    datacenter:
+    wait_time: 0s
+    token:
+    namespace:
+    partition:
+    with_http_basic_auth: false
+    auth_username:
+    auth_password:
+    insecure_skip_verify: true
+    tls_address:
+    tls_ca_pem:
+    tls_cert_pem:
+    tls_key_pem:
+  # jaeger_trace 服务追踪
+  jaeger_tracer:
+    endpoint: http://127.0.0.1:14268/api/traces
+    with_http_basic_auth: false
+    username:
+    password:
+  # rabbitmq 消息队列rabbitmq
+  rabbitmq:
+    url: amqp://guest:guest@127.0.0.1:5672/
+    tls_address:
+    tls_ca_pem:
+    tls_cert_pem:
+    tls_key_pem:
+  # snowflake_worker 雪花算法
+  snowflake_worker:
+    endpoint: http://127.0.0.1:50627
+    # with_discovery 服务注册与发现；调用 apputil.ID 可获取 discovery.endpoint
+    #with_discovery: false
+    #endpoint: "discovery:///snowflake-node-id:PRODUCTION:ckgmac:v1.0.0"
+    with_http_basic_auth: false
+    username:
+    password:

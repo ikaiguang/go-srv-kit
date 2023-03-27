@@ -75,7 +75,7 @@ func New(opts ...Option) (engineHandler Engine, err error) {
 	}
 
 	// 雪花算法
-	if cfg := setupHandler.Config.ServerSettingConfig(); cfg != nil && cfg.EnableSnowflakeWorker {
+	if cfg := setupHandler.Config.BaseSettingConfig(); cfg != nil && cfg.EnableSnowflakeWorker {
 		err = setupHandler.loadingSnowflakeWorker()
 		if err != nil {
 			return engineHandler, err

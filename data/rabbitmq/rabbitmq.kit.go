@@ -21,7 +21,7 @@ import (
 
 // NewConnection 链接
 // 已默认支持重连机制： amqp.DefaultReconnectConfig
-func NewConnection(conf *confv1.Data_Rabbitmq, opts ...Option) (*amqp.ConnectionWrapper, error) {
+func NewConnection(conf *confv1.Base_Rabbitmq, opts ...Option) (*amqp.ConnectionWrapper, error) {
 	// 配置
 	var (
 		op         = newOptions(opts...)
@@ -32,7 +32,7 @@ func NewConnection(conf *confv1.Data_Rabbitmq, opts ...Option) (*amqp.Connection
 
 // NewSubscriber 订阅者
 // 注意：Close 同步调用了 conn.Close
-func NewSubscriber(conf *confv1.Data_Rabbitmq, opts ...Option) (*amqp.Subscriber, error) {
+func NewSubscriber(conf *confv1.Base_Rabbitmq, opts ...Option) (*amqp.Subscriber, error) {
 	// 配置
 	var (
 		op         = newOptions(opts...)
@@ -47,7 +47,7 @@ func NewSubscriber(conf *confv1.Data_Rabbitmq, opts ...Option) (*amqp.Subscriber
 
 // NewPublisher 发布者
 // 注意：Close 同步调用了 conn.Close
-func NewPublisher(conf *confv1.Data_Rabbitmq, opts ...Option) (*amqp.Publisher, error) {
+func NewPublisher(conf *confv1.Base_Rabbitmq, opts ...Option) (*amqp.Publisher, error) {
 	// 配置
 	var (
 		op         = newOptions(opts...)
@@ -62,7 +62,7 @@ func NewPublisher(conf *confv1.Data_Rabbitmq, opts ...Option) (*amqp.Publisher, 
 
 // NewPubSub 发布订阅
 // 注意：Close 同步调用了 conn.Close
-func NewPubSub(conf *confv1.Data_Rabbitmq, opts ...Option) (publisher message.Publisher, subscriber message.Subscriber, err error) {
+func NewPubSub(conf *confv1.Base_Rabbitmq, opts ...Option) (publisher message.Publisher, subscriber message.Subscriber, err error) {
 	// 配置
 	var (
 		op         = newOptions(opts...)
@@ -99,7 +99,7 @@ func newOptions(opts ...Option) *options {
 }
 
 // newQueueConfig ...
-func newQueueConfig(conf *confv1.Data_Rabbitmq, op *options) amqp.Config {
+func newQueueConfig(conf *confv1.Base_Rabbitmq, op *options) amqp.Config {
 	// 配置
 	var amqpConfig amqp.Config
 	if op.isNonDurable {
@@ -114,7 +114,7 @@ func newQueueConfig(conf *confv1.Data_Rabbitmq, op *options) amqp.Config {
 }
 
 // newPubSubConfig ...
-func newPubSubConfig(conf *confv1.Data_Rabbitmq, op *options) amqp.Config {
+func newPubSubConfig(conf *confv1.Base_Rabbitmq, op *options) amqp.Config {
 	// 配置
 	var amqpConfig amqp.Config
 	if op.isNonDurable {

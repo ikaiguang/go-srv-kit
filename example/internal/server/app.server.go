@@ -66,7 +66,7 @@ func NewApp(engineHandler setup.Engine) (app *kratos.App, err error) {
 	)
 
 	// 启用服务注册中心
-	settingConfig := engineHandler.ServerSettingConfig()
+	settingConfig := engineHandler.BaseSettingConfig()
 	if settingConfig != nil && settingConfig.EnableServiceRegistry {
 		stdlog.Println("|*** 加载：服务注册与发现")
 		consulClient, err := engineHandler.GetConsulClient()

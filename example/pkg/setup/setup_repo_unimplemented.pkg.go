@@ -50,11 +50,11 @@ func (*Unimplemented) GRPCConfig() *confv1.Server_GRPC {
 	return nil
 }
 
-func (*Unimplemented) ServerAuthConfig() *confv1.Server_Auth {
+func (*Unimplemented) BusinessAuthConfig() *confv1.Business_Auth {
 	return nil
 }
 
-func (*Unimplemented) ServerSettingConfig() *confv1.Server_Setting {
+func (*Unimplemented) BaseSettingConfig() *confv1.Base_Setting {
 	return nil
 }
 
@@ -98,15 +98,15 @@ func (*Unimplemented) RedisConfig() *confv1.Data_Redis {
 	return nil
 }
 
-func (*Unimplemented) ConsulConfig() *confv1.Data_Consul {
+func (*Unimplemented) ConsulConfig() *confv1.Base_Consul {
 	return nil
 }
 
-func (*Unimplemented) JaegerTracerConfig() *confv1.Data_JaegerTracer {
+func (*Unimplemented) JaegerTracerConfig() *confv1.Base_JaegerTracer {
 	return nil
 }
 
-func (*Unimplemented) SnowflakeWorkerConfig() *confv1.Data_SnowflakeWorker {
+func (*Unimplemented) SnowflakeWorkerConfig() *confv1.Base_SnowflakeWorker {
 	return nil
 }
 

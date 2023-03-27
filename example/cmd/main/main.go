@@ -30,9 +30,9 @@ func main() {
 	// 关闭
 	defer func() { _ = setup.Close() }()
 
-	// loadingAppSettingEnv 加载程序配置
-	if err = loadingAppSettingEnv(engineHandler); err != nil {
-		stdlog.Fatalf("loadingAppSettingEnv : %+v\n", err)
+	// loadingBaseSettingEnv 加载程序配置
+	if err = loadingBaseSettingEnv(engineHandler); err != nil {
+		stdlog.Fatalf("loadingBaseSettingEnv : %+v\n", err)
 		return
 	}
 
@@ -59,10 +59,10 @@ func main() {
 	}
 }
 
-// loadingAppSettingEnv 加载计划任务
-func loadingAppSettingEnv(engineHandler setup.Engine) error {
+// loadingBaseSettingEnv 加载计划任务
+func loadingBaseSettingEnv(engineHandler setup.Engine) error {
 	// 计划任务
-	settingConfig := engineHandler.ServerSettingConfig()
+	settingConfig := engineHandler.BaseSettingConfig()
 	stdlog.Println()
 	stdlog.Println("|==================== 加载计划任务 开始 ====================|")
 	defer stdlog.Println("|==================== 加载计划任务 结束 ====================|")

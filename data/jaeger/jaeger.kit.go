@@ -9,12 +9,12 @@ import (
 )
 
 // NewJaegerExporter ...
-func NewJaegerExporter(conf *confv1.Data_JaegerTracer, opts ...Option) (*jaeger.Exporter, error) {
+func NewJaegerExporter(conf *confv1.Base_JaegerTracer, opts ...Option) (*jaeger.Exporter, error) {
 	return NewExporter(conf, opts...)
 }
 
 // NewExporter jaeger.Exporter
-func NewExporter(conf *confv1.Data_JaegerTracer, opts ...Option) (*jaeger.Exporter, error) {
+func NewExporter(conf *confv1.Base_JaegerTracer, opts ...Option) (*jaeger.Exporter, error) {
 	var jaegerOptions []jaeger.CollectorEndpointOption
 	if conf.Endpoint != "" {
 		jaegerOptions = append(jaegerOptions, jaeger.WithEndpoint(conf.Endpoint))
@@ -38,7 +38,7 @@ func NewExporter(conf *confv1.Data_JaegerTracer, opts ...Option) (*jaeger.Export
 }
 
 // checkConnection 检查链接可用性
-func checkConnection(conf *confv1.Data_JaegerTracer) (isValid bool, err error) {
+func checkConnection(conf *confv1.Base_JaegerTracer) (isValid bool, err error) {
 	httpClient := stdhttp.Client{}
 	defer httpClient.CloseIdleConnections()
 	httpRequest, err := stdhttp.NewRequest(stdhttp.MethodPost, conf.Endpoint, nil)

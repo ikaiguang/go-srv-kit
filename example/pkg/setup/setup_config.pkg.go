@@ -212,19 +212,19 @@ func (s *configuration) GRPCConfig() *confv1.Server_GRPC {
 }
 
 // ServerAuthConfig APP验证配置
-func (s *configuration) ServerAuthConfig() *confv1.Server_Auth {
-	if s.conf.App == nil {
+func (s *configuration) BusinessAuthConfig() *confv1.Business_Auth {
+	if s.conf.Business == nil {
 		return nil
 	}
-	return s.conf.Server.Auth
+	return s.conf.Business.Auth
 }
 
 // ServerSettingConfig APP设置配置
-func (s *configuration) ServerSettingConfig() *confv1.Server_Setting {
-	if s.conf.App == nil {
+func (s *configuration) BaseSettingConfig() *confv1.Base_Setting {
+	if s.conf.Base == nil {
 		return nil
 	}
-	return s.conf.Server.Setting
+	return s.conf.Base.Setting
 }
 
 // LoggerConfigForConsole 日志配置 控制台
@@ -273,25 +273,25 @@ func (s *configuration) RedisConfig() *confv1.Data_Redis {
 }
 
 // ConsulConfig consul配置
-func (s *configuration) ConsulConfig() *confv1.Data_Consul {
-	if s.conf.Data == nil {
+func (s *configuration) ConsulConfig() *confv1.Base_Consul {
+	if s.conf.Base == nil {
 		return nil
 	}
-	return s.conf.Data.Consul
+	return s.conf.Base.Consul
 }
 
 // JaegerTracerConfig jaeger tracer 配置
-func (s *configuration) JaegerTracerConfig() *confv1.Data_JaegerTracer {
-	if s.conf.Data == nil {
+func (s *configuration) JaegerTracerConfig() *confv1.Base_JaegerTracer {
+	if s.conf.Base == nil {
 		return nil
 	}
-	return s.conf.Data.JaegerTracer
+	return s.conf.Base.JaegerTracer
 }
 
 // SnowflakeWorkerConfig snowflake worker 配置
-func (s *configuration) SnowflakeWorkerConfig() *confv1.Data_SnowflakeWorker {
-	if s.conf.Data == nil {
+func (s *configuration) SnowflakeWorkerConfig() *confv1.Base_SnowflakeWorker {
+	if s.conf.Base == nil {
 		return nil
 	}
-	return s.conf.Data.SnowflakeWorker
+	return s.conf.Base.SnowflakeWorker
 }

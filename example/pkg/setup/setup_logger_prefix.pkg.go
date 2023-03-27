@@ -46,7 +46,7 @@ func (s *engines) withLoggerPrefix(logger log.Logger) log.Logger {
 		"app",
 		s.LoggerPrefixField().String(),
 	}
-	if cfg := s.ServerSettingConfig(); cfg != nil && cfg.EnableServiceTracer {
+	if cfg := s.BaseSettingConfig(); cfg != nil && cfg.EnableServiceTracer {
 		kvs = append(kvs, "tracer", s.withLoggerTracer())
 	}
 	return log.With(logger, kvs...)

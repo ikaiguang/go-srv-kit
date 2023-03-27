@@ -44,7 +44,7 @@ func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 		//metadata.Server(),
 	}
 	// tracer
-	settingConfig := engineHandler.ServerSettingConfig()
+	settingConfig := engineHandler.BaseSettingConfig()
 	if settingConfig != nil && settingConfig.EnableServiceTracer {
 		stdlog.Println("|*** 加载：服务追踪：GRPC")
 		if err = middlewarepkg.SetTracerProvider(engineHandler); err != nil {

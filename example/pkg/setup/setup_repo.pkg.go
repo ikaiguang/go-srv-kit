@@ -73,10 +73,10 @@ type Config interface {
 	HTTPConfig() *confv1.Server_HTTP
 	// GRPCConfig grpc配置
 	GRPCConfig() *confv1.Server_GRPC
-	// ServerAuthConfig APP验证配置
-	ServerAuthConfig() *confv1.Server_Auth
-	// ServerSettingConfig APP设置配置
-	ServerSettingConfig() *confv1.Server_Setting
+	// BusinessAuthConfig APP验证配置
+	BusinessAuthConfig() *confv1.Business_Auth
+	// BaseSettingConfig APP设置配置
+	BaseSettingConfig() *confv1.Base_Setting
 
 	// Env app环境
 	Env() envv1.Env
@@ -100,11 +100,11 @@ type Config interface {
 	// RedisConfig redis配置
 	RedisConfig() *confv1.Data_Redis
 	// ConsulConfig consul配置
-	ConsulConfig() *confv1.Data_Consul
+	ConsulConfig() *confv1.Base_Consul
 	// JaegerTracerConfig jaeger tracer 配置
-	JaegerTracerConfig() *confv1.Data_JaegerTracer
+	JaegerTracerConfig() *confv1.Base_JaegerTracer
 	// SnowflakeWorkerConfig snowflake worker 配置
-	SnowflakeWorkerConfig() *confv1.Data_SnowflakeWorker
+	SnowflakeWorkerConfig() *confv1.Base_SnowflakeWorker
 
 	// Close 关闭
 	Close() error
