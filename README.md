@@ -1,19 +1,24 @@
 # 服务工具
 
-为服务开发提供基础工具
+为微服务开发提供基础工具，通过配置按需启动服务基础组件
 
-基于`Example`创建新项目: [README-new-project](./README-new-project.md)
+创建新项目请阅读: [README-NEW-PROJECT.md](./README-NEW-PROJECT.md)
 
-## Overview
+## 概述
 
-- 基于[go-kratos](https://github.com/go-kratos/kratos)
-- Domain-Driven Design (DDD)
+- 本工具的服务框架是： [go-kratos](https://github.com/go-kratos/kratos)
+- 项目的目录结构参考： DDD(领域驱动设计)
 
-## 运行Example
+参考链接
 
-运行Example;
+- [github.com/go-kratos/kratos](https://github.com/go-kratos/kratos)
+- [Domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design)
+- [github.com/uber-go/guide](https://github.com/uber-go/guide)
+- [Go Package names](https://blog.golang.org/package-names)
 
-**Windows**系统，请使用`CMD`或`Git-Bash`运行。原因：某些命令行工具无法正确读取配置目录；例：`PowerShell`
+## 运行程序
+
+**Windows**系统，请使用`cmd`或`git-bash`运行。
 
 ```shell
 
@@ -36,13 +41,6 @@ curl -X GET \
     http://127.0.0.1:8081/api/v1/ping/error
 ```
 
-## 参考链接
-
-- [github.com/go-kratos/kratos](https://github.com/go-kratos/kratos)
-- [Domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design)
-- [github.com/uber-go/guide](https://github.com/uber-go/guide)
-- [Go Package names](https://blog.golang.org/package-names)
-
 ## 感谢支持
 
 | 感谢支持                                   | LOGO                                                                                                                            | 支持内容                            |
@@ -50,5 +48,7 @@ curl -X GET \
 | [JETBRAINS](https://www.jetbrains.com) | <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg"  width="120" alt="JetBrains Logo"> | Open Source Development License |
 
 ## Give a star! ⭐
+
+如果您觉得这个项目有趣，或者对您有帮助，请给个star吧！
 
 If you think this project is interesting, or helpful to you, please give a star!

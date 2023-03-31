@@ -11,9 +11,9 @@
 go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
-## **克隆两个项目:**
+## **克隆两个项目**
 
-一、 克隆`go-kratos`项目；后续生成`protobuf`需要
+一、 克隆`go-kratos`项目；用于后续生成`protobuf`
 
 ```shell
 # kratos
@@ -21,7 +21,7 @@ mkdir -p $GOPATH/src/github.com/go-kratos && cd $GOPATH/src/github.com/go-kratos
 git clone https://github.com/go-kratos/kratos.git
 ```
 
-二、 克隆`go-srv-kit`项目；后续生成`protobuf`需要
+二、 克隆`go-srv-kit`项目；用于后续生成`protobuf`
 
 ```shell
 # go-srv-kit
