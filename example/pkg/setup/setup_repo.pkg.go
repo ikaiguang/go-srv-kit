@@ -43,9 +43,9 @@ type LoggerPrefixField struct {
 	AppName    string `json:"name"`
 	AppVersion string `json:"version"`
 	AppEnv     string `json:"env"`
-	AppBranch  string `json:"envBranch"`
+	AppBranch  string `json:"branch"`
 	Hostname   string `json:"hostname"`
-	ServerIP   string `json:"serverIP"`
+	ServerIP   string `json:"ip"`
 }
 
 // String returns the string representation of LoggerPrefixField.
