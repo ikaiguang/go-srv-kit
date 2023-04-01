@@ -24,7 +24,7 @@ func SetTracerProvider(engineHandler setuppkg.Engine) error {
 		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
 		// Always be sure to batch in production.
 		tracesdk.WithBatcher(exp),
-		// Record information about this application in an Resource.
+		// Record information about this application in a Resource.
 		tracesdk.WithResource(resource.NewSchemaless(
 			semconv.ServiceNameKey.String(apputil.ID(appConfig)),
 			//attribute.String("env", appConfig.Env),

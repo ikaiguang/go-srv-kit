@@ -42,10 +42,7 @@ func (s *engines) assemblyLoggerPrefixField() *LoggerPrefixField {
 
 // withLoggerPrefix ...
 func (s *engines) withLoggerPrefix(logger log.Logger) log.Logger {
-	var kvs = []interface{}{
-		"app",
-		s.LoggerPrefixField().String(),
-	}
+	var kvs = s.LoggerPrefixField().Prefix()
 	if cfg := s.BaseSettingConfig(); cfg != nil && cfg.EnableServiceTracer {
 		kvs = append(kvs, "tracer", s.withLoggerTracer())
 	}

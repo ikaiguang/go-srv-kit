@@ -48,7 +48,7 @@ type LoggerPrefixField struct {
 	ServerIP   string `json:"ip"`
 }
 
-// String returns the string representation of LoggerPrefixField.
+// String 展示为文本
 func (s *LoggerPrefixField) String() string {
 	strSlice := []string{
 		"name:" + fmt.Sprintf("%q", s.AppName),
@@ -58,6 +58,20 @@ func (s *LoggerPrefixField) String() string {
 		"ip:" + fmt.Sprintf("%q", s.ServerIP),
 	}
 	return strings.Join(strSlice, " ")
+}
+
+// Prefix 日志前缀
+func (s *LoggerPrefixField) Prefix() []interface{} {
+	ss := []string{
+		"version:" + fmt.Sprintf("%q", s.AppVersion),
+		"env:" + fmt.Sprintf("%q", s.AppEnv),
+		"branch:" + fmt.Sprintf("%q", s.AppBranch),
+		"ip:" + fmt.Sprintf("%q", s.ServerIP),
+	}
+	return []interface{}{
+		"service", s.AppName,
+		"app", strings.Join(ss, " "),
+	}
 }
 
 // Config 配置
