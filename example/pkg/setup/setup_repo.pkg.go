@@ -54,8 +54,8 @@ func (s *LoggerPrefixField) String() string {
 		"name:" + fmt.Sprintf("%q", s.AppName),
 		"version:" + fmt.Sprintf("%q", s.AppVersion),
 		"env:" + fmt.Sprintf("%q", s.AppEnv),
-		"envBranch:" + fmt.Sprintf("%q", s.AppBranch),
-		"serverIP:" + fmt.Sprintf("%q", s.ServerIP),
+		"branch:" + fmt.Sprintf("%q", s.AppBranch),
+		"ip:" + fmt.Sprintf("%q", s.ServerIP),
 	}
 	return strings.Join(strSlice, " ")
 }
