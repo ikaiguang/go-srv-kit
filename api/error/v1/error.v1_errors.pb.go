@@ -85,6 +85,54 @@ func ErrorNetworkTimeout(format string, args ...interface{}) *errors.Error {
 	return errors.New(504, ERROR_NETWORK_TIMEOUT.String(), fmt.Sprintf(format, args...))
 }
 
+func IsConnection(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_CONNECTION.String() && e.Code == 500
+}
+
+func ErrorConnection(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_CONNECTION.String(), fmt.Sprintf(format, args...))
+}
+
+func IsUnimplemented(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_UNIMPLEMENTED.String() && e.Code == 500
+}
+
+func ErrorUnimplemented(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_UNIMPLEMENTED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsFatal(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_FATAL.String() && e.Code == 500
+}
+
+func ErrorFatal(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_FATAL.String(), fmt.Sprintf(format, args...))
+}
+
+func IsPanic(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_PANIC.String() && e.Code == 500
+}
+
+func ErrorPanic(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_PANIC.String(), fmt.Sprintf(format, args...))
+}
+
 func IsRequestNotSupport(err error) bool {
 	if err == nil {
 		return false
@@ -95,6 +143,66 @@ func IsRequestNotSupport(err error) bool {
 
 func ErrorRequestNotSupport(format string, args ...interface{}) *errors.Error {
 	return errors.New(505, ERROR_REQUEST_NOT_SUPPORT.String(), fmt.Sprintf(format, args...))
+}
+
+func IsDb(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_DB.String() && e.Code == 500
+}
+
+func ErrorDb(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_DB.String(), fmt.Sprintf(format, args...))
+}
+
+func IsRedis(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_REDIS.String() && e.Code == 500
+}
+
+func ErrorRedis(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_REDIS.String(), fmt.Sprintf(format, args...))
+}
+
+func IsRabbitMq(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_RABBIT_MQ.String() && e.Code == 500
+}
+
+func ErrorRabbitMq(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_RABBIT_MQ.String(), fmt.Sprintf(format, args...))
+}
+
+func IsRabbitKafka(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_RABBIT_KAFKA.String() && e.Code == 500
+}
+
+func ErrorRabbitKafka(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_RABBIT_KAFKA.String(), fmt.Sprintf(format, args...))
+}
+
+func IsMongo(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_MONGO.String() && e.Code == 500
+}
+
+func ErrorMongo(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_MONGO.String(), fmt.Sprintf(format, args...))
 }
 
 // CONTINUE Continue

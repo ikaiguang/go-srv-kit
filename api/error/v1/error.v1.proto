@@ -21,7 +21,16 @@ enum ERROR {
   RECORD_ALREADY_EXISTS = 3 [ (errors.code) = 409 ];
   NETWORK_ERROR = 4 [ (errors.code) = 502 ];
   NETWORK_TIMEOUT = 5 [ (errors.code) = 504 ];
+  CONNECTION = 6 [ (errors.code) = 500 ];
+  UNIMPLEMENTED = 7 [ (errors.code) = 500 ];
+  FATAL = 8 [ (errors.code) = 500 ];
+  PANIC = 9 [ (errors.code) = 500 ];
   REQUEST_NOT_SUPPORT = 10 [ (errors.code) = 505 ];
+  DB = 11 [ (errors.code) = 500 ];
+  REDIS = 12 [ (errors.code) = 500 ];
+  RABBIT_MQ = 13 [ (errors.code) = 500 ];
+  RABBIT_KAFKA = 14 [ (errors.code) = 500 ];
+  MONGO = 15 [ (errors.code) = 500 ];
 
   // CONTINUE Continue
   CONTINUE = 100 [ (errors.code) = 100 ];
