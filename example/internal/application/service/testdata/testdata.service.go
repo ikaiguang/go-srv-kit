@@ -2,10 +2,10 @@ package testdatasrv
 
 import (
 	"context"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/rs/xid"
+	stdhttp "net/http"
 
 	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
 	testdatav1 "github.com/ikaiguang/go-srv-kit/api/testdata/v1/resources"
@@ -31,12 +31,15 @@ func NewTestdataService(logger log.Logger) testdataservicev1.SrvTestdataServer {
 
 // Websocket websocket
 func (s *testdata) Websocket(ctx context.Context, in *testdatav1.TestReq) (resp *testdatav1.TestResp, err error) {
-	//err = errorutil.NotImplemented(errorv1.ERROR_NOT_IMPLEMENTED.String(), "未实现")
-	//return &v1.TestResp{}, err
-
 	// http
 	httpContext, isHTTPContext := contextutil.MatchHTTPContext(ctx)
 	if isHTTPContext {
+		if httpContext.Request() == nil || httpContext.Request().Method != stdhttp.MethodGet {
+			err = errorutil.InternalServer(errorv1.ERROR_METHOD_NOT_ALLOWED.String(), "ERROR_METHOD_NOT_ALLOWED")
+			s.log.Error(err)
+			return resp, err
+		}
+
 		//return s.exportApp(httpContext, req)
 		s.ws(httpContext, in)
 		resp = &testdatav1.TestResp{

@@ -3,8 +3,8 @@ package setuppkg
 import (
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-redis/redis/v8"
 	"github.com/hashicorp/consul/api"
+	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"gorm.io/gorm"
 	"io"

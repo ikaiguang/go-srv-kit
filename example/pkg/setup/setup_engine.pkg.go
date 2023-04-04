@@ -1,12 +1,12 @@
 package setuppkg
 
 import (
+	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"io"
 	"sync"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-redis/redis/v8"
 	"github.com/hashicorp/consul/api"
 	"gorm.io/gorm"
 

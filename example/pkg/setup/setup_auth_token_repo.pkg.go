@@ -1,7 +1,7 @@
 package setuppkg
 
 import (
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	stdlog "log"
 	"sync"
 
