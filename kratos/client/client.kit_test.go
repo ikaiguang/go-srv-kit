@@ -9,7 +9,6 @@ import (
 
 	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources"
 	pingservicev1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/services"
-	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
 )
 
 // go test -v -count=1 ./kratos/client -run=TestNewSampleHTTPClient
@@ -56,7 +55,7 @@ func TestNewHTTPClient(t *testing.T) {
 		http.WithMiddleware(
 			recovery.Recovery(),
 		),
-		http.WithResponseDecoder(apputil.ResponseDecoder),
+		http.WithResponseDecoder(ResponseDecoder),
 	}
 
 	httpOptions = append(httpOptions, http.WithEndpoint("127.0.0.1:50627"))
