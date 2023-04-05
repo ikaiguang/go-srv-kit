@@ -16,7 +16,7 @@ func TestNewMultiLogger(t *testing.T) {
 	}
 	stdLogger, err := NewStdLogger(stdLoggerConfig)
 	require.Nil(t, err)
-	defer func() { _ = stdLogger.Sync() }()
+	defer func() { _ = stdLogger.Close() }()
 
 	// file logger
 	fileLoggerConfig := &ConfigFile{
@@ -34,7 +34,7 @@ func TestNewMultiLogger(t *testing.T) {
 	}
 	fileLogger, err := NewFileLogger(fileLoggerConfig)
 	require.Nil(t, err)
-	defer func() { _ = fileLogger.Sync() }()
+	defer func() { _ = fileLogger.Close() }()
 
 	logger := NewMultiLogger(stdLogger, fileLogger)
 

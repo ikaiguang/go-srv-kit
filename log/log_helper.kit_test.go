@@ -102,7 +102,7 @@ func TestSetup_Xxx(t *testing.T) {
 			Infof("第 %d 个", i+1)
 
 			for fnIndex := range syncFnSlice {
-				_ = syncFnSlice[fnIndex]()
+				_ = syncFnSlice[fnIndex].Close()
 			}
 		})
 	}

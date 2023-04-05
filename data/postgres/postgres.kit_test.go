@@ -1,12 +1,13 @@
 package psqlutil
 
 import (
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/gorm"
 	"testing"
 	"time"
+
+	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 )
 
 var (

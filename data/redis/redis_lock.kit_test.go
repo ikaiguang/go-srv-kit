@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	lockerutil "github.com/ikaiguang/go-srv-kit/kit/locker"
 	"github.com/stretchr/testify/require"
+
+	lockerutil "github.com/ikaiguang/go-srv-kit/kit/locker"
 )
 
 const (

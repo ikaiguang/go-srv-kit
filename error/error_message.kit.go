@@ -1,19 +1,28 @@
 package errorutil
 
 import (
-	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
+	stdhttp "net/http"
 )
 
-var (
-	_ errorv1.ERROR
+var _ = stdhttp.StatusOK
 
+var (
 	ERROR_UNKNOWN               = "未知错误"
 	ERROR_REQUEST_FAILED        = "请求失败"
 	ERROR_RECORD_NOT_FOUND      = "请求的内容未找到或已删除"
 	ERROR_RECORD_ALREADY_EXISTS = "数据已存在"
 	ERROR_NETWORK_ERROR         = "网络开小差了，请稍后再试"
 	ERROR_NETWORK_TIMEOUT       = "请求超时"
+	ERROR_CONNECTION            = "链接错误"
+	ERROR_UNIMPLEMENTED         = "未实现"
+	ERROR_FATAL                 = "服务内部错误"
+	ERROR_PANIC                 = "服务内部错误"
 	ERROR_REQUEST_NOT_SUPPORT   = "暂不支持此次请求"
+	ERROR_DB                    = "数据错误"
+	ERROR_REDIS                 = "redis缓存错误"
+	ERROR_RABBIT_MQ             = "rabbitMQ消息队列错误"
+	ERROR_RABBIT_KAFKA          = "kafka消息队列错误"
+	ERROR_MONGO                 = "mongo数据库错误"
 
 	ERROR_CONTINUE            = "请继续请求"
 	ERROR_SWITCHING_PROTOCOLS = "请切换协议"

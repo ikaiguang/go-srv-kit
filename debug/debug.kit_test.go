@@ -8,11 +8,11 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	syncFn, err := Setup()
+	closer, err := Setup()
 	if err != nil {
 		panic(err)
 	}
-	defer func() { _ = syncFn() }()
+	defer func() { _ = closer.Close() }()
 
 	code := m.Run()
 

@@ -10,7 +10,6 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
 	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
@@ -65,7 +64,7 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 	anyData, err := anypb.New(resultMessage)
 	if err != nil {
 		respData.Code = stdhttp.StatusInternalServerError
-		respData.Reason = errorv1.ERROR_NO_CONTENT.String()
+		respData.Reason = "INTERNAL_SERVER"
 		respData.Metadata = map[string]string{"error": err.Error()}
 	} else {
 		respData.Data = anyData

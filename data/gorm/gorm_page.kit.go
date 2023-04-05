@@ -1,8 +1,9 @@
 package gormutil
 
 import (
-	pageutil "github.com/ikaiguang/go-srv-kit/kit/page"
 	"gorm.io/gorm"
+
+	pageutil "github.com/ikaiguang/go-srv-kit/kit/page"
 )
 
 // PaginatorArgs 列表参数

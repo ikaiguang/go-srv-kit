@@ -15,7 +15,7 @@ func TestNewStdLogger(t *testing.T) {
 	}
 	logImpl, err := NewStdLogger(cfg)
 	require.Nil(t, err)
-	defer func() { _ = logImpl.Sync() }()
+	defer func() { _ = logImpl.Close() }()
 
 	logHandler := log.NewHelper(logImpl)
 	logHandler.Error("log level error")

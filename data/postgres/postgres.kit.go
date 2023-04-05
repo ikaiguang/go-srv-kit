@@ -1,10 +1,11 @@
 package psqlutil
 
 import (
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
-	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
+	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 )
 
 // NewPostgresDB .
