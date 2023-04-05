@@ -43,8 +43,8 @@ type RequestMessage struct {
 func (s *RequestMessage) GetRequestInfo() string {
 	str := "kind=" + `"` + s.Kind + `"`
 	str += " component=" + `"` + s.Component + `"`
+	str += " ip=" + `"` + s.ClientIP + `"`
 	str += " latency=" + `"` + s.ExecTime.String() + `"`
-	str += " clientIP=" + `"` + s.ClientIP + `"`
 	return str
 }
 
