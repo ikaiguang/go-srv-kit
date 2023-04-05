@@ -1,0 +1,3 @@
+[submodule "go-srv-services"]
+	path = go-srv-services
+	url = git@github.com:ikaiguang/go-srv-services.git
