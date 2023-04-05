@@ -28,12 +28,11 @@ git clone git@github.com:ikaiguang/go-srv-kit.git --recurse-submodules
 ```shell
 # 拉取代码
 git submodule update
-# 更新子模块
-git submodule sync --recursive go-srv-services
+# 切换目录 & 拉取代码
+cd go-srv-services
+git pull origin master
+# 或 项目较多的时候执行以下命令
 # git submodule foreach 'git pull origin master'
-# 或
-# cd go-srv-services
-# git pull origin master
 ```
 
 ## 删除 submodule
