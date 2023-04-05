@@ -1,5 +1,13 @@
 # 添加子项目
 
+查看帮助命令
+
+```shell
+git submodule help
+```
+
+## 添加子项目
+
 ```shell
 git submodule add git@github.com:ikaiguang/go-srv-services.git
 ```
@@ -20,13 +28,12 @@ git clone git@github.com:ikaiguang/go-srv-kit.git --recurse-submodules
 ```shell
 # 拉取代码
 git submodule update
-# 切换目录
-cd go-srv-services
-# 拉取代码
-git pull origin master
 # 更新子模块
 git submodule sync --recursive go-srv-services
 # git submodule foreach 'git pull origin master'
+# 或
+# cd go-srv-services
+# git pull origin master
 ```
 
 ## 删除 submodule
