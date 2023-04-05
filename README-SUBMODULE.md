@@ -14,3 +14,23 @@ git submodule add git@github.com:ikaiguang/go-srv-services.git
 ```shell
 git clone git@github.com:ikaiguang/go-srv-kit.git --recurse-submodules
 ```
+
+## 更新 submodule
+
+```shell
+# 拉取代码
+git submodule update
+# 切换目录
+cd go-srv-services
+# 拉取代码
+git pull origin master
+# 更新子模块
+git submodule sync --recursive go-srv-services
+# git submodule foreach 'git pull origin master'
+```
+
+## 删除 submodule
+
+```shell
+git submodule deinit go-srv-services
+```
