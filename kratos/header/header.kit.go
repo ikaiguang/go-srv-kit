@@ -7,11 +7,13 @@ import (
 
 const (
 	// RequestID http请求设置
-	RequestID = "X-Custom-Request-id"
+	RequestID = "x-custom-request-id"
 	// IsWebsocket http请求设置
-	IsWebsocket = "X-Custom-Is-Websocket"
+	IsWebsocket = "x-custom-is-websocket"
 	// RemoteAddr 远程地址
-	RemoteAddr = "X-Custom-Remote-Addr"
+	RemoteAddr = "x-custom-remote-addr"
+	// UserTerminal 使用终端、平台
+	UserTerminal = "x-custom-user-terminal"
 
 	// WebsocketConnection websocket
 	WebsocketConnection = "Connection"
