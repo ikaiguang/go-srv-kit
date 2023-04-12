@@ -27,18 +27,20 @@ message Bootstrap {
 
 // App application
 message App {
+  // belong_to 属于哪个项目
+  string belong_to = 1;
   // name app名字
-  string name = 1;
+  string name = 2;
   // version app版本
-  string version = 2;
+  string version = 3;
   // env app 环境
-  string env = 3;
+  string env = 4;
   // env_branch 环境分支
-  string env_branch = 4;
+  string env_branch = 5;
   // endpoints app站点
-  repeated string endpoints = 5;
+  repeated string endpoints = 6;
   // metadata 元数据
-  map<string, string> metadata = 6;
+  map<string, string> metadata = 7;
 }
 
 // Server 服务
