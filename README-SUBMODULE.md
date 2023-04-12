@@ -31,6 +31,8 @@ git submodule update
 # 切换目录 & 拉取代码
 cd go-srv-services
 git pull origin master
+# 或
+git pull origin master
 # 或 子项目较多的时候执行以下命令
 git submodule foreach 'git pull origin master'
 ```
