@@ -8,7 +8,6 @@ require (
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-kratos/kratos/v2 v2.6.1
 	github.com/go-redsync/redsync/v4 v4.8.1
-	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/hashicorp/consul/api v1.20.0
