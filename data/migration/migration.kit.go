@@ -102,7 +102,7 @@ func (s *CreateTable) Version() string {
 
 // Identifier implements the Migration
 func (s *CreateTable) Identifier() string {
-	return "create_table_" + s.table.TableName()
+	return "create_table:" + s.table.TableName()
 }
 
 // Up implements the Migration
@@ -147,7 +147,7 @@ func (s *DropTable) Version() string {
 
 // Identifier implements the Migration
 func (s *DropTable) Identifier() string {
-	return "drop_table_" + s.table.TableName()
+	return "drop_table:" + s.table.TableName()
 }
 
 // Up implements the Migration
