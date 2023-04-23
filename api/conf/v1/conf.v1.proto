@@ -141,7 +141,7 @@ message Data {
   message Redis {
     // enable 是否启动
     bool enable = 100;
-    string addr = 1;
+    repeated string addresses = 1;
     string username = 2;
     string password = 3;
     uint32 db = 4;

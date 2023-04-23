@@ -10,9 +10,9 @@ import (
 )
 
 // NewDB redis db
-func NewDB(conf *confv1.Data_Redis) (db *redis.Client, err error) {
-	redisOpt := &redis.Options{
-		Addr:            conf.Addr,
+func NewDB(conf *confv1.Data_Redis) (db redis.UniversalClient, err error) {
+	redisOpt := &redis.UniversalOptions{
+		Addrs:           conf.Addresses,
 		Username:        conf.Username,
 		Password:        conf.Password,
 		DB:              int(conf.Db),
@@ -25,7 +25,7 @@ func NewDB(conf *confv1.Data_Redis) (db *redis.Client, err error) {
 		MaxIdleConns:    int(conf.ConnMaxIdle),
 		ConnMaxIdleTime: conf.ConnMaxIdleTime.AsDuration(),
 	}
-	db = redis.NewClient(redisOpt)
+	db = redis.NewUniversalClient(redisOpt)
 
 	// ping 测试连接
 	err = db.Ping(context.Background()).Err()
