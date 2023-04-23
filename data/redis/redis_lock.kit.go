@@ -24,7 +24,7 @@ type Locker struct {
 }
 
 // NewLocker ..
-func NewLocker(redisCC *redis.Client, opts ...redsync.Option) lockerutil.Lock {
+func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerutil.Lock {
 	// 锁选项
 	lockerOpts := []redsync.Option{
 		redsync.WithExpiry(_lockExpire),

@@ -21,12 +21,12 @@ func TestMigrateALL_MySQL(t *testing.T) {
 	require.Nil(t, err)
 
 	var (
-		normalMg = NewCreateTable(dbConn.Migrator(), &Migration{})
-		testMg   = NewCreateTable(dbConn.Migrator(), &TestMigration{})
+		normalMg = NewCreateTable(dbConn.Migrator(), Version, &Migration{})
+		testMg   = NewCreateTable(dbConn.Migrator(), Version, &TestMigration{})
 	)
 	var args = []struct {
 		name string
-		repo MigrationRepo
+		repo MigrationInterface
 	}{
 		{
 			name: "#创建表：" + normalMg.Identifier(),
