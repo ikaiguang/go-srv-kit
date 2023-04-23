@@ -27,11 +27,6 @@ type MigrationEntity struct {
 	UpdatedTime         time.Time `gorm:"column:updated_time" json:"updated_time"`                 // 更新时间
 }
 
-// TableName table name
-func (s *MigrationEntity) TableName() string {
-	return MigrationSchema.TableName()
-}
-
 // MigrationDataRepo repo
 type MigrationDataRepo interface {
 	Create(ctx context.Context, dataModel *MigrationEntity) error
@@ -54,7 +49,9 @@ func NewMigrationDataRepo(dbConn *gorm.DB) MigrationDataRepo {
 
 // create insert one
 func (s *migrationRepo) create(ctx context.Context, dbConn *gorm.DB, dataModel *MigrationEntity) (err error) {
-	err = dbConn.WithContext(ctx).Create(dataModel).Error
+	err = dbConn.WithContext(ctx).
+		Table(s.MigrationSchema.TableName()).
+		Create(dataModel).Error
 	if err != nil {
 		return err
 	}
@@ -74,7 +71,8 @@ func (s *migrationRepo) CreateWithDBConn(ctx context.Context, dbConn *gorm.DB, d
 // QueryOneByIdentifier query one by identifier
 func (s *migrationRepo) QueryOneByIdentifier(ctx context.Context, identifier string) (dataModel *MigrationEntity, isNotFound bool, err error) {
 	dataModel = new(MigrationEntity)
-	err = s.dbConn.WithContext(ctx).Table(s.MigrationSchema.TableName()).
+	err = s.dbConn.WithContext(ctx).
+		Table(s.MigrationSchema.TableName()).
 		Where(FieldMigrationIdentifier+" = ?", identifier).
 		First(dataModel).Error
 	if err != nil {
