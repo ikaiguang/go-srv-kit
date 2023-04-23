@@ -27,6 +27,11 @@ type MigrationEntity struct {
 	UpdatedTime         time.Time `gorm:"column:updated_time" json:"updated_time"`                 // 更新时间
 }
 
+// TableName table name
+func (s *MigrationEntity) TableName() string {
+	return MigrationSchema.TableName()
+}
+
 // MigrationDataRepo repo
 type MigrationDataRepo interface {
 	Create(ctx context.Context, dataModel *MigrationEntity) error
