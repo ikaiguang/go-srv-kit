@@ -1,20 +1,39 @@
 package mysqlutil
 
 import (
+	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 )
 
+// Config MySQL config
+type Config struct {
+	Dsn string
+	// SlowThreshold 慢查询
+	SlowThreshold  *durationpb.Duration
+	LoggerEnable   bool
+	LoggerColorful bool
+	// LoggerLevel 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+	LoggerLevel string
+	// conn_max_active 连接可复用的最大时间
+	ConnMaxActive uint32
+	// conn_max_lifetime 可复用的最大时间
+	ConnMaxLifetime *durationpb.Duration
+	// conn_max_idle 连接池中空闲连接的最大数量
+	ConnMaxIdle uint32
+	// conn_max_idle_time 设置连接空闲的最长时间
+	ConnMaxIdleTime *durationpb.Duration
+}
+
 // NewMysqlDB .
-func NewMysqlDB(conf *confv1.Data_MySQL, opts ...gormutil.Option) (db *gorm.DB, err error) {
+func NewMysqlDB(conf *Config, opts ...gormutil.Option) (db *gorm.DB, err error) {
 	return NewDB(conf, opts...)
 }
 
 // NewDB 初始化
-func NewDB(conf *confv1.Data_MySQL, opts ...gormutil.Option) (db *gorm.DB, err error) {
+func NewDB(conf *Config, opts ...gormutil.Option) (db *gorm.DB, err error) {
 	// 链接选项
 	connOption := &gormutil.ConnOption{
 		LoggerEnable:              conf.LoggerEnable,

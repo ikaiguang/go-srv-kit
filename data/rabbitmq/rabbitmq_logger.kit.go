@@ -14,7 +14,7 @@ type logger struct {
 }
 
 // NewLogger ...
-func NewLogger(handler log.Logger) *logger {
+func NewLogger(handler log.Logger) watermill.LoggerAdapter {
 	return &logger{
 		handler: handler,
 		fields:  watermill.LogFields{},

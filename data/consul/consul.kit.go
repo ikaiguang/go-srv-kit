@@ -2,17 +2,36 @@ package consulutil
 
 import (
 	"github.com/hashicorp/consul/api"
-
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
+// Config consul config
+type Config struct {
+	Scheme             string
+	Address            string
+	PathPrefix         string
+	Datacenter         string
+	WaitTime           *durationpb.Duration
+	Token              string
+	Namespace          string
+	Partition          string
+	WithHttpBasicAuth  bool
+	AuthUsername       string
+	AuthPassword       string
+	InsecureSkipVerify bool
+	TlsAddress         string
+	TlsCaPem           string
+	TlsCertPem         string
+	TlsKeyPem          string
+}
+
 // NewConsulClient .
-func NewConsulClient(conf *confv1.Base_Consul, opts ...Option) (*api.Client, error) {
+func NewConsulClient(conf *Config, opts ...Option) (*api.Client, error) {
 	return NewClient(conf, opts...)
 }
 
 // NewClient ...
-func NewClient(conf *confv1.Base_Consul, opts ...Option) (*api.Client, error) {
+func NewClient(conf *Config, opts ...Option) (*api.Client, error) {
 	defConfig := api.DefaultConfig()
 	// basic
 	if conf.Scheme != "" {

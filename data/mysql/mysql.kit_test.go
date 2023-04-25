@@ -11,13 +11,12 @@ import (
 	"testing"
 	"time"
 
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
 var (
-	dbConfig = &confv1.Data_MySQL{
+	dbConfig = &Config{
 		Dsn:             "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True",
 		SlowThreshold:   durationpb.New(time.Millisecond * 100),
 		LoggerEnable:    true,

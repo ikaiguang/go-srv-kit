@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 	stdhttp "net/http"
 	"testing"
-
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 )
 
 // go test -v ./data/jaeger/ -count=1 -test.run=TestNewJaegerExporter_Xxx
@@ -15,17 +13,17 @@ import (
 func TestNewJaegerExporter_Xxx(t *testing.T) {
 	var tests = []struct {
 		name string
-		conf *confv1.Base_JaegerTracer
+		conf *Config
 	}{
 		{
 			name: "#WithHttpBasicAuth:NO",
-			conf: &confv1.Base_JaegerTracer{
+			conf: &Config{
 				Endpoint: "http://127.0.0.1:14268/api/traces",
 			},
 		},
 		{
 			name: "#WithHttpBasicAuth:YES",
-			conf: &confv1.Base_JaegerTracer{
+			conf: &Config{
 				Endpoint:          "http://127.0.0.1:14268/api/traces",
 				WithHttpBasicAuth: true,
 				Username:          "ikaiguang",

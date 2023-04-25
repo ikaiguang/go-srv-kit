@@ -12,9 +12,9 @@ var (
 //gbk2312Encoder  = simplifiedchinese.HZGB2312.NewEncoder()
 
 // gbk18030Decoder 解码
-//gbk18030Decoder = simplifiedchinese.GB18030.NewDecoder()
-//gbkDecoder      = simplifiedchinese.GBK.NewDecoder()
-//gbk2312Decoder  = simplifiedchinese.HZGB2312.NewDecoder()
+// gbk18030Decoder = simplifiedchinese.GB18030.NewDecoder()
+// gbkDecoder      = simplifiedchinese.GBK.NewDecoder()
+// gbk2312Decoder  = simplifiedchinese.HZGB2312.NewDecoder()
 )
 
 // GbkToUtf8 ...

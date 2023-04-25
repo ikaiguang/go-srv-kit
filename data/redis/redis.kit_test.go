@@ -7,13 +7,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
-
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 )
 
 var (
-	redisConfig = &confv1.Data_Redis{
-		Addr:            "127.0.0.1:6379",
+	redisConfig = &Config{
+		Addresses:       []string{"127.0.0.1:6379"},
 		Username:        "",
 		Password:        "",
 		Db:              0,

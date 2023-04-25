@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 	uuidutil "github.com/ikaiguang/go-srv-kit/kit/uuid"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
@@ -24,7 +23,7 @@ func TestNewSubscriber(t *testing.T) {
 	)
 	logger := newMultiLogger()
 
-	conf := &confv1.Base_Rabbitmq{
+	conf := &Config{
 		Url: amqpURI,
 	}
 

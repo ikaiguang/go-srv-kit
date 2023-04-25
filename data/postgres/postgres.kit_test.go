@@ -6,12 +6,10 @@ import (
 	"gorm.io/gorm"
 	"testing"
 	"time"
-
-	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 )
 
 var (
-	dbConfig = &confv1.Data_PSQL{
+	dbConfig = &Config{
 		Dsn:             "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai",
 		SlowThreshold:   durationpb.New(time.Millisecond * 100),
 		LoggerEnable:    true,
