@@ -2,6 +2,28 @@ package base64util
 
 import "encoding/base64"
 
+// Encryptor ...
+type Encryptor interface {
+	EncryptToString(plaintext string) (string, error)
+	DecryptToString(ciphertext string) (string, error)
+}
+
+// B64 ...
+type B64 struct{}
+
+func (s *B64) EncryptToString(plaintext string) (string, error) {
+	res := Encode([]byte(plaintext))
+	return string(res), nil
+}
+
+func (s *B64) DecryptToString(ciphertext string) (string, error) {
+	res, err := Decode([]byte(ciphertext))
+	if err != nil {
+		return "", err
+	}
+	return string(res), nil
+}
+
 // Encode 编码
 func Encode(src []byte) (dst []byte) {
 	dst = make([]byte, base64.StdEncoding.EncodedLen(len(src)))

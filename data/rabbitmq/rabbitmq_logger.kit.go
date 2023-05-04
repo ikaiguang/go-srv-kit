@@ -21,34 +21,31 @@ func NewLogger(handler log.Logger) watermill.LoggerAdapter {
 	}
 }
 
+func kvs(msg string, fields watermill.LogFields) []interface{} {
+	var kv = make([]interface{}, 0, 2+len(fields)*2)
+	kv = append(kv, "msg", msg)
+	for k := range fields {
+		kv = append(kv, k, fields[k])
+	}
+	return kv
+}
+
 func (s *logger) Error(msg string, err error, fields watermill.LogFields) {
-	_ = s.handler.Log(log.LevelError,
-		"msg", msg,
-		"error", err,
-		"fields", fields,
-	)
+	fields = fields.Add(watermill.LogFields{"error": err})
+	_ = s.handler.Log(log.LevelError, kvs(msg, fields)...)
 }
 
 func (s *logger) Info(msg string, fields watermill.LogFields) {
-	_ = s.handler.Log(log.LevelInfo,
-		"msg", msg,
-		"fields", fields,
-	)
+	_ = s.handler.Log(log.LevelInfo, kvs(msg, fields)...)
 }
 
 func (s *logger) Debug(msg string, fields watermill.LogFields) {
-	_ = s.handler.Log(log.LevelDebug,
-		"msg", msg,
-		"fields", fields,
-	)
+	_ = s.handler.Log(log.LevelDebug, kvs(msg, fields)...)
 }
 
 func (s *logger) Trace(msg string, fields watermill.LogFields) {
-	_ = s.handler.Log(log.LevelDebug,
-		"isTrace", true,
-		"msg", msg,
-		"fields", fields,
-	)
+	fields = fields.Add(watermill.LogFields{"isTrace": true})
+	_ = s.handler.Log(log.LevelDebug, kvs(msg, fields)...)
 }
 
 func (s *logger) With(fields watermill.LogFields) watermill.LoggerAdapter {

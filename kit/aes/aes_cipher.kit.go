@@ -8,6 +8,12 @@ import (
 	"errors"
 )
 
+// Encryptor ...
+type Encryptor interface {
+	EncryptToString(plaintext string) (string, error)
+	DecryptToString(ciphertext string) (string, error)
+}
+
 // AesCipher aes加解密
 type AesCipher struct {
 	key       []byte

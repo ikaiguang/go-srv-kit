@@ -1,4 +1,4 @@
-package rasutil
+package rsautil
 
 import (
 	"testing"

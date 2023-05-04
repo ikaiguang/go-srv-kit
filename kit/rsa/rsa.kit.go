@@ -1,4 +1,4 @@
-package rasutil
+package rsautil
 
 import (
 	"crypto"
@@ -11,6 +11,12 @@ import (
 
 	base64util "github.com/ikaiguang/go-srv-kit/kit/base64"
 )
+
+// Encryptor ...
+type Encryptor interface {
+	EncryptToString(plaintext string) (string, error)
+	DecryptToString(ciphertext string) (string, error)
+}
 
 // GenRsaKey RSA公钥私钥产生
 func GenRsaKey() ([]byte, []byte, error) {
