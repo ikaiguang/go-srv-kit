@@ -14,20 +14,20 @@ type Encryptor interface {
 	DecryptToString(ciphertext string) (string, error)
 }
 
-// AesCipher aes加解密
-type AesCipher struct {
+// aesCipher aes加解密
+type aesCipher struct {
 	key       []byte
 	block     cipher.Block
 	blockSize int
 }
 
 // NewAesCipher aes加解密
-func NewAesCipher(key []byte) (*AesCipher, error) {
+func NewAesCipher(key []byte) (Encryptor, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
-	a := &AesCipher{
+	a := &aesCipher{
 		key:       key,
 		block:     block,
 		blockSize: block.BlockSize(),
@@ -36,7 +36,7 @@ func NewAesCipher(key []byte) (*AesCipher, error) {
 }
 
 // EncryptToString 加密
-func (a *AesCipher) EncryptToString(msg string) (string, error) {
+func (a *aesCipher) EncryptToString(msg string) (string, error) {
 	// 转成字节数组
 	origData := []byte(msg)
 	// 补全码
@@ -51,7 +51,7 @@ func (a *AesCipher) EncryptToString(msg string) (string, error) {
 }
 
 // DecryptToString 解密
-func (a *AesCipher) DecryptToString(encrypted string) (string, error) {
+func (a *aesCipher) DecryptToString(encrypted string) (string, error) {
 	encryptedByte, err := base64.StdEncoding.DecodeString(encrypted)
 	if err != nil {
 		return "", err

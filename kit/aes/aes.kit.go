@@ -10,6 +10,27 @@ import (
 	"io"
 )
 
+// AESEncryptor ...
+type AESEncryptor interface {
+	EncryptToString(plaintext, key string) (string, error)
+	DecryptToString(ciphertext, key string) (string, error)
+}
+
+// cbcEncryptor ...
+type cbcEncryptor struct{}
+
+func NewCBCCipher() AESEncryptor {
+	return &cbcEncryptor{}
+}
+
+func (s *cbcEncryptor) EncryptToString(plaintext, key string) (string, error) {
+	return EncryptCBC([]byte(plaintext), []byte(key))
+}
+
+func (s *cbcEncryptor) DecryptToString(ciphertext, key string) (string, error) {
+	return DecryptCBC(ciphertext, []byte(key))
+}
+
 // EncryptCBC CBC模式加密
 func EncryptCBC(rawData, key []byte) (res string, err error) {
 	// block
