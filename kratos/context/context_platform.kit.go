@@ -1,12 +1,12 @@
-package contextutil
+package contextpkg
 
 import (
-	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 // TrustedPlatform 信任的平台
 var (
-	defaultTrustedPlatform = headerutil.RemoteAddr
+	defaultTrustedPlatform = headerpkg.RemoteAddr
 )
 
 // SetTrustedPlatform 设置信任的平台

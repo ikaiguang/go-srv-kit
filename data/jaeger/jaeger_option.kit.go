@@ -1,4 +1,4 @@
-package jaegerutil
+package jaegerpkg
 
 import "io"
 

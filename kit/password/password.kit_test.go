@@ -1,4 +1,4 @@
-package passwordutil
+package passwordpkg
 
 import (
 	"testing"

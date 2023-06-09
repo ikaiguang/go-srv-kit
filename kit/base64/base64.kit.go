@@ -1,4 +1,4 @@
-package base64util
+package base64pkg
 
 import "encoding/base64"
 
@@ -25,15 +25,15 @@ func (s *B64) DecryptToString(ciphertext string) (string, error) {
 }
 
 // Encode 编码
-func Encode(src []byte) (dst []byte) {
-	dst = make([]byte, base64.StdEncoding.EncodedLen(len(src)))
+func Encode(src []byte) []byte {
+	dst := make([]byte, base64.StdEncoding.EncodedLen(len(src)))
 	base64.StdEncoding.Encode(dst, src)
 	return dst
 }
 
 // Decode 解码
-func Decode(src []byte) (dst []byte, err error) {
-	dst = make([]byte, base64.StdEncoding.DecodedLen(len(src)))
+func Decode(src []byte) ([]byte, error) {
+	dst := make([]byte, base64.StdEncoding.DecodedLen(len(src)))
 	n, err := base64.StdEncoding.Decode(dst, src)
 	if err != nil {
 		return nil, err

@@ -1,16 +1,15 @@
-package pageutil
+package pagepkg
 
 import (
-	pagev1 "github.com/ikaiguang/go-srv-kit/api/page/v1"
 	"google.golang.org/protobuf/proto"
 )
 
 // ParsePageRequest 解析页码分页请求
-func ParsePageRequest(pageRequest *pagev1.PageRequest) (*pagev1.PageRequest, *PageOption) {
+func ParsePageRequest(pageRequest *PageRequest) (*PageRequest, *PageOption) {
 	if pageRequest == nil {
 		pageRequest = DefaultPageRequest()
 	} else {
-		pageRequest = proto.Clone(pageRequest).(*pagev1.PageRequest)
+		pageRequest = proto.Clone(pageRequest).(*PageRequest)
 		pageRequest.Page = ParsePage(pageRequest.Page)
 		pageRequest.PageSize = ParsePageSize(pageRequest.PageSize)
 	}

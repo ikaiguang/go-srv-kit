@@ -1,10 +1,15 @@
-package randomutil
+package randompkg
 
 import (
 	"math/rand"
 	"strconv"
 	"time"
 )
+
+// NewRandHandler ...
+func NewRandHandler() *rand.Rand {
+	return rand.New(rand.NewSource(time.Now().UnixNano()))
+}
 
 // Name random name
 func Name() string {
@@ -14,23 +19,23 @@ func Name() string {
 // Strings : A-Z a-z 0-9
 func Strings(size int) string {
 
-	rand.Seed(time.Now().UnixNano())
+	randHandler := NewRandHandler()
 
 	res := make([]byte, size)
 
 	for i := 0; i < size; i++ {
 
-		t := rand.Intn(3)
+		t := randHandler.Intn(3)
 
 		if t == 0 {
 			// A-Z
-			res[i] = byte(rand.Intn(26) + 65)
+			res[i] = byte(randHandler.Intn(26) + 65)
 		} else if t == 1 {
 			// a-z
-			res[i] = byte(rand.Intn(26) + 97)
+			res[i] = byte(randHandler.Intn(26) + 97)
 		} else {
 			// 0-9
-			res[i] = byte(rand.Intn(9) + 48)
+			res[i] = byte(randHandler.Intn(9) + 48)
 		}
 	}
 	return string(res)
@@ -39,20 +44,20 @@ func Strings(size int) string {
 // Letter : A-Z a-z
 func Letter(size int) string {
 
-	rand.Seed(time.Now().UnixNano())
+	randHandler := NewRandHandler()
 
 	res := make([]byte, size)
 
 	for i := 0; i < size; i++ {
 
-		t := rand.Intn(2)
+		t := randHandler.Intn(2)
 
 		if t == 0 {
 			// A-Z
-			res[i] = byte(rand.Intn(26) + 65)
+			res[i] = byte(randHandler.Intn(26) + 65)
 		} else {
 			// a-z
-			res[i] = byte(rand.Intn(26) + 97)
+			res[i] = byte(randHandler.Intn(26) + 97)
 		}
 	}
 	return string(res)
@@ -61,12 +66,12 @@ func Letter(size int) string {
 // Numeric 0-9
 func Numeric(size int) string {
 
-	rand.Seed(time.Now().UnixNano())
+	randHandler := NewRandHandler()
 
 	res := make([]byte, size)
 
 	for i := 0; i < size; i++ {
-		res[i] = byte(rand.Intn(9) + 48)
+		res[i] = byte(randHandler.Intn(9) + 48)
 	}
 	return string(res)
 }
@@ -80,9 +85,8 @@ func Int32Between(min, max int32) int32 {
 	if min >= max {
 		min, max = max, min
 	}
-	rand.Seed(time.Now().UnixNano())
 
-	return rand.Int31n(max-min) + min
+	return NewRandHandler().Int31n(max-min) + min
 }
 
 // Int64Between random number between min-max
@@ -94,9 +98,8 @@ func Int64Between(min, max int64) int64 {
 	if min >= max {
 		min, max = max, min
 	}
-	rand.Seed(time.Now().UnixNano())
 
-	return rand.Int63n(max-min) + min
+	return NewRandHandler().Int63n(max-min) + min
 }
 
 // NumericBetween random number between min-max
@@ -113,7 +116,6 @@ func IntBetween(min, max int) int {
 	if min >= max {
 		min, max = max, min
 	}
-	rand.Seed(time.Now().UnixNano())
 
-	return rand.Intn(max-min) + min
+	return NewRandHandler().Intn(max-min) + min
 }

@@ -1,10 +1,10 @@
-package debugutil
+package debugpkg
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
 	"io"
 
-	logutil "github.com/ikaiguang/go-srv-kit/log"
+	"github.com/go-kratos/kratos/v2/log"
+	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 )
 
 // debug
@@ -16,11 +16,11 @@ var (
 // Setup 启动
 func Setup() (closer io.Closer, err error) {
 	// std logger
-	stdLoggerConfig := &logutil.ConfigStd{
+	stdLoggerConfig := &logpkg.ConfigStd{
 		Level:      log.LevelDebug,
-		CallerSkip: logutil.DefaultCallerSkip,
+		CallerSkip: logpkg.DefaultCallerSkip,
 	}
-	stdLogger, err := logutil.NewStdLogger(stdLoggerConfig)
+	stdLogger, err := logpkg.NewStdLogger(stdLoggerConfig)
 	if err != nil {
 		return closer, err
 	}
@@ -30,9 +30,14 @@ func Setup() (closer io.Closer, err error) {
 	return closer, err
 }
 
+// CloseDebug ...
+func CloseDebug() {
+	handler = defaultHandler()
+}
+
 // defaultHandler .
 func defaultHandler() *log.Helper {
-	logger, _ := logutil.NewDummyLogger()
+	logger, _ := logpkg.NewDummyLogger()
 
 	return log.NewHelper(logger)
 }

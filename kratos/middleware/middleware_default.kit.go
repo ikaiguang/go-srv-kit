@@ -1,4 +1,4 @@
-package middlewareutil
+package middlewarepkg
 
 import (
 	"github.com/go-kratos/kratos/v2/middleware"

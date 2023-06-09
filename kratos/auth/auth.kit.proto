@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package pkg.auth.authpkg;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/kratos/auth;authpkg";
+option java_multiple_files = true;
+option java_package = "pkg.auth.authpkg";
+option java_outer_classname = "PkgAuthAuthPkg";
+
+import "errors/errors.proto";
+
+// ERROR ...
+enum ERROR {
+  option (errors.default_code) = 500;
+
+  UNKNOWN = 0 [(errors.code) = 500];
+
+  TOKEN_MISSING = 1 [(errors.code) = 401];
+  TOKEN_KEY_MISSING = 2 [(errors.code) = 401];
+  TOKEN_METHOD_MISSING = 3 [(errors.code) = 401];
+  UNAUTHORIZED = 4 [(errors.code) = 401];
+  TOKEN_EXPIRED = 5 [(errors.code) = 401];
+  AUTHENTICATION_FAILED = 6 [(errors.code) = 401];
+  TOKEN_INVALID = 7 [(errors.code) = 401];
+  TOKEN_DEPRECATED = 8 [(errors.code) = 401];
+  VERIFICATION_FAILED = 9 [(errors.code) = 401];
+  INVALID_CLAIMS = 10 [(errors.code) = 401];
+}
+
+message LoginPlatformEnum {
+  enum LoginPlatform{
+    // UNSPECIFIED 未指定
+    UNSPECIFIED = 0;
+
+    COMPUTER = 1;
+    ANDROID = 2;
+    IOS = 3;
+    IPAD = 4;
+  }
+}
+
+message LoginTypeEnum {
+  enum LoginType{
+    // UNSPECIFIED 未指定
+    UNSPECIFIED = 0;
+
+    PHONE_AND_CAPTCHA = 1;
+    PHONE_AND_PASSWORD = 2;
+    EMAIL_AND_CAPTCHA = 3;
+    EMAIL_AND_PASSWORD = 4;
+    USERNAME_AND_PASSWORD = 5;
+    WECHAT_QRCODE = 6;
+    GOOGLE_OAUTH = 7;
+  }
+}
+
+message LoginLimitEnum {
+  enum LoginLimit{
+    UNLIMITED = 0;
+    ONLY_ONE = 1;
+    PLATFORM_ONE = 2;
+  }
+}
+
+message TokenTypeEnum {
+  enum TokenType{
+    UNSPECIFIED = 0;
+    ADMIN = 1;
+    USER = 2;
+  }
+}

@@ -1,10 +1,10 @@
-package contextutil
+package contextpkg
 
 import (
 	"context"
+
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-
 	"github.com/go-kratos/kratos/v2/transport/http"
 )
 
@@ -51,7 +51,7 @@ func IsGRPCTransporter(kratosTr transport.Transporter) (grpcTr *grpc.Transport, 
 
 // MatchHTTPContext 匹配
 // Deprecated: 不建议使用此方法
-// 建议使用： contextutil.MatchHTTPServerContext or contextutil.MatchGRPCServerContext
+// 建议使用： contextpkg.MatchHTTPServerContext or contextpkg.MatchGRPCServerContext
 func MatchHTTPContext(ctx context.Context) (http.Context, bool) {
 	httpCtx, ok := ctx.(http.Context)
 	return httpCtx, ok

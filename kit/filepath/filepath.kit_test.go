@@ -1,4 +1,4 @@
-package filepathutil
+package filepathpkg
 
 import (
 	"path/filepath"

@@ -1,4 +1,4 @@
-package gormutil
+package gormpkg
 
 import (
 	"encoding/json"
@@ -9,9 +9,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	timepkg "github.com/ikaiguang/go-srv-kit/kit/time"
 	"gorm.io/gorm/logger"
-
-	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 )
 
 // NewStdWriter .
@@ -87,7 +86,7 @@ type jsonStruct struct {
 func (w *jsonWriter) Printf(format string, args ...interface{}) {
 	bodyBytes, _ := json.Marshal(&jsonStruct{
 		Name:      "GORM",
-		Time:      time.Now().Format(timeutil.YmdHmsMLogger),
+		Time:      time.Now().Format(timepkg.YmdHmsMLogger),
 		RequestID: uuid.New().String(),
 		Msg:       fmt.Sprintf(format, args...),
 	})

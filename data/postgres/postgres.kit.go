@@ -1,11 +1,10 @@
-package psqlutil
+package psqlpkg
 
 import (
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 )
 
 // Config postgres conig
@@ -28,16 +27,16 @@ type Config struct {
 }
 
 // NewPostgresDB .
-func NewPostgresDB(conf *Config, opts ...gormutil.Option) (db *gorm.DB, err error) {
+func NewPostgresDB(conf *Config, opts ...gormpkg.Option) (db *gorm.DB, err error) {
 	return NewDB(conf, opts...)
 }
 
 // NewDB 初始化
-func NewDB(conf *Config, opts ...gormutil.Option) (db *gorm.DB, err error) {
+func NewDB(conf *Config, opts ...gormpkg.Option) (db *gorm.DB, err error) {
 	// 链接选项
-	connOption := &gormutil.ConnOption{
+	connOption := &gormpkg.ConnOption{
 		LoggerEnable:              conf.LoggerEnable,
-		LoggerLevel:               gormutil.ParseLoggerLevel(conf.LoggerLevel),
+		LoggerLevel:               gormpkg.ParseLoggerLevel(conf.LoggerLevel),
 		LoggerWriters:             nil,
 		LoggerColorful:            conf.LoggerColorful,
 		SlowThreshold:             conf.SlowThreshold.AsDuration(),
@@ -55,5 +54,5 @@ func NewDB(conf *Config, opts ...gormutil.Option) (db *gorm.DB, err error) {
 	// 拨号
 	dialect := postgres.Open(conf.Dsn)
 
-	return gormutil.NewDB(dialect, connOption)
+	return gormpkg.NewDB(dialect, connOption)
 }

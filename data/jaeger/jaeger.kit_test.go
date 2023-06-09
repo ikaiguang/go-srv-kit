@@ -1,10 +1,11 @@
-package jaegerutil
+package jaegerpkg
 
 import (
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	stdhttp "net/http"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 // go test -v ./data/jaeger/ -count=1 -test.run=TestNewJaegerExporter_Xxx

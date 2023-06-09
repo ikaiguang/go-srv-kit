@@ -1,4 +1,4 @@
-package idutil
+package idpkg
 
 import "testing"
 

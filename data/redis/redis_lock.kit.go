@@ -1,4 +1,4 @@
-package redisutil
+package redispkg
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
 	"github.com/redis/go-redis/v9"
 
-	lockerutil "github.com/ikaiguang/go-srv-kit/kit/locker"
+	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
 )
 
 const (
@@ -24,7 +24,7 @@ type Locker struct {
 }
 
 // NewLocker ..
-func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerutil.Lock {
+func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerpkg.Lock {
 	// 锁选项
 	lockerOpts := []redsync.Option{
 		redsync.WithExpiry(_lockExpire),
@@ -40,22 +40,22 @@ func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerutil
 }
 
 // Once ...
-func (s *Locker) Once(ctx context.Context, lockName string) (locker lockerutil.Unlock, err error) {
+func (s *Locker) Once(ctx context.Context, lockName string) (locker lockerpkg.Unlock, err error) {
 	m := &onceLock{}
 	m.mutex = s.rs.NewMutex(lockName, s.opts...)
 	if err = m.mutex.LockContext(ctx); err != nil {
-		err = lockerutil.NewErrLockerFailed(true, lockName, err)
+		err = lockerpkg.NewErrLockerFailed(true, lockName, err)
 		return m, err
 	}
 	return m, err
 }
 
 // Mutex ...
-func (s *Locker) Mutex(ctx context.Context, lockName string) (locker lockerutil.Unlock, err error) {
+func (s *Locker) Mutex(ctx context.Context, lockName string) (locker lockerpkg.Unlock, err error) {
 	m := &mutexLock{}
 	m.mutex = s.rs.NewMutex(lockName, s.opts...)
 	if err = m.mutex.LockContext(ctx); err != nil {
-		err = lockerutil.NewErrLockerFailed(true, lockName, err)
+		err = lockerpkg.NewErrLockerFailed(true, lockName, err)
 		return m, err
 	}
 

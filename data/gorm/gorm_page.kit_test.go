@@ -1,24 +1,23 @@
-package gormutil
+package gormpkg
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 
-	pagev1 "github.com/ikaiguang/go-srv-kit/api/page/v1"
-	pageutil "github.com/ikaiguang/go-srv-kit/kit/page"
+	pagepkg "github.com/ikaiguang/go-srv-kit/kit/page"
+	"github.com/stretchr/testify/require"
 )
 
 // go test -v ./data/gorm/ -count=1 -test.run=TestPaging
 func TestPaging(t *testing.T) {
 	var data = []struct {
 		name          string
-		pageReq       *pagev1.PageRequest
+		pageReq       *pagepkg.PageRequest
 		paginatorArgs *PaginatorArgs
 	}{
 		{
 			name: "#分页：顺序：第 1 页",
-			pageReq: &pagev1.PageRequest{
+			pageReq: &pagepkg.PageRequest{
 				Page:     1,
 				PageSize: 5,
 			},
@@ -41,7 +40,7 @@ func TestPaging(t *testing.T) {
 		},
 		{
 			name: "#分页：顺序：第 2 页",
-			pageReq: &pagev1.PageRequest{
+			pageReq: &pagepkg.PageRequest{
 				Page:     2,
 				PageSize: 5,
 			},
@@ -64,7 +63,7 @@ func TestPaging(t *testing.T) {
 		},
 		{
 			name: "#分页：顺序：第 100 页",
-			pageReq: &pagev1.PageRequest{
+			pageReq: &pagepkg.PageRequest{
 				Page:     100,
 				PageSize: 20,
 			},
@@ -87,7 +86,7 @@ func TestPaging(t *testing.T) {
 		},
 		{
 			name: "#分页：倒序：第 1 页",
-			pageReq: &pagev1.PageRequest{
+			pageReq: &pagepkg.PageRequest{
 				Page:     1,
 				PageSize: 5,
 			},
@@ -110,7 +109,7 @@ func TestPaging(t *testing.T) {
 		},
 		{
 			name: "#分页：倒序：第 2 页",
-			pageReq: &pagev1.PageRequest{
+			pageReq: &pagepkg.PageRequest{
 				Page:     2,
 				PageSize: 5,
 			},
@@ -133,7 +132,7 @@ func TestPaging(t *testing.T) {
 		},
 		{
 			name: "#分页：倒序：第 100 页",
-			pageReq: &pagev1.PageRequest{
+			pageReq: &pagepkg.PageRequest{
 				Page:     100,
 				PageSize: 20,
 			},
@@ -166,7 +165,7 @@ func TestPaging(t *testing.T) {
 			db := dbConn.Table((&User{}).TableName())
 
 			// 分页
-			pageReq, pageOption := pageutil.ParsePageRequest(dd.pageReq)
+			pageReq, pageOption := pagepkg.ParsePageRequest(dd.pageReq)
 			t.Logf("pageReq:  第 %d 页", pageReq.Page)
 
 			// 条件
@@ -195,7 +194,7 @@ func TestPaging(t *testing.T) {
 				t.FailNow()
 			}
 
-			pageResp := pageutil.CalcPageResponse(pageReq, uint32(counter))
+			pageResp := pagepkg.CalcPageResponse(pageReq, uint32(counter))
 			t.Log("==> pageResp.TotalNumber", pageResp.TotalNumber)
 			t.Log("==> pageResp.TotalPage", pageResp.TotalPage)
 			t.Log("==> pageResp.Page", pageResp.Page)

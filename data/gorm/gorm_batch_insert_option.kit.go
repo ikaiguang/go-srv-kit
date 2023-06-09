@@ -1,4 +1,4 @@
-package gormutil
+package gormpkg
 
 // BatchInsertOption 批量插入选项
 type BatchInsertOption func(*batchInsertOptions)

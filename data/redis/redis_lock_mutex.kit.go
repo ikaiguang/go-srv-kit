@@ -1,4 +1,4 @@
-package redisutil
+package redispkg
 
 import (
 	"context"
@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redsync/redsync/v4"
-
-	lockerutil "github.com/ikaiguang/go-srv-kit/kit/locker"
+	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
 )
 
 // mutexLock ...
@@ -43,7 +42,7 @@ func (s *mutexLock) extend(ctx context.Context) {
 		// 续期
 		if ok, err := s.mutex.ExtendContext(ctx); err != nil || !ok {
 			if stderrors.Is(err, redsync.ErrExtendFailed) {
-				err = lockerutil.NewErrExtendFailed(true, s.mutex.Name(), err)
+				err = lockerpkg.NewErrExtendFailed(true, s.mutex.Name(), err)
 			}
 			// 调试
 			//fmt.Println("redis mutex 续期失败")

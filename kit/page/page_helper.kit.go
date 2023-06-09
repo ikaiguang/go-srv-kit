@@ -1,17 +1,13 @@
-package pageutil
-
-import (
-	pagev1 "github.com/ikaiguang/go-srv-kit/api/page/v1"
-)
+package pagepkg
 
 // HasNextPage 是否有下一页
-func HasNextPage(pageResponse *pagev1.PageResponse) bool {
+func HasNextPage(pageResponse *PageResponse) bool {
 	return pageResponse.TotalPage > pageResponse.Page
 }
 
 // CalcPageResponse 计算分页响应
-func CalcPageResponse(pageRequest *pagev1.PageRequest, totalNumber uint32) *pagev1.PageResponse {
-	pageResponse := &pagev1.PageResponse{
+func CalcPageResponse(pageRequest *PageRequest, totalNumber uint32) *PageResponse {
+	pageResponse := &PageResponse{
 		TotalNumber: totalNumber,
 		Page:        pageRequest.Page,
 		PageSize:    pageRequest.PageSize,

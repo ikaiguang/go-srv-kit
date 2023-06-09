@@ -1,9 +1,10 @@
-package migrationutil
+package migrationpkg
 
 import (
 	"context"
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 var (

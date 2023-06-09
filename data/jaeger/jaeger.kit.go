@@ -1,9 +1,10 @@
-package jaegerutil
+package jaegerpkg
 
 import (
 	"fmt"
-	"go.opentelemetry.io/otel/exporters/jaeger"
 	stdhttp "net/http"
+
+	"go.opentelemetry.io/otel/exporters/jaeger"
 )
 
 // Config jaeger config

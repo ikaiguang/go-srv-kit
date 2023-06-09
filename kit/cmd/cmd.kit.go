@@ -1,18 +1,18 @@
-package cmdutil
+package cmdpkg
 
 import (
 	"fmt"
 	"os/exec"
 
-	debugutil "github.com/ikaiguang/go-srv-kit/debug"
-	bufferutil "github.com/ikaiguang/go-srv-kit/kit/buffer"
+	debugpkg "github.com/ikaiguang/go-srv-kit/debug"
+	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 )
 
 // RunCommand 运行命令
 func RunCommand(command string, args []string) (output []byte, err error) {
 	cmd := exec.Command(command, args...)
 
-	debugutil.Debugw("cmd", command, "args", args)
+	debugpkg.Debugw("cmd", command, "args", args)
 
 	return run(cmd)
 }
@@ -23,7 +23,7 @@ func RunCommandWithWorkDir(workDir, command string, args []string) (output []byt
 	cmd := exec.Command(command, args...)
 	cmd.Dir = workDir
 
-	debugutil.Debugw("workdir", workDir, "cmd", command, "args", args)
+	debugpkg.Debugw("workdir", workDir, "cmd", command, "args", args)
 
 	return run(cmd)
 }
@@ -31,11 +31,11 @@ func RunCommandWithWorkDir(workDir, command string, args []string) (output []byt
 // run 运行命令
 func run(cmdHandler *exec.Cmd) (output []byte, err error) {
 	var (
-		stdout = bufferutil.GetBuffer()
-		stderr = bufferutil.GetBuffer()
+		stdout = bufferpkg.GetBuffer()
+		stderr = bufferpkg.GetBuffer()
 	)
-	defer bufferutil.PutBuffer(stdout)
-	defer bufferutil.PutBuffer(stderr)
+	defer bufferpkg.PutBuffer(stdout)
+	defer bufferpkg.PutBuffer(stderr)
 
 	cmdHandler.Stdout = stdout
 	cmdHandler.Stderr = stderr

@@ -3,19 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"runtime"
 	"sort"
 	"strings"
 
+	debugpkg "github.com/ikaiguang/go-srv-kit/debug"
+	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
+	cmdpkg "github.com/ikaiguang/go-srv-kit/kit/cmd"
+	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
+	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
 	pkgerrors "github.com/pkg/errors"
-
-	debugutil "github.com/ikaiguang/go-srv-kit/debug"
-	bufferutil "github.com/ikaiguang/go-srv-kit/kit/buffer"
-	cmdutil "github.com/ikaiguang/go-srv-kit/kit/cmd"
-	fileutil "github.com/ikaiguang/go-srv-kit/kit/file"
-	filepathutil "github.com/ikaiguang/go-srv-kit/kit/filepath"
 )
 
 const (
@@ -38,7 +37,7 @@ func main() {
 		fmt.Println("==> 请添加启动参数：-path")
 		return
 	}
-	_, _ = debugutil.Setup()
+	_, _ = debugpkg.Setup()
 
 	var dirs = []string{
 		*protoPath,
@@ -92,7 +91,7 @@ func genProtoScriptFileAndExecScript(dir string) (scriptFilePath string, err err
 	args := execBinSlice[1:]
 	for i := range scripts {
 		newArgs := append(args, scripts[i])
-		out, err := cmdutil.RunCommand(command, newArgs)
+		out, err := cmdpkg.RunCommand(command, newArgs)
 		if err != nil {
 			err = pkgerrors.WithStack(err)
 			return scriptFilePath, err
@@ -130,8 +129,8 @@ func (s *Proto) CmdKratosClient() []string {
 
 // GenProtoScriptFile 生成协议执行脚本文件
 func (s *Proto) GenProtoScriptFile(filename string, scripts []string) (err error) {
-	buf := bufferutil.GetBuffer()
-	defer bufferutil.PutBuffer(buf)
+	buf := bufferpkg.GetBuffer()
+	defer bufferpkg.PutBuffer(buf)
 
 	buf.WriteString("#!/bin/bash\n\n")
 
@@ -140,7 +139,7 @@ func (s *Proto) GenProtoScriptFile(filename string, scripts []string) (err error
 		buf.WriteString("\n")
 	}
 
-	err = ioutil.WriteFile(filename, buf.Bytes(), fileutil.DefaultFileMode)
+	err = os.WriteFile(filename, buf.Bytes(), filepkg.DefaultFileMode)
 	if err != nil {
 		err = pkgerrors.WithStack(err)
 		return err
@@ -164,7 +163,7 @@ func (s *Proto) GenProtoExecScripts(protoFiles []string) (scripts []string) {
 
 // FindProtoFiles 查找协议文件
 func (s *Proto) FindProtoFiles(dir string) (protoFiles []string, err error) {
-	filePaths, _, err := filepathutil.WaldDir(dir)
+	filePaths, _, err := filepathpkg.WaldDir(dir)
 	if err != nil {
 		err = pkgerrors.WithStack(err)
 		return protoFiles, err

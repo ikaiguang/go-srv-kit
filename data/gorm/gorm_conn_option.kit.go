@@ -1,8 +1,9 @@
-package gormutil
+package gormpkg
 
 import (
-	"gorm.io/gorm/logger"
 	"time"
+
+	"gorm.io/gorm/logger"
 )
 
 // ConnOption 连接配置

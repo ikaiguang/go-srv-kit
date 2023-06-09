@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package kit.api.pingenumv1;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/api/ping/v1/enums;pingenumv1";
+option java_multiple_files = true;
+option java_package = "kit.api.pingenumv1";
+option java_outer_classname = "KitApiPingEnumV1";
+
+// PingInitEnum PingInitEnum enum
+message PingInitEnum {
+  // PingInit PingInit enum
+  enum PingInit {
+    // UNSPECIFIED 未指定
+    UNSPECIFIED = 0;
+  }
+}

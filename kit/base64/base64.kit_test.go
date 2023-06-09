@@ -1,4 +1,4 @@
-package base64util
+package base64pkg
 
 import (
 	"testing"

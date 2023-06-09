@@ -1,4 +1,4 @@
-package debugutil
+package debugpkg
 
 import (
 	"os"

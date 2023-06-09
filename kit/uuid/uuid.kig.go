@@ -1,8 +1,9 @@
-package uuidutil
+package uuidpkg
 
 import (
-	"github.com/rs/xid"
 	"time"
+
+	"github.com/rs/xid"
 )
 
 // New ...

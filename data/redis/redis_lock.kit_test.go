@@ -1,4 +1,4 @@
-package redisutil
+package redispkg
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	lockerutil "github.com/ikaiguang/go-srv-kit/kit/locker"
+	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
 )
 
 const (
@@ -27,7 +27,7 @@ func TestLockOnce(t *testing.T) {
 		name         string
 		lockerStatus bool
 		isLockFailed bool
-		unlock       lockerutil.Unlock
+		unlock       lockerpkg.Unlock
 	}{
 		{
 			name:         "#加锁成功",
@@ -47,7 +47,7 @@ func TestLockOnce(t *testing.T) {
 			t.Logf("想要：加锁(%v)\n", tt.lockerStatus)
 			if err != nil {
 				t.Logf("加锁失败！错误：%v\n", err)
-				t.Logf("==> IsLockFailedError : %v\n", lockerutil.IsLockFailedError(err))
+				t.Logf("==> IsLockFailedError : %v\n", lockerpkg.IsErrLockFailed(err))
 			} else {
 				t.Logf("===> 加锁成功！\n")
 			}
@@ -88,7 +88,7 @@ func TestLockMutex(t *testing.T) {
 		name         string
 		lockerStatus bool
 		isLockFailed bool
-		unlock       lockerutil.Unlock
+		unlock       lockerpkg.Unlock
 	}{
 		{
 			name:         "#加锁成功",
@@ -113,7 +113,7 @@ func TestLockMutex(t *testing.T) {
 			t.Logf("想要：加锁(%v)\n", tt.lockerStatus)
 			if err != nil {
 				t.Logf("加锁失败啦！错误：%v\n", err)
-				t.Logf("==> IsLockFailedError : %v\n", lockerutil.IsLockFailedError(err))
+				t.Logf("==> IsLockFailedError : %v\n", lockerpkg.IsErrLockFailed(err))
 			} else {
 				t.Logf("===> 加锁成功啦！\n")
 			}

@@ -1,4 +1,4 @@
-package connectionutil
+package connectionpkg
 
 import (
 	"net"

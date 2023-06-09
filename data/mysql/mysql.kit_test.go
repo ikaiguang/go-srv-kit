@@ -1,18 +1,18 @@
-package mysqlutil
+package mysqlpkg
 
 import (
-	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/durationpb"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"log"
 	"os"
 	"testing"
 	"time"
 
-	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
-	writerutil "github.com/ikaiguang/go-srv-kit/kit/writer"
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm"
+	writerpkg "github.com/ikaiguang/go-srv-kit/kit/writer"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var (
@@ -39,18 +39,18 @@ func TestNewDB_Xxx(t *testing.T) {
 
 // go test -v ./data/mysql/ -count=1 -test.run=TestNewDB_WithWriters
 func TestNewDB_WithWriters(t *testing.T) {
-	writerConfig := &writerutil.ConfigRotate{
+	writerConfig := &writerpkg.ConfigRotate{
 		Dir:      ".",
 		Filename: "test",
 
 		RotateTime:     time.Hour,
 		StorageCounter: 10,
 	}
-	fileWriter, err := writerutil.NewRotateFile(writerConfig)
+	fileWriter, err := writerpkg.NewRotateFile(writerConfig)
 	require.Nil(t, err)
 
 	//opt := WithWriters(NewStdWriter(), NewWriter(fileWriter), NewJSONWriter(fileWriter))
-	opt := gormutil.WithWriters(gormutil.NewStdWriter(), gormutil.NewJSONWriter(fileWriter))
+	opt := gormpkg.WithWriters(gormpkg.NewStdWriter(), gormpkg.NewJSONWriter(fileWriter))
 	db, err := NewMysqlDB(dbConfig, opt)
 	require.Nil(t, err)
 

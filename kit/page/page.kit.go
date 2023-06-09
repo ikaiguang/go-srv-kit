@@ -1,8 +1,4 @@
-package pageutil
-
-import (
-	pagev1 "github.com/ikaiguang/go-srv-kit/api/page/v1"
-)
+package pagepkg
 
 const (
 	DefaultPageNumber = 1  // goto page number : which page (default : 1)
@@ -10,8 +6,8 @@ const (
 )
 
 // DefaultPageRequest 默认分页请求
-func DefaultPageRequest() *pagev1.PageRequest {
-	return &pagev1.PageRequest{
+func DefaultPageRequest() *PageRequest {
+	return &PageRequest{
 		Page:     DefaultPageNumber,
 		PageSize: DefaultPageSize,
 	}
@@ -24,7 +20,7 @@ type PageOption struct {
 }
 
 // ConvertToPageOption 转换为分页选项
-func ConvertToPageOption(pageRequest *pagev1.PageRequest) *PageOption {
+func ConvertToPageOption(pageRequest *PageRequest) *PageOption {
 	opts := &PageOption{
 		Limit:  int(pageRequest.PageSize),
 		Offset: int(pageRequest.PageSize * (pageRequest.Page - 1)),

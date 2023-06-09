@@ -1,10 +1,10 @@
-package filepathutil
+package filepathpkg
 
 import (
 	"os"
 	"path/filepath"
 
-	fileutil "github.com/ikaiguang/go-srv-kit/kit/file"
+	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
 )
 
 // WaldDir 遍历所有的目录与文件
@@ -46,7 +46,7 @@ func ReadDir(rootPath string) (fileInfos []os.FileInfo, err error) {
 // CreateDir 创建目录
 func CreateDir(destDir string) (err error) {
 	// 创建目录
-	err = os.MkdirAll(destDir, fileutil.DefaultFileMode)
+	err = os.MkdirAll(destDir, filepkg.DefaultFileMode)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func RenewDir(destDir string) (err error) {
 	}
 
 	// 创建目录
-	err = os.MkdirAll(destDir, fileutil.DefaultFileMode)
+	err = os.MkdirAll(destDir, filepkg.DefaultFileMode)
 	if err != nil {
 		return err
 	}

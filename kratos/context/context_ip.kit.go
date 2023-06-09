@@ -1,4 +1,4 @@
-package contextutil
+package contextpkg
 
 import (
 	"context"
@@ -6,10 +6,9 @@ import (
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/transport/http"
+	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
-
-	iputil "github.com/ikaiguang/go-srv-kit/kit/ip"
 )
 
 // ClientIP 获取客户端IP
@@ -35,14 +34,14 @@ func ClientIPFromHTTP(ctx context.Context, r *http.Request) (clientIP string) {
 
 	ips := strings.Split(r.Header.Get("X-Forwarded-For"), ",")
 	for i := len(ips) - 1; i >= 0; i-- {
-		if clientIP = strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
+		if clientIP = strings.TrimSpace(ips[i]); ippkg.IsValidIP(clientIP) {
 			return clientIP
 		}
 	}
 
 	ips = strings.Split(r.Header.Get("X-Real-Ip"), ",")
 	for i := len(ips) - 1; i >= 0; i-- {
-		if clientIP = strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
+		if clientIP = strings.TrimSpace(ips[i]); ippkg.IsValidIP(clientIP) {
 			return clientIP
 		}
 	}
@@ -51,7 +50,7 @@ func ClientIPFromHTTP(ctx context.Context, r *http.Request) (clientIP string) {
 	if err != nil {
 		return clientIP
 	}
-	if clientIP = strings.TrimSpace(ip); iputil.IsValidIP(clientIP) {
+	if clientIP = strings.TrimSpace(ip); ippkg.IsValidIP(clientIP) {
 		return clientIP
 	}
 	return clientIP
@@ -71,14 +70,14 @@ func ClientIPFromGRPC(ctx context.Context) (clientIP string) {
 
 		ips := md.Get("x-forwarded-for")
 		for i := len(ips) - 1; i >= 0; i-- {
-			if clientIP = strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
+			if clientIP = strings.TrimSpace(ips[i]); ippkg.IsValidIP(clientIP) {
 				return clientIP
 			}
 		}
 
 		ips = md.Get("x-real-ip")
 		for i := len(ips) - 1; i >= 0; i-- {
-			if clientIP = strings.TrimSpace(ips[i]); iputil.IsValidIP(clientIP) {
+			if clientIP = strings.TrimSpace(ips[i]); ippkg.IsValidIP(clientIP) {
 				return clientIP
 			}
 		}

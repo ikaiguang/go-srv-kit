@@ -1,4 +1,4 @@
-package bufferutil
+package bufferpkg
 
 import (
 	"bytes"

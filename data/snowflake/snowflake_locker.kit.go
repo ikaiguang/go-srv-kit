@@ -1,14 +1,15 @@
-package snowflakeutil
+package snowflakepkg
 
 import (
 	"context"
 	"fmt"
-	redisutil "github.com/ikaiguang/go-srv-kit/data/redis"
-	lockerutil "github.com/ikaiguang/go-srv-kit/kit/locker"
-	"github.com/patrickmn/go-cache"
-	"github.com/redis/go-redis/v9"
 	"sync"
 	"time"
+
+	redispkg "github.com/ikaiguang/go-srv-kit/data/redis"
+	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
+	"github.com/patrickmn/go-cache"
+	"github.com/redis/go-redis/v9"
 )
 
 const (
@@ -19,7 +20,7 @@ const (
 
 // Locker ...
 type Locker interface {
-	Lock(ctx context.Context, lockName string) (locker lockerutil.Unlock, err error)
+	Lock(ctx context.Context, lockName string) (locker lockerpkg.Unlock, err error)
 }
 
 var (
@@ -37,12 +38,12 @@ func NewLockerFromCache(cacheHandler *cache.Cache) Locker {
 // NewLockerFromRedis ...
 func NewLockerFromRedis(redisCC redis.UniversalClient) Locker {
 	return &redisRepo{
-		locker: redisutil.NewLocker(redisCC),
+		locker: redispkg.NewLocker(redisCC),
 	}
 }
 
 // Lock ...
-func (s *cacheRepo) Lock(ctx context.Context, lockName string) (lockerutil.Unlock, error) {
+func (s *cacheRepo) Lock(ctx context.Context, lockName string) (lockerpkg.Unlock, error) {
 	// 读取锁
 	muInterface, ok := s.cacheHandler.Get(lockName)
 	if ok {
@@ -69,10 +70,10 @@ func (s *cacheRepo) Lock(ctx context.Context, lockName string) (lockerutil.Unloc
 }
 
 // Lock ...
-func (s *redisRepo) Lock(ctx context.Context, lockName string) (locker lockerutil.Unlock, err error) {
+func (s *redisRepo) Lock(ctx context.Context, lockName string) (locker lockerpkg.Unlock, err error) {
 	locker, err = s.locker.Mutex(ctx, lockName)
 	if err != nil {
-		if lockerutil.IsLockFailedError(err) {
+		if lockerpkg.IsErrLockFailed(err) {
 			err = nil
 			time.Sleep(time.Millisecond * 30)
 			return s.Lock(ctx, lockName)
@@ -89,7 +90,7 @@ type cacheRepo struct {
 
 // redisRepo ...
 type redisRepo struct {
-	locker lockerutil.Lock
+	locker lockerpkg.Lock
 }
 
 // cacheLocker ...

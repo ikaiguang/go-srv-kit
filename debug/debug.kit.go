@@ -1,4 +1,4 @@
-package debugutil
+package debugpkg
 
 // Print .
 func Print(a ...interface{}) {

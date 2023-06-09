@@ -1,4 +1,5 @@
-// Package rabbitmqutil
+package rabbitmqpkg
+
 // 仅适用于简单例子使用，高级使用请配置后再实例化
 // 仅做例子参考，实例化 amqp.NewPublisher
 // 仅做例子参考，实例化 amqp.NewPublisherWithConnection
@@ -9,8 +10,6 @@
 // 仅做例子参考，按需配置 amqp.PublishConfig
 // 仅做例子参考，按需配置 amqp.ConsumeConfig
 // 仅做例子参考，按需配置 amqp.QueueConfig
-package rabbitmqutil
-
 import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"

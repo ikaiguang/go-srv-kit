@@ -1,8 +1,9 @@
-package chineseutil
+package chinesepkg
 
 import (
-	"golang.org/x/text/encoding/simplifiedchinese"
 	"unicode/utf8"
+
+	"golang.org/x/text/encoding/simplifiedchinese"
 )
 
 var (

@@ -1,4 +1,4 @@
-package headerutil
+package headerpkg
 
 import (
 	"net/http"
@@ -6,14 +6,11 @@ import (
 )
 
 const (
-	// RequestID http请求设置
-	RequestID = "x-custom-request-id"
-	// IsWebsocket http请求设置
-	IsWebsocket = "x-custom-is-websocket"
-	// RemoteAddr 远程地址
-	RemoteAddr = "x-custom-remote-addr"
-	// UserTerminal 使用终端、平台
-	UserTerminal = "x-custom-user-terminal"
+	RequestID    = "x-custom-request-id"    // http请求id
+	IsWebsocket  = "x-custom-is-websocket"  // http请求设置
+	RemoteAddr   = "x-custom-remote-addr"   // 远程地址
+	UserTerminal = "x-custom-user-terminal" // 使用终端、平台
+	TraceID      = "trace-id"               // trace-id
 
 	// WebsocketConnection websocket
 	WebsocketConnection = "Connection"

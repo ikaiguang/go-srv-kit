@@ -1,9 +1,10 @@
-package middlewareutil
+package middlewarepkg
 
 import (
-	"github.com/gorilla/handlers"
 	stdhttp "net/http"
 	"time"
+
+	"github.com/gorilla/handlers"
 )
 
 // NewCORS 跨域设置

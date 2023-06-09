@@ -1,18 +1,18 @@
-package rabbitmqutil
+package rabbitmqpkg
 
 import (
 	"context"
 	"fmt"
-	"github.com/ThreeDotsLabs/watermill"
-	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 
-	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
-	uuidutil "github.com/ikaiguang/go-srv-kit/kit/uuid"
-	logutil "github.com/ikaiguang/go-srv-kit/log"
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
+	"github.com/ThreeDotsLabs/watermill/message"
+	timepkg "github.com/ikaiguang/go-srv-kit/kit/time"
+	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
+	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
+	"github.com/stretchr/testify/require"
 )
 
 // go test -v ./data/rabbitmq/ -count=1 -test.run=TestNewSubscriber
@@ -64,7 +64,7 @@ func doPub(publisher *amqp.Publisher, topic string) {
 	var i = 0
 	for {
 		i++
-		msg := message.NewMessage(uuidutil.NewUUID(), []byte(
+		msg := message.NewMessage(uuidpkg.NewUUID(), []byte(
 			fmt.Sprintf("%d : Hello, world!", i)))
 
 		if err := publisher.Publish(topic, msg); err != nil {
@@ -79,21 +79,21 @@ func doPub(publisher *amqp.Publisher, topic string) {
 }
 
 func newMultiLogger() watermill.LoggerAdapter {
-	stdLoggerConfig := &logutil.ConfigStd{
-		Level:      logutil.ParseLevel("DEBUG"),
-		CallerSkip: logutil.DefaultCallerSkip,
+	stdLoggerConfig := &logpkg.ConfigStd{
+		Level:      logpkg.ParseLevel("DEBUG"),
+		CallerSkip: logpkg.DefaultCallerSkip,
 	}
-	stdLoggerImpl, err := logutil.NewStdLogger(stdLoggerConfig)
+	stdLoggerImpl, err := logpkg.NewStdLogger(stdLoggerConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	cfg := &logutil.ConfigFile{
+	cfg := &logpkg.ConfigFile{
 		//Level:      log.LevelDebug,
 		//Level:      log.LevelInfo,
 		//CallerSkip: logutil.DefaultCallerSkip,
-		Level:      logutil.ParseLevel("DEBUG"),
-		CallerSkip: logutil.DefaultCallerSkip,
+		Level:      logpkg.ParseLevel("DEBUG"),
+		CallerSkip: logpkg.DefaultCallerSkip,
 
 		Dir:      "./runtime/logs",
 		Filename: "rotation",
@@ -104,16 +104,16 @@ func newMultiLogger() watermill.LoggerAdapter {
 		//StorageCounter: 2,
 		StorageAge: time.Hour,
 	}
-	fileLogger, err := logutil.NewFileLogger(
+	fileLogger, err := logpkg.NewFileLogger(
 		cfg,
 		//WithFilenameSuffix("_xxx"),
-		logutil.WithFilenameSuffix("_xxx.%Y%m%d%H%M%S.log"),
-		logutil.WithLoggerKey(map[logutil.LoggerKey]string{logutil.LoggerKeyTime: "date"}),
-		logutil.WithTimeFormat(timeutil.YmdHmsMillisecond),
+		logpkg.WithFilenameSuffix("_xxx.%Y%m%d%H%M%S.log"),
+		logpkg.WithLoggerKey(map[logpkg.LoggerKey]string{logpkg.LoggerKeyTime: "date"}),
+		logpkg.WithTimeFormat(timepkg.YmdHmsMillisecond),
 	)
 	if err != nil {
 		panic(err)
 	}
-	logImpl := logutil.NewMultiLogger(stdLoggerImpl, fileLogger)
+	logImpl := logpkg.NewMultiLogger(stdLoggerImpl, fileLogger)
 	return NewLogger(logImpl)
 }

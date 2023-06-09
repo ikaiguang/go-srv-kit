@@ -1,4 +1,4 @@
-package lockerutil
+package lockerpkg
 
 import (
 	"context"
@@ -58,16 +58,16 @@ func (e *ErrExtendFailed) Error() string {
 	return fmt.Sprintf("Lock(%s) failed : %s", e.name, e.err.Error())
 }
 
-// IsLockFailedError 锁失败
-func IsLockFailedError(err error) bool {
+// IsErrLockFailed 锁失败
+func IsErrLockFailed(err error) bool {
 	if e, ok := err.(*ErrLockerFailed); ok {
 		return e.isLockFailed
 	}
 	return false
 }
 
-// IsExtendFailedError 延长锁失败
-func IsExtendFailedError(err error) bool {
+// IsErrExtendFailed 延长锁失败
+func IsErrExtendFailed(err error) bool {
 	if e, ok := err.(*ErrExtendFailed); ok {
 		return e.isExtendFailed
 	}

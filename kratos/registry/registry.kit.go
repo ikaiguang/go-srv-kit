@@ -1,4 +1,4 @@
-package registryutil
+package registrypkg
 
 import (
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"

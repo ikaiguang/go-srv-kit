@@ -1,4 +1,4 @@
-package apputil
+package apppkg
 
 import (
 	stdjson "encoding/json"

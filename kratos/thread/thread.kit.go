@@ -1,11 +1,11 @@
-package threadutil
+package threadpkg
 
 import (
 	"context"
-	"go.opentelemetry.io/otel/trace"
 	"runtime/debug"
 
-	logutil "github.com/ikaiguang/go-srv-kit/log"
+	"github.com/ikaiguang/go-srv-kit/kratos/log"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // GoSafe runs the given fn using another goroutine, recovers if fn panics.
@@ -35,7 +35,7 @@ func Recover(cleanups ...func()) {
 	}
 
 	if p := recover(); p != nil {
-		logutil.Error(p)
-		logutil.Error(string(debug.Stack()))
+		logpkg.Error(p)
+		logpkg.Error(string(debug.Stack()))
 	}
 }

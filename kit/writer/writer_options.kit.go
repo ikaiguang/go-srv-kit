@@ -1,4 +1,4 @@
-package writerutil
+package writerpkg
 
 // options 配置可选项
 type options struct {

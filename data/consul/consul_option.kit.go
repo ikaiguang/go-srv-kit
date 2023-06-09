@@ -1,4 +1,4 @@
-package consulutil
+package consulpkg
 
 import "io"
 

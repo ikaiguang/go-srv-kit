@@ -1,11 +1,10 @@
-package websocketutil
+package websocketpkg
 
 import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-
-	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 // upgrade 升级http
@@ -22,6 +21,6 @@ func UpgradeConn(w http.ResponseWriter, r *http.Request, responseHeader http.Hea
 	if err != nil {
 		return nil, err
 	}
-	headerutil.SetIsWebsocket(r.Header)
+	headerpkg.SetIsWebsocket(r.Header)
 	return cc, err
 }

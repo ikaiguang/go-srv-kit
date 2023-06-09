@@ -1,4 +1,4 @@
-package headerutil
+package headerpkg
 
 import (
 	stdhttp "net/http"

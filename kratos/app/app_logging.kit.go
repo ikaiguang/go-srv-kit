@@ -1,12 +1,8 @@
-package apputil
+package apppkg
 
 import (
 	"context"
 	"fmt"
-	"github.com/go-kratos/kratos/v2/transport/http"
-	errorutil "github.com/ikaiguang/go-srv-kit/error"
-	contextutil "github.com/ikaiguang/go-srv-kit/kratos/context"
-	headerutil "github.com/ikaiguang/go-srv-kit/kratos/header"
 	"strconv"
 	"strings"
 	"time"
@@ -15,6 +11,10 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/go-kratos/kratos/v2/transport/http"
+	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
+	"github.com/ikaiguang/go-srv-kit/kratos/error"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 var (
@@ -140,14 +140,14 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 			if httpTr, isHTTP := tr.(http.Transporter); isHTTP {
 				requestMessage.Method = httpTr.Request().Method
 				requestMessage.Operation = httpTr.Request().URL.String()
-				if headerutil.GetIsWebsocket(httpTr.Request().Header) {
+				if headerpkg.GetIsWebsocket(httpTr.Request().Header) {
 					isWebsocket = true
 					requestMessage.Method = "WS"
 				}
-				requestMessage.ClientIP = contextutil.ClientIPFromHTTP(ctx, httpTr.Request())
+				requestMessage.ClientIP = contextpkg.ClientIPFromHTTP(ctx, httpTr.Request())
 			} else {
 				requestMessage.Method = "GRPC"
-				requestMessage.ClientIP = contextutil.ClientIPFromGRPC(ctx)
+				requestMessage.ClientIP = contextpkg.ClientIPFromGRPC(ctx)
 			}
 
 			// 打印日志
@@ -174,9 +174,9 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 				// 错误调用
 				var callers []string
 				if opt.withSkip && opt.withSkipDepth > 0 {
-					callers = errorutil.CallerWithSkip(err, opt.withSkipDepth)
+					callers = errorpkg.CallerWithSkip(err, opt.withSkipDepth)
 				} else {
-					callers = errorutil.Stack(err)
+					callers = errorpkg.Stack(err)
 				}
 				if len(callers) > 0 {
 					errMessage.Stack = strings.Join(callers, "\n\t")

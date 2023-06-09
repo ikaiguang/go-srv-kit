@@ -1,7 +1,8 @@
-package rabbitmqutil
+package rabbitmqpkg
 
 import (
 	"crypto/tls"
+
 	"github.com/ThreeDotsLabs/watermill"
 )
 

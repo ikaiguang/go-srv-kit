@@ -1,4 +1,4 @@
-package ziputil
+package zippkg
 
 import (
 	"testing"

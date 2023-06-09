@@ -1,4 +1,4 @@
-package passwordutil
+package passwordpkg
 
 import (
 	"golang.org/x/crypto/bcrypt"
@@ -28,7 +28,7 @@ func NewPasswordHash() *PasswordHash {
 	return &PasswordHash{}
 }
 
-func (e *PasswordHash) Encrypt(src string) (des string, err error) {
+func (e *PasswordHash) Encrypt(src string) (string, error) {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(src), bcrypt.MinCost)
 	if err != nil {
 		return "", err

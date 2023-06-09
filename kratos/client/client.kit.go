@@ -1,17 +1,17 @@
-package clientutil
+package clientpkg
 
 import (
 	"context"
 	stdjson "encoding/json"
-	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-	"github.com/go-kratos/kratos/v2/transport/http"
-	stdgrpc "google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
 	"io"
 	stdhttp "net/http"
 
-	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
+	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/go-kratos/kratos/v2/transport/http"
+	apppkg "github.com/ikaiguang/go-srv-kit/kratos/app"
+	stdgrpc "google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 // NewHTTPClient ...
@@ -51,7 +51,7 @@ func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) 
 	}
 
 	// 解析数据
-	data := &responsev1.Response{}
+	data := &apppkg.Response{}
 	if err = http.CodecForResponse(res).Unmarshal(bodyBytes, data); err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) 
 	case proto.Message:
 		return data.Data.UnmarshalTo(m)
 	default:
-		unknownData := &responsev1.Data{}
+		unknownData := &apppkg.ResponseData{}
 		if err = data.Data.UnmarshalTo(unknownData); err != nil {
 			return err
 		}

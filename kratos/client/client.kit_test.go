@@ -1,11 +1,12 @@
-package clientutil
+package clientpkg
 
 import (
 	"context"
+	"testing"
+
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	pingv1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources"
 	pingservicev1 "github.com/ikaiguang/go-srv-kit/api/ping/v1/services"

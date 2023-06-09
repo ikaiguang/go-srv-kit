@@ -1,14 +1,16 @@
-package jsonutil
+package jsonpkg
 
 import (
 	"encoding/json"
-	bufferutil "github.com/ikaiguang/go-srv-kit/kit/buffer"
+
+	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 )
 
 // MarshalWithoutEscapeHTML ...
 func MarshalWithoutEscapeHTML(data interface{}) ([]byte, error) {
-	buffer := bufferutil.GetBuffer()
-	defer bufferutil.PutBuffer(buffer)
+	buffer := bufferpkg.GetBuffer()
+	defer bufferpkg.PutBuffer(buffer)
+
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)
 	err := encoder.Encode(data)
@@ -17,8 +19,9 @@ func MarshalWithoutEscapeHTML(data interface{}) ([]byte, error) {
 
 // MarshalIndentWithoutEscapeHTML ...
 func MarshalIndentWithoutEscapeHTML(data interface{}, prefix, indent string) ([]byte, error) {
-	buffer := bufferutil.GetBuffer()
-	defer bufferutil.PutBuffer(buffer)
+	buffer := bufferpkg.GetBuffer()
+	defer bufferpkg.PutBuffer(buffer)
+
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent(prefix, indent)

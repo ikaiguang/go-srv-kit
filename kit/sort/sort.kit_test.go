@@ -1,4 +1,4 @@
-package sortutil
+package sortpkg
 
 import (
 	"testing"

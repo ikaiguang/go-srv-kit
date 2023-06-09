@@ -1,11 +1,12 @@
-package psqlutil
+package psqlpkg
 
 import (
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/gorm"
-	"testing"
-	"time"
 )
 
 var (

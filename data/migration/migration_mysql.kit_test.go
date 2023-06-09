@@ -1,4 +1,4 @@
-package migrationutil
+package migrationpkg
 
 import (
 	"fmt"
@@ -7,12 +7,11 @@ import (
 	"testing"
 	"time"
 
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-
-	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 )
 
 // go test -v -count=1 ./data/migration -test.run=TestMigrateALL_MySQL
@@ -71,7 +70,7 @@ func newMysqlDB() (*gorm.DB, error) {
 		return dbConn, err
 	}
 	dbConn = dbConn.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4")
-	dbConn = gormutil.SetOption(dbConn, gormutil.OptionKeyTableOptions, gormutil.OptionValueEngineInnoDB)
+	dbConn = gormpkg.SetOption(dbConn, gormpkg.OptionKeyTableOptions, gormpkg.OptionValueEngineInnoDB)
 
 	return dbConn, err
 }

@@ -1,4 +1,4 @@
-package ziputil
+package zippkg
 
 import (
 	"archive/zip"
@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	fileutil "github.com/ikaiguang/go-srv-kit/kit/file"
-	filepathutil "github.com/ikaiguang/go-srv-kit/kit/filepath"
+	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
+	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
 )
 
 // Zip 压缩目录
@@ -34,7 +34,7 @@ func Zip(resourcePath string, zipPath string) error {
 	defer func() { _ = zipWriter.Close() }()
 
 	// 读取文件
-	fps, fis, err := filepathutil.WaldDir(resourcePath)
+	fps, fis, err := filepathpkg.WaldDir(resourcePath)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 
 	// 创建文件夹
 	if zipFile.FileInfo().IsDir() {
-		err = os.MkdirAll(outputPath, fileutil.DefaultFileMode)
+		err = os.MkdirAll(outputPath, filepkg.DefaultFileMode)
 		if err != nil {
 			return err
 		}
@@ -143,13 +143,13 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 	}
 
 	// 创建文件目录
-	//err = os.MkdirAll(filepath.Dir(outputPath), fileutil.DefaultFileMode)
+	//err = os.MkdirAll(filepath.Dir(outputPath), filepkg.DefaultFileMode)
 	//if err != nil {
 	//	return err
 	//}
 
 	// 创建输出文件
-	outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, fileutil.DefaultFileMode)
+	outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, filepkg.DefaultFileMode)
 	if err != nil {
 		return err
 	}

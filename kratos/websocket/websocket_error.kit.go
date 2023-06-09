@@ -1,9 +1,9 @@
-package websocketutil
+package websocketpkg
 
 import (
 	"github.com/gorilla/websocket"
 
-	connectionutil "github.com/ikaiguang/go-srv-kit/kit/connection"
+	connectionpkg "github.com/ikaiguang/go-srv-kit/kit/connection"
 )
 
 // IsCloseError .
@@ -21,7 +21,7 @@ func IsCloseError(wsErr error) bool {
 		return isClose
 	}
 
-	if connectionutil.IsConnCloseErr(wsErr) {
+	if connectionpkg.IsConnCloseErr(wsErr) {
 		return true
 	}
 	return false

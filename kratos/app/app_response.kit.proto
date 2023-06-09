@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package kit.app.apppkg;
+
+option go_package = "github.com/ikaiguang/go-srv-kit/kratos/app;apppkg";
+option java_multiple_files = true;
+option java_package = "kit.app.apppkg";
+option java_outer_classname = "KitAppAppPkg";
+
+import "google/protobuf/any.proto";
+
+// Response 响应
+message Response {
+  int32 code = 1;
+  string reason = 2;
+  string message = 3;
+
+  google.protobuf.Any data = 5;
+  map<string, string> metadata = 6;
+};
+
+// ResponseData data
+message ResponseData { string data = 1; }

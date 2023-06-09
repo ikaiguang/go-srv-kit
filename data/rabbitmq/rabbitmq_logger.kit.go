@@ -1,4 +1,4 @@
-package rabbitmqutil
+package rabbitmqpkg
 
 import (
 	"github.com/ThreeDotsLabs/watermill"

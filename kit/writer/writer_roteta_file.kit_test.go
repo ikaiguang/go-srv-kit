@@ -1,4 +1,4 @@
-package writerutil
+package writerpkg
 
 import (
 	"fmt"

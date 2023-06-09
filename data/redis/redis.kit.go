@@ -1,8 +1,9 @@
-package redisutil
+package redispkg
 
 import (
 	"context"
 	"fmt"
+
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/types/known/durationpb"
 )

@@ -1,23 +1,22 @@
-package pageutil
+package pagepkg
 
 import (
 	"testing"
 
-	pagev1 "github.com/ikaiguang/go-srv-kit/api/page/v1"
 	"github.com/stretchr/testify/assert"
 )
 
 // go test -v -count=1 ./kit/page -test.run=TestPaginate_ConvertToPageOption
 func TestPaginate_ConvertToPageOption(t *testing.T) {
 	defaultRequest := DefaultPageRequest()
-	pageRequestFor10 := &pagev1.PageRequest{
+	pageRequestFor10 := &PageRequest{
 		Page:     10,
 		PageSize: 10,
 	}
 
 	tests := []struct {
 		name        string
-		pageRequest *pagev1.PageRequest
+		pageRequest *PageRequest
 		want        *PageOption
 	}{
 		{
@@ -50,46 +49,46 @@ func TestPaginate_ConvertToPageOption(t *testing.T) {
 func TestPaginate_ParsePageRequest(t *testing.T) {
 	tests := []struct {
 		name  string
-		given *pagev1.PageRequest
-		want  *pagev1.PageRequest
+		given *PageRequest
+		want  *PageRequest
 	}{
 		{
 			name:  "#解析分页请求#nil",
 			given: nil,
-			want: &pagev1.PageRequest{
+			want: &PageRequest{
 				Page:     DefaultPageNumber,
 				PageSize: DefaultPageSize,
 			},
 		},
 		{
 			name: "#解析分页请求#default",
-			given: &pagev1.PageRequest{
+			given: &PageRequest{
 				Page:     DefaultPageNumber,
 				PageSize: DefaultPageSize,
 			},
-			want: &pagev1.PageRequest{
+			want: &PageRequest{
 				Page:     DefaultPageNumber,
 				PageSize: DefaultPageSize,
 			},
 		},
 		{
 			name: "#解析分页请求#zero",
-			given: &pagev1.PageRequest{
+			given: &PageRequest{
 				Page:     0,
 				PageSize: 0,
 			},
-			want: &pagev1.PageRequest{
+			want: &PageRequest{
 				Page:     DefaultPageNumber,
 				PageSize: DefaultPageSize,
 			},
 		},
 		{
 			name: "#解析分页请求#custom",
-			given: &pagev1.PageRequest{
+			given: &PageRequest{
 				Page:     2,
 				PageSize: 300,
 			},
-			want: &pagev1.PageRequest{
+			want: &PageRequest{
 				Page:     2,
 				PageSize: 300,
 			},
@@ -108,11 +107,11 @@ func TestPaginate_ParsePageRequest(t *testing.T) {
 func TestPaginate_DefaultPageRequest(t *testing.T) {
 	tests := []struct {
 		name string
-		want *pagev1.PageRequest
+		want *PageRequest
 	}{
 		{
 			name: "#默认的分页请求",
-			want: &pagev1.PageRequest{
+			want: &PageRequest{
 				Page:     DefaultPageNumber,
 				PageSize: DefaultPageSize,
 			},

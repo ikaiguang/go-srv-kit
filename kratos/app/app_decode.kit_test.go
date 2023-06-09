@@ -1,26 +1,24 @@
-package apputil
+package apppkg
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/anypb"
-	commonv1 "realibox-global/go-global-services/api/common/v1"
-	pingv1 "realibox-global/go-global-services/api/ping-service/v1/resources"
-	"testing"
 )
 
 // go test -v -count=1 ./business/app -test.run=TestDecodeProto
 func TestDecodeProto(t *testing.T) {
 	var (
 		err      error
-		response = &commonv1.Response{
-			Code:      400,
-			Reason:    "CONTENT_ERROR",
-			Message:   "testing error",
-			RequestId: "",
-			Metadata:  map[string]string{"testdata": "testdata"},
+		response = &Response{
+			Code:     400,
+			Reason:   "CONTENT_ERROR",
+			Message:  "testing error",
+			Metadata: map[string]string{"testdata": "testdata"},
 		}
-		data = &pingv1.PingResp{
+		data = &Response{
 			Message: "ping-pong",
 		}
 	)
@@ -34,7 +32,7 @@ func TestDecodeProto(t *testing.T) {
 		name     string
 		body     []byte
 		wantCode int32
-		wantData *commonv1.Response
+		wantData *Response
 	}{
 		{
 			name:     "#test_error",
@@ -46,8 +44,8 @@ func TestDecodeProto(t *testing.T) {
 
 	for _, v := range tests {
 		t.Run(v.name, func(t *testing.T) {
-			actual := &pingv1.PingResp{}
-			got, err := DecodeProto(v.body, actual)
+			actual := &Response{}
+			got, err := DecodeProtobufResponse(v.body, actual)
 			require.Nil(t, err)
 			require.Equal(t, v.wantCode, got.Code)
 			require.Equal(t, v.wantData.Reason, got.Reason)
@@ -63,20 +61,20 @@ func TestDecodeResponse(t *testing.T) {
 		name     string
 		body     []byte
 		wantCode int
-		wantData *pingv1.PingResp
+		wantData *Response
 	}{
 		{
 			name:     "#test_data",
 			body:     body,
 			wantCode: 0,
-			wantData: &pingv1.PingResp{Message: "Received Message : hello"},
+			wantData: &Response{Message: "Received Message : hello"},
 		},
 	}
 
 	for _, v := range tests {
 		t.Run(v.name, func(t *testing.T) {
-			actual := &pingv1.PingResp{}
-			got, err := DecodeResponse(v.body, actual)
+			actual := &Response{}
+			got, err := DecodeHTTPResponse(v.body, actual)
 			require.Nil(t, err)
 			require.Equal(t, v.wantCode, int(got.Code))
 			require.Equal(t, v.wantData.Message, actual.Message)
@@ -91,13 +89,13 @@ func TestDecodeError(t *testing.T) {
 		name     string
 		body     []byte
 		wantCode int
-		wantData *commonv1.Response
+		wantData *Response
 	}{
 		{
 			name:     "#test_error",
 			body:     body,
 			wantCode: 400,
-			wantData: &commonv1.Response{
+			wantData: &Response{
 				Code:    400,
 				Reason:  "CONTENT_ERROR",
 				Message: "testing error",

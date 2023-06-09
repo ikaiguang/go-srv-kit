@@ -1,4 +1,4 @@
-package randomutil
+package randompkg
 
 import "testing"
 

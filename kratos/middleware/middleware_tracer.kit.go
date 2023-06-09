@@ -1,4 +1,4 @@
-package middlewareutil
+package middlewarepkg
 
 import (
 	"go.opentelemetry.io/otel"

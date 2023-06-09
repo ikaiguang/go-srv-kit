@@ -1,19 +1,19 @@
-package apputil
+package apppkg
 
 import (
 	"context"
 	stdjson "encoding/json"
-	"github.com/go-kratos/kratos/v2/transport/http"
-	responsev1 "github.com/ikaiguang/go-srv-kit/api/response/v1"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 	"io"
 	stdhttp "net/http"
+
+	"github.com/go-kratos/kratos/v2/transport/http"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
-// DecodeProto 解码结果
-func DecodeProto(contentBody []byte, pbMessage proto.Message) (response *responsev1.Response, err error) {
-	response = &responsev1.Response{}
+// DecodeProtobufResponse 解码结果
+func DecodeProtobufResponse(contentBody []byte, pbMessage proto.Message) (response *Response, err error) {
+	response = &Response{}
 	err = protojson.Unmarshal(contentBody, response)
 	if err != nil {
 		return response, err
@@ -30,9 +30,9 @@ func DecodeProto(contentBody []byte, pbMessage proto.Message) (response *respons
 	return response, err
 }
 
-// DecodeResponse 解码结果
-func DecodeResponse(contentBody []byte, data interface{}) (response *Response, err error) {
-	response = &Response{
+// DecodeHTTPResponse 解码结果
+func DecodeHTTPResponse(contentBody []byte, data interface{}) (response *HTTPResponse, err error) {
+	response = &HTTPResponse{
 		Data: data,
 	}
 	err = UnmarshalJSON(contentBody, response)
@@ -43,8 +43,8 @@ func DecodeResponse(contentBody []byte, data interface{}) (response *Response, e
 }
 
 // DecodeError 解码结果
-func DecodeError(contentBody []byte) (response *responsev1.Response, err error) {
-	response = &responsev1.Response{}
+func DecodeError(contentBody []byte) (response *Response, err error) {
+	response = &Response{}
 	err = UnmarshalJSON(contentBody, response)
 	if err != nil {
 		return response, err
@@ -61,7 +61,7 @@ func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) 
 	}
 
 	// 解析数据
-	data := &responsev1.Response{}
+	data := &Response{}
 	if err = http.CodecForResponse(res).Unmarshal(bodyBytes, data); err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) 
 	case proto.Message:
 		return data.Data.UnmarshalTo(m)
 	default:
-		unknownData := &responsev1.ResponseData{}
+		unknownData := &ResponseData{}
 		if err = data.Data.UnmarshalTo(unknownData); err != nil {
 			return err
 		}
