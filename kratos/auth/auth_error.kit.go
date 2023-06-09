@@ -2,8 +2,7 @@ package authpkg
 
 import (
 	"github.com/go-kratos/kratos/v2/errors"
-
-	errorpkg "gitlab.realibox.cn/designhub/app-server/hub-kratos-pkg/error"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )
 
 func ErrMissingToken() *errors.Error {

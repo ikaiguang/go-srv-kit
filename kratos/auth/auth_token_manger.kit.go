@@ -6,9 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	"github.com/redis/go-redis/v9"
-
-	threadpkg "gitlab.realibox.cn/designhub/app-server/hub-kratos-pkg/thread"
 )
 
 // RedisCacheKeyPrefix ...

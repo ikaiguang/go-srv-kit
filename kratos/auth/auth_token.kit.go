@@ -7,11 +7,10 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v4"
+	aespkg "github.com/ikaiguang/go-srv-kit/kit/aes"
+	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
+	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	"github.com/redis/go-redis/v9"
-
-	aespkg "gitlab.realibox.cn/designhub/app-server/hub-kratos-pkg/aes"
-	threadpkg "gitlab.realibox.cn/designhub/app-server/hub-kratos-pkg/thread"
-	uuidpkg "gitlab.realibox.cn/designhub/app-server/hub-kratos-pkg/uuid"
 )
 
 // Encryptor ...

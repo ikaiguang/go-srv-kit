@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/go-kratos/kratos/v2/transport"
 	"go.opentelemetry.io/otel/trace"
 
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
-	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
 	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
@@ -21,11 +21,14 @@ func RequestHeader() middleware.Middleware {
 			}
 			if traceID == "" {
 				traceID = uuidpkg.New()
-				if httpTr, ok := contextpkg.MatchHTTPServerContext(ctx); ok {
-					httpTr.RequestHeader().Set(headerpkg.RequestID, traceID)
+			}
+			tr, ok := transport.FromServerContext(ctx)
+			if ok {
+				if tr.ReplyHeader().Get(headerpkg.TraceID) == "" {
+					tr.ReplyHeader().Set(headerpkg.TraceID, traceID)
 				}
-				if grpcTr, ok := contextpkg.MatchGRPCServerContext(ctx); ok {
-					grpcTr.ReplyHeader().Set(headerpkg.RequestID, traceID)
+				if tr.RequestHeader().Get(headerpkg.RequestID) == "" {
+					tr.RequestHeader().Set(headerpkg.RequestID, traceID)
 				}
 			}
 			return handler(ctx, req)
