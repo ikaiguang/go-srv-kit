@@ -5,6 +5,8 @@ import (
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )
 
+var ()
+
 func ErrMissingToken() *errors.Error {
 	return errors.Unauthorized(ERROR_TOKEN_MISSING.String(), "token is missing")
 }

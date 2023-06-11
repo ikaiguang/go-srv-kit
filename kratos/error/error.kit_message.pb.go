@@ -22,6 +22,7 @@ var (
 		"NETWORK_ERROR":                      "网络开小差了，请稍后再试",
 		"NETWORK_TIMEOUT":                    "请求超时",
 		"CONNECTION":                         "链接错误",
+		"UNINITIALIZED":                      "未初始化",
 		"UNIMPLEMENTED":                      "未实现",
 		"REQUEST_NOT_SUPPORT":                "暂不支持此次请求",
 		"THIRD_PARTY_SERVICE_INTERNAL_ERROR": "第三方服务错误",

@@ -21,21 +21,22 @@ enum ERROR {
   NETWORK_ERROR = 4 [(errors.code) = 500];
   NETWORK_TIMEOUT = 5 [(errors.code) = 504];
   CONNECTION = 6 [(errors.code) = 500];
-  UNIMPLEMENTED = 7 [(errors.code) = 500];
-  INVALID_PARAMETER = 8 [(errors.code) = 400];
-  REQUEST_NOT_SUPPORT = 9 [(errors.code) = 500];
-  THIRD_PARTY_SERVICE_INTERNAL_ERROR = 10 [(errors.code) = 500]; // 第三方服务错误
-  THIRD_PARTY_SERVICE_INVALID_CODE = 11 [(errors.code) = 400]; // 第三方服务响应结果有误
-  DB = 12 [(errors.code) = 500];
-  MYSQL = 13 [(errors.code) = 500];
-  MONGO = 14 [(errors.code) = 500];
-  CACHE = 15 [(errors.code) = 500];
-  REDIS = 16 [(errors.code) = 500];
-  MQ = 17 [(errors.code) = 500];
-  RABBIT_MQ = 18 [(errors.code) = 500];
-  KAFKA = 19 [(errors.code) = 500];
-  PANIC = 20 [(errors.code) = 500];
-  FATAL = 21 [(errors.code) = 500];
+  UNINITIALIZED = 7 [(errors.code) = 500];
+  UNIMPLEMENTED = 8 [(errors.code) = 500];
+  INVALID_PARAMETER = 9 [(errors.code) = 400];
+  REQUEST_NOT_SUPPORT = 10 [(errors.code) = 500];
+  THIRD_PARTY_SERVICE_INTERNAL_ERROR = 11 [(errors.code) = 500]; // 第三方服务错误
+  THIRD_PARTY_SERVICE_INVALID_CODE = 12 [(errors.code) = 400]; // 第三方服务响应结果有误
+  DB = 13 [(errors.code) = 500];
+  MYSQL = 14 [(errors.code) = 500];
+  MONGO = 15 [(errors.code) = 500];
+  CACHE = 16 [(errors.code) = 500];
+  REDIS = 17 [(errors.code) = 500];
+  MQ = 18 [(errors.code) = 500];
+  RABBIT_MQ = 19 [(errors.code) = 500];
+  KAFKA = 20 [(errors.code) = 500];
+  PANIC = 21 [(errors.code) = 500];
+  FATAL = 22 [(errors.code) = 500];
 
   // CONTINUE Continue
   CONTINUE = 100 [(errors.code) = 100];

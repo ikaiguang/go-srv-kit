@@ -97,6 +97,18 @@ func ErrorConnection(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ERROR_CONNECTION.String(), fmt.Sprintf(format, args...))
 }
 
+func IsUninitialized(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_UNINITIALIZED.String() && e.Code == 500
+}
+
+func ErrorUninitialized(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_UNINITIALIZED.String(), fmt.Sprintf(format, args...))
+}
+
 func IsUnimplemented(err error) bool {
 	if err == nil {
 		return false
