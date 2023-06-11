@@ -9,6 +9,24 @@ option java_outer_classname = "KitAppAppPkg";
 
 import "google/protobuf/any.proto";
 
+// RuntimeEnvEnum app运行环境
+message RuntimeEnvEnum {
+  enum RuntimeEnv {
+    // UNKNOWN 未知
+    UNKNOWN = 0;
+    // LOCAL 本地开发
+    LOCAL = 1;
+    // DEVELOP 开发环境
+    DEVELOP = 2;
+    // TESTING 测试环境
+    TESTING = 3;
+    // PREVIEW 预发布 环境
+    PREVIEW = 4;
+    // PRODUCTION 生产环境
+    PRODUCTION = 5;
+  }
+}
+
 // Response 响应
 message Response {
   int32 code = 1;

@@ -7,7 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// go test -v -count=1 ./auth -test.run=TestNewAuthRepo
+// go test -v -count=1 ./kratos/auth -test.run=TestNewAuthRepo
 func TestNewAuthRepo(t *testing.T) {
 	type args struct {
 		redisCC redis.UniversalClient
