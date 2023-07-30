@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
@@ -100,7 +99,7 @@ func WithCallerSkip(skip int) Option {
 
 // ServerLog 中间件日志
 // 参考 logging.Server(logger)
-func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
+func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 	opt := &options{}
 	for i := range opts {
 		opts[i](opt)
@@ -158,7 +157,7 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 
 			// websocket 不输出错误
 			if isWebsocket {
-				_ = log.WithContext(ctx, logger).Log(loggingLevel, kv...)
+				logHelper.WithContext(ctx).Log(loggingLevel, kv...)
 				return
 			}
 
@@ -167,7 +166,7 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 				loggingLevel = log.LevelError
 				// 错误信息
 				errMessage.Msg = err.Error()
-				if se := errors.FromError(err); se != nil {
+				if se := errorpkg.FromError(err); se != nil {
 					errMessage.Code = se.Code
 					errMessage.Reason = se.Reason
 				}
@@ -196,7 +195,7 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 			}
 
 			// 输出日志
-			_ = log.WithContext(ctx, logger).Log(loggingLevel, kv...)
+			logHelper.WithContext(ctx).Log(loggingLevel, kv...)
 			return
 		}
 
@@ -205,7 +204,7 @@ func ServerLog(logger log.Logger, opts ...Option) middleware.Middleware {
 
 // ClientLog is an client logging middleware.
 // logging.Client(logger)
-func ClientLog(logger log.Logger) middleware.Middleware {
+func ClientLog(logHelper *log.Helper) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			var (
@@ -220,12 +219,12 @@ func ClientLog(logger log.Logger) middleware.Middleware {
 				operation = info.Operation()
 			}
 			reply, err = handler(ctx, req)
-			if se := errors.FromError(err); se != nil {
+			if se := errorpkg.FromError(err); se != nil {
 				code = se.Code
 				reason = se.Reason
 			}
 			level, stack := extractError(err)
-			_ = log.WithContext(ctx, logger).Log(level,
+			logHelper.WithContext(ctx).Log(level,
 				"kind", "client",
 				"component", kind,
 				"operation", operation,

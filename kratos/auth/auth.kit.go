@@ -3,7 +3,6 @@ package authpkg
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -69,16 +68,18 @@ type Claims struct {
 func (s *Claims) EncodeToString() (string, error) {
 	res, err := json.Marshal(s)
 	if err != nil {
-		return "", fmt.Errorf("encode token claims failed : %w", err)
+		err = errorpkg.ErrorBadRequest("encode token claims failed : %w", err)
+		return "", err
 	}
 	return string(res), nil
 }
 
 // DecodeString ...
-func (s *Claims) DecodeString(claims string) error {
-	err := json.Unmarshal([]byte(claims), s)
+func (s *Claims) DecodeString(claimCiphertext string) error {
+	err := json.Unmarshal([]byte(claimCiphertext), s)
 	if err != nil {
-		return fmt.Errorf("decode token claims failed : %w", err)
+		err = errorpkg.ErrorBadRequest("decode token claims failed : %w", err)
+		return err
 	}
 	return nil
 }
@@ -121,7 +122,8 @@ type TokenItem struct {
 func (s *TokenItem) EncodeToString() (string, error) {
 	res, err := json.Marshal(s)
 	if err != nil {
-		return "", fmt.Errorf("encode token item failed : %w", err)
+		err = errorpkg.ErrorBadRequest("encode token item failed : %w", err)
+		return "", err
 	}
 	return string(res), nil
 }
@@ -130,7 +132,8 @@ func (s *TokenItem) EncodeToString() (string, error) {
 func (s *TokenItem) DecodeString(tokenItem string) error {
 	err := json.Unmarshal([]byte(tokenItem), s)
 	if err != nil {
-		return fmt.Errorf("decode token item failed : %w", err)
+		err = errorpkg.ErrorBadRequest("decode token item failed : %w", err)
+		return err
 	}
 	return nil
 }

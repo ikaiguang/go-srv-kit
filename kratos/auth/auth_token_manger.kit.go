@@ -2,10 +2,10 @@ package authpkg
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"time"
 
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	"github.com/redis/go-redis/v9"
 )
@@ -99,7 +99,8 @@ func (s *tokenManger) SaveTokens(ctx context.Context, userIdentifier string, tok
 		}
 		itemStr, err := tokenItems[i].EncodeToString()
 		if err != nil {
-			return fmt.Errorf("encode token item failed: %w", err)
+			err = errorpkg.ErrorBadRequest("encode token item failed: %w", err)
+			return err
 		}
 		kvs = append(kvs, itemStr)
 

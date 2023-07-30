@@ -16,17 +16,21 @@ type ConfigStd struct {
 	// Level 日志级别
 	Level log.Level
 	// CallerSkip 日志 runtime caller skips
-	CallerSkip int
+	CallerSkip     int
+	UseJSONEncoder bool
 }
 
 // Std 标准输出
 type Std struct {
+	conf          *ConfigStd
 	loggerHandler *zap.Logger
 }
 
 // NewStdLogger 输出到控制台
 func NewStdLogger(conf *ConfigStd) (*Std, error) {
-	handler := &Std{}
+	handler := &Std{
+		conf: conf,
+	}
 	if err := handler.InitLogger(conf); err != nil {
 		return handler, err
 	}
@@ -54,24 +58,30 @@ func (s *Std) Log(level log.Level, keyvals ...interface{}) (err error) {
 
 	// field
 	var (
-		msg = "\n"
+		msg  = "\n"
+		data []zap.Field
 	)
-	for i := 0; i < len(keyvals); i += 2 {
-		msg += "*** ｜ " + fmt.Sprint(keyvals[i]) + "\n"
-		msg += "\t" + fmt.Sprint(keyvals[i+1]) + "\n"
+	if s.conf.UseJSONEncoder {
+		for i := 0; i < len(keyvals); i += 2 {
+			data = append(data, zap.Any(fmt.Sprint(keyvals[i]), fmt.Sprint(keyvals[i+1])))
+		}
+	} else {
+		for i := 0; i < len(keyvals); i += 2 {
+			msg += "*** ｜ " + fmt.Sprint(keyvals[i]) + " : " + fmt.Sprint(keyvals[i+1]) + "\n"
+		}
 	}
 
 	switch level {
 	case log.LevelDebug:
-		s.loggerHandler.Debug(msg)
+		s.loggerHandler.Debug(msg, data...)
 	case log.LevelInfo:
-		s.loggerHandler.Info(msg)
+		s.loggerHandler.Info(msg, data...)
 	case log.LevelWarn:
-		s.loggerHandler.Warn(msg)
+		s.loggerHandler.Warn(msg, data...)
 	case log.LevelError:
-		s.loggerHandler.Error(msg)
+		s.loggerHandler.Error(msg, data...)
 	case log.LevelFatal:
-		s.loggerHandler.Fatal(msg)
+		s.loggerHandler.Fatal(msg, data...)
 	}
 	return err
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
 	"github.com/golang-jwt/jwt/v4"
-	aespkg "github.com/ikaiguang/go-srv-kit/kit/aes"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -20,7 +19,7 @@ func ExampleServer() {
 	authConfig := Config{
 		SigningMethod:      jwt.SigningMethodHS256,
 		SignKey:            signKey,
-		RefreshCrypto:      aespkg.NewCBCCipher(),
+		RefreshCrypto:      NewCBCCipher(signKey),
 		AuthCacheKeyPrefix: CheckAuthCacheKeyPrefix(nil),
 	}
 	repo, err := NewAuthRepo(redisCC, logger, authConfig)
