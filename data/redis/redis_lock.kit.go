@@ -44,7 +44,7 @@ func (s *Locker) Once(ctx context.Context, lockName string) (locker lockerpkg.Un
 	m := &onceLock{}
 	m.mutex = s.rs.NewMutex(lockName, s.opts...)
 	if err = m.mutex.LockContext(ctx); err != nil {
-		err = lockerpkg.NewErrLockerFailed(true, lockName, err)
+		err = lockerpkg.ErrorLockerFailed(lockName, err)
 		return m, err
 	}
 	return m, err
@@ -55,7 +55,7 @@ func (s *Locker) Mutex(ctx context.Context, lockName string) (locker lockerpkg.U
 	m := &mutexLock{}
 	m.mutex = s.rs.NewMutex(lockName, s.opts...)
 	if err = m.mutex.LockContext(ctx); err != nil {
-		err = lockerpkg.NewErrLockerFailed(true, lockName, err)
+		err = lockerpkg.ErrorLockerFailed(lockName, err)
 		return m, err
 	}
 

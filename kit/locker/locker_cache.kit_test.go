@@ -1,33 +1,26 @@
-package redispkg
+package lockerpkg
 
 import (
 	"context"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/require"
-
-	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
 )
 
 const (
-	keyName = "test-redsync"
+	cacheKeyName = "test-redsync"
 )
 
-// go test -v -count=1 ./data/redis -test.run=TestLockOnce
-func TestLockOnce(t *testing.T) {
+// go test -v -count=1 ./kit/locker -test.run=TestCache_LockOnce
+func TestCache_LockOnce(t *testing.T) {
 
-	redisCC, err := NewDB(redisConfig)
-	require.Nil(t, err)
-	locker := NewLocker(redisCC)
-
+	locker := NewCacheLocker()
 	ctx := context.Background()
 
 	tests := []struct {
 		name         string
 		lockerStatus bool
 		isLockFailed bool
-		unlock       lockerpkg.Unlock
+		unlock       Unlock
 	}{
 		{
 			name:         "#加锁成功",
@@ -43,11 +36,11 @@ func TestLockOnce(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			unlock, err := locker.Once(ctx, keyName)
+			unlock, err := locker.Once(ctx, cacheKeyName)
 			t.Logf("想要：加锁(%v)\n", tt.lockerStatus)
 			if err != nil {
 				t.Logf("加锁失败！错误：%v\n", err)
-				t.Logf("==> IsLockFailedError : %v\n", lockerpkg.IsErrorLockFailed(err))
+				t.Logf("==> IsLockFailedError : %v\n", IsErrorLockFailed(err))
 			} else {
 				t.Logf("===> 加锁成功！\n")
 			}
@@ -58,10 +51,11 @@ func TestLockOnce(t *testing.T) {
 		if i == len(tests)-1 {
 			continue
 		}
-		sleepDuration := _lockExpire + 2*time.Second
-		t.Logf("==> 睡眠%v,尝试加锁是否成功。设置的加锁时长为%v\n", sleepDuration, _lockExpire)
+		sleepDuration := _cacheLockerExpire + 2*time.Second
+		t.Logf("==> 睡眠%v,尝试加锁是否成功。设置的加锁时长为%v\n", sleepDuration, _cacheLockerExpire)
 		time.Sleep(sleepDuration)
 	}
+	t.Log("==> 准备解锁")
 
 	// 解锁
 	for i := range tests {
@@ -75,20 +69,17 @@ func TestLockOnce(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./data/redis -test.run=TestLockMutex
-func TestLockMutex(t *testing.T) {
+// go test -v -count=1 ./kit/locker -test.run=TestCache_LockMutex
+func TestCache_LockMutex(t *testing.T) {
 
-	redisCC, err := NewDB(redisConfig)
-	require.Nil(t, err)
-	locker := NewLocker(redisCC)
-
+	locker := NewCacheLocker()
 	ctx := context.Background()
 
 	tests := []struct {
 		name         string
 		lockerStatus bool
 		isLockFailed bool
-		unlock       lockerpkg.Unlock
+		unlock       Unlock
 	}{
 		{
 			name:         "#加锁成功",
@@ -109,11 +100,11 @@ func TestLockMutex(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			unlock, err := locker.Mutex(ctx, keyName)
+			unlock, err := locker.Mutex(ctx, cacheKeyName)
 			t.Logf("想要：加锁(%v)\n", tt.lockerStatus)
 			if err != nil {
 				t.Logf("加锁失败啦！错误：%v\n", err)
-				t.Logf("==> IsLockFailedError : %v\n", lockerpkg.IsErrorLockFailed(err))
+				t.Logf("==> IsLockFailedError : %v\n", IsErrorLockFailed(err))
 			} else {
 				t.Logf("===> 加锁成功啦！\n")
 			}
@@ -125,10 +116,11 @@ func TestLockMutex(t *testing.T) {
 			continue
 		}
 		// lockExpire 默认8秒
-		sleepDuration := _lockExpire + time.Second
-		t.Logf("==> 睡眠:%v,尝试加锁是否成功。设置的加锁时长为:%v\n", sleepDuration, _lockExpire)
+		sleepDuration := _cacheLockerExpire + time.Second
+		t.Logf("==> 睡眠:%v,尝试加锁是否成功。设置的加锁时长为:%v\n", sleepDuration, _cacheLockerExpire)
 		time.Sleep(sleepDuration)
 	}
+	t.Log("==> 准备解锁")
 
 	// 解锁
 	for i := range tests {

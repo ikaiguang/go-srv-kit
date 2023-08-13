@@ -42,7 +42,7 @@ func (s *mutexLock) extend(ctx context.Context) {
 		// 续期
 		if ok, err := s.mutex.ExtendContext(ctx); err != nil || !ok {
 			if stderrors.Is(err, redsync.ErrExtendFailed) {
-				err = lockerpkg.NewErrExtendFailed(true, s.mutex.Name(), err)
+				err = lockerpkg.ErrorExtendFailed(s.mutex.Name(), err)
 			}
 			// 调试
 			//fmt.Println("redis mutex 续期失败")

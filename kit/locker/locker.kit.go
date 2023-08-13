@@ -5,6 +5,12 @@ import (
 	"fmt"
 )
 
+type LocalLocker interface {
+	Lock
+
+	Unlock(ctx context.Context, lockName string)
+}
+
 // Unlock 解锁
 type Unlock interface {
 	Unlock(ctx context.Context) (ok bool, err error)
@@ -12,64 +18,57 @@ type Unlock interface {
 
 // Lock 加锁
 type Lock interface {
-	Mutex(ctx context.Context, lockName string) (locker Unlock, err error)
-	Once(ctx context.Context, lockName string) (locker Unlock, err error)
+	Mutex(ctx context.Context, lockName string) (Unlock, error)
+	Once(ctx context.Context, lockName string) (Unlock, error)
 }
 
-// NewErrLockerFailed .
-func NewErrLockerFailed(isLockFailed bool, name string, err error) error {
-	return &ErrLockerFailed{
-		isLockFailed: isLockFailed,
-		name:         name,
-		err:          err,
+// ErrorLockerFailed .
+func ErrorLockerFailed(name string, err error) error {
+	return &errLockerFailed{
+		name: name,
+		err:  err,
 	}
 }
 
-// ErrLockerFailed ...
-type ErrLockerFailed struct {
-	isLockFailed bool
-	name         string
-	err          error
+// errLockerFailed ...
+type errLockerFailed struct {
+	name string
+	err  error
 }
 
 // Error error
-func (e *ErrLockerFailed) Error() string {
+func (e *errLockerFailed) Error() string {
 	return fmt.Sprintf("Lock(%s) failed : %s", e.name, e.err.Error())
 }
 
-// NewErrExtendFailed .
-func NewErrExtendFailed(isExtendFailed bool, name string, err error) error {
-	return &ErrExtendFailed{
-		isExtendFailed: isExtendFailed,
-		name:           name,
-		err:            err,
+// IsErrorLockFailed 锁失败
+func IsErrorLockFailed(err error) bool {
+	_, ok := err.(*errLockerFailed)
+	return ok
+}
+
+// ErrorExtendFailed .
+func ErrorExtendFailed(name string, err error) error {
+	return &errExtendFailed{
+		name: name,
+		err:  err,
 	}
 }
 
-// ErrExtendFailed ...
-type ErrExtendFailed struct {
-	isExtendFailed bool
-	name           string
-	err            error
+// errExtendFailed ...
+type errExtendFailed struct {
+	name string
+	err  error
 }
 
 // Error error
-func (e *ErrExtendFailed) Error() string {
+func (e *errExtendFailed) Error() string {
 	return fmt.Sprintf("Lock(%s) failed : %s", e.name, e.err.Error())
 }
 
-// IsErrLockFailed 锁失败
-func IsErrLockFailed(err error) bool {
-	if e, ok := err.(*ErrLockerFailed); ok {
-		return e.isLockFailed
-	}
-	return false
-}
+// IsErrorExtendFailed 延长锁失败
+func IsErrorExtendFailed(err error) bool {
+	_, ok := err.(*errExtendFailed)
 
-// IsErrExtendFailed 延长锁失败
-func IsErrExtendFailed(err error) bool {
-	if e, ok := err.(*ErrExtendFailed); ok {
-		return e.isExtendFailed
-	}
-	return false
+	return ok
 }
