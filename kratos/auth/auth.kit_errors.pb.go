@@ -16,11 +16,11 @@ func IsUnknown(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_UNKNOWN.String() && e.Code == 500
+	return e.Reason == ERROR_UNKNOWN.String() && e.Code == 401
 }
 
 func ErrorUnknown(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
+	return errors.New(401, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
 }
 
 func IsTokenMissing(err error) bool {

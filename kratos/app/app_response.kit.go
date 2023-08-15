@@ -2,18 +2,29 @@ package apppkg
 
 import (
 	stdhttp "net/http"
+	"strings"
 
+	"github.com/go-kratos/kratos/v2/encoding"
+	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
-	"github.com/go-kratos/kratos/v2/transport/http"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 	"google.golang.org/grpc/codes"
 )
 
-var (
-	_ = http.DefaultRequestDecoder
-	_ = http.DefaultErrorEncoder
-	_ = http.DefaultResponseEncoder
-	_ = http.DefaultResponseDecoder
-)
+// ContentType returns the content-type with base prefix.
+func ContentType(subtype string) string {
+	return strings.Join([]string{baseContentType, subtype}, "/")
+}
+
+// SetResponseContentType ...
+func SetResponseContentType(w stdhttp.ResponseWriter, codec encoding.Codec) {
+	switch codec.Name() {
+	case json.Name:
+		w.Header().Set("Content-Type", headerpkg.ContentTypeJSONUtf8)
+	default:
+		w.Header().Set("Content-Type", ContentType(codec.Name()))
+	}
+}
 
 // HTTPResponseInterface .
 type HTTPResponseInterface interface {
@@ -64,18 +75,12 @@ func (x *HTTPResponse) GetMetadata() map[string]string {
 
 // IsSuccessCode 成功的响应码
 func IsSuccessCode(code int32) bool {
-	if code == OK {
-		return true
-	}
-	return IsSuccessHTTPCode(int(code))
+	return code == OK || IsSuccessHTTPCode(int(code))
 }
 
 // IsSuccessHTTPCode 成功的HTTP响应吗
 func IsSuccessHTTPCode(code int) bool {
-	if code >= stdhttp.StatusOK && code < stdhttp.StatusMultipleChoices {
-		return true
-	}
-	return false
+	return code >= stdhttp.StatusOK && code < stdhttp.StatusMultipleChoices
 }
 
 // IsSuccessGRPCCode 成功的GRPC响应吗

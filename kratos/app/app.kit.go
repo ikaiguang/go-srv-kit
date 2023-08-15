@@ -1,6 +1,17 @@
 package apppkg
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/go-kratos/kratos/v2/transport/http"
+)
+
+var (
+	_ = http.DefaultRequestDecoder
+	_ = http.DefaultErrorEncoder
+	_ = http.DefaultResponseEncoder
+	_ = http.DefaultResponseDecoder
+)
 
 var (
 	appRuntimeEnv = RuntimeEnvEnum_PRODUCTION

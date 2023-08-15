@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
@@ -218,22 +219,40 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 				kind = info.Kind().String()
 				operation = info.Operation()
 			}
-			reply, err = handler(ctx, req)
-			if se := errorpkg.FromError(err); se != nil {
-				code = se.Code
-				reason = se.Reason
-			}
-			level, stack := extractError(err)
-			logHelper.WithContext(ctx).Log(level,
-				"kind", "client",
-				"component", kind,
-				"operation", operation,
-				"args", extractArgs(req),
-				"code", code,
-				"reason", reason,
-				"stack", stack,
-				"latency", time.Since(startTime).Seconds(),
+
+			// log
+			requestStr := `kind="client"`
+			requestStr += " component=" + `"` + kind + `"`
+			requestStr += " latency=" + `"` + time.Since(startTime).String() + `"`
+			var (
+				level log.Level
+				stack string
+				kv    = []interface{}{
+					"request", requestStr,
+					"operation", operation,
+					//"code", code,
+					//"reason", reason,
+					//"args", extractArgs(req),
+					//"stack", stack,
+				}
 			)
+
+			reply, err = handler(ctx, req)
+			if err != nil {
+				if se := errorpkg.FromError(err); se != nil {
+					code = se.Code
+					reason = se.Reason
+				}
+				level, stack = extractError(err)
+				message := "code=" + `"` + strconv.FormatInt(int64(code), 10) + `"`
+				message += " reason=" + `"` + reason + `"`
+				kv = append(kv,
+					"error", message,
+					"args", extractArgs(req),
+					"stack", stack,
+				)
+			}
+			logHelper.WithContext(ctx).Log(level, kv...)
 			return
 		}
 	}
@@ -241,6 +260,9 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 
 // extractArgs returns the string of the req
 func extractArgs(req interface{}) string {
+	if redacter, ok := req.(logging.Redacter); ok {
+		return redacter.Redact()
+	}
 	if stringer, ok := req.(fmt.Stringer); ok {
 		return stringer.String()
 	}

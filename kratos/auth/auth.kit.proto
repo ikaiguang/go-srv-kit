@@ -13,7 +13,7 @@ import "errors/errors.proto";
 enum ERROR {
   option (errors.default_code) = 500;
 
-  UNKNOWN = 0 [(errors.code) = 500];
+  UNKNOWN = 0 [(errors.code) = 401];
 
   TOKEN_MISSING = 1 [(errors.code) = 401];
   TOKEN_KEY_MISSING = 2 [(errors.code) = 401];

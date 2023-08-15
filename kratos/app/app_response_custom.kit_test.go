@@ -8,8 +8,8 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-// go test -v -count=1 ./business/app -test.run=TestDecodeProto
-func TestDecodeProto(t *testing.T) {
+// go test -v -count=1 ./business/app -test.run=TestCustomDecodeProtobufResponse
+func TestCustomDecodeProtobufResponse(t *testing.T) {
 	var (
 		err      error
 		response = &Response{
@@ -45,7 +45,7 @@ func TestDecodeProto(t *testing.T) {
 	for _, v := range tests {
 		t.Run(v.name, func(t *testing.T) {
 			actual := &Response{}
-			got, err := DecodeProtobufResponse(v.body, actual)
+			got, err := CustomDecodeProtobufResponse(v.body, actual)
 			require.Nil(t, err)
 			require.Equal(t, v.wantCode, got.Code)
 			require.Equal(t, v.wantData.Reason, got.Reason)
@@ -54,8 +54,8 @@ func TestDecodeProto(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./business/app -test.run=TestDecodeResponse
-func TestDecodeResponse(t *testing.T) {
+// go test -v -count=1 ./business/app -test.run=TestCustomDecodeHTTPResponse
+func TestCustomDecodeHTTPResponse(t *testing.T) {
 	body := []byte(`{"code":0,"reason":"","message":"","data":{"message":"Received Message : hello"},"request_id":""}`)
 	tests := []struct {
 		name     string
@@ -74,7 +74,7 @@ func TestDecodeResponse(t *testing.T) {
 	for _, v := range tests {
 		t.Run(v.name, func(t *testing.T) {
 			actual := &Response{}
-			got, err := DecodeHTTPResponse(v.body, actual)
+			got, err := CustomDecodeHTTPResponse(v.body, actual)
 			require.Nil(t, err)
 			require.Equal(t, v.wantCode, int(got.Code))
 			require.Equal(t, v.wantData.Message, actual.Message)
@@ -82,8 +82,8 @@ func TestDecodeResponse(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./business/app -test.run=TestDecodeError
-func TestDecodeError(t *testing.T) {
+// go test -v -count=1 ./business/app -test.run=TestCustomDecodeResponseError
+func TestCustomDecodeResponseError(t *testing.T) {
 	body := []byte(`{"code":400, "reason":"CONTENT_ERROR", "message":"testing error", "requestId":"", "data":null, "metadata":{"testdata":"testdata"}}`)
 	tests := []struct {
 		name     string
@@ -105,7 +105,7 @@ func TestDecodeError(t *testing.T) {
 
 	for _, v := range tests {
 		t.Run(v.name, func(t *testing.T) {
-			got, err := DecodeError(v.body)
+			got, err := CustomDecodeResponseError(v.body)
 			require.Nil(t, err)
 			require.Equal(t, v.wantCode, int(got.Code))
 			require.Equal(t, v.wantData.Reason, got.Reason)

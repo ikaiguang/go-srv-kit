@@ -14,7 +14,7 @@ enum ERROR {
   option (errors.default_code) = 500;
 
   // UNKNOWN 常规
-  UNKNOWN = 0 [(errors.code) = 404];
+  UNKNOWN = 0 [(errors.code) = 500];
   REQUEST_FAILED = 1 [(errors.code) = 400];
   RECORD_NOT_FOUND = 2 [(errors.code) = 404];
   RECORD_ALREADY_EXISTS = 3 [(errors.code) = 400];

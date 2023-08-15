@@ -10,7 +10,7 @@ const (
 	IsWebsocket  = "x-custom-is-websocket"  // http请求设置
 	RemoteAddr   = "x-custom-remote-addr"   // 远程地址
 	UserTerminal = "x-custom-user-terminal" // 使用终端、平台
-	TraceID      = "trace-id"               // trace-id
+	TraceID      = "x-custom-trace-id"      // trace-id
 
 	// WebsocketConnection websocket
 	WebsocketConnection = "Connection"

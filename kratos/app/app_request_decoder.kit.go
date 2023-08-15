@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/encoding"
-	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )
@@ -38,7 +37,9 @@ func RequestDecoder(r *http.Request, v interface{}) error {
 	// 解码
 	codec, ok := http.CodecForRequest(r, "Content-Type")
 	if !ok {
-		return errors.BadRequest("CODEC", fmt.Sprintf("unregister Content-Type: %s", r.Header.Get("Content-Type")))
+		msg := fmt.Sprintf("[CODEC] unregister Content-Type: %s", r.Header.Get("Content-Type"))
+		e := errorpkg.ErrorInvalidParameter(msg)
+		return errorpkg.Wrap(e)
 	}
 	// 不解析 multipart/form-data : encoding.RegisterCodec(&multipartForm{})
 	if codec.Name() == codecNameMultipartForm {
@@ -51,16 +52,15 @@ func RequestDecoder(r *http.Request, v interface{}) error {
 	// reset body.
 	r.Body = io.NopCloser(bytes.NewBuffer(data))
 	if err != nil {
-		return errors.BadRequest("CODEC", err.Error())
+		e := errorpkg.ErrorInvalidParameter("[CODEC] invalid request body")
+		return errorpkg.Wrap(e, err)
 	}
 	if len(data) == 0 {
 		return nil
 	}
 	if err = codec.Unmarshal(data, v); err != nil {
-		code := errorpkg.ERROR_INVALID_PARAMETER
-		reason := code.String()
-		message := fmt.Sprintf("body unmarshal %s", err.Error())
-		return errorpkg.New(int(code), reason, message)
+		e := errorpkg.ErrorInvalidParameter("[CODEC] unmarshal request body failed")
+		return errorpkg.Wrap(e, err)
 	}
 	return nil
 }

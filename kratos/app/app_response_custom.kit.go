@@ -1,29 +1,20 @@
 package apppkg
 
 import (
+	"context"
 	stdjson "encoding/json"
+	"io"
 	stdhttp "net/http"
-	"strings"
 
-	"github.com/go-kratos/kratos/v2/encoding"
-	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/ikaiguang/go-srv-kit/kratos/error"
-	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-const (
-	OK = 0
-
-	baseContentType = "application"
-)
-
-var _ = http.DefaultResponseEncoder
-
-// ResponseEncoder http.DefaultResponseEncoder
-func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
+// CustomSuccessResponseEncoder http.DefaultResponseEncoder
+func CustomSuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
 	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
 	// 在websocket时日志干扰：http: response.Write on hijacked connection from
 	// is websocket
@@ -85,11 +76,13 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 	// return
 	dataBytes, err := codec.Marshal(respData)
 	if err != nil {
-		return err
+		e := errorpkg.ErrorInternalServer(errorpkg.ERROR_INTERNAL_SERVER.String())
+		return errorpkg.Wrap(e, err)
 	}
 	_, err = w.Write(dataBytes)
 	if err != nil {
-		return err
+		e := errorpkg.ErrorInternalServer(errorpkg.ERROR_INTERNAL_SERVER.String())
+		return errorpkg.Wrap(e, err)
 	}
 	return nil
 
@@ -97,10 +90,8 @@ func ResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 	//return http.DefaultResponseEncoder(w, r, respData)
 }
 
-var _ = http.DefaultErrorEncoder
-
-// ErrorEncoder http.DefaultErrorEncoder
-func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
+// CustomErrorResponseEncoder http.DefaultErrorEncoder
+func CustomErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
 	// 在websocket时日志干扰：http: response.Write on hijacked connection from
 	// is websocket
@@ -132,8 +123,8 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 		_, _ = w.Write([]byte(err.Error()))
 		return
 	}
-	w.WriteHeader(stdhttp.StatusOK)
-	//w.WriteHeader(int(se.Code))
+	//w.WriteHeader(stdhttp.StatusOK)
+	w.WriteHeader(int(se.Code))
 	_, _ = w.Write(body)
 
 	// 参考
@@ -142,17 +133,74 @@ func ErrorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 	return
 }
 
-// ContentType returns the content-type with base prefix.
-func ContentType(subtype string) string {
-	return strings.Join([]string{baseContentType, subtype}, "/")
+// CustomResponseDecoder http.DefaultResponseDecoder
+func CustomResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) error {
+	//return http.CodecForResponse(res).Unmarshal(data, v)
+	defer func() { _ = res.Body.Close() }()
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	// 解析数据
+	data := &Response{}
+	if err = http.CodecForResponse(res).Unmarshal(bodyBytes, data); err != nil {
+		return err
+	}
+
+	// 解密
+	if data.Data == nil {
+		return nil
+	}
+	switch m := v.(type) {
+	case proto.Message:
+		return data.Data.UnmarshalTo(m)
+	default:
+		unknownData := &ResponseData{}
+		if err = data.Data.UnmarshalTo(unknownData); err != nil {
+			return err
+		}
+		return stdjson.Unmarshal([]byte(unknownData.Data), v)
+	}
 }
 
-// SetResponseContentType ...
-func SetResponseContentType(w stdhttp.ResponseWriter, codec encoding.Codec) {
-	switch codec.Name() {
-	case json.Name:
-		w.Header().Set("Content-Type", headerpkg.ContentTypeJSONUtf8)
-	default:
-		w.Header().Set("Content-Type", ContentType(codec.Name()))
+// CustomDecodeProtobufResponse 解码结果
+func CustomDecodeProtobufResponse(contentBody []byte, pbMessage proto.Message) (response *Response, err error) {
+	response = &Response{}
+	err = protojson.Unmarshal(contentBody, response)
+	if err != nil {
+		return response, err
 	}
+
+	// 解密
+	if response.Data == nil {
+		return response, err
+	}
+	err = response.Data.UnmarshalTo(pbMessage)
+	if err != nil {
+		return response, err
+	}
+	return response, err
+}
+
+// CustomDecodeHTTPResponse 解码结果
+func CustomDecodeHTTPResponse(contentBody []byte, data interface{}) (response *HTTPResponse, err error) {
+	response = &HTTPResponse{
+		Data: data,
+	}
+	err = UnmarshalJSON(contentBody, response)
+	if err != nil {
+		return response, err
+	}
+	return response, err
+}
+
+// CustomDecodeResponseError 解码结果
+func CustomDecodeResponseError(contentBody []byte) (response *Response, err error) {
+	response = &Response{}
+	err = UnmarshalJSON(contentBody, response)
+	if err != nil {
+		return response, err
+	}
+	return response, err
 }

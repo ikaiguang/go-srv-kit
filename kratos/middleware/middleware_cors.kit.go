@@ -4,8 +4,11 @@ import (
 	stdhttp "net/http"
 	"time"
 
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/gorilla/handlers"
 )
+
+var _ = http.Filter(NewCORS())
 
 // NewCORS 跨域设置
 func NewCORS() func(stdhttp.Handler) stdhttp.Handler {

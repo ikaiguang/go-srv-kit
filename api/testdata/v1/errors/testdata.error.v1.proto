@@ -14,5 +14,5 @@ option java_outer_classname = "KitApiTestdataErrorV1";
 enum ERROR {
   option (errors.default_code) = 500;
 
-  UNKNOWN = 0 [ (errors.code) = 404 ];
+  UNKNOWN = 0 [ (errors.code) = 500 ];
 }
