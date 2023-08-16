@@ -32,10 +32,11 @@ message Response {
   int32 code = 1;
   string reason = 2;
   string message = 3;
+  string requestId = 4;
 
   google.protobuf.Any data = 5;
   map<string, string> metadata = 6;
 };
 
 // ResponseData data
-message ResponseData { string data = 1; }
+message ResponseData {string data = 1;}

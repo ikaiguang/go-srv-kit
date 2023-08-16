@@ -4,8 +4,12 @@ import (
 	"context"
 	stdhttp "net/http"
 
+	"github.com/go-kratos/kratos/v2/encoding"
+	"github.com/go-kratos/kratos/v2/encoding/json"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/ikaiguang/go-srv-kit/kratos/error"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 const (
@@ -27,7 +31,7 @@ func SuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v inte
 		return nil
 	}
 	codec, _ := http.CodecForRequest(r, "Accept")
-	// w.Header().Set("Content-Type", ContentType(codec.Name()))
+	// w.Header().Set(headerpkg.ContentType, ContentType(codec.Name()))
 	SetResponseContentType(w, codec)
 	w.WriteHeader(stdhttp.StatusOK)
 
@@ -49,7 +53,7 @@ func ErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err erro
 	// http.DefaultErrorEncoder(w, r, err)
 	// errorResponseEncoder(w, r, err)
 	codec, _ := http.CodecForRequest(r, "Accept")
-	//w.Header().Set("Content-Type", ContentType(codec.Name()))
+	//w.Header().Set(headerpkg.ContentType, ContentType(codec.Name()))
 	SetResponseContentType(w, codec)
 
 	se := errorpkg.FromError(err)
@@ -66,7 +70,46 @@ func ErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err erro
 	_, _ = w.Write(body)
 }
 
-// DefaultResponseDecoder http.DefaultResponseDecoder
-func DefaultResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) error {
+// SuccessResponseDecoder http.DefaultResponseDecoder
+func SuccessResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) error {
 	return http.DefaultResponseDecoder(ctx, res, v)
+}
+
+// ErrorResponseDecode ...
+func ErrorResponseDecode(ctx context.Context, res *stdhttp.Response) error {
+	return http.DefaultErrorDecoder(ctx, res)
+}
+
+// SuccessResponseDecoderBody http.DefaultResponseDecoder
+func SuccessResponseDecoderBody(contentType string, data []byte, v interface{}) error {
+	codec := encoding.GetCodec(ContentSubtype(contentType))
+	if codec == nil {
+		codec = encoding.GetCodec(json.Name)
+	}
+	return codec.Unmarshal(data, v)
+}
+
+// SuccessResponseDecoderBody2 http.DefaultResponseDecoder
+func SuccessResponseDecoderBody2(header stdhttp.Header, data []byte, v interface{}) error {
+	return SuccessResponseDecoderBody(header.Get(headerpkg.ContentType), data, v)
+}
+
+// ErrorResponseDecodeBody ...
+func ErrorResponseDecodeBody(contentType string, statusCode int, data []byte) (*errors.Error, error) {
+	e := new(errors.Error)
+	codec := encoding.GetCodec(ContentSubtype(contentType))
+	if codec == nil {
+		codec = encoding.GetCodec(json.Name)
+	}
+	if err := codec.Unmarshal(data, e); err != nil {
+		e = errorpkg.ErrorInternalServer("[CODEC] unmarshal failed")
+		return nil, errorpkg.Wrap(e, err)
+	}
+	e.Code = int32(statusCode)
+	return e, nil
+}
+
+// ErrorResponseDecodeBody2 ...
+func ErrorResponseDecodeBody2(header stdhttp.Header, statusCode int, data []byte) (*errors.Error, error) {
+	return ErrorResponseDecodeBody(header.Get(headerpkg.ContentType), statusCode, data)
 }

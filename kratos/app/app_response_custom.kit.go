@@ -8,6 +8,8 @@ import (
 
 	"github.com/go-kratos/kratos/v2/transport/http"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
+	"github.com/tidwall/sjson"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -44,9 +46,9 @@ func CustomSuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, 
 
 	// 响应结果
 	respData := &Response{
-		Code: OK,
-		//RequestId: headerpkg.GetRequestID(r.Header),
-		//Data:      v,
+		Code:      OK,
+		RequestId: headerpkg.GetRequestID(r.Header),
+		//Data:      v,、
 	}
 	var resultMessage proto.Message
 	if vMessage, ok := v.(proto.Message); ok {
@@ -102,15 +104,15 @@ func CustomErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, er
 	// 响应错误
 	se := errorpkg.FromError(err)
 	data := &Response{
-		Code:     se.Code,
-		Reason:   se.Reason,
-		Message:  se.Message,
-		Metadata: se.Metadata,
-		//RequestId: headerpkg.GetRequestID(r.Header),
+		Code:      se.Code,
+		Reason:    se.Reason,
+		Message:   se.Message,
+		Metadata:  se.Metadata,
+		RequestId: headerpkg.GetRequestID(r.Header),
 	}
-	if !IsDebugMode() {
-		data.Metadata = nil
-	}
+	//if !IsDebugMode() {
+	//	data.Metadata = nil
+	//}
 
 	codec, _ := http.CodecForRequest(r, "Accept")
 	SetResponseContentType(w, codec)
@@ -203,4 +205,22 @@ func CustomDecodeResponseError(contentBody []byte) (response *Response, err erro
 		return response, err
 	}
 	return response, err
+}
+
+// DeleteDataTypeURL ...
+func DeleteDataTypeURL(buf []byte) ([]byte, error) {
+	p := "data.\\@type"
+	res, err := sjson.DeleteBytes(buf, p)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+	//if r := gjson.GetBytes(buf, p); r.Exists() {
+	//	res, err := sjson.DeleteBytes(buf, p)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	return res, nil
+	//}
+	//return buf, nil
 }

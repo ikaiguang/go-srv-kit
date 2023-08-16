@@ -9,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 var (
@@ -35,9 +36,9 @@ func RequestDecoder(r *http.Request, v interface{}) error {
 	//}
 
 	// 解码
-	codec, ok := http.CodecForRequest(r, "Content-Type")
+	codec, ok := http.CodecForRequest(r, headerpkg.ContentType)
 	if !ok {
-		msg := fmt.Sprintf("[CODEC] unregister Content-Type: %s", r.Header.Get("Content-Type"))
+		msg := fmt.Sprintf("[CODEC] unregister Content-Type: %s", r.Header.Get(headerpkg.ContentType))
 		e := errorpkg.ErrorInvalidParameter(msg)
 		return errorpkg.Wrap(e)
 	}

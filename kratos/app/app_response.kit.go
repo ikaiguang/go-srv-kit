@@ -20,9 +20,9 @@ func ContentType(subtype string) string {
 func SetResponseContentType(w stdhttp.ResponseWriter, codec encoding.Codec) {
 	switch codec.Name() {
 	case json.Name:
-		w.Header().Set("Content-Type", headerpkg.ContentTypeJSONUtf8)
+		w.Header().Set(headerpkg.ContentType, headerpkg.ContentTypeJSONUtf8)
 	default:
-		w.Header().Set("Content-Type", ContentType(codec.Name()))
+		w.Header().Set(headerpkg.ContentType, ContentType(codec.Name()))
 	}
 }
 
