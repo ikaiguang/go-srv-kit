@@ -10,20 +10,21 @@ import (
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
-	"github.com/redis/go-redis/v9"
 )
 
 // Config ...
 type Config struct {
-	SignCrypto         SignEncryptor
-	RefreshCrypto      RefreshEncryptor
-	AuthCacheKeyPrefix *AuthCacheKeyPrefix
+	SignCrypto    SignEncryptor
+	RefreshCrypto RefreshEncryptor
 }
 
 // TokenResponse ...
 type TokenResponse struct {
 	AccessToken  string
 	RefreshToken string
+
+	AccessTokenItem  *TokenItem
+	RefreshTokenItem *TokenItem
 }
 
 // SignEncryptor ...
@@ -69,7 +70,8 @@ func (s *signEncryptor) JWTSigningClaims() jwt.Claims {
 func (s *signEncryptor) EncryptToken(ctx context.Context, authClaims *Claims) (string, error) {
 	token, err := jwt.NewWithClaims(s.signingMethod, authClaims).SignedString(s.key)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("sign token failed: %w", err)
+		e := errorpkg.ErrorBadRequest("sign token failed")
+		err = errorpkg.Wrap(e, err)
 		return "", err
 	}
 	return token, nil
@@ -79,7 +81,8 @@ func (s *signEncryptor) DecryptToken(ctx context.Context, accessToken string) (*
 	claims := &Claims{}
 	_, err := jwt.ParseWithClaims(accessToken, claims, s.JWTSigningKeyFunc(ctx))
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("decrypt token failed: %w", err)
+		e := errorpkg.ErrorBadRequest("decrypt token failed")
+		err = errorpkg.Wrap(e, err)
 		return nil, err
 	}
 	return claims, err
@@ -106,7 +109,8 @@ func (s *cbcEncryptor) EncryptToken(ctx context.Context, refreshClaims *Claims) 
 	}
 	token, err := aespkg.EncryptCBC([]byte(refreshClaimsStr), s.key)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("crypto refresh claims failed: %w", err)
+		e := errorpkg.ErrorBadRequest("crypto refresh claims failed")
+		err = errorpkg.Wrap(e, err)
 		return "", err
 	}
 	return token, nil
@@ -115,7 +119,8 @@ func (s *cbcEncryptor) EncryptToken(ctx context.Context, refreshClaims *Claims) 
 func (s *cbcEncryptor) DecryptToken(ctx context.Context, refreshToken string) (*Claims, error) {
 	plaintext, err := aespkg.DecryptCBC(refreshToken, s.key)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("decode refresh token claims failed : %w", err)
+		e := errorpkg.ErrorBadRequest("decode refresh token claims failed")
+		err = errorpkg.Wrap(e, err)
 		return nil, err
 	}
 	claims := &Claims{}
@@ -136,7 +141,7 @@ type AuthRepo interface {
 
 	// SignToken 签证Token
 	// @Param signKey 拼接在原来的signKey上
-	SignToken(ctx context.Context, authClaims *Claims) (*TokenResponse, []*TokenItem, error)
+	SignToken(ctx context.Context, authClaims *Claims) (*TokenResponse, error)
 	DecodeAccessToken(ctx context.Context, accessToken string) (*Claims, error)
 	DecodeRefreshToken(ctx context.Context, refreshToken string) (*Claims, error)
 
@@ -152,21 +157,24 @@ type authRepo struct {
 }
 
 // NewAuthRepo ...
-func NewAuthRepo(redisCC redis.UniversalClient, logger log.Logger, config Config) (AuthRepo, error) {
+func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManger) (AuthRepo, error) {
 	if config.SignCrypto == nil {
-		err := errorpkg.ErrorBadRequest("invalid SignCrypto")
+		e := errorpkg.ErrorBadRequest("invalid SignCrypto")
+		err := errorpkg.WithStack(e)
 		return nil, err
 	}
 	if config.RefreshCrypto == nil {
-		err := errorpkg.ErrorBadRequest("invalid RefreshCrypto")
+		e := errorpkg.ErrorBadRequest("invalid RefreshCrypto")
+		err := errorpkg.WithStack(e)
 		return nil, err
 	}
-	authCacheKeyPrefix := CheckAuthCacheKeyPrefix(config.AuthCacheKeyPrefix)
+	// authCacheKeyPrefix := CheckAuthCacheKeyPrefix(config.AuthCacheKeyPrefix)
 	return &authRepo{
 		signEncryptor: config.SignCrypto,
 		refreshCrypto: config.RefreshCrypto,
 		logHandler:    log.NewHelper(log.With(logger, "module", "auth/repo")),
-		tokenManger:   NewTokenManger(redisCC, authCacheKeyPrefix),
+		tokenManger:   tokenManger,
+		// tokenManger:   NewTokenManger(redisCC, authCacheKeyPrefix),
 	}, nil
 }
 
@@ -186,63 +194,74 @@ func (s *authRepo) JWTSigningClaims() jwt.Claims {
 }
 
 // SignToken ...
-func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenResponse, []*TokenItem, error) {
+func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenResponse, error) {
 	// token
 	if authClaims.ID == "" {
 		authClaims.ID = uuidpkg.NewUUID()
 	}
+	if authClaims.ExpiresAt == nil {
+		authClaims.ExpiresAt = DefaultExpireTime()
+	}
 	tokenString, err := s.signEncryptor.EncryptToken(ctx, authClaims)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	// refresh token
 	refreshClaims := DefaultRefreshClaims(authClaims)
 	refreshToken, err := s.refreshCrypto.EncryptToken(ctx, refreshClaims)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	// 存储
 	var (
-		userIdentifier = authClaims.Payload.UserIdentifier()
-		tokenItems     = []*TokenItem{
-			{
-				TokenID:        authClaims.ID,
-				RefreshTokenID: refreshClaims.ID,
-				ExpiredAt:      authClaims.ExpiresAt.Time.Unix(),
-				IsRefreshToken: false,
-				Payload:        authClaims.Payload,
-			},
-			{
-				TokenID:        authClaims.ID,
-				RefreshTokenID: refreshClaims.ID,
-				ExpiredAt:      refreshClaims.ExpiresAt.Time.Unix(),
-				IsRefreshToken: true,
-				Payload:        refreshClaims.Payload,
-			},
+		userIdentifier  = authClaims.Payload.UserIdentifier()
+		accessTokenItem = &TokenItem{
+			TokenID:        authClaims.ID,
+			RefreshTokenID: refreshClaims.ID,
+			ExpiredAt:      authClaims.ExpiresAt.Time.Unix(),
+			IsRefreshToken: false,
+			Payload:        authClaims.Payload,
 		}
+		refreshTokenItem = &TokenItem{
+			TokenID:        authClaims.ID,
+			RefreshTokenID: refreshClaims.ID,
+			ExpiredAt:      refreshClaims.ExpiresAt.Time.Unix(),
+			IsRefreshToken: true,
+			Payload:        refreshClaims.Payload,
+		}
+		tokenItems = []*TokenItem{accessTokenItem, refreshTokenItem}
 	)
-	err = s.tokenManger.SaveTokens(ctx, userIdentifier, tokenItems)
-	if err != nil {
-		return nil, nil, err
+
+	// save token
+	if s.tokenManger != nil {
+		err = s.tokenManger.SaveTokens(ctx, userIdentifier, tokenItems)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// 登录限制
 	threadpkg.GoSafe(func() {
-		s.afterSignToken(ctx, authClaims)
+		if s.tokenManger != nil {
+			s.checkLimitAndDeleteExpireTokens(ctx, authClaims)
+		}
 	})
 
 	res := &TokenResponse{
 		AccessToken:  tokenString,
 		RefreshToken: refreshToken,
+
+		AccessTokenItem:  accessTokenItem,
+		RefreshTokenItem: refreshTokenItem,
 	}
-	return res, tokenItems, nil
+	return res, nil
 }
 
-// afterSignToken ...
-func (s *authRepo) afterSignToken(ctx context.Context, authClaims *Claims) {
-	checkErr := s.checkLoginLimit(ctx, authClaims)
+// checkLimitAndDeleteExpireTokens ...
+func (s *authRepo) checkLimitAndDeleteExpireTokens(ctx context.Context, authClaims *Claims) {
+	checkErr := s.checkLimitAndLogoutOtherAccount(ctx, authClaims)
 	if checkErr != nil {
 		s.logHandler.WithContext(ctx).Errorw("msg", "checkLoginLimit failed", "err", checkErr)
 	}
@@ -262,7 +281,8 @@ func (s *authRepo) deleteExpireTokens(ctx context.Context, authClaims *Claims) e
 
 	allTokens, err := s.tokenManger.GetAllTokens(ctx, userIdentifier)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("GetAllTokens failed: %w", err)
+		e := errorpkg.ErrorBadRequest("GetAllTokens failed")
+		err = errorpkg.Wrap(e, err)
 		return err
 	}
 	for i := range allTokens {
@@ -274,21 +294,23 @@ func (s *authRepo) deleteExpireTokens(ctx context.Context, authClaims *Claims) e
 
 	// 删除过期
 	if err = s.tokenManger.DeleteTokens(ctx, userIdentifier, expireList); err != nil {
-		err = errorpkg.ErrorBadRequest("DeleteTokens failed: %w", err)
+		e := errorpkg.ErrorBadRequest("DeleteTokens failed")
+		err = errorpkg.Wrap(e, err)
 		return err
 	}
 	return nil
 }
 
-// checkLoginLimit 检查登录限制
-func (s *authRepo) checkLoginLimit(ctx context.Context, authClaims *Claims) error {
+// checkLimitAndLogoutOtherAccount 检查登录限制
+func (s *authRepo) checkLimitAndLogoutOtherAccount(ctx context.Context, authClaims *Claims) error {
 	if authClaims.Payload.LoginLimit == LoginLimitEnum_UNLIMITED {
 		return nil
 	}
 	userIdentifier := authClaims.Payload.UserIdentifier()
 	allTokens, err := s.tokenManger.GetAllTokens(ctx, userIdentifier)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("GetAllTokens failed: %w", err)
+		e := errorpkg.ErrorBadRequest("GetAllTokens failed")
+		err = errorpkg.Wrap(e, err)
 		return err
 	}
 
@@ -328,12 +350,14 @@ func (s *authRepo) checkLoginLimit(ctx context.Context, authClaims *Claims) erro
 
 	// 添加黑名单
 	if err = s.tokenManger.AddBlacklist(ctx, userIdentifier, blacklist); err != nil {
-		err = errorpkg.ErrorBadRequest("AddBlacklist failed: %w", err)
+		e := errorpkg.ErrorBadRequest("AddBlacklist failed")
+		err = errorpkg.Wrap(e, err)
 		return err
 	}
 	// 添加登录限制
 	if err = s.tokenManger.AddLoginLimit(ctx, limitList); err != nil {
-		err = errorpkg.ErrorBadRequest("AddLoginLimit failed: %w", err)
+		e := errorpkg.ErrorBadRequest("AddLoginLimit failed")
+		err = errorpkg.Wrap(e, err)
 		return err
 	}
 	return nil
@@ -347,7 +371,8 @@ func (s *authRepo) DecodeAccessToken(ctx context.Context, accessToken string) (*
 	}
 	// 验证有效性
 	if err = claims.Valid(); err != nil {
-		err = ErrorTokenExpired("access token expired : %w", err)
+		e := ErrorTokenExpired("access token expired")
+		err = errorpkg.Wrap(e, err)
 		return nil, err
 	}
 	return claims, err
@@ -361,7 +386,8 @@ func (s *authRepo) DecodeRefreshToken(ctx context.Context, refreshToken string) 
 	}
 	// 验证有效性
 	if err = claims.Valid(); err != nil {
-		err = ErrorTokenExpired("refresh token expired : %w", err)
+		e := ErrorTokenExpired("refresh token expired")
+		err = errorpkg.Wrap(e, err)
 		return nil, err
 	}
 	return claims, err
@@ -374,6 +400,17 @@ func (s *authRepo) VerifyToken(ctx context.Context, jwtToken *jwt.Token) error {
 		return ErrTokenInvalid()
 	}
 
+	// 检查 黑名单 & 白名单
+	if s.tokenManger != nil {
+		if err := s.checkTokenBlackAndWhite(ctx, authClaims); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// checkTokenBlackAndWhite 检查黑白名单
+func (s *authRepo) checkTokenBlackAndWhite(ctx context.Context, authClaims *Claims) error {
 	// 黑名单
 	isBlacklist, err := s.tokenManger.IsBlacklist(ctx, authClaims.ID)
 	if err != nil {

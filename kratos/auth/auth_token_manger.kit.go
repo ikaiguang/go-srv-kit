@@ -18,9 +18,9 @@ func (s RedisCacheKeyPrefix) String() string {
 }
 
 const (
-	DefaultBlackTokenKeyPrefix RedisCacheKeyPrefix = "gs:auth:black:"
-	DefaultLoginLimitKeyPrefix RedisCacheKeyPrefix = "gs:auth:limit:"
-	DefaultAuthTokenKeyPrefix  RedisCacheKeyPrefix = "gs:auth:token:"
+	DefaultBlackTokenKeyPrefix RedisCacheKeyPrefix = "kit:auth_black:"
+	DefaultLoginLimitKeyPrefix RedisCacheKeyPrefix = "kit:auth_limit:"
+	DefaultAuthTokenKeyPrefix  RedisCacheKeyPrefix = "kit:auth_token:"
 )
 
 // AuthCacheKeyPrefix ...
@@ -99,7 +99,8 @@ func (s *tokenManger) SaveTokens(ctx context.Context, userIdentifier string, tok
 		}
 		itemStr, err := tokenItems[i].EncodeToString()
 		if err != nil {
-			err = errorpkg.ErrorBadRequest("encode token item failed: %w", err)
+			e := errorpkg.ErrorBadRequest("encode token item failed")
+			err = errorpkg.Wrap(e, err)
 			return err
 		}
 		kvs = append(kvs, itemStr)
@@ -112,7 +113,8 @@ func (s *tokenManger) SaveTokens(ctx context.Context, userIdentifier string, tok
 
 	key := s.genTokensKey(userIdentifier)
 	if err := s.redisCC.HSet(ctx, key, kvs...).Err(); err != nil {
-		return err
+		e := errorpkg.ErrorInternalServer("")
+		return errorpkg.Wrap(e, err)
 	}
 	threadpkg.GoSafe(func() {
 		_ = s.redisCC.Expire(ctx, key, expire)
@@ -157,16 +159,19 @@ func (s *tokenManger) AddBlacklist(ctx context.Context, userIdentifier string, t
 		// 加入黑名单
 		d := s.calcExpireTime(tokenItems[i].ExpiredAt, nowUnix)
 		if err := pipe.Set(ctx, blackKey, 0, d).Err(); err != nil {
-			return err
+			e := errorpkg.ErrorInternalServer("")
+			return errorpkg.Wrap(e, err)
 		}
 	}
 	if err := pipe.HDel(ctx, tokensKey, hashKeys...).Err(); err != nil {
-		return err
+		e := errorpkg.ErrorInternalServer("")
+		return errorpkg.Wrap(e, err)
 	}
 
 	_, err := pipe.Exec(ctx)
 	if err != nil {
-		return err
+		e := errorpkg.ErrorInternalServer("")
+		return errorpkg.Wrap(e, err)
 	}
 	return nil
 }
@@ -190,7 +195,8 @@ func (s *tokenManger) DeleteTokens(ctx context.Context, userIdentifier string, t
 		}
 	}
 	if err := s.redisCC.HDel(ctx, tokensKey, hashKeys...).Err(); err != nil {
-		return err
+		e := errorpkg.ErrorInternalServer("")
+		return errorpkg.Wrap(e, err)
 	}
 	return nil
 }
@@ -209,12 +215,14 @@ func (s *tokenManger) AddLoginLimit(ctx context.Context, tokenItems []*TokenItem
 		limitKey := s.genLimitTokenKey(tokenItems[i].TokenID)
 		d := s.calcExpireTime(tokenItems[i].ExpiredAt, nowUnix)
 		if err := pipe.Set(ctx, limitKey, tokenItems[i].Payload.LoginLimit, d).Err(); err != nil {
-			return err
+			e := errorpkg.ErrorInternalServer("")
+			return errorpkg.Wrap(e, err)
 		}
 	}
 	_, err := pipe.Exec(ctx)
 	if err != nil {
-		return err
+		e := errorpkg.ErrorInternalServer("")
+		return errorpkg.Wrap(e, err)
 	}
 	return nil
 }
@@ -224,6 +232,8 @@ func (s *tokenManger) IsBlacklist(ctx context.Context, tokenID string) (bool, er
 	blackKey := s.genBlackTokenKey(tokenID)
 	i, err := s.redisCC.Exists(ctx, blackKey).Result()
 	if err != nil {
+		e := errorpkg.ErrorInternalServer("")
+		err = errorpkg.Wrap(e, err)
 		return false, err
 	}
 	return i > 0, nil
@@ -236,6 +246,9 @@ func (s *tokenManger) IsLoginLimit(ctx context.Context, tokenID string) (bool, L
 	if err != nil {
 		if err == redis.Nil {
 			err = nil
+		} else {
+			e := errorpkg.ErrorInternalServer("")
+			err = errorpkg.Wrap(e, err)
 		}
 		return false, LoginLimitEnum_UNLIMITED, err
 	}
@@ -251,6 +264,9 @@ func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, token
 		if err == redis.Nil {
 			err = nil
 			isNotFound = true
+		} else {
+			e := errorpkg.ErrorInternalServer("")
+			err = errorpkg.Wrap(e, err)
 		}
 		return item, isNotFound, err
 	}
@@ -266,7 +282,13 @@ func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, token
 func (s *tokenManger) IsExistToken(ctx context.Context, userIdentifier string, tokenID string) (bool, error) {
 	key := s.genTokensKey(userIdentifier)
 
-	return s.redisCC.HExists(ctx, key, tokenID).Result()
+	exist, err := s.redisCC.HExists(ctx, key, tokenID).Result()
+	if err != nil {
+		e := errorpkg.ErrorInternalServer("")
+		err = errorpkg.Wrap(e, err)
+		return false, err
+	}
+	return exist, nil
 }
 
 // GetAllTokens ...
@@ -274,6 +296,8 @@ func (s *tokenManger) GetAllTokens(ctx context.Context, userIdentifier string) (
 	key := s.genTokensKey(userIdentifier)
 	tokens, err := s.redisCC.HGetAll(ctx, key).Result()
 	if err != nil {
+		e := errorpkg.ErrorInternalServer("")
+		err = errorpkg.Wrap(e, err)
 		return nil, err
 	}
 

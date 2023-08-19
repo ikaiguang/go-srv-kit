@@ -16,9 +16,14 @@ import (
 const (
 	TokenExpireDuration = time.Hour * 24 * 7
 	RefreshTokenExpire  = TokenExpireDuration + time.Hour*24*7
-	AuthorizationKey    = "Authorization"
-	BearerWord          = "Bearer"
-	BearerFormat        = "Bearer %s"
+
+	AuthorizationKey = "Authorization"
+	BearerWord       = "Bearer"
+	BearerFormat     = "Bearer %s"
+
+	PayloadIdentifierPrefixDefault = "default_"
+	PayloadIdentifierPrefixUser    = "user_"
+	PayloadIdentifierPrefixAdmin   = "admin_"
 )
 
 // Payload 授权信息
@@ -48,6 +53,14 @@ func (s *Payload) UserIdentifier() string {
 	} else if s.UserID > 0 {
 		identifier = strconv.FormatUint(s.UserID, 10)
 	}
+	switch s.TokenType {
+	default:
+		identifier = PayloadIdentifierPrefixDefault + identifier
+	case TokenTypeEnum_USER:
+		identifier = PayloadIdentifierPrefixUser + identifier
+	case TokenTypeEnum_ADMIN:
+		identifier = PayloadIdentifierPrefixAdmin + identifier
+	}
 	return identifier
 }
 
@@ -68,7 +81,8 @@ type Claims struct {
 func (s *Claims) EncodeToString() (string, error) {
 	res, err := json.Marshal(s)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("encode token claims failed : %w", err)
+		e := errorpkg.ErrorBadRequest("encode token claims failed")
+		err = errorpkg.Wrap(e, err)
 		return "", err
 	}
 	return string(res), nil
@@ -78,14 +92,15 @@ func (s *Claims) EncodeToString() (string, error) {
 func (s *Claims) DecodeString(claimCiphertext string) error {
 	err := json.Unmarshal([]byte(claimCiphertext), s)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("decode token claims failed : %w", err)
+		e := errorpkg.ErrorBadRequest("decode token claims failed")
+		err = errorpkg.Wrap(e, err)
 		return err
 	}
 	return nil
 }
 
-// DefaultClaims ...
-func DefaultClaims(payload Payload) *Claims {
+// DefaultAuthClaims ...
+func DefaultAuthClaims(payload Payload) *Claims {
 	return &Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: DefaultExpireTime(),
@@ -122,7 +137,8 @@ type TokenItem struct {
 func (s *TokenItem) EncodeToString() (string, error) {
 	res, err := json.Marshal(s)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("encode token item failed : %w", err)
+		e := errorpkg.ErrorBadRequest("encode token item failed")
+		err = errorpkg.Wrap(e, err)
 		return "", err
 	}
 	return string(res), nil
@@ -132,7 +148,8 @@ func (s *TokenItem) EncodeToString() (string, error) {
 func (s *TokenItem) DecodeString(tokenItem string) error {
 	err := json.Unmarshal([]byte(tokenItem), s)
 	if err != nil {
-		err = errorpkg.ErrorBadRequest("decode token item failed : %w", err)
+		e := errorpkg.ErrorBadRequest("decode token item failed")
+		err = errorpkg.Wrap(e, err)
 		return err
 	}
 	return nil

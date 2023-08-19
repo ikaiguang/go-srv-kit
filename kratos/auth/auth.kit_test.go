@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -17,12 +16,10 @@ func ExampleServer() {
 		whiteList = map[string]struct{}{}
 	)
 	authConfig := Config{
-		SigningMethod:      jwt.SigningMethodHS256,
-		SignKey:            signKey,
-		RefreshCrypto:      NewCBCCipher(signKey),
-		AuthCacheKeyPrefix: CheckAuthCacheKeyPrefix(nil),
+		RefreshCrypto: NewCBCCipher(signKey),
 	}
-	repo, err := NewAuthRepo(redisCC, logger, authConfig)
+	tokenM := NewTokenManger(redisCC, nil)
+	repo, err := NewAuthRepo(authConfig, logger, tokenM)
 	if err != nil {
 		return
 	}

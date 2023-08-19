@@ -25,15 +25,14 @@ func TestNewAuthRepo(t *testing.T) {
 			args: args{
 				redisCC: &redis.Client{},
 				logger:  log.DefaultLogger,
-				config: Config{
-					SignKey: "abc",
-				},
+				config:  Config{},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewAuthRepo(tt.args.redisCC, tt.args.logger, tt.args.config)
+			tokenM := NewTokenManger(tt.args.redisCC, nil)
+			got, err := NewAuthRepo(tt.args.config, tt.args.logger, tokenM)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewAuthRepo() error = %v, wantErr %v", err, tt.wantErr)
 				return
