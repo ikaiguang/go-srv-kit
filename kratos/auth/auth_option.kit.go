@@ -6,18 +6,18 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// TokenValidateFunc 自定义验证
-type TokenValidateFunc func(context.Context, *jwt.Token) error
+// AccessTokenValidateFunc 自定义验证
+type AccessTokenValidateFunc func(context.Context, *Claims) error
 
 // Option is jwt option.
 type Option func(*options)
 
 // Parser is a jwt parser
 type options struct {
-	signingMethod      jwt.SigningMethod
-	claims             func() jwt.Claims
-	tokenHeader        map[string]interface{}
-	tokenValidatorFunc TokenValidateFunc
+	signingMethod            jwt.SigningMethod
+	claims                   func() jwt.Claims
+	accessTokenHeader        map[string]interface{}
+	accessTokenValidatorFunc AccessTokenValidateFunc
 }
 
 // WithSigningMethod with signing method option.
@@ -36,16 +36,16 @@ func WithClaims(f func() jwt.Claims) Option {
 	}
 }
 
-// WithTokenHeader withe customer tokenHeader for client side
-func WithTokenHeader(header map[string]interface{}) Option {
+// WithAccessTokenHeader withe customer accessTokenHeader for client side
+func WithAccessTokenHeader(header map[string]interface{}) Option {
 	return func(o *options) {
-		o.tokenHeader = header
+		o.accessTokenHeader = header
 	}
 }
 
-// WithTokenValidator token验证
-func WithTokenValidator(tokenValidator TokenValidateFunc) Option {
+// WithAccessTokenValidator token验证
+func WithAccessTokenValidator(tokenValidator AccessTokenValidateFunc) Option {
 	return func(o *options) {
-		o.tokenValidatorFunc = tokenValidator
+		o.accessTokenValidatorFunc = tokenValidator
 	}
 }

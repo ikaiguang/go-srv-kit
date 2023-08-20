@@ -5,6 +5,11 @@ import (
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )
 
+// Is ...
+func Is(err, target error) bool {
+	return errorpkg.Is(errorpkg.Cause(err), target)
+}
+
 func ErrMissingToken() *errors.Error {
 	return errors.Unauthorized(ERROR_TOKEN_MISSING.String(), "token is missing")
 }
@@ -36,19 +41,14 @@ func ErrGetKey() *errors.Error {
 	return errors.Unauthorized(ERROR_TOKEN_INVALID.String(), "Can not get key while signing token")
 }
 func ErrInvalidAuthToken() *errors.Error {
-	return errors.Unauthorized(ERROR_VERIFICATION_FAILED.String(), "[validator] invalid auth token")
+	return errors.Unauthorized(ERROR_VERIFICATION_FAILED.String(), "[validator] Invalid auth token")
 }
 func ErrInvalidClaims() *errors.Error {
-	return errors.Unauthorized(ERROR_INVALID_CLAIMS.String(), "[validator] get redis data failed")
+	return errors.Unauthorized(ERROR_INVALID_CLAIMS.String(), "[validator] Invalid auth claims")
 }
 func ErrBlacklist() *errors.Error {
-	return errors.Unauthorized(ERROR_TOKEN_DEPRECATED.String(), "[validator] deprecated token")
+	return errors.Unauthorized(ERROR_TOKEN_DEPRECATED.String(), "[validator] Deprecated token")
 }
 func ErrWhitelist() *errors.Error {
-	return errors.Unauthorized(ERROR_TOKEN_INVALID.String(), "[validator] invalid token")
-}
-
-// Is ...
-func Is(err, target error) bool {
-	return errorpkg.Is(err, target)
+	return errors.Unauthorized(ERROR_TOKEN_NOT_IN_WHITELIST.String(), "[validator] The token is not in the valid list")
 }

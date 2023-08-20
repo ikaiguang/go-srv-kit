@@ -25,7 +25,10 @@ func TestNewAuthRepo(t *testing.T) {
 			args: args{
 				redisCC: &redis.Client{},
 				logger:  log.DefaultLogger,
-				config:  Config{},
+				config: Config{
+					SignCrypto:    NewSignEncryptor("SignKey"),
+					RefreshCrypto: NewCBCCipher("RefreshKey"),
+				},
 			},
 		},
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func ExampleServer() {
+func ExampleServerMiddleware() {
 	var (
 		redisCC   = &redis.Client{}
 		signKey   = ""
@@ -45,7 +45,7 @@ func ExampleServer() {
 			repo.JWTSigningKeyFunc,
 			WithSigningMethod(repo.JWTSigningMethod()),
 			WithClaims(repo.JWTSigningClaims),
-			WithTokenValidator(repo.VerifyToken),
+			WithAccessTokenValidator(repo.VerifyAccessToken),
 		),
 	).
 		Match(ExampleWhiteListMatcher(whiteList)).

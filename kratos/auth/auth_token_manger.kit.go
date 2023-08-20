@@ -281,7 +281,6 @@ func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, token
 // IsExistToken ...
 func (s *tokenManger) IsExistToken(ctx context.Context, userIdentifier string, tokenID string) (bool, error) {
 	key := s.genTokensKey(userIdentifier)
-
 	exist, err := s.redisCC.HExists(ctx, key, tokenID).Result()
 	if err != nil {
 		e := errorpkg.ErrorInternalServer("")

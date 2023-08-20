@@ -7,7 +7,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v4"
 	aespkg "github.com/ikaiguang/go-srv-kit/kit/aes"
-	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 )
@@ -145,7 +144,8 @@ type AuthRepo interface {
 	DecodeAccessToken(ctx context.Context, accessToken string) (*Claims, error)
 	DecodeRefreshToken(ctx context.Context, refreshToken string) (*Claims, error)
 
-	VerifyToken(ctx context.Context, jwtToken *jwt.Token) error
+	VerifyAccessToken(ctx context.Context, authClaims *Claims) error
+	VerifyRefreshToken(ctx context.Context, authClaims *Claims) error
 }
 
 // authRepo ...
@@ -194,21 +194,20 @@ func (s *authRepo) JWTSigningClaims() jwt.Claims {
 }
 
 // SignToken ...
+// Note: CheckAndCorrectAuthClaims
 func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenResponse, error) {
+	// check CheckAndCorrectAuthClaims
+	// authClaims.ID = authClaims.Payload.TokenID
+	// authClaims.ExpiresAt = DefaultExpireTime()
+
 	// token
-	if authClaims.ID == "" {
-		authClaims.ID = uuidpkg.NewUUID()
-	}
-	if authClaims.ExpiresAt == nil {
-		authClaims.ExpiresAt = DefaultExpireTime()
-	}
 	tokenString, err := s.signEncryptor.EncryptToken(ctx, authClaims)
 	if err != nil {
 		return nil, err
 	}
 
 	// refresh token
-	refreshClaims := DefaultRefreshClaims(authClaims)
+	refreshClaims := GenRefreshClaimsByAuthClaims(authClaims)
 	refreshToken, err := s.refreshCrypto.EncryptToken(ctx, refreshClaims)
 	if err != nil {
 		return nil, err
@@ -393,13 +392,19 @@ func (s *authRepo) DecodeRefreshToken(ctx context.Context, refreshToken string) 
 	return claims, err
 }
 
-// VerifyToken 验证令牌
-func (s *authRepo) VerifyToken(ctx context.Context, jwtToken *jwt.Token) error {
-	authClaims, ok := jwtToken.Claims.(*Claims)
-	if !ok {
-		return ErrTokenInvalid()
+// VerifyAccessToken 验证令牌
+func (s *authRepo) VerifyAccessToken(ctx context.Context, authClaims *Claims) error {
+	// 检查 黑名单 & 白名单
+	if s.tokenManger != nil {
+		if err := s.checkTokenBlackAndWhite(ctx, authClaims); err != nil {
+			return err
+		}
 	}
+	return nil
+}
 
+// VerifyRefreshToken 验证令牌
+func (s *authRepo) VerifyRefreshToken(ctx context.Context, authClaims *Claims) error {
 	// 检查 黑名单 & 白名单
 	if s.tokenManger != nil {
 		if err := s.checkTokenBlackAndWhite(ctx, authClaims); err != nil {
@@ -414,9 +419,7 @@ func (s *authRepo) checkTokenBlackAndWhite(ctx context.Context, authClaims *Clai
 	// 黑名单
 	isBlacklist, err := s.tokenManger.IsBlacklist(ctx, authClaims.ID)
 	if err != nil {
-		e := ErrInvalidClaims()
-		e.Metadata = map[string]string{"err": err.Error()}
-		return e
+		return err
 	}
 	if isBlacklist {
 		return ErrBlacklist()
@@ -425,9 +428,7 @@ func (s *authRepo) checkTokenBlackAndWhite(ctx context.Context, authClaims *Clai
 	// 白名单
 	isExist, err := s.tokenManger.IsExistToken(ctx, authClaims.Payload.UserIdentifier(), authClaims.ID)
 	if err != nil {
-		e := ErrInvalidClaims()
-		e.Metadata = map[string]string{"err": err.Error()}
-		return e
+		return err
 	}
 	if !isExist {
 		return ErrWhitelist()

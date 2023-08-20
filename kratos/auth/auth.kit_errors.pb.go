@@ -119,6 +119,18 @@ func ErrorTokenDeprecated(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, ERROR_TOKEN_DEPRECATED.String(), fmt.Sprintf(format, args...))
 }
 
+func IsTokenNotInWhitelist(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_TOKEN_NOT_IN_WHITELIST.String() && e.Code == 401
+}
+
+func ErrorTokenNotInWhitelist(format string, args ...interface{}) *errors.Error {
+	return errors.New(401, ERROR_TOKEN_NOT_IN_WHITELIST.String(), fmt.Sprintf(format, args...))
+}
+
 func IsVerificationFailed(err error) bool {
 	if err == nil {
 		return false

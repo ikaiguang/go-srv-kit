@@ -23,8 +23,9 @@ enum ERROR {
   AUTHENTICATION_FAILED = 6 [(errors.code) = 401];
   TOKEN_INVALID = 7 [(errors.code) = 401];
   TOKEN_DEPRECATED = 8 [(errors.code) = 401];
-  VERIFICATION_FAILED = 9 [(errors.code) = 401];
-  INVALID_CLAIMS = 10 [(errors.code) = 401];
+  TOKEN_NOT_IN_WHITELIST = 9 [(errors.code) = 401];
+  VERIFICATION_FAILED = 10 [(errors.code) = 401];
+  INVALID_CLAIMS = 11 [(errors.code) = 401];
 }
 
 message LoginPlatformEnum {
