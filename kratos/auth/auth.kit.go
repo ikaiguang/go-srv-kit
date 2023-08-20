@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	TokenExpireDuration = time.Hour * 24
+	AccessTokenExpire   = time.Hour * 24
 	RefreshTokenExpire  = time.Hour * 24 * 7
+	PreviousTokenExpire = time.Minute * 10
 
 	AuthorizationKey = "Authorization"
 	BearerWord       = "Bearer"
@@ -66,7 +67,7 @@ func (s *Payload) UserIdentifier() string {
 
 // DefaultExpireTime 令牌过期时间
 func DefaultExpireTime() *jwt.NumericDate {
-	return jwt.NewNumericDate(time.Now().Add(TokenExpireDuration))
+	return jwt.NewNumericDate(time.Now().Add(AccessTokenExpire))
 }
 
 // Claims jwt.Claims
@@ -99,23 +100,51 @@ func (s *Claims) DecodeString(claimCiphertext string) error {
 	return nil
 }
 
+// GenExpireAt ...
+func GenExpireAt(duration time.Duration) *jwt.NumericDate {
+	return jwt.NewNumericDate(time.Now().Add(duration))
+}
+
 // GenAuthClaimsByAuthPayload ...
-func GenAuthClaimsByAuthPayload(payload *Payload) *Claims {
+func GenAuthClaimsByAuthPayload(payload *Payload, accessTokenExpire time.Duration) *Claims {
 	if payload.TokenID == "" {
 		payload.TokenID = uuidpkg.NewUUID()
 	}
 	authClaims := &Claims{Payload: payload}
-	CheckAndCorrectAuthClaims(authClaims)
+	authClaims.ID = payload.TokenID
+	authClaims.ExpiresAt = GenExpireAt(AccessTokenExpire)
+	if accessTokenExpire > 0 {
+		authClaims.ExpiresAt = GenExpireAt(accessTokenExpire)
+	}
 	return authClaims
 }
 
-// GenRefreshClaimsByAuthClaims ...
-func GenRefreshClaimsByAuthClaims(authClaims *Claims) *Claims {
+// GenAuthClaimsByAuthClaims ...
+func GenAuthClaimsByAuthClaims(authClaims *Claims, accessTokenExpire time.Duration) *Claims {
 	payload := *authClaims.Payload
 	payload.TokenID = uuidpkg.NewUUID()
 	regClaims := authClaims.RegisteredClaims
 	regClaims.ID = payload.TokenID
-	regClaims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(RefreshTokenExpire))
+	regClaims.ExpiresAt = GenExpireAt(AccessTokenExpire)
+	if accessTokenExpire > 0 {
+		regClaims.ExpiresAt = GenExpireAt(accessTokenExpire)
+	}
+	return &Claims{
+		RegisteredClaims: regClaims,
+		Payload:          &payload,
+	}
+}
+
+// GenRefreshClaimsByAuthClaims ...
+func GenRefreshClaimsByAuthClaims(authClaims *Claims, refreshTokenExpire time.Duration) *Claims {
+	payload := *authClaims.Payload
+	payload.TokenID = uuidpkg.NewUUID()
+	regClaims := authClaims.RegisteredClaims
+	regClaims.ID = payload.TokenID
+	regClaims.ExpiresAt = GenExpireAt(RefreshTokenExpire)
+	if refreshTokenExpire > 0 {
+		regClaims.ExpiresAt = GenExpireAt(refreshTokenExpire)
+	}
 	return &Claims{
 		RegisteredClaims: regClaims,
 		Payload:          &payload,

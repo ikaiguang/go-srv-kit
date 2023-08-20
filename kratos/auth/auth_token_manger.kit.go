@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-kratos/kratos/v2/log"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	"github.com/redis/go-redis/v9"
@@ -54,7 +55,8 @@ var _ TokenManger = (*tokenManger)(nil)
 
 // TokenManger ...
 type TokenManger interface {
-	SaveTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
+	SaveAccessTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
+	ResetPreviousTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
 	DeleteTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
 	GetToken(ctx context.Context, userIdentifier string, tokenID string) (item *TokenItem, isNotFound bool, err error)
 	GetAllTokens(ctx context.Context, userIdentifier string) (map[string]*TokenItem, error)
@@ -67,21 +69,27 @@ type TokenManger interface {
 
 // tokenManger ...
 type tokenManger struct {
+	log                *log.Helper
 	redisCC            redis.UniversalClient
 	authCacheKeyPrefix *AuthCacheKeyPrefix
 }
 
 // NewTokenManger ...
-func NewTokenManger(redisCC redis.UniversalClient, authCacheKeyPrefix *AuthCacheKeyPrefix) TokenManger {
+func NewTokenManger(
+	logger log.Logger,
+	redisCC redis.UniversalClient,
+	authCacheKeyPrefix *AuthCacheKeyPrefix,
+) TokenManger {
 	authCacheKeyPrefix = CheckAuthCacheKeyPrefix(authCacheKeyPrefix)
 	return &tokenManger{
+		log:                log.NewHelper(log.With(logger, "module", "kit.kratos.auth.token.manger")),
 		redisCC:            redisCC,
 		authCacheKeyPrefix: authCacheKeyPrefix,
 	}
 }
 
-// SaveTokens ...
-func (s *tokenManger) SaveTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error {
+// SaveAccessTokens ...
+func (s *tokenManger) SaveAccessTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error {
 	if len(tokenItems) == 0 {
 		return nil
 	}
@@ -132,6 +140,38 @@ func (s *tokenManger) calcExpireTime(expireAt, nowUnix int64) time.Duration {
 		return t
 	}
 	return time.Second
+}
+
+// ResetPreviousTokens ...
+func (s *tokenManger) ResetPreviousTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error {
+	if len(tokenItems) == 0 {
+		return nil
+	}
+
+	var (
+		kvs = make([]interface{}, 0, 2*len(tokenItems))
+	)
+	for i := range tokenItems {
+		if tokenItems[i].IsRefreshToken {
+			kvs = append(kvs, tokenItems[i].RefreshTokenID)
+		} else {
+			kvs = append(kvs, tokenItems[i].TokenID)
+		}
+		itemStr, err := tokenItems[i].EncodeToString()
+		if err != nil {
+			e := errorpkg.ErrorBadRequest("encode token item failed")
+			err = errorpkg.Wrap(e, err)
+			return err
+		}
+		kvs = append(kvs, itemStr)
+	}
+
+	key := s.genTokensKey(userIdentifier)
+	if err := s.redisCC.HSet(ctx, key, kvs...).Err(); err != nil {
+		e := errorpkg.ErrorInternalServer("")
+		return errorpkg.Wrap(e, err)
+	}
+	return nil
 }
 
 // AddBlacklist ...
@@ -275,19 +315,39 @@ func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, token
 	if err != nil {
 		return item, isNotFound, err
 	}
+	if item.TokenID == "" {
+		isNotFound = true
+	}
 	return item, isNotFound, err
 }
 
 // IsExistToken ...
 func (s *tokenManger) IsExistToken(ctx context.Context, userIdentifier string, tokenID string) (bool, error) {
-	key := s.genTokensKey(userIdentifier)
-	exist, err := s.redisCC.HExists(ctx, key, tokenID).Result()
+	//key := s.genTokensKey(userIdentifier)
+	//exist, err := s.redisCC.HExists(ctx, key, tokenID).Result()
+	//if err != nil {
+	//	e := errorpkg.ErrorInternalServer("")
+	//	err = errorpkg.Wrap(e, err)
+	//	return false, err
+	//}
+
+	tokenItem, isNotFound, err := s.GetToken(ctx, userIdentifier, tokenID)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer("")
-		err = errorpkg.Wrap(e, err)
 		return false, err
 	}
-	return exist, nil
+	if isNotFound {
+		return false, nil
+	}
+	if time.Unix(tokenItem.ExpiredAt, 0).Before(time.Now()) {
+		threadpkg.GoSafe(func() {
+			deleteErr := s.DeleteTokens(ctx, userIdentifier, []*TokenItem{tokenItem})
+			if deleteErr != nil {
+				s.log.Warnw("msg", "DeleteTokens failed", "tokenItem", tokenItem)
+			}
+		})
+		return false, nil
+	}
+	return true, nil
 }
 
 // GetAllTokens ...

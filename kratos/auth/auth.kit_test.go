@@ -18,7 +18,7 @@ func ExampleServerMiddleware() {
 	authConfig := Config{
 		RefreshCrypto: NewCBCCipher(signKey),
 	}
-	tokenM := NewTokenManger(redisCC, nil)
+	tokenM := NewTokenManger(logger, redisCC, nil)
 	repo, err := NewAuthRepo(authConfig, logger, tokenM)
 	if err != nil {
 		return

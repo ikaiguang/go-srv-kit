@@ -15,6 +15,10 @@ import (
 type Config struct {
 	SignCrypto    SignEncryptor
 	RefreshCrypto RefreshEncryptor
+
+	AccessTokenExpire   time.Duration
+	RefreshTokenExpire  time.Duration
+	PreviousTokenExpire time.Duration
 }
 
 // TokenResponse ...
@@ -141,6 +145,8 @@ type AuthRepo interface {
 	// SignToken 签证Token
 	// @Param signKey 拼接在原来的signKey上
 	SignToken(ctx context.Context, authClaims *Claims) (*TokenResponse, error)
+	RefreshToken(ctx context.Context, originRefreshClaims *Claims) (*TokenResponse, error)
+
 	DecodeAccessToken(ctx context.Context, accessToken string) (*Claims, error)
 	DecodeRefreshToken(ctx context.Context, refreshToken string) (*Claims, error)
 
@@ -150,6 +156,10 @@ type AuthRepo interface {
 
 // authRepo ...
 type authRepo struct {
+	accessTokenExpire   time.Duration
+	refreshTokenExpire  time.Duration
+	previousTokenExpire time.Duration
+
 	logHandler    *log.Helper
 	signEncryptor SignEncryptor
 	refreshCrypto RefreshEncryptor
@@ -168,8 +178,21 @@ func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManger) (Aut
 		err := errorpkg.WithStack(e)
 		return nil, err
 	}
+	if config.AccessTokenExpire < 1 {
+		config.AccessTokenExpire = AccessTokenExpire
+	}
+	if config.RefreshTokenExpire < 1 {
+		config.RefreshTokenExpire = RefreshTokenExpire
+	}
+	if config.PreviousTokenExpire < 1 {
+		config.PreviousTokenExpire = PreviousTokenExpire
+	}
 	// authCacheKeyPrefix := CheckAuthCacheKeyPrefix(config.AuthCacheKeyPrefix)
 	return &authRepo{
+		accessTokenExpire:   config.AccessTokenExpire,
+		refreshTokenExpire:  config.RefreshTokenExpire,
+		previousTokenExpire: config.PreviousTokenExpire,
+
 		signEncryptor: config.SignCrypto,
 		refreshCrypto: config.RefreshCrypto,
 		logHandler:    log.NewHelper(log.With(logger, "module", "auth/repo")),
@@ -198,7 +221,7 @@ func (s *authRepo) JWTSigningClaims() jwt.Claims {
 func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenResponse, error) {
 	// check CheckAndCorrectAuthClaims
 	// authClaims.ID = authClaims.Payload.TokenID
-	// authClaims.ExpiresAt = DefaultExpireTime()
+	authClaims.ExpiresAt = GenExpireAt(s.accessTokenExpire)
 
 	// token
 	tokenString, err := s.signEncryptor.EncryptToken(ctx, authClaims)
@@ -207,7 +230,7 @@ func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenRes
 	}
 
 	// refresh token
-	refreshClaims := GenRefreshClaimsByAuthClaims(authClaims)
+	refreshClaims := GenRefreshClaimsByAuthClaims(authClaims, s.refreshTokenExpire)
 	refreshToken, err := s.refreshCrypto.EncryptToken(ctx, refreshClaims)
 	if err != nil {
 		return nil, err
@@ -215,27 +238,14 @@ func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenRes
 
 	// 存储
 	var (
-		userIdentifier  = authClaims.Payload.UserIdentifier()
-		accessTokenItem = &TokenItem{
-			TokenID:        authClaims.ID,
-			RefreshTokenID: refreshClaims.ID,
-			ExpiredAt:      authClaims.ExpiresAt.Time.Unix(),
-			IsRefreshToken: false,
-			Payload:        authClaims.Payload,
-		}
-		refreshTokenItem = &TokenItem{
-			TokenID:        authClaims.ID,
-			RefreshTokenID: refreshClaims.ID,
-			ExpiredAt:      refreshClaims.ExpiresAt.Time.Unix(),
-			IsRefreshToken: true,
-			Payload:        refreshClaims.Payload,
-		}
-		tokenItems = []*TokenItem{accessTokenItem, refreshTokenItem}
+		userIdentifier                    = authClaims.Payload.UserIdentifier()
+		accessTokenItem, refreshTokenItem = s.genTokenItems(authClaims, refreshClaims)
+		tokenItems                        = []*TokenItem{accessTokenItem, refreshTokenItem}
 	)
 
 	// save token
 	if s.tokenManger != nil {
-		err = s.tokenManger.SaveTokens(ctx, userIdentifier, tokenItems)
+		err = s.tokenManger.SaveAccessTokens(ctx, userIdentifier, tokenItems)
 		if err != nil {
 			return nil, err
 		}
@@ -243,8 +253,60 @@ func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenRes
 
 	// 登录限制
 	threadpkg.GoSafe(func() {
-		if s.tokenManger != nil {
-			s.checkLimitAndDeleteExpireTokens(ctx, authClaims)
+		s.checkLimitAndDeleteExpireTokens(ctx, authClaims)
+	})
+
+	res := &TokenResponse{
+		AccessToken:  tokenString,
+		RefreshToken: refreshToken,
+
+		AccessTokenItem:  accessTokenItem,
+		RefreshTokenItem: refreshTokenItem,
+	}
+	return res, nil
+}
+
+// RefreshToken ...
+// Note: authClaims = refreshToken.authClaims
+func (s *authRepo) RefreshToken(ctx context.Context, originRefreshClaims *Claims) (*TokenResponse, error) {
+	// token
+	authClaims := GenAuthClaimsByAuthClaims(originRefreshClaims, s.accessTokenExpire)
+	tokenString, err := s.signEncryptor.EncryptToken(ctx, authClaims)
+	if err != nil {
+		return nil, err
+	}
+
+	// refresh token
+	refreshClaims := GenRefreshClaimsByAuthClaims(authClaims, s.refreshTokenExpire)
+	refreshToken, err := s.refreshCrypto.EncryptToken(ctx, refreshClaims)
+	if err != nil {
+		return nil, err
+	}
+
+	// 存储
+	var (
+		userIdentifier                    = authClaims.Payload.UserIdentifier()
+		accessTokenItem, refreshTokenItem = s.genTokenItems(authClaims, refreshClaims)
+		tokenItems                        = []*TokenItem{accessTokenItem, refreshTokenItem}
+	)
+
+	// save token
+	if s.tokenManger != nil {
+		// 设置被刷新的token过期时间为 PreviousTokenExpire
+		if err = s.setPreviousTokenExpireTime(ctx, originRefreshClaims); err != nil {
+			return nil, err
+		}
+		err = s.tokenManger.SaveAccessTokens(ctx, userIdentifier, tokenItems)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// 清除过期Token
+	threadpkg.GoSafe(func() {
+		deleteErr := s.deleteExpireTokens(ctx, originRefreshClaims)
+		if deleteErr != nil {
+			s.logHandler.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
 		}
 	})
 
@@ -256,6 +318,25 @@ func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenRes
 		RefreshTokenItem: refreshTokenItem,
 	}
 	return res, nil
+}
+
+// genTokenItems ...
+func (s *authRepo) genTokenItems(authClaims, refreshClaims *Claims) (accessTokenItem, refreshTokenItem *TokenItem) {
+	accessTokenItem = &TokenItem{
+		TokenID:        authClaims.ID,
+		RefreshTokenID: refreshClaims.ID,
+		ExpiredAt:      authClaims.ExpiresAt.Time.Unix(),
+		IsRefreshToken: false,
+		Payload:        authClaims.Payload,
+	}
+	refreshTokenItem = &TokenItem{
+		TokenID:        authClaims.ID,
+		RefreshTokenID: refreshClaims.ID,
+		ExpiredAt:      refreshClaims.ExpiresAt.Time.Unix(),
+		IsRefreshToken: true,
+		Payload:        refreshClaims.Payload,
+	}
+	return accessTokenItem, refreshTokenItem
 }
 
 // checkLimitAndDeleteExpireTokens ...
@@ -270,8 +351,52 @@ func (s *authRepo) checkLimitAndDeleteExpireTokens(ctx context.Context, authClai
 	}
 }
 
+// setPreviousTokenExpireTime 设置上一个令牌的过期时间
+func (s *authRepo) setPreviousTokenExpireTime(ctx context.Context, originRefreshClaims *Claims) error {
+	if s.tokenManger == nil {
+		return nil
+	}
+	var (
+		userIdentifier   = originRefreshClaims.Payload.UserIdentifier()
+		refreshTokenId   = originRefreshClaims.Payload.TokenID
+		previousExpireAt = time.Now().Add(s.previousTokenExpire).Unix()
+		tokenItems       []*TokenItem
+	)
+	refreshTokenItem, isNotFound, err := s.tokenManger.GetToken(ctx, userIdentifier, refreshTokenId)
+	if err != nil {
+		return err
+	}
+	if isNotFound {
+		return nil
+	}
+	tokenItems = append(tokenItems, refreshTokenItem)
+	if refreshTokenItem.ExpiredAt > previousExpireAt {
+		refreshTokenItem.ExpiredAt = previousExpireAt
+	}
+
+	var accessTokenId = refreshTokenItem.TokenID
+	accessTokenItem, isNotFound, err := s.tokenManger.GetToken(ctx, userIdentifier, accessTokenId)
+	if err != nil {
+		return err
+	}
+	if !isNotFound {
+		if accessTokenItem.ExpiredAt > previousExpireAt {
+			accessTokenItem.ExpiredAt = previousExpireAt
+		}
+		tokenItems = append(tokenItems, accessTokenItem)
+	}
+	if err = s.tokenManger.ResetPreviousTokens(ctx, userIdentifier, tokenItems); err != nil {
+		return err
+	}
+	return nil
+}
+
 // deleteExpireTokens 检查登录限制
 func (s *authRepo) deleteExpireTokens(ctx context.Context, authClaims *Claims) error {
+	if s.tokenManger == nil {
+		return nil
+	}
+
 	var (
 		userIdentifier = authClaims.Payload.UserIdentifier()
 		nowUnix        = time.Now().Unix()
@@ -302,6 +427,9 @@ func (s *authRepo) deleteExpireTokens(ctx context.Context, authClaims *Claims) e
 
 // checkLimitAndLogoutOtherAccount 检查登录限制
 func (s *authRepo) checkLimitAndLogoutOtherAccount(ctx context.Context, authClaims *Claims) error {
+	if s.tokenManger == nil {
+		return nil
+	}
 	if authClaims.Payload.LoginLimit == LoginLimitEnum_UNLIMITED {
 		return nil
 	}
@@ -394,22 +522,24 @@ func (s *authRepo) DecodeRefreshToken(ctx context.Context, refreshToken string) 
 
 // VerifyAccessToken 验证令牌
 func (s *authRepo) VerifyAccessToken(ctx context.Context, authClaims *Claims) error {
+	if s.tokenManger == nil {
+		return nil
+	}
 	// 检查 黑名单 & 白名单
-	if s.tokenManger != nil {
-		if err := s.checkTokenBlackAndWhite(ctx, authClaims); err != nil {
-			return err
-		}
+	if err := s.checkTokenBlackAndWhite(ctx, authClaims); err != nil {
+		return err
 	}
 	return nil
 }
 
 // VerifyRefreshToken 验证令牌
 func (s *authRepo) VerifyRefreshToken(ctx context.Context, authClaims *Claims) error {
+	if s.tokenManger == nil {
+		return nil
+	}
 	// 检查 黑名单 & 白名单
-	if s.tokenManger != nil {
-		if err := s.checkTokenBlackAndWhite(ctx, authClaims); err != nil {
-			return err
-		}
+	if err := s.checkTokenBlackAndWhite(ctx, authClaims); err != nil {
+		return err
 	}
 	return nil
 }
@@ -422,7 +552,8 @@ func (s *authRepo) checkTokenBlackAndWhite(ctx context.Context, authClaims *Clai
 		return err
 	}
 	if isBlacklist {
-		return ErrBlacklist()
+		e := ErrBlacklist()
+		return errorpkg.WithStack(e)
 	}
 
 	// 白名单
@@ -431,7 +562,8 @@ func (s *authRepo) checkTokenBlackAndWhite(ctx context.Context, authClaims *Clai
 		return err
 	}
 	if !isExist {
-		return ErrWhitelist()
+		e := ErrWhitelist()
+		return errorpkg.WithStack(e)
 	}
 	return nil
 }

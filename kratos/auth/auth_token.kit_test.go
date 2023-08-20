@@ -34,7 +34,7 @@ func TestNewAuthRepo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tokenM := NewTokenManger(tt.args.redisCC, nil)
+			tokenM := NewTokenManger(tt.args.logger, tt.args.redisCC, nil)
 			got, err := NewAuthRepo(tt.args.config, tt.args.logger, tokenM)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewAuthRepo() error = %v, wantErr %v", err, tt.wantErr)
