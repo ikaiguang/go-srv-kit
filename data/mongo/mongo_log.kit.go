@@ -26,14 +26,10 @@ func NewMonitor(logger log.Logger) *event.CommandMonitor {
 		Succeeded: func(ctx context.Context, evt *event.CommandSucceededEvent) {
 			d := evt.DurationNanos / (1000 * 1000)
 			_ = log.WithContext(ctx, logger).Log(log.LevelDebug,
-				"request_id",
-				evt.RequestID,
-				"command_name",
-				evt.CommandName,
-				"result",
-				evt.Reply.String(),
-				"duration",
-				strconv.FormatInt(d, 10)+"ms",
+				"request_id", evt.RequestID,
+				"command_name", evt.CommandName,
+				// "result", evt.Reply.String(),
+				"duration", strconv.FormatInt(d, 10)+"ms",
 			)
 		},
 	}
