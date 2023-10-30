@@ -160,7 +160,7 @@ type authRepo struct {
 	refreshTokenExpire  time.Duration
 	previousTokenExpire time.Duration
 
-	logHandler    *log.Helper
+	log           *log.Helper
 	signEncryptor SignEncryptor
 	refreshCrypto RefreshEncryptor
 	tokenManger   TokenManger
@@ -195,7 +195,7 @@ func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManger) (Aut
 
 		signEncryptor: config.SignCrypto,
 		refreshCrypto: config.RefreshCrypto,
-		logHandler:    log.NewHelper(log.With(logger, "module", "auth/repo")),
+		log:           log.NewHelper(log.With(logger, "module", "kit.auth.token.repo")),
 		tokenManger:   tokenManger,
 		// tokenManger:   NewTokenManger(redisCC, authCacheKeyPrefix),
 	}, nil
@@ -304,9 +304,10 @@ func (s *authRepo) RefreshToken(ctx context.Context, originRefreshClaims *Claims
 
 	// 清除过期Token
 	threadpkg.GoSafe(func() {
-		deleteErr := s.deleteExpireTokens(ctx, originRefreshClaims)
+		// ctx many be cancel
+		deleteErr := s.deleteExpireTokens(context.Background(), originRefreshClaims)
 		if deleteErr != nil {
-			s.logHandler.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
+			s.log.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
 		}
 	})
 
@@ -341,13 +342,15 @@ func (s *authRepo) genTokenItems(authClaims, refreshClaims *Claims) (accessToken
 
 // checkLimitAndDeleteExpireTokens ...
 func (s *authRepo) checkLimitAndDeleteExpireTokens(ctx context.Context, authClaims *Claims) {
-	checkErr := s.checkLimitAndLogoutOtherAccount(ctx, authClaims)
+	// ctx many be cancel
+	newCtx := context.Background()
+	checkErr := s.checkLimitAndLogoutOtherAccount(newCtx, authClaims)
 	if checkErr != nil {
-		s.logHandler.WithContext(ctx).Errorw("msg", "checkLoginLimit failed", "err", checkErr)
+		s.log.WithContext(ctx).Errorw("msg", "checkLoginLimit failed", "err", checkErr)
 	}
-	deleteErr := s.deleteExpireTokens(ctx, authClaims)
+	deleteErr := s.deleteExpireTokens(newCtx, authClaims)
 	if deleteErr != nil {
-		s.logHandler.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
+		s.log.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
 	}
 }
 
@@ -405,8 +408,6 @@ func (s *authRepo) deleteExpireTokens(ctx context.Context, authClaims *Claims) e
 
 	allTokens, err := s.tokenManger.GetAllTokens(ctx, userIdentifier)
 	if err != nil {
-		e := errorpkg.ErrorBadRequest("GetAllTokens failed")
-		err = errorpkg.Wrap(e, err)
 		return err
 	}
 	for i := range allTokens {

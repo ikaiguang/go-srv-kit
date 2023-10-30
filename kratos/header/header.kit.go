@@ -6,11 +6,15 @@ import (
 )
 
 const (
-	RequestID    = "x-custom-request-id"    // http请求id
-	IsWebsocket  = "x-custom-is-websocket"  // http请求设置
-	RemoteAddr   = "x-custom-remote-addr"   // 远程地址
-	UserTerminal = "x-custom-user-terminal" // 使用终端、平台
-	TraceID      = "x-custom-trace-id"      // trace-id
+	RequestID     = "x-kit-request-id"    // http请求id
+	TraceID       = "x-kit-trace-id"      // trace-id
+	InternalToken = "x-kit-authorization" // 内部令牌
+	IsWebsocket   = "x-kit-websocket"     // http请求设置
+	RemoteAddr    = "x-kit-remote-addr"   // 远程地址
+	UserTerminal  = "x-kit-user-terminal" // 使用终端、平台
+
+	// AuthorizationKey auth
+	AuthorizationKey = "Authorization"
 
 	// WebsocketConnection websocket
 	WebsocketConnection = "Connection"

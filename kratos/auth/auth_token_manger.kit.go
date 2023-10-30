@@ -82,7 +82,7 @@ func NewTokenManger(
 ) TokenManger {
 	authCacheKeyPrefix = CheckAuthCacheKeyPrefix(authCacheKeyPrefix)
 	return &tokenManger{
-		log:                log.NewHelper(log.With(logger, "module", "kit.kratos.auth.token.manger")),
+		log:                log.NewHelper(log.With(logger, "module", "kit.auth.token.manger")),
 		redisCC:            redisCC,
 		authCacheKeyPrefix: authCacheKeyPrefix,
 	}
@@ -125,7 +125,8 @@ func (s *tokenManger) SaveAccessTokens(ctx context.Context, userIdentifier strin
 		return errorpkg.Wrap(e, err)
 	}
 	threadpkg.GoSafe(func() {
-		_ = s.redisCC.Expire(ctx, key, expire)
+		// ctx many be cancel
+		_ = s.redisCC.Expire(context.Background(), key, expire)
 	})
 	return nil
 }
@@ -340,9 +341,10 @@ func (s *tokenManger) IsExistToken(ctx context.Context, userIdentifier string, t
 	}
 	if time.Unix(tokenItem.ExpiredAt, 0).Before(time.Now()) {
 		threadpkg.GoSafe(func() {
-			deleteErr := s.DeleteTokens(ctx, userIdentifier, []*TokenItem{tokenItem})
+			// ctx many be cancel
+			deleteErr := s.DeleteTokens(context.Background(), userIdentifier, []*TokenItem{tokenItem})
 			if deleteErr != nil {
-				s.log.Warnw("msg", "DeleteTokens failed", "tokenItem", tokenItem)
+				s.log.WithContext(ctx).Warnw("msg", "DeleteTokens failed", "tokenItem", tokenItem)
 			}
 		})
 		return false, nil
