@@ -29,9 +29,9 @@ func CalcShowFrom(pageNumber, pageSize uint32) uint32 {
 }
 
 // CalcShowTo 计算：分页显示结束位置 长度
-func CalcShowTo(showFromNumer, resultLength uint32) uint32 {
+func CalcShowTo(showFromNumber, resultLength uint32) uint32 {
 	if resultLength <= 1 {
-		return showFromNumer
+		return showFromNumber
 	}
-	return showFromNumer + resultLength - 1
+	return showFromNumber + resultLength - 1
 }
