@@ -18,7 +18,9 @@ type Unlock interface {
 
 // Lock 加锁
 type Lock interface {
+	// Mutex 互斥锁，一直等待直到解锁
 	Mutex(ctx context.Context, lockName string) (Unlock, error)
+	// Once 简单锁，等待解锁或者锁定时间过期后自动解锁
 	Once(ctx context.Context, lockName string) (Unlock, error)
 }
 
