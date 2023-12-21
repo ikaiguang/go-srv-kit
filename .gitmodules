@@ -1,6 +1,0 @@
-[submodule "go-srv-services"]
-	path = go-srv-services
-	url = git@github.com:ikaiguang/go-srv-services.git
-[submodule "go-snowflake-node-id"]
-	path = go-snowflake-node-id
-	url = git@github.com:ikaiguang/go-snowflake-node-id.git
