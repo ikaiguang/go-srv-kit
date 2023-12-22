@@ -17,7 +17,7 @@ const (
 
 // Locker ...
 type Locker interface {
-	Lock(ctx context.Context, lockName string) (locker lockerpkg.Unlock, err error)
+	Lock(ctx context.Context, lockName string) (locker lockerpkg.Unlocker, err error)
 }
 
 var (
@@ -40,7 +40,7 @@ func NewLockerFromRedis(redisCC redis.UniversalClient) Locker {
 }
 
 // Lock ...
-func (s *cacheRepo) Lock(ctx context.Context, lockName string) (lockerpkg.Unlock, error) {
+func (s *cacheRepo) Lock(ctx context.Context, lockName string) (lockerpkg.Unlocker, error) {
 	locker, err := s.locker.Mutex(ctx, lockName)
 	if err != nil {
 		if lockerpkg.IsErrorLockFailed(err) {
@@ -54,7 +54,7 @@ func (s *cacheRepo) Lock(ctx context.Context, lockName string) (lockerpkg.Unlock
 }
 
 // Lock ...
-func (s *redisRepo) Lock(ctx context.Context, lockName string) (lockerpkg.Unlock, error) {
+func (s *redisRepo) Lock(ctx context.Context, lockName string) (lockerpkg.Unlocker, error) {
 	locker, err := s.locker.Mutex(ctx, lockName)
 	if err != nil {
 		if lockerpkg.IsErrorLockFailed(err) {
@@ -69,10 +69,10 @@ func (s *redisRepo) Lock(ctx context.Context, lockName string) (lockerpkg.Unlock
 
 // cacheRepo ...
 type cacheRepo struct {
-	locker lockerpkg.Lock
+	locker lockerpkg.Locker
 }
 
 // redisRepo ...
 type redisRepo struct {
-	locker lockerpkg.Lock
+	locker lockerpkg.Locker
 }

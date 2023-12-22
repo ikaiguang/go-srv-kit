@@ -27,7 +27,7 @@ func TestLockOnce(t *testing.T) {
 		name         string
 		lockerStatus bool
 		isLockFailed bool
-		unlock       lockerpkg.Unlock
+		unlock       lockerpkg.Unlocker
 	}{
 		{
 			name:         "#加锁成功",
@@ -88,7 +88,7 @@ func TestLockMutex(t *testing.T) {
 		name         string
 		lockerStatus bool
 		isLockFailed bool
-		unlock       lockerpkg.Unlock
+		unlock       lockerpkg.Unlocker
 	}{
 		{
 			name:         "#加锁成功",

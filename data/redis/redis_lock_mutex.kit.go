@@ -13,6 +13,7 @@ import (
 type mutexLock struct {
 	mutex      *redsync.Mutex
 	stopExtend chan bool
+	lockName   string
 }
 
 // Unlock ...
@@ -28,6 +29,10 @@ func (s *mutexLock) Unlock(ctx context.Context) (ok bool, err error) {
 		return ok, err
 	}
 	return s.mutex.UnlockContext(ctx)
+}
+
+func (s *mutexLock) Name() string {
+	return s.lockName
 }
 
 // extend ...

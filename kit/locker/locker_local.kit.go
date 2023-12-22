@@ -11,12 +11,12 @@ var _ LocalLocker = (*local)(nil)
 type local struct{ sm sync.Map }
 
 // NewLocalLocker ...
-func NewLocalLocker() Lock {
+func NewLocalLocker() Locker {
 	return &local{}
 }
 
-func (s *local) Mutex(ctx context.Context, lockName string) (Unlock, error) {
-	locker := newLocalLock(&sync.Mutex{})
+func (s *local) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
+	locker := newLocalLock(&sync.Mutex{}, lockName)
 	lockerInterface, _ := s.sm.LoadOrStore(lockName, locker)
 	locker = lockerInterface.(*localLock)
 	if !locker.mu.TryLock() {
@@ -26,7 +26,7 @@ func (s *local) Mutex(ctx context.Context, lockName string) (Unlock, error) {
 	return locker, nil
 }
 
-func (s *local) Once(ctx context.Context, lockName string) (Unlock, error) {
+func (s *local) Once(ctx context.Context, lockName string) (Unlocker, error) {
 	return s.Mutex(ctx, lockName)
 }
 
@@ -43,11 +43,12 @@ func (s *local) Unlock(ctx context.Context, lockName string) {
 
 // localLock ...
 type localLock struct {
-	mu *sync.Mutex
+	mu       *sync.Mutex
+	lockName string
 }
 
-func newLocalLock(mu *sync.Mutex) *localLock {
-	return &localLock{mu: mu}
+func newLocalLock(mu *sync.Mutex, lockName string) *localLock {
+	return &localLock{mu: mu, lockName: lockName}
 }
 
 // Unlock ...
@@ -55,4 +56,8 @@ func (s *localLock) Unlock(ctx context.Context) (bool, error) {
 	_ = s.mu.TryLock()
 	s.mu.Unlock()
 	return true, nil
+}
+
+func (s *localLock) Name() string {
+	return s.lockName
 }

@@ -24,7 +24,7 @@ type Locker struct {
 }
 
 // NewLocker ..
-func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerpkg.Lock {
+func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerpkg.Locker {
 	// 锁选项
 	lockerOpts := []redsync.Option{
 		redsync.WithExpiry(_lockExpire),
@@ -40,8 +40,8 @@ func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerpkg.
 }
 
 // Once ...
-func (s *Locker) Once(ctx context.Context, lockName string) (locker lockerpkg.Unlock, err error) {
-	m := &onceLock{}
+func (s *Locker) Once(ctx context.Context, lockName string) (locker lockerpkg.Unlocker, err error) {
+	m := &onceLock{lockName: lockName}
 	m.mutex = s.rs.NewMutex(lockName, s.opts...)
 	if err = m.mutex.LockContext(ctx); err != nil {
 		err = lockerpkg.ErrorLockerFailed(lockName, err)
@@ -51,8 +51,8 @@ func (s *Locker) Once(ctx context.Context, lockName string) (locker lockerpkg.Un
 }
 
 // Mutex ...
-func (s *Locker) Mutex(ctx context.Context, lockName string) (locker lockerpkg.Unlock, err error) {
-	m := &mutexLock{}
+func (s *Locker) Mutex(ctx context.Context, lockName string) (locker lockerpkg.Unlocker, err error) {
+	m := &mutexLock{lockName: lockName}
 	m.mutex = s.rs.NewMutex(lockName, s.opts...)
 	if err = m.mutex.LockContext(ctx); err != nil {
 		err = lockerpkg.ErrorLockerFailed(lockName, err)

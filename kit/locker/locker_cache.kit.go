@@ -23,13 +23,13 @@ type cache struct {
 }
 
 // NewCacheLocker ...
-func NewCacheLocker() Lock {
+func NewCacheLocker() Locker {
 	return &cache{
 		cache: cachepkg.New(_cacheLockerExpire, _cacheLockerClean),
 	}
 }
 
-func (s *cache) Mutex(ctx context.Context, lockName string) (Unlock, error) {
+func (s *cache) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
 	mu := &sync.Mutex{}
 	muInterface, _ := s.sm.LoadOrStore(lockName, mu)
 	mu = muInterface.(*sync.Mutex)
@@ -54,7 +54,7 @@ func (s *cache) Mutex(ctx context.Context, lockName string) (Unlock, error) {
 	return locker, nil
 }
 
-func (s *cache) Once(ctx context.Context, lockName string) (Unlock, error) {
+func (s *cache) Once(ctx context.Context, lockName string) (Unlocker, error) {
 	mu := &sync.Mutex{}
 	muInterface, _ := s.sm.LoadOrStore(lockName, mu)
 	mu = muInterface.(*sync.Mutex)
@@ -123,6 +123,10 @@ func (s *cacheLock) Unlock(ctx context.Context) (bool, error) {
 	_ = s.mu.TryLock()
 	s.mu.Unlock()
 	return true, nil
+}
+
+func (s *cacheLock) Name() string {
+	return s.lockName
 }
 
 // extend ...

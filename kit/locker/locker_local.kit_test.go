@@ -20,7 +20,7 @@ func TestLocal_LockOnce(t *testing.T) {
 		name         string
 		lockerStatus bool
 		isLockFailed bool
-		unlock       Unlock
+		unlock       Unlocker
 	}{
 		{
 			name:         "#加锁成功",
@@ -79,7 +79,7 @@ func TestLocal_LockMutex(t *testing.T) {
 		name         string
 		lockerStatus bool
 		isLockFailed bool
-		unlock       Unlock
+		unlock       Unlocker
 	}{
 		{
 			name:         "#加锁成功",

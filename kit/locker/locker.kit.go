@@ -5,23 +5,27 @@ import (
 	"fmt"
 )
 
-type LocalLocker interface {
-	Lock
-
-	Unlock(ctx context.Context, lockName string)
-}
-
-// Unlock 解锁
-type Unlock interface {
-	Unlock(ctx context.Context) (ok bool, err error)
-}
-
-// Lock 加锁
-type Lock interface {
+// Locker 加锁
+type Locker interface {
 	// Mutex 互斥锁，一直等待直到解锁
-	Mutex(ctx context.Context, lockName string) (Unlock, error)
+	Mutex(ctx context.Context, lockName string) (Unlocker, error)
 	// Once 简单锁，等待解锁或者锁定时间过期后自动解锁
-	Once(ctx context.Context, lockName string) (Unlock, error)
+	Once(ctx context.Context, lockName string) (Unlocker, error)
+}
+
+// Unlocker 解锁
+type Unlocker interface {
+	Unlock(ctx context.Context) (ok bool, err error)
+	Name() string
+}
+
+type LocalLocker interface {
+	// Mutex 互斥锁，一直等待直到解锁
+	Mutex(ctx context.Context, lockName string) (Unlocker, error)
+	// Once 简单锁，等待解锁或者锁定时间过期后自动解锁
+	Once(ctx context.Context, lockName string) (Unlocker, error)
+	// Unlock 解锁
+	Unlock(ctx context.Context, lockName string)
 }
 
 // ErrorLockerFailed .
