@@ -15,15 +15,17 @@ message RuntimeEnvEnum {
     // UNKNOWN 未知
     UNKNOWN = 0;
     // LOCAL 本地开发
-    LOCAL = 1;
+    LOCAL = 10;
     // DEVELOP 开发环境
-    DEVELOP = 2;
+    DEVELOP = 20;
     // TESTING 测试环境
-    TESTING = 3;
+    TESTING = 30;
+    // UAT User Acceptance Test
+    UAT = 40;
     // PREVIEW 预发布 环境
-    PREVIEW = 4;
+    PREVIEW = 50;
     // PRODUCTION 生产环境
-    PRODUCTION = 5;
+    PRODUCTION = 60;
   }
 }
 
