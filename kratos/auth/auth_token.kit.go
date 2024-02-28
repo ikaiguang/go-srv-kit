@@ -300,16 +300,15 @@ func (s *authRepo) RefreshToken(ctx context.Context, originRefreshClaims *Claims
 		if err != nil {
 			return nil, err
 		}
+		// 清除过期Token
+		threadpkg.GoSafe(func() {
+			// ctx many be cancel
+			deleteErr := s.tokenManger.DeleteExpireTokens(context.Background(), userIdentifier)
+			if deleteErr != nil {
+				s.log.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
+			}
+		})
 	}
-
-	// 清除过期Token
-	threadpkg.GoSafe(func() {
-		// ctx many be cancel
-		deleteErr := s.deleteExpireTokens(context.Background(), originRefreshClaims)
-		if deleteErr != nil {
-			s.log.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
-		}
-	})
 
 	res := &TokenResponse{
 		AccessToken:  tokenString,
@@ -348,9 +347,11 @@ func (s *authRepo) checkLimitAndDeleteExpireTokens(ctx context.Context, authClai
 	if checkErr != nil {
 		s.log.WithContext(ctx).Errorw("msg", "checkLoginLimit failed", "err", checkErr)
 	}
-	deleteErr := s.deleteExpireTokens(newCtx, authClaims)
-	if deleteErr != nil {
-		s.log.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
+	if s.tokenManger != nil {
+		deleteErr := s.tokenManger.DeleteExpireTokens(newCtx, authClaims.Payload.UserIdentifier())
+		if deleteErr != nil {
+			s.log.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
+		}
 	}
 }
 
@@ -389,38 +390,6 @@ func (s *authRepo) setPreviousTokenExpireTime(ctx context.Context, originRefresh
 		tokenItems = append(tokenItems, accessTokenItem)
 	}
 	if err = s.tokenManger.ResetPreviousTokens(ctx, userIdentifier, tokenItems); err != nil {
-		return err
-	}
-	return nil
-}
-
-// deleteExpireTokens 检查登录限制
-func (s *authRepo) deleteExpireTokens(ctx context.Context, authClaims *Claims) error {
-	if s.tokenManger == nil {
-		return nil
-	}
-
-	var (
-		userIdentifier = authClaims.Payload.UserIdentifier()
-		nowUnix        = time.Now().Unix()
-		expireList     []*TokenItem
-	)
-
-	allTokens, err := s.tokenManger.GetAllTokens(ctx, userIdentifier)
-	if err != nil {
-		return err
-	}
-	for i := range allTokens {
-		if allTokens[i].ExpiredAt > nowUnix {
-			continue
-		}
-		expireList = append(expireList, allTokens[i])
-	}
-
-	// 删除过期
-	if err = s.tokenManger.DeleteTokens(ctx, userIdentifier, expireList); err != nil {
-		e := errorpkg.ErrorBadRequest("DeleteTokens failed")
-		err = errorpkg.Wrap(e, err)
 		return err
 	}
 	return nil

@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
+	redispkg "github.com/ikaiguang/go-srv-kit/data/redis"
+	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	"github.com/redis/go-redis/v9"
@@ -22,6 +24,7 @@ const (
 	DefaultBlackTokenKeyPrefix RedisCacheKeyPrefix = "kit:auth_black:"
 	DefaultLoginLimitKeyPrefix RedisCacheKeyPrefix = "kit:auth_limit:"
 	DefaultAuthTokenKeyPrefix  RedisCacheKeyPrefix = "kit:auth_token:"
+	DefaultClearTokenKeyPrefix RedisCacheKeyPrefix = "kit:auth_clear:"
 )
 
 // AuthCacheKeyPrefix ...
@@ -29,24 +32,31 @@ type AuthCacheKeyPrefix struct {
 	TokensKeyPrefix     RedisCacheKeyPrefix // 用户令牌
 	BlackTokenKeyPrefix RedisCacheKeyPrefix // 黑名单
 	LimitTokenKeyPrefix RedisCacheKeyPrefix // 登录限制
+	ClearTokenKeyPrefix RedisCacheKeyPrefix // 清除token
 }
 
 // CheckAuthCacheKeyPrefix ...
-func CheckAuthCacheKeyPrefix(keyPrefix *AuthCacheKeyPrefix) *AuthCacheKeyPrefix {
-	if keyPrefix == nil {
-		return &AuthCacheKeyPrefix{
-			TokensKeyPrefix:     DefaultAuthTokenKeyPrefix,
-			BlackTokenKeyPrefix: DefaultBlackTokenKeyPrefix,
-		}
+func CheckAuthCacheKeyPrefix(inputKeyPrefix *AuthCacheKeyPrefix) *AuthCacheKeyPrefix {
+	keyPrefix := &AuthCacheKeyPrefix{
+		TokensKeyPrefix:     DefaultAuthTokenKeyPrefix,  // 用户令牌
+		BlackTokenKeyPrefix: DefaultBlackTokenKeyPrefix, // 黑名单
+		LimitTokenKeyPrefix: DefaultLoginLimitKeyPrefix, // 登录限制
+		ClearTokenKeyPrefix: DefaultClearTokenKeyPrefix, // 清除token
 	}
-	if keyPrefix.TokensKeyPrefix == "" {
-		keyPrefix.TokensKeyPrefix = DefaultAuthTokenKeyPrefix
+	if inputKeyPrefix == nil {
+		return keyPrefix
 	}
-	if keyPrefix.BlackTokenKeyPrefix == "" {
-		keyPrefix.BlackTokenKeyPrefix = DefaultBlackTokenKeyPrefix
+	if inputKeyPrefix.TokensKeyPrefix == "" {
+		keyPrefix.TokensKeyPrefix = inputKeyPrefix.TokensKeyPrefix
 	}
-	if keyPrefix.LimitTokenKeyPrefix == "" {
-		keyPrefix.LimitTokenKeyPrefix = DefaultLoginLimitKeyPrefix
+	if inputKeyPrefix.BlackTokenKeyPrefix == "" {
+		keyPrefix.BlackTokenKeyPrefix = inputKeyPrefix.BlackTokenKeyPrefix
+	}
+	if inputKeyPrefix.LimitTokenKeyPrefix == "" {
+		keyPrefix.LimitTokenKeyPrefix = inputKeyPrefix.LimitTokenKeyPrefix
+	}
+	if inputKeyPrefix.ClearTokenKeyPrefix == "" {
+		keyPrefix.ClearTokenKeyPrefix = inputKeyPrefix.ClearTokenKeyPrefix
 	}
 	return keyPrefix
 }
@@ -57,14 +67,23 @@ var _ TokenManger = (*tokenManger)(nil)
 type TokenManger interface {
 	SaveAccessTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
 	ResetPreviousTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
-	DeleteTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
+	AddBlacklist(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
+	AddLoginLimit(ctx context.Context, tokenItems []*TokenItem) error
+
 	GetToken(ctx context.Context, userIdentifier string, tokenID string) (item *TokenItem, isNotFound bool, err error)
 	GetAllTokens(ctx context.Context, userIdentifier string) (map[string]*TokenItem, error)
-	IsExistToken(ctx context.Context, userIdentifier string, tokenID string) (bool, error)
-	AddBlacklist(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
-	IsBlacklist(ctx context.Context, tokenID string) (bool, error)
-	AddLoginLimit(ctx context.Context, tokenItems []*TokenItem) error
+
+	DeleteTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
+	DeleteExpireTokens(ctx context.Context, userIdentifier string) error
+
 	IsLoginLimit(ctx context.Context, tokenID string) (bool, LoginLimitEnum_LoginLimit, error)
+	IsExistToken(ctx context.Context, userIdentifier string, tokenID string) (bool, error)
+	IsBlacklist(ctx context.Context, tokenID string) (bool, error)
+
+	// EasyLock 简单锁，等待解锁或者锁定时间过期后自动解锁
+	EasyLock(ctx context.Context, lockName string) (lockerpkg.Unlocker, error)
+	// MutexLock 互斥锁，一直等待直到解锁
+	// MutexLock(ctx context.Context, lockName string) (lockerpkg.Unlocker, error)
 }
 
 // tokenManger ...
@@ -72,6 +91,7 @@ type tokenManger struct {
 	log                *log.Helper
 	redisCC            redis.UniversalClient
 	authCacheKeyPrefix *AuthCacheKeyPrefix
+	locker             lockerpkg.Locker
 }
 
 // NewTokenManger ...
@@ -85,6 +105,7 @@ func NewTokenManger(
 		log:                log.NewHelper(log.With(logger, "module", "kit.auth.token.manger")),
 		redisCC:            redisCC,
 		authCacheKeyPrefix: authCacheKeyPrefix,
+		locker:             redispkg.NewLocker(redisCC),
 	}
 }
 
@@ -217,6 +238,40 @@ func (s *tokenManger) AddBlacklist(ctx context.Context, userIdentifier string, t
 	return nil
 }
 
+// DeleteExpireTokens 删除过期的token
+func (s *tokenManger) DeleteExpireTokens(ctx context.Context, userIdentifier string) error {
+	var (
+		nowUnix    = time.Now().Unix()
+		expireList []*TokenItem
+	)
+
+	// 防止重复删除
+	unlocker, err := s.EasyLock(ctx, s.genClearTokenKey(userIdentifier))
+	if err != nil {
+		return err
+	}
+	defer func() { _, _ = unlocker.Unlock(ctx) }()
+
+	allTokens, err := s.GetAllTokens(ctx, userIdentifier)
+	if err != nil {
+		return err
+	}
+	for i := range allTokens {
+		if allTokens[i].ExpiredAt > nowUnix {
+			continue
+		}
+		expireList = append(expireList, allTokens[i])
+	}
+
+	// 删除过期
+	if err = s.DeleteTokens(ctx, userIdentifier, expireList); err != nil {
+		e := errorpkg.ErrorBadRequest("DeleteTokens failed")
+		err = errorpkg.Wrap(e, err)
+		return err
+	}
+	return nil
+}
+
 // DeleteTokens ...
 func (s *tokenManger) DeleteTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error {
 	if len(tokenItems) == 0 {
@@ -278,6 +333,16 @@ func (s *tokenManger) IsBlacklist(ctx context.Context, tokenID string) (bool, er
 		return false, err
 	}
 	return i > 0, nil
+}
+
+// EasyLock 简单锁，等待解锁或者锁定时间过期后自动解锁
+func (s *tokenManger) EasyLock(ctx context.Context, lockName string) (lockerpkg.Unlocker, error) {
+	return s.locker.Once(ctx, lockName)
+}
+
+// MutexLock 互斥锁，一直等待直到解锁
+func (s *tokenManger) MutexLock(ctx context.Context, lockName string) (lockerpkg.Unlocker, error) {
+	return s.locker.Mutex(ctx, lockName)
 }
 
 // IsLoginLimit ...
@@ -387,4 +452,9 @@ func (s *tokenManger) genBlackTokenKey(tokenID string) string {
 // genLimitTokenKey ...
 func (s *tokenManger) genLimitTokenKey(tokenID string) string {
 	return s.authCacheKeyPrefix.LimitTokenKeyPrefix.String() + tokenID
+}
+
+// genClearTokenKey ...
+func (s *tokenManger) genClearTokenKey(tokenID string) string {
+	return s.authCacheKeyPrefix.ClearTokenKeyPrefix.String() + tokenID
 }
