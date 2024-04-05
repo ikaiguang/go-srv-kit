@@ -7,11 +7,9 @@ import (
 )
 
 const (
-	// DefaultFileMode 文件权限
-	DefaultFileMode os.FileMode = 0744
-
-	// DefaultRuntimeDir 临时目录
-	DefaultRuntimeDir = "runtime"
+	DefaultFileMode   os.FileMode = 0744      // 文件权限
+	DefaultRuntimeDir             = "runtime" // 临时目录
+	DefaultMaxSize                = 20 << 20  // 20M
 )
 
 // CopyFile 复制文件

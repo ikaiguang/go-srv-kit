@@ -23,11 +23,13 @@ const (
 	WebsocketSecKey     = "Sec-Websocket-Key"
 
 	// ContentType header
-	ContentType         = "Content-Type"
-	ContentTypeJSON     = "application/json"
-	ContentTypeJSONUtf8 = "application/json; charset=utf-8"
-	ContentTypeProto    = "application/proto"
-	ContentTypeProtobuf = "application/x-protobuf"
+	ContentType               = "Content-Type"
+	ContentTypeJSON           = "application/json"
+	ContentTypeJSONUtf8       = "application/json; charset=utf-8"
+	ContentTypeProto          = "application/proto"
+	ContentTypeProtobuf       = "application/x-protobuf"
+	ContentTypeFormURLEncoded = "application/x-www-form-urlencoded"
+	ContentTypeMultipartForm  = "multipart/form-data"
 
 	// Accept header
 	Accept         = "Accept"

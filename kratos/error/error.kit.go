@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-kratos/kratos/v2/errors"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // WithStack returns an error
@@ -26,6 +27,15 @@ func Wrap(e *errors.Error, eSlice ...error) *Error {
 		status: &status{Error: e},
 		stack:  callers(),
 	}
+}
+
+type Enum interface {
+	String() string
+	Number() protoreflect.EnumNumber
+}
+
+func Err(e Enum, msg string) *Error {
+	return New(int(e.Number()), e.String(), msg)
 }
 
 // New ...

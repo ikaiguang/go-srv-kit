@@ -17,9 +17,8 @@ var (
 )
 
 const (
-	codecNameMultipartForm = "form-data"
-
-	DefaultUploadMaxSize = 10 << 20 // 20M
+	codecNameMultipartForm = "form-data" // 表单提交
+	DefaultUploadMaxSize   = 20 << 20    // 20M
 )
 
 // RegisterCodec ...
@@ -49,6 +48,10 @@ func RequestDecoder(r *http.Request, v interface{}) error {
 
 	// read data
 	data, err := io.ReadAll(r.Body)
+	if len(data) > DefaultUploadMaxSize {
+		e := errorpkg.ErrorRequestEntityTooLarge("REQUEST_ENTITY_TOO_LARGE")
+		return errorpkg.WithStack(e)
+	}
 
 	// reset body.
 	r.Body = io.NopCloser(bytes.NewBuffer(data))
