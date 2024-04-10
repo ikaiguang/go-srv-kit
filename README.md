@@ -1,6 +1,9 @@
 # 服务工具
 
-为微服务开发提供基础工具，通过配置按需启动服务基础组件
+`go-srv-kit`为微服务和业务系统开发提供开箱即用的工具；
+
+- 按需配置启动基础组件，如：数据库、缓存、消息队列等。
+- 提供一些基础的工具，如：日志、配置、HTTP、GRPC、JWT、SnowflakeId等。
 
 创建新项目请阅读: [README-NEW-PROJECT.md](./README-NEW-PROJECT.md)
 
