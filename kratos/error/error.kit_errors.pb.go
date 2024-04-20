@@ -85,16 +85,16 @@ func ErrorNetworkTimeout(format string, args ...interface{}) *errors.Error {
 	return errors.New(504, ERROR_NETWORK_TIMEOUT.String(), fmt.Sprintf(format, args...))
 }
 
-func IsConnection(err error) bool {
+func IsConnectionError(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_CONNECTION.String() && e.Code == 500
+	return e.Reason == ERROR_CONNECTION_ERROR.String() && e.Code == 500
 }
 
-func ErrorConnection(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_CONNECTION.String(), fmt.Sprintf(format, args...))
+func ErrorConnectionError(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_CONNECTION_ERROR.String(), fmt.Sprintf(format, args...))
 }
 
 func IsUninitialized(err error) bool {
@@ -145,34 +145,43 @@ func ErrorRequestNotSupport(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ERROR_REQUEST_NOT_SUPPORT.String(), fmt.Sprintf(format, args...))
 }
 
-// 第三方服务错误
-func IsThirdPartyServiceInternalError(err error) bool {
+func IsInternalError(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_THIRD_PARTY_SERVICE_INTERNAL_ERROR.String() && e.Code == 500
+	return e.Reason == ERROR_INTERNAL_ERROR.String() && e.Code == 500
 }
 
-// 第三方服务错误
-func ErrorThirdPartyServiceInternalError(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_THIRD_PARTY_SERVICE_INTERNAL_ERROR.String(), fmt.Sprintf(format, args...))
+func ErrorInternalError(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_INTERNAL_ERROR.String(), fmt.Sprintf(format, args...))
 }
 
-// 第三方服务响应结果有误
-func IsThirdPartyServiceInvalidCode(err error) bool {
+func IsPanic(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_THIRD_PARTY_SERVICE_INVALID_CODE.String() && e.Code == 400
+	return e.Reason == ERROR_PANIC.String() && e.Code == 500
 }
 
-// 第三方服务响应结果有误
-func ErrorThirdPartyServiceInvalidCode(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ERROR_THIRD_PARTY_SERVICE_INVALID_CODE.String(), fmt.Sprintf(format, args...))
+func ErrorPanic(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_PANIC.String(), fmt.Sprintf(format, args...))
 }
 
+func IsFatal(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_FATAL.String() && e.Code == 500
+}
+
+func ErrorFatal(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_FATAL.String(), fmt.Sprintf(format, args...))
+}
+
+// DB database
 func IsDb(err error) bool {
 	if err == nil {
 		return false
@@ -181,6 +190,7 @@ func IsDb(err error) bool {
 	return e.Reason == ERROR_DB.String() && e.Code == 500
 }
 
+// DB database
 func ErrorDb(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ERROR_DB.String(), fmt.Sprintf(format, args...))
 }
@@ -233,6 +243,7 @@ func ErrorRedis(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ERROR_REDIS.String(), fmt.Sprintf(format, args...))
 }
 
+// MQ message queue
 func IsMq(err error) bool {
 	if err == nil {
 		return false
@@ -241,8 +252,21 @@ func IsMq(err error) bool {
 	return e.Reason == ERROR_MQ.String() && e.Code == 500
 }
 
+// MQ message queue
 func ErrorMq(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ERROR_MQ.String(), fmt.Sprintf(format, args...))
+}
+
+func IsQueue(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_QUEUE.String() && e.Code == 500
+}
+
+func ErrorQueue(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_QUEUE.String(), fmt.Sprintf(format, args...))
 }
 
 func IsRabbitMq(err error) bool {
@@ -269,28 +293,32 @@ func ErrorKafka(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ERROR_KAFKA.String(), fmt.Sprintf(format, args...))
 }
 
-func IsPanic(err error) bool {
+// THIRD_PARTY_SERVICE_INVALID_CODE third party
+func IsThirdPartyServiceInvalidCode(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_PANIC.String() && e.Code == 500
+	return e.Reason == ERROR_THIRD_PARTY_SERVICE_INVALID_CODE.String() && e.Code == 400
 }
 
-func ErrorPanic(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_PANIC.String(), fmt.Sprintf(format, args...))
+// THIRD_PARTY_SERVICE_INVALID_CODE third party
+func ErrorThirdPartyServiceInvalidCode(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ERROR_THIRD_PARTY_SERVICE_INVALID_CODE.String(), fmt.Sprintf(format, args...))
 }
 
-func IsFatal(err error) bool {
+// 第三方服务错误
+func IsThirdPartyServiceInternalError(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ERROR_FATAL.String() && e.Code == 500
+	return e.Reason == ERROR_THIRD_PARTY_SERVICE_INTERNAL_ERROR.String() && e.Code == 500
 }
 
-func ErrorFatal(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_FATAL.String(), fmt.Sprintf(format, args...))
+// 第三方服务错误
+func ErrorThirdPartyServiceInternalError(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ERROR_THIRD_PARTY_SERVICE_INTERNAL_ERROR.String(), fmt.Sprintf(format, args...))
 }
 
 // CONTINUE Continue

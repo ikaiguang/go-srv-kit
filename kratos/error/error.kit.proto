@@ -15,28 +15,37 @@ enum ERROR {
 
   // UNKNOWN 常规
   UNKNOWN = 0 [(errors.code) = 500];
-  REQUEST_FAILED = 1 [(errors.code) = 400];
-  RECORD_NOT_FOUND = 2 [(errors.code) = 404];
-  RECORD_ALREADY_EXISTS = 3 [(errors.code) = 400];
-  NETWORK_ERROR = 4 [(errors.code) = 500];
-  NETWORK_TIMEOUT = 5 [(errors.code) = 504];
-  CONNECTION = 6 [(errors.code) = 500];
-  UNINITIALIZED = 7 [(errors.code) = 500];
-  UNIMPLEMENTED = 8 [(errors.code) = 500];
-  INVALID_PARAMETER = 9 [(errors.code) = 400];
-  REQUEST_NOT_SUPPORT = 10 [(errors.code) = 500];
-  THIRD_PARTY_SERVICE_INTERNAL_ERROR = 11 [(errors.code) = 500]; // 第三方服务错误
-  THIRD_PARTY_SERVICE_INVALID_CODE = 12 [(errors.code) = 400]; // 第三方服务响应结果有误
-  DB = 13 [(errors.code) = 500];
-  MYSQL = 14 [(errors.code) = 500];
-  MONGO = 15 [(errors.code) = 500];
-  CACHE = 16 [(errors.code) = 500];
-  REDIS = 17 [(errors.code) = 500];
-  MQ = 18 [(errors.code) = 500];
-  RABBIT_MQ = 19 [(errors.code) = 500];
-  KAFKA = 20 [(errors.code) = 500];
-  PANIC = 21 [(errors.code) = 500];
-  FATAL = 22 [(errors.code) = 500];
+
+  REQUEST_FAILED = 10001 [(errors.code) = 400];
+  RECORD_NOT_FOUND = 10002 [(errors.code) = 404];
+  RECORD_ALREADY_EXISTS = 10003 [(errors.code) = 400];
+  NETWORK_ERROR = 10004 [(errors.code) = 500];
+  NETWORK_TIMEOUT = 10005 [(errors.code) = 504];
+  CONNECTION_ERROR = 10006 [(errors.code) = 500];
+  UNINITIALIZED = 10007 [(errors.code) = 500];
+  UNIMPLEMENTED = 10008 [(errors.code) = 500];
+  INVALID_PARAMETER = 10009 [(errors.code) = 400];
+  REQUEST_NOT_SUPPORT = 10010 [(errors.code) = 500];
+  INTERNAL_ERROR = 10011 [(errors.code) = 500];
+  PANIC = 10012 [(errors.code) = 500];
+  FATAL = 10013 [(errors.code) = 500];
+
+  // DB database
+  DB = 11001 [(errors.code) = 500];
+  MYSQL = 11002 [(errors.code) = 500];
+  MONGO = 11003 [(errors.code) = 500];
+  CACHE = 11004 [(errors.code) = 500];
+  REDIS = 11005 [(errors.code) = 500];
+
+  // MQ message queue
+  MQ = 12001 [(errors.code) = 500];
+  QUEUE = 12002 [(errors.code) = 500];
+  RABBIT_MQ = 12003 [(errors.code) = 500];
+  KAFKA = 12004 [(errors.code) = 500];
+
+  // THIRD_PARTY_SERVICE_INVALID_CODE third party
+  THIRD_PARTY_SERVICE_INVALID_CODE = 13002 [(errors.code) = 400]; // 第三方服务响应结果有误
+  THIRD_PARTY_SERVICE_INTERNAL_ERROR = 13001 [(errors.code) = 500]; // 第三方服务错误
 
   // CONTINUE Continue
   CONTINUE = 100 [(errors.code) = 100];
