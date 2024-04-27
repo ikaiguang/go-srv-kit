@@ -15,17 +15,17 @@ enum ERROR {
 
   UNKNOWN = 0 [(errors.code) = 401];
 
-  TOKEN_MISSING = 1 [(errors.code) = 401];
-  TOKEN_KEY_MISSING = 2 [(errors.code) = 401];
-  TOKEN_METHOD_MISSING = 3 [(errors.code) = 401];
-  UNAUTHORIZED = 4 [(errors.code) = 401];
-  TOKEN_EXPIRED = 5 [(errors.code) = 401];
-  AUTHENTICATION_FAILED = 6 [(errors.code) = 401];
-  TOKEN_INVALID = 7 [(errors.code) = 401];
-  TOKEN_DEPRECATED = 8 [(errors.code) = 401];
-  TOKEN_NOT_IN_WHITELIST = 9 [(errors.code) = 401];
-  VERIFICATION_FAILED = 10 [(errors.code) = 401];
-  INVALID_CLAIMS = 11 [(errors.code) = 401];
+  TOKEN_MISSING = 1001 [(errors.code) = 401];
+  TOKEN_KEY_MISSING = 1002 [(errors.code) = 401];
+  TOKEN_METHOD_MISSING = 1003 [(errors.code) = 401];
+  UNAUTHORIZED = 1004 [(errors.code) = 401];
+  TOKEN_EXPIRED = 1005 [(errors.code) = 401];
+  AUTHENTICATION_FAILED = 1006 [(errors.code) = 401];
+  TOKEN_INVALID = 1007 [(errors.code) = 401];
+  TOKEN_DEPRECATED = 1008 [(errors.code) = 401];
+  TOKEN_NOT_IN_WHITELIST = 1009 [(errors.code) = 401];
+  VERIFICATION_FAILED = 1010 [(errors.code) = 401];
+  INVALID_CLAIMS = 1011 [(errors.code) = 401];
 }
 
 message LoginPlatformEnum {

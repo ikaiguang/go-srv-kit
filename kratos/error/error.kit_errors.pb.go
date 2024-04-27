@@ -5,6 +5,7 @@ package errorpkg
 import (
 	fmt "fmt"
 	errors "github.com/go-kratos/kratos/v2/errors"
+	strconv "strconv"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,7 +23,9 @@ func IsUnknown(err error) bool {
 
 // UNKNOWN 常规
 func ErrorUnknown(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNKNOWN.Number()))}
+	return e
 }
 
 func IsRequestFailed(err error) bool {
@@ -34,7 +37,9 @@ func IsRequestFailed(err error) bool {
 }
 
 func ErrorRequestFailed(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ERROR_REQUEST_FAILED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(400, ERROR_REQUEST_FAILED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_REQUEST_FAILED.Number()))}
+	return e
 }
 
 func IsRecordNotFound(err error) bool {
@@ -46,7 +51,9 @@ func IsRecordNotFound(err error) bool {
 }
 
 func ErrorRecordNotFound(format string, args ...interface{}) *errors.Error {
-	return errors.New(404, ERROR_RECORD_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+	e := errors.New(404, ERROR_RECORD_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_RECORD_NOT_FOUND.Number()))}
+	return e
 }
 
 func IsRecordAlreadyExists(err error) bool {
@@ -58,7 +65,9 @@ func IsRecordAlreadyExists(err error) bool {
 }
 
 func ErrorRecordAlreadyExists(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ERROR_RECORD_ALREADY_EXISTS.String(), fmt.Sprintf(format, args...))
+	e := errors.New(400, ERROR_RECORD_ALREADY_EXISTS.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_RECORD_ALREADY_EXISTS.Number()))}
+	return e
 }
 
 func IsNetworkError(err error) bool {
@@ -70,7 +79,9 @@ func IsNetworkError(err error) bool {
 }
 
 func ErrorNetworkError(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_NETWORK_ERROR.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_NETWORK_ERROR.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NETWORK_ERROR.Number()))}
+	return e
 }
 
 func IsNetworkTimeout(err error) bool {
@@ -82,7 +93,9 @@ func IsNetworkTimeout(err error) bool {
 }
 
 func ErrorNetworkTimeout(format string, args ...interface{}) *errors.Error {
-	return errors.New(504, ERROR_NETWORK_TIMEOUT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(504, ERROR_NETWORK_TIMEOUT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NETWORK_TIMEOUT.Number()))}
+	return e
 }
 
 func IsConnectionError(err error) bool {
@@ -94,7 +107,9 @@ func IsConnectionError(err error) bool {
 }
 
 func ErrorConnectionError(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_CONNECTION_ERROR.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_CONNECTION_ERROR.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_CONNECTION_ERROR.Number()))}
+	return e
 }
 
 func IsUninitialized(err error) bool {
@@ -106,7 +121,9 @@ func IsUninitialized(err error) bool {
 }
 
 func ErrorUninitialized(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_UNINITIALIZED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_UNINITIALIZED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNINITIALIZED.Number()))}
+	return e
 }
 
 func IsUnimplemented(err error) bool {
@@ -118,7 +135,9 @@ func IsUnimplemented(err error) bool {
 }
 
 func ErrorUnimplemented(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_UNIMPLEMENTED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_UNIMPLEMENTED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNIMPLEMENTED.Number()))}
+	return e
 }
 
 func IsInvalidParameter(err error) bool {
@@ -130,7 +149,9 @@ func IsInvalidParameter(err error) bool {
 }
 
 func ErrorInvalidParameter(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ERROR_INVALID_PARAMETER.String(), fmt.Sprintf(format, args...))
+	e := errors.New(400, ERROR_INVALID_PARAMETER.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_INVALID_PARAMETER.Number()))}
+	return e
 }
 
 func IsRequestNotSupport(err error) bool {
@@ -142,7 +163,9 @@ func IsRequestNotSupport(err error) bool {
 }
 
 func ErrorRequestNotSupport(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_REQUEST_NOT_SUPPORT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_REQUEST_NOT_SUPPORT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_REQUEST_NOT_SUPPORT.Number()))}
+	return e
 }
 
 func IsInternalError(err error) bool {
@@ -154,7 +177,9 @@ func IsInternalError(err error) bool {
 }
 
 func ErrorInternalError(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_INTERNAL_ERROR.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_INTERNAL_ERROR.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_INTERNAL_ERROR.Number()))}
+	return e
 }
 
 func IsPanic(err error) bool {
@@ -166,7 +191,9 @@ func IsPanic(err error) bool {
 }
 
 func ErrorPanic(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_PANIC.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_PANIC.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_PANIC.Number()))}
+	return e
 }
 
 func IsFatal(err error) bool {
@@ -178,7 +205,9 @@ func IsFatal(err error) bool {
 }
 
 func ErrorFatal(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_FATAL.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_FATAL.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_FATAL.Number()))}
+	return e
 }
 
 // DB database
@@ -192,7 +221,9 @@ func IsDb(err error) bool {
 
 // DB database
 func ErrorDb(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_DB.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_DB.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_DB.Number()))}
+	return e
 }
 
 func IsMysql(err error) bool {
@@ -204,7 +235,9 @@ func IsMysql(err error) bool {
 }
 
 func ErrorMysql(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_MYSQL.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_MYSQL.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_MYSQL.Number()))}
+	return e
 }
 
 func IsMongo(err error) bool {
@@ -216,7 +249,9 @@ func IsMongo(err error) bool {
 }
 
 func ErrorMongo(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_MONGO.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_MONGO.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_MONGO.Number()))}
+	return e
 }
 
 func IsCache(err error) bool {
@@ -228,7 +263,9 @@ func IsCache(err error) bool {
 }
 
 func ErrorCache(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_CACHE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_CACHE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_CACHE.Number()))}
+	return e
 }
 
 func IsRedis(err error) bool {
@@ -240,7 +277,9 @@ func IsRedis(err error) bool {
 }
 
 func ErrorRedis(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_REDIS.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_REDIS.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_REDIS.Number()))}
+	return e
 }
 
 // MQ message queue
@@ -254,7 +293,9 @@ func IsMq(err error) bool {
 
 // MQ message queue
 func ErrorMq(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_MQ.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_MQ.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_MQ.Number()))}
+	return e
 }
 
 func IsQueue(err error) bool {
@@ -266,7 +307,9 @@ func IsQueue(err error) bool {
 }
 
 func ErrorQueue(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_QUEUE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_QUEUE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_QUEUE.Number()))}
+	return e
 }
 
 func IsRabbitMq(err error) bool {
@@ -278,7 +321,9 @@ func IsRabbitMq(err error) bool {
 }
 
 func ErrorRabbitMq(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_RABBIT_MQ.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_RABBIT_MQ.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_RABBIT_MQ.Number()))}
+	return e
 }
 
 func IsKafka(err error) bool {
@@ -290,7 +335,9 @@ func IsKafka(err error) bool {
 }
 
 func ErrorKafka(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_KAFKA.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_KAFKA.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_KAFKA.Number()))}
+	return e
 }
 
 // THIRD_PARTY_SERVICE_INVALID_CODE third party
@@ -304,7 +351,9 @@ func IsThirdPartyServiceInvalidCode(err error) bool {
 
 // THIRD_PARTY_SERVICE_INVALID_CODE third party
 func ErrorThirdPartyServiceInvalidCode(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ERROR_THIRD_PARTY_SERVICE_INVALID_CODE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(400, ERROR_THIRD_PARTY_SERVICE_INVALID_CODE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_THIRD_PARTY_SERVICE_INVALID_CODE.Number()))}
+	return e
 }
 
 // 第三方服务错误
@@ -318,7 +367,9 @@ func IsThirdPartyServiceInternalError(err error) bool {
 
 // 第三方服务错误
 func ErrorThirdPartyServiceInternalError(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_THIRD_PARTY_SERVICE_INTERNAL_ERROR.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_THIRD_PARTY_SERVICE_INTERNAL_ERROR.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_THIRD_PARTY_SERVICE_INTERNAL_ERROR.Number()))}
+	return e
 }
 
 // CONTINUE Continue
@@ -332,7 +383,9 @@ func IsContinue(err error) bool {
 
 // CONTINUE Continue
 func ErrorContinue(format string, args ...interface{}) *errors.Error {
-	return errors.New(100, ERROR_CONTINUE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(100, ERROR_CONTINUE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_CONTINUE.Number()))}
+	return e
 }
 
 func IsSwitchingProtocols(err error) bool {
@@ -344,7 +397,9 @@ func IsSwitchingProtocols(err error) bool {
 }
 
 func ErrorSwitchingProtocols(format string, args ...interface{}) *errors.Error {
-	return errors.New(101, ERROR_SWITCHING_PROTOCOLS.String(), fmt.Sprintf(format, args...))
+	e := errors.New(101, ERROR_SWITCHING_PROTOCOLS.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_SWITCHING_PROTOCOLS.Number()))}
+	return e
 }
 
 func IsProcessing(err error) bool {
@@ -356,7 +411,9 @@ func IsProcessing(err error) bool {
 }
 
 func ErrorProcessing(format string, args ...interface{}) *errors.Error {
-	return errors.New(102, ERROR_PROCESSING.String(), fmt.Sprintf(format, args...))
+	e := errors.New(102, ERROR_PROCESSING.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_PROCESSING.Number()))}
+	return e
 }
 
 func IsEarlyHints(err error) bool {
@@ -368,7 +425,9 @@ func IsEarlyHints(err error) bool {
 }
 
 func ErrorEarlyHints(format string, args ...interface{}) *errors.Error {
-	return errors.New(103, ERROR_EARLY_HINTS.String(), fmt.Sprintf(format, args...))
+	e := errors.New(103, ERROR_EARLY_HINTS.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_EARLY_HINTS.Number()))}
+	return e
 }
 
 // OK OK
@@ -382,7 +441,9 @@ func IsOk(err error) bool {
 
 // OK OK
 func ErrorOk(format string, args ...interface{}) *errors.Error {
-	return errors.New(200, ERROR_OK.String(), fmt.Sprintf(format, args...))
+	e := errors.New(200, ERROR_OK.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_OK.Number()))}
+	return e
 }
 
 func IsCreated(err error) bool {
@@ -394,7 +455,9 @@ func IsCreated(err error) bool {
 }
 
 func ErrorCreated(format string, args ...interface{}) *errors.Error {
-	return errors.New(201, ERROR_CREATED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(201, ERROR_CREATED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_CREATED.Number()))}
+	return e
 }
 
 func IsAccepted(err error) bool {
@@ -406,7 +469,9 @@ func IsAccepted(err error) bool {
 }
 
 func ErrorAccepted(format string, args ...interface{}) *errors.Error {
-	return errors.New(202, ERROR_ACCEPTED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(202, ERROR_ACCEPTED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_ACCEPTED.Number()))}
+	return e
 }
 
 func IsNonAuthoritativeInfo(err error) bool {
@@ -418,7 +483,9 @@ func IsNonAuthoritativeInfo(err error) bool {
 }
 
 func ErrorNonAuthoritativeInfo(format string, args ...interface{}) *errors.Error {
-	return errors.New(203, ERROR_NON_AUTHORITATIVE_INFO.String(), fmt.Sprintf(format, args...))
+	e := errors.New(203, ERROR_NON_AUTHORITATIVE_INFO.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NON_AUTHORITATIVE_INFO.Number()))}
+	return e
 }
 
 func IsNoContent(err error) bool {
@@ -430,7 +497,9 @@ func IsNoContent(err error) bool {
 }
 
 func ErrorNoContent(format string, args ...interface{}) *errors.Error {
-	return errors.New(204, ERROR_NO_CONTENT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(204, ERROR_NO_CONTENT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NO_CONTENT.Number()))}
+	return e
 }
 
 func IsResetContent(err error) bool {
@@ -442,7 +511,9 @@ func IsResetContent(err error) bool {
 }
 
 func ErrorResetContent(format string, args ...interface{}) *errors.Error {
-	return errors.New(205, ERROR_RESET_CONTENT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(205, ERROR_RESET_CONTENT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_RESET_CONTENT.Number()))}
+	return e
 }
 
 func IsPartialContent(err error) bool {
@@ -454,7 +525,9 @@ func IsPartialContent(err error) bool {
 }
 
 func ErrorPartialContent(format string, args ...interface{}) *errors.Error {
-	return errors.New(206, ERROR_PARTIAL_CONTENT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(206, ERROR_PARTIAL_CONTENT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_PARTIAL_CONTENT.Number()))}
+	return e
 }
 
 func IsMultiStatus(err error) bool {
@@ -466,7 +539,9 @@ func IsMultiStatus(err error) bool {
 }
 
 func ErrorMultiStatus(format string, args ...interface{}) *errors.Error {
-	return errors.New(207, ERROR_MULTI_STATUS.String(), fmt.Sprintf(format, args...))
+	e := errors.New(207, ERROR_MULTI_STATUS.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_MULTI_STATUS.Number()))}
+	return e
 }
 
 func IsAlreadyReported(err error) bool {
@@ -478,7 +553,9 @@ func IsAlreadyReported(err error) bool {
 }
 
 func ErrorAlreadyReported(format string, args ...interface{}) *errors.Error {
-	return errors.New(208, ERROR_ALREADY_REPORTED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(208, ERROR_ALREADY_REPORTED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_ALREADY_REPORTED.Number()))}
+	return e
 }
 
 func IsIMUsed(err error) bool {
@@ -490,7 +567,9 @@ func IsIMUsed(err error) bool {
 }
 
 func ErrorIMUsed(format string, args ...interface{}) *errors.Error {
-	return errors.New(226, ERROR_I_M_USED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(226, ERROR_I_M_USED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_I_M_USED.Number()))}
+	return e
 }
 
 // MULTIPLE_CHOICES MultipleChoices
@@ -504,7 +583,9 @@ func IsMultipleChoices(err error) bool {
 
 // MULTIPLE_CHOICES MultipleChoices
 func ErrorMultipleChoices(format string, args ...interface{}) *errors.Error {
-	return errors.New(300, ERROR_MULTIPLE_CHOICES.String(), fmt.Sprintf(format, args...))
+	e := errors.New(300, ERROR_MULTIPLE_CHOICES.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_MULTIPLE_CHOICES.Number()))}
+	return e
 }
 
 func IsMovedPermanently(err error) bool {
@@ -516,7 +597,9 @@ func IsMovedPermanently(err error) bool {
 }
 
 func ErrorMovedPermanently(format string, args ...interface{}) *errors.Error {
-	return errors.New(301, ERROR_MOVED_PERMANENTLY.String(), fmt.Sprintf(format, args...))
+	e := errors.New(301, ERROR_MOVED_PERMANENTLY.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_MOVED_PERMANENTLY.Number()))}
+	return e
 }
 
 func IsFound(err error) bool {
@@ -528,7 +611,9 @@ func IsFound(err error) bool {
 }
 
 func ErrorFound(format string, args ...interface{}) *errors.Error {
-	return errors.New(302, ERROR_FOUND.String(), fmt.Sprintf(format, args...))
+	e := errors.New(302, ERROR_FOUND.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_FOUND.Number()))}
+	return e
 }
 
 func IsSeeOther(err error) bool {
@@ -540,7 +625,9 @@ func IsSeeOther(err error) bool {
 }
 
 func ErrorSeeOther(format string, args ...interface{}) *errors.Error {
-	return errors.New(303, ERROR_SEE_OTHER.String(), fmt.Sprintf(format, args...))
+	e := errors.New(303, ERROR_SEE_OTHER.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_SEE_OTHER.Number()))}
+	return e
 }
 
 func IsNotModified(err error) bool {
@@ -552,7 +639,9 @@ func IsNotModified(err error) bool {
 }
 
 func ErrorNotModified(format string, args ...interface{}) *errors.Error {
-	return errors.New(304, ERROR_NOT_MODIFIED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(304, ERROR_NOT_MODIFIED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NOT_MODIFIED.Number()))}
+	return e
 }
 
 func IsUseProxy(err error) bool {
@@ -564,7 +653,9 @@ func IsUseProxy(err error) bool {
 }
 
 func ErrorUseProxy(format string, args ...interface{}) *errors.Error {
-	return errors.New(305, ERROR_USE_PROXY.String(), fmt.Sprintf(format, args...))
+	e := errors.New(305, ERROR_USE_PROXY.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_USE_PROXY.Number()))}
+	return e
 }
 
 func IsEmpty306(err error) bool {
@@ -576,7 +667,9 @@ func IsEmpty306(err error) bool {
 }
 
 func ErrorEmpty306(format string, args ...interface{}) *errors.Error {
-	return errors.New(306, ERROR_EMPTY306.String(), fmt.Sprintf(format, args...))
+	e := errors.New(306, ERROR_EMPTY306.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_EMPTY306.Number()))}
+	return e
 }
 
 func IsTemporaryRedirect(err error) bool {
@@ -588,7 +681,9 @@ func IsTemporaryRedirect(err error) bool {
 }
 
 func ErrorTemporaryRedirect(format string, args ...interface{}) *errors.Error {
-	return errors.New(307, ERROR_TEMPORARY_REDIRECT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(307, ERROR_TEMPORARY_REDIRECT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TEMPORARY_REDIRECT.Number()))}
+	return e
 }
 
 func IsPermanentRedirect(err error) bool {
@@ -600,7 +695,9 @@ func IsPermanentRedirect(err error) bool {
 }
 
 func ErrorPermanentRedirect(format string, args ...interface{}) *errors.Error {
-	return errors.New(308, ERROR_PERMANENT_REDIRECT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(308, ERROR_PERMANENT_REDIRECT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_PERMANENT_REDIRECT.Number()))}
+	return e
 }
 
 // BAD_REQUEST Bad Request
@@ -614,7 +711,9 @@ func IsBadRequest(err error) bool {
 
 // BAD_REQUEST Bad Request
 func ErrorBadRequest(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ERROR_BAD_REQUEST.String(), fmt.Sprintf(format, args...))
+	e := errors.New(400, ERROR_BAD_REQUEST.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_BAD_REQUEST.Number()))}
+	return e
 }
 
 func IsUnauthorized(err error) bool {
@@ -626,7 +725,9 @@ func IsUnauthorized(err error) bool {
 }
 
 func ErrorUnauthorized(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_UNAUTHORIZED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_UNAUTHORIZED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNAUTHORIZED.Number()))}
+	return e
 }
 
 func IsPaymentRequired(err error) bool {
@@ -638,7 +739,9 @@ func IsPaymentRequired(err error) bool {
 }
 
 func ErrorPaymentRequired(format string, args ...interface{}) *errors.Error {
-	return errors.New(402, ERROR_PAYMENT_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(402, ERROR_PAYMENT_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_PAYMENT_REQUIRED.Number()))}
+	return e
 }
 
 func IsForbidden(err error) bool {
@@ -650,7 +753,9 @@ func IsForbidden(err error) bool {
 }
 
 func ErrorForbidden(format string, args ...interface{}) *errors.Error {
-	return errors.New(403, ERROR_FORBIDDEN.String(), fmt.Sprintf(format, args...))
+	e := errors.New(403, ERROR_FORBIDDEN.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_FORBIDDEN.Number()))}
+	return e
 }
 
 func IsNotFound(err error) bool {
@@ -662,7 +767,9 @@ func IsNotFound(err error) bool {
 }
 
 func ErrorNotFound(format string, args ...interface{}) *errors.Error {
-	return errors.New(404, ERROR_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+	e := errors.New(404, ERROR_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NOT_FOUND.Number()))}
+	return e
 }
 
 func IsMethodNotAllowed(err error) bool {
@@ -674,7 +781,9 @@ func IsMethodNotAllowed(err error) bool {
 }
 
 func ErrorMethodNotAllowed(format string, args ...interface{}) *errors.Error {
-	return errors.New(405, ERROR_METHOD_NOT_ALLOWED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(405, ERROR_METHOD_NOT_ALLOWED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_METHOD_NOT_ALLOWED.Number()))}
+	return e
 }
 
 func IsNotAcceptable(err error) bool {
@@ -686,7 +795,9 @@ func IsNotAcceptable(err error) bool {
 }
 
 func ErrorNotAcceptable(format string, args ...interface{}) *errors.Error {
-	return errors.New(406, ERROR_NOT_ACCEPTABLE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(406, ERROR_NOT_ACCEPTABLE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NOT_ACCEPTABLE.Number()))}
+	return e
 }
 
 func IsProxyAuthRequired(err error) bool {
@@ -698,7 +809,9 @@ func IsProxyAuthRequired(err error) bool {
 }
 
 func ErrorProxyAuthRequired(format string, args ...interface{}) *errors.Error {
-	return errors.New(407, ERROR_PROXY_AUTH_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(407, ERROR_PROXY_AUTH_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_PROXY_AUTH_REQUIRED.Number()))}
+	return e
 }
 
 func IsRequestTimeout(err error) bool {
@@ -710,7 +823,9 @@ func IsRequestTimeout(err error) bool {
 }
 
 func ErrorRequestTimeout(format string, args ...interface{}) *errors.Error {
-	return errors.New(408, ERROR_REQUEST_TIMEOUT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(408, ERROR_REQUEST_TIMEOUT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_REQUEST_TIMEOUT.Number()))}
+	return e
 }
 
 func IsConflict(err error) bool {
@@ -722,7 +837,9 @@ func IsConflict(err error) bool {
 }
 
 func ErrorConflict(format string, args ...interface{}) *errors.Error {
-	return errors.New(409, ERROR_CONFLICT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(409, ERROR_CONFLICT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_CONFLICT.Number()))}
+	return e
 }
 
 func IsGone(err error) bool {
@@ -734,7 +851,9 @@ func IsGone(err error) bool {
 }
 
 func ErrorGone(format string, args ...interface{}) *errors.Error {
-	return errors.New(410, ERROR_GONE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(410, ERROR_GONE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_GONE.Number()))}
+	return e
 }
 
 func IsLengthRequired(err error) bool {
@@ -746,7 +865,9 @@ func IsLengthRequired(err error) bool {
 }
 
 func ErrorLengthRequired(format string, args ...interface{}) *errors.Error {
-	return errors.New(411, ERROR_LENGTH_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(411, ERROR_LENGTH_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_LENGTH_REQUIRED.Number()))}
+	return e
 }
 
 func IsPreconditionFailed(err error) bool {
@@ -758,7 +879,9 @@ func IsPreconditionFailed(err error) bool {
 }
 
 func ErrorPreconditionFailed(format string, args ...interface{}) *errors.Error {
-	return errors.New(412, ERROR_PRECONDITION_FAILED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(412, ERROR_PRECONDITION_FAILED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_PRECONDITION_FAILED.Number()))}
+	return e
 }
 
 func IsRequestEntityTooLarge(err error) bool {
@@ -770,7 +893,9 @@ func IsRequestEntityTooLarge(err error) bool {
 }
 
 func ErrorRequestEntityTooLarge(format string, args ...interface{}) *errors.Error {
-	return errors.New(413, ERROR_REQUEST_ENTITY_TOO_LARGE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(413, ERROR_REQUEST_ENTITY_TOO_LARGE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_REQUEST_ENTITY_TOO_LARGE.Number()))}
+	return e
 }
 
 func IsRequestUriTooLong(err error) bool {
@@ -782,7 +907,9 @@ func IsRequestUriTooLong(err error) bool {
 }
 
 func ErrorRequestUriTooLong(format string, args ...interface{}) *errors.Error {
-	return errors.New(414, ERROR_REQUEST_URI_TOO_LONG.String(), fmt.Sprintf(format, args...))
+	e := errors.New(414, ERROR_REQUEST_URI_TOO_LONG.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_REQUEST_URI_TOO_LONG.Number()))}
+	return e
 }
 
 func IsUnsupportedMediaType(err error) bool {
@@ -794,7 +921,9 @@ func IsUnsupportedMediaType(err error) bool {
 }
 
 func ErrorUnsupportedMediaType(format string, args ...interface{}) *errors.Error {
-	return errors.New(415, ERROR_UNSUPPORTED_MEDIA_TYPE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(415, ERROR_UNSUPPORTED_MEDIA_TYPE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNSUPPORTED_MEDIA_TYPE.Number()))}
+	return e
 }
 
 func IsRequestedRangeNotSatisfiable(err error) bool {
@@ -806,7 +935,9 @@ func IsRequestedRangeNotSatisfiable(err error) bool {
 }
 
 func ErrorRequestedRangeNotSatisfiable(format string, args ...interface{}) *errors.Error {
-	return errors.New(416, ERROR_REQUESTED_RANGE_NOT_SATISFIABLE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(416, ERROR_REQUESTED_RANGE_NOT_SATISFIABLE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_REQUESTED_RANGE_NOT_SATISFIABLE.Number()))}
+	return e
 }
 
 func IsExpectationFailed(err error) bool {
@@ -818,7 +949,9 @@ func IsExpectationFailed(err error) bool {
 }
 
 func ErrorExpectationFailed(format string, args ...interface{}) *errors.Error {
-	return errors.New(417, ERROR_EXPECTATION_FAILED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(417, ERROR_EXPECTATION_FAILED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_EXPECTATION_FAILED.Number()))}
+	return e
 }
 
 func IsTeapot(err error) bool {
@@ -830,7 +963,9 @@ func IsTeapot(err error) bool {
 }
 
 func ErrorTeapot(format string, args ...interface{}) *errors.Error {
-	return errors.New(418, ERROR_TEAPOT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(418, ERROR_TEAPOT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TEAPOT.Number()))}
+	return e
 }
 
 func IsMisdirectedRequest(err error) bool {
@@ -842,7 +977,9 @@ func IsMisdirectedRequest(err error) bool {
 }
 
 func ErrorMisdirectedRequest(format string, args ...interface{}) *errors.Error {
-	return errors.New(421, ERROR_MISDIRECTED_REQUEST.String(), fmt.Sprintf(format, args...))
+	e := errors.New(421, ERROR_MISDIRECTED_REQUEST.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_MISDIRECTED_REQUEST.Number()))}
+	return e
 }
 
 func IsUnprocessableEntity(err error) bool {
@@ -854,7 +991,9 @@ func IsUnprocessableEntity(err error) bool {
 }
 
 func ErrorUnprocessableEntity(format string, args ...interface{}) *errors.Error {
-	return errors.New(422, ERROR_UNPROCESSABLE_ENTITY.String(), fmt.Sprintf(format, args...))
+	e := errors.New(422, ERROR_UNPROCESSABLE_ENTITY.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNPROCESSABLE_ENTITY.Number()))}
+	return e
 }
 
 func IsLocked(err error) bool {
@@ -866,7 +1005,9 @@ func IsLocked(err error) bool {
 }
 
 func ErrorLocked(format string, args ...interface{}) *errors.Error {
-	return errors.New(423, ERROR_LOCKED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(423, ERROR_LOCKED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_LOCKED.Number()))}
+	return e
 }
 
 func IsFailedDependency(err error) bool {
@@ -878,7 +1019,9 @@ func IsFailedDependency(err error) bool {
 }
 
 func ErrorFailedDependency(format string, args ...interface{}) *errors.Error {
-	return errors.New(424, ERROR_FAILED_DEPENDENCY.String(), fmt.Sprintf(format, args...))
+	e := errors.New(424, ERROR_FAILED_DEPENDENCY.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_FAILED_DEPENDENCY.Number()))}
+	return e
 }
 
 func IsTooEarly(err error) bool {
@@ -890,7 +1033,9 @@ func IsTooEarly(err error) bool {
 }
 
 func ErrorTooEarly(format string, args ...interface{}) *errors.Error {
-	return errors.New(425, ERROR_TOO_EARLY.String(), fmt.Sprintf(format, args...))
+	e := errors.New(425, ERROR_TOO_EARLY.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOO_EARLY.Number()))}
+	return e
 }
 
 func IsUpgradeRequired(err error) bool {
@@ -902,7 +1047,9 @@ func IsUpgradeRequired(err error) bool {
 }
 
 func ErrorUpgradeRequired(format string, args ...interface{}) *errors.Error {
-	return errors.New(426, ERROR_UPGRADE_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(426, ERROR_UPGRADE_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UPGRADE_REQUIRED.Number()))}
+	return e
 }
 
 func IsPreconditionRequired(err error) bool {
@@ -914,7 +1061,9 @@ func IsPreconditionRequired(err error) bool {
 }
 
 func ErrorPreconditionRequired(format string, args ...interface{}) *errors.Error {
-	return errors.New(428, ERROR_PRECONDITION_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(428, ERROR_PRECONDITION_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_PRECONDITION_REQUIRED.Number()))}
+	return e
 }
 
 func IsTooManyRequests(err error) bool {
@@ -926,7 +1075,9 @@ func IsTooManyRequests(err error) bool {
 }
 
 func ErrorTooManyRequests(format string, args ...interface{}) *errors.Error {
-	return errors.New(429, ERROR_TOO_MANY_REQUESTS.String(), fmt.Sprintf(format, args...))
+	e := errors.New(429, ERROR_TOO_MANY_REQUESTS.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOO_MANY_REQUESTS.Number()))}
+	return e
 }
 
 func IsRequestHeaderFieldsTooLarge(err error) bool {
@@ -938,7 +1089,9 @@ func IsRequestHeaderFieldsTooLarge(err error) bool {
 }
 
 func ErrorRequestHeaderFieldsTooLarge(format string, args ...interface{}) *errors.Error {
-	return errors.New(431, ERROR_REQUEST_HEADER_FIELDS_TOO_LARGE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(431, ERROR_REQUEST_HEADER_FIELDS_TOO_LARGE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_REQUEST_HEADER_FIELDS_TOO_LARGE.Number()))}
+	return e
 }
 
 func IsUnavailableForLegalReasons(err error) bool {
@@ -950,7 +1103,9 @@ func IsUnavailableForLegalReasons(err error) bool {
 }
 
 func ErrorUnavailableForLegalReasons(format string, args ...interface{}) *errors.Error {
-	return errors.New(451, ERROR_UNAVAILABLE_FOR_LEGAL_REASONS.String(), fmt.Sprintf(format, args...))
+	e := errors.New(451, ERROR_UNAVAILABLE_FOR_LEGAL_REASONS.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNAVAILABLE_FOR_LEGAL_REASONS.Number()))}
+	return e
 }
 
 func IsClientClose(err error) bool {
@@ -962,7 +1117,9 @@ func IsClientClose(err error) bool {
 }
 
 func ErrorClientClose(format string, args ...interface{}) *errors.Error {
-	return errors.New(499, ERROR_CLIENT_CLOSE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(499, ERROR_CLIENT_CLOSE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_CLIENT_CLOSE.Number()))}
+	return e
 }
 
 // INTERNAL_SERVER Internal Server Error
@@ -976,7 +1133,9 @@ func IsInternalServer(err error) bool {
 
 // INTERNAL_SERVER Internal Server Error
 func ErrorInternalServer(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ERROR_INTERNAL_SERVER.String(), fmt.Sprintf(format, args...))
+	e := errors.New(500, ERROR_INTERNAL_SERVER.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_INTERNAL_SERVER.Number()))}
+	return e
 }
 
 func IsNotImplemented(err error) bool {
@@ -988,7 +1147,9 @@ func IsNotImplemented(err error) bool {
 }
 
 func ErrorNotImplemented(format string, args ...interface{}) *errors.Error {
-	return errors.New(501, ERROR_NOT_IMPLEMENTED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(501, ERROR_NOT_IMPLEMENTED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NOT_IMPLEMENTED.Number()))}
+	return e
 }
 
 func IsBadGateway(err error) bool {
@@ -1000,7 +1161,9 @@ func IsBadGateway(err error) bool {
 }
 
 func ErrorBadGateway(format string, args ...interface{}) *errors.Error {
-	return errors.New(502, ERROR_BAD_GATEWAY.String(), fmt.Sprintf(format, args...))
+	e := errors.New(502, ERROR_BAD_GATEWAY.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_BAD_GATEWAY.Number()))}
+	return e
 }
 
 func IsServiceUnavailable(err error) bool {
@@ -1012,7 +1175,9 @@ func IsServiceUnavailable(err error) bool {
 }
 
 func ErrorServiceUnavailable(format string, args ...interface{}) *errors.Error {
-	return errors.New(503, ERROR_SERVICE_UNAVAILABLE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(503, ERROR_SERVICE_UNAVAILABLE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_SERVICE_UNAVAILABLE.Number()))}
+	return e
 }
 
 func IsGatewayTimeout(err error) bool {
@@ -1024,7 +1189,9 @@ func IsGatewayTimeout(err error) bool {
 }
 
 func ErrorGatewayTimeout(format string, args ...interface{}) *errors.Error {
-	return errors.New(504, ERROR_GATEWAY_TIMEOUT.String(), fmt.Sprintf(format, args...))
+	e := errors.New(504, ERROR_GATEWAY_TIMEOUT.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_GATEWAY_TIMEOUT.Number()))}
+	return e
 }
 
 func IsHttpVersionNotSupported(err error) bool {
@@ -1036,7 +1203,9 @@ func IsHttpVersionNotSupported(err error) bool {
 }
 
 func ErrorHttpVersionNotSupported(format string, args ...interface{}) *errors.Error {
-	return errors.New(505, ERROR_HTTP_VERSION_NOT_SUPPORTED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(505, ERROR_HTTP_VERSION_NOT_SUPPORTED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_HTTP_VERSION_NOT_SUPPORTED.Number()))}
+	return e
 }
 
 func IsVariantAlsoNegotiates(err error) bool {
@@ -1048,7 +1217,9 @@ func IsVariantAlsoNegotiates(err error) bool {
 }
 
 func ErrorVariantAlsoNegotiates(format string, args ...interface{}) *errors.Error {
-	return errors.New(506, ERROR_VARIANT_ALSO_NEGOTIATES.String(), fmt.Sprintf(format, args...))
+	e := errors.New(506, ERROR_VARIANT_ALSO_NEGOTIATES.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_VARIANT_ALSO_NEGOTIATES.Number()))}
+	return e
 }
 
 func IsInsufficientStorage(err error) bool {
@@ -1060,7 +1231,9 @@ func IsInsufficientStorage(err error) bool {
 }
 
 func ErrorInsufficientStorage(format string, args ...interface{}) *errors.Error {
-	return errors.New(507, ERROR_INSUFFICIENT_STORAGE.String(), fmt.Sprintf(format, args...))
+	e := errors.New(507, ERROR_INSUFFICIENT_STORAGE.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_INSUFFICIENT_STORAGE.Number()))}
+	return e
 }
 
 func IsLoopDetected(err error) bool {
@@ -1072,7 +1245,9 @@ func IsLoopDetected(err error) bool {
 }
 
 func ErrorLoopDetected(format string, args ...interface{}) *errors.Error {
-	return errors.New(508, ERROR_LOOP_DETECTED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(508, ERROR_LOOP_DETECTED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_LOOP_DETECTED.Number()))}
+	return e
 }
 
 func IsNotExtended(err error) bool {
@@ -1084,7 +1259,9 @@ func IsNotExtended(err error) bool {
 }
 
 func ErrorNotExtended(format string, args ...interface{}) *errors.Error {
-	return errors.New(510, ERROR_NOT_EXTENDED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(510, ERROR_NOT_EXTENDED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NOT_EXTENDED.Number()))}
+	return e
 }
 
 func IsNetworkAuthenticationRequired(err error) bool {
@@ -1096,5 +1273,7 @@ func IsNetworkAuthenticationRequired(err error) bool {
 }
 
 func ErrorNetworkAuthenticationRequired(format string, args ...interface{}) *errors.Error {
-	return errors.New(511, ERROR_NETWORK_AUTHENTICATION_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(511, ERROR_NETWORK_AUTHENTICATION_REQUIRED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_NETWORK_AUTHENTICATION_REQUIRED.Number()))}
+	return e
 }

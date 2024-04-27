@@ -9,7 +9,10 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-const EnumNumberKey = "enum_number"
+const (
+	EnumMetadataKey = "reason"
+	EnumErrorKey    = "with_error"
+)
 
 // WithStack returns an error
 func WithStack(e *errors.Error) *Error {
@@ -24,7 +27,26 @@ func Wrap(e *errors.Error, eSlice ...error) *Error {
 	if e == nil {
 		return nil
 	}
-	e.Metadata = errorMetadata(eSlice)
+	e.Metadata = errorMetadata(e.Metadata, eSlice)
+	return &Error{
+		status: &status{Error: e},
+		stack:  callers(),
+	}
+}
+
+func WrapKvs(e *errors.Error, kvs ...string) *Error {
+	if e == nil {
+		return nil
+	}
+	if e.Metadata == nil {
+		e.Metadata = make(map[string]string)
+	}
+	if len(kvs)%2 != 0 {
+		kvs = append(kvs, "KEYVALS UNPAIRED")
+	}
+	for i := 0; i < len(kvs); i += 2 {
+		e.Metadata[fmt.Sprint(kvs[i])] = fmt.Sprint(kvs[i+1])
+	}
 	return &Error{
 		status: &status{Error: e},
 		stack:  callers(),
@@ -58,7 +80,13 @@ func Errorf(code int, reason, format string, a ...interface{}) *Error {
 // NewWithMetadata ...
 func NewWithMetadata(code int, reason, message string, md map[string]string) *Error {
 	e := errors.New(code, reason, message)
-	e.Metadata = md
+	if e.Metadata == nil {
+		e.Metadata = md
+	} else {
+		for k, v := range md {
+			e.Metadata[k] = v
+		}
+	}
 	return &Error{
 		status: &status{Error: e},
 		stack:  callers(),
@@ -70,7 +98,13 @@ func WrapWithMetadata(e *errors.Error, md map[string]string) error {
 	if e == nil {
 		return nil
 	}
-	e = e.WithMetadata(md)
+	if e.Metadata == nil {
+		e.Metadata = md
+	} else {
+		for k, v := range md {
+			e.Metadata[k] = v
+		}
+	}
 	return &Error{
 		status: &status{Error: e},
 		stack:  callers(),
@@ -85,24 +119,21 @@ func newError(code int, reason, message string) *errors.Error {
 }
 
 // errorMetadata .
-func errorMetadata(eSlice []error) map[string]string {
-	var (
+func errorMetadata(metadata map[string]string, eSlice []error) map[string]string {
+	if metadata == nil {
 		metadata = make(map[string]string)
-		errorKey = "error"
-	)
+	}
 	if len(eSlice) == 0 {
 		return metadata
 	}
-	if len(eSlice) == 1 {
-		if eSlice[0] != nil {
-			metadata[errorKey] = eSlice[0].Error()
-		}
-		return metadata
-	}
+
+	var (
+		errorKey = EnumErrorKey
+	)
 	for i := range eSlice {
-		key := errorKey + "." + strconv.Itoa(i)
+		key := errorKey + "." + strconv.Itoa(i+1)
 		if eSlice[i] == nil {
-			metadata[key] = ""
+			metadata[key] = "nil"
 		} else {
 			metadata[key] = eSlice[i].Error()
 		}
@@ -151,6 +182,16 @@ func (e *Error) GetMetadata() map[string]string {
 	return e.status.Metadata
 }
 
+func (e *Error) GetMetadataReason() string {
+	if e.status.Metadata == nil {
+		return ""
+	}
+	if v, ok := e.status.Metadata[EnumMetadataKey]; ok {
+		return v
+	}
+	return ""
+}
+
 func (e *Error) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
@@ -180,51 +221,35 @@ func (e *Error) StackTrace() StackTrace {
 type Enum interface {
 	String() string
 	Number() protoreflect.EnumNumber
+	HTTPCode() int
 }
 
-func Err(code int, e Enum, msg string) *Error {
+func Err(e Enum, msg string) *Error {
 	return NewWithMetadata(
-		code,
+		e.HTTPCode(),
 		e.String(),
 		msg,
-		map[string]string{"enum": strconv.Itoa(int(e.Number()))},
+		map[string]string{EnumMetadataKey: strconv.Itoa(int(e.Number()))},
 	)
 }
 
-func Errf(code int, e Enum, format string, a ...interface{}) *Error {
+func Errf(e Enum, format string, a ...interface{}) *Error {
 	return NewWithMetadata(
-		code,
+		e.HTTPCode(),
 		e.String(),
 		fmt.Sprintf(format, a...),
-		map[string]string{EnumNumberKey: strconv.Itoa(int(e.Number()))},
+		map[string]string{EnumMetadataKey: strconv.Itoa(int(e.Number()))},
 	)
 }
 
 // ErrWithMetadata ...
-func ErrWithMetadata(code int, enum Enum, message string, md map[string]string) *Error {
-	e := errors.New(code, enum.String(), message)
+func ErrWithMetadata(enum Enum, message string, md map[string]string) *Error {
+	e := errors.New(enum.HTTPCode(), enum.String(), message)
 	e.Metadata = md
 	if md != nil {
-		if _, ok := md[EnumNumberKey]; !ok {
-			md[EnumNumberKey] = strconv.Itoa(int(enum.Number()))
+		if _, ok := md[EnumMetadataKey]; !ok {
+			md[EnumMetadataKey] = strconv.Itoa(int(enum.Number()))
 		}
-	}
-	return &Error{
-		status: &status{Error: e},
-		stack:  callers(),
-	}
-}
-
-// WrapWithEnumNumber enum number
-func WrapWithEnumNumber(e *errors.Error, enum Enum) error {
-	if e == nil {
-		return nil
-	}
-	if e.Metadata == nil {
-		e.Metadata = map[string]string{}
-	}
-	if _, ok := e.Metadata[EnumNumberKey]; !ok {
-		e.Metadata[EnumNumberKey] = strconv.Itoa(int(enum.Number()))
 	}
 	return &Error{
 		status: &status{Error: e},

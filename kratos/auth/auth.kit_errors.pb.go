@@ -5,6 +5,7 @@ package authpkg
 import (
 	fmt "fmt"
 	errors "github.com/go-kratos/kratos/v2/errors"
+	strconv "strconv"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,7 +21,9 @@ func IsUnknown(err error) bool {
 }
 
 func ErrorUnknown(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_UNKNOWN.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNKNOWN.Number()))}
+	return e
 }
 
 func IsTokenMissing(err error) bool {
@@ -32,7 +35,9 @@ func IsTokenMissing(err error) bool {
 }
 
 func ErrorTokenMissing(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_TOKEN_MISSING.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_TOKEN_MISSING.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOKEN_MISSING.Number()))}
+	return e
 }
 
 func IsTokenKeyMissing(err error) bool {
@@ -44,7 +49,9 @@ func IsTokenKeyMissing(err error) bool {
 }
 
 func ErrorTokenKeyMissing(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_TOKEN_KEY_MISSING.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_TOKEN_KEY_MISSING.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOKEN_KEY_MISSING.Number()))}
+	return e
 }
 
 func IsTokenMethodMissing(err error) bool {
@@ -56,7 +63,9 @@ func IsTokenMethodMissing(err error) bool {
 }
 
 func ErrorTokenMethodMissing(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_TOKEN_METHOD_MISSING.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_TOKEN_METHOD_MISSING.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOKEN_METHOD_MISSING.Number()))}
+	return e
 }
 
 func IsUnauthorized(err error) bool {
@@ -68,7 +77,9 @@ func IsUnauthorized(err error) bool {
 }
 
 func ErrorUnauthorized(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_UNAUTHORIZED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_UNAUTHORIZED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_UNAUTHORIZED.Number()))}
+	return e
 }
 
 func IsTokenExpired(err error) bool {
@@ -80,7 +91,9 @@ func IsTokenExpired(err error) bool {
 }
 
 func ErrorTokenExpired(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_TOKEN_EXPIRED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_TOKEN_EXPIRED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOKEN_EXPIRED.Number()))}
+	return e
 }
 
 func IsAuthenticationFailed(err error) bool {
@@ -92,7 +105,9 @@ func IsAuthenticationFailed(err error) bool {
 }
 
 func ErrorAuthenticationFailed(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_AUTHENTICATION_FAILED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_AUTHENTICATION_FAILED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_AUTHENTICATION_FAILED.Number()))}
+	return e
 }
 
 func IsTokenInvalid(err error) bool {
@@ -104,7 +119,9 @@ func IsTokenInvalid(err error) bool {
 }
 
 func ErrorTokenInvalid(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_TOKEN_INVALID.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_TOKEN_INVALID.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOKEN_INVALID.Number()))}
+	return e
 }
 
 func IsTokenDeprecated(err error) bool {
@@ -116,7 +133,9 @@ func IsTokenDeprecated(err error) bool {
 }
 
 func ErrorTokenDeprecated(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_TOKEN_DEPRECATED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_TOKEN_DEPRECATED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOKEN_DEPRECATED.Number()))}
+	return e
 }
 
 func IsTokenNotInWhitelist(err error) bool {
@@ -128,7 +147,9 @@ func IsTokenNotInWhitelist(err error) bool {
 }
 
 func ErrorTokenNotInWhitelist(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_TOKEN_NOT_IN_WHITELIST.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_TOKEN_NOT_IN_WHITELIST.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_TOKEN_NOT_IN_WHITELIST.Number()))}
+	return e
 }
 
 func IsVerificationFailed(err error) bool {
@@ -140,7 +161,9 @@ func IsVerificationFailed(err error) bool {
 }
 
 func ErrorVerificationFailed(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_VERIFICATION_FAILED.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_VERIFICATION_FAILED.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_VERIFICATION_FAILED.Number()))}
+	return e
 }
 
 func IsInvalidClaims(err error) bool {
@@ -152,5 +175,7 @@ func IsInvalidClaims(err error) bool {
 }
 
 func ErrorInvalidClaims(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ERROR_INVALID_CLAIMS.String(), fmt.Sprintf(format, args...))
+	e := errors.New(401, ERROR_INVALID_CLAIMS.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_INVALID_CLAIMS.Number()))}
+	return e
 }

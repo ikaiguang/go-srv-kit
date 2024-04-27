@@ -2,6 +2,7 @@ package authpkg
 
 import (
 	"context"
+	stderrors "errors"
 	"strconv"
 	"time"
 
@@ -350,7 +351,7 @@ func (s *tokenManger) IsLoginLimit(ctx context.Context, tokenID string) (bool, L
 	limitKey := s.genLimitTokenKey(tokenID)
 	loginLimitStr, err := s.redisCC.Get(ctx, limitKey).Result()
 	if err != nil {
-		if err == redis.Nil {
+		if stderrors.Is(err, redis.Nil) {
 			err = nil
 		} else {
 			e := errorpkg.ErrorInternalServer("")
@@ -367,7 +368,7 @@ func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, token
 	key := s.genTokensKey(userIdentifier)
 	res, err := s.redisCC.HGet(ctx, key, tokenID).Result()
 	if err != nil {
-		if err == redis.Nil {
+		if stderrors.Is(err, redis.Nil) {
 			err = nil
 			isNotFound = true
 		} else {

@@ -2,6 +2,7 @@ package redispkg
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
@@ -53,4 +54,8 @@ func NewDB(conf *Config) (db redis.UniversalClient, err error) {
 		return db, err
 	}
 	return db, err
+}
+
+func IsNilErr(err error) bool {
+	return stderrors.Is(err, redis.Nil)
 }

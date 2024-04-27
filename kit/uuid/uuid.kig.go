@@ -3,6 +3,7 @@ package uuidpkg
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/rs/xid"
 )
 
@@ -44,4 +45,8 @@ func FromBytes(b []byte) (xid.ID, error) {
 // Sort ...
 func Sort(ids []xid.ID) {
 	xid.Sort(ids)
+}
+
+func UUID() string {
+	return uuid.New().String()
 }
