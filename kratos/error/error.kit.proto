@@ -29,6 +29,7 @@ enum ERROR {
   INTERNAL_ERROR = 10011 [(errors.code) = 500];
   PANIC = 10012 [(errors.code) = 500];
   FATAL = 10013 [(errors.code) = 500];
+  DUPLICATE_KEY = 10014 [(errors.code) = 400];
 
   // DB database
   DB = 11001 [(errors.code) = 500];
