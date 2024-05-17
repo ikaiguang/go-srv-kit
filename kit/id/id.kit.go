@@ -38,18 +38,18 @@ func SetNode(node *snowflake.Node) {
 	_idNode = node
 }
 
-// New ...
+func NewNode(node int64) (*snowflake.Node, error) {
+	return snowflake.NewNode(node)
+}
+
+// ID ...
 // 为了帮助保证唯一性
 // - 确保您的系统保持准确的系统时间
 // - 确保您永远不会有多个节点以相同的节点 ID 运行
-func New() int64 {
+func ID() int64 {
 	return _idNode.Generate().Int64()
 }
 
-// NewID ...
-// 为了帮助保证唯一性
-// - 确保您的系统保持准确的系统时间
-// - 确保您永远不会有多个节点以相同的节点 ID 运行
-func NewID() uint64 {
-	return uint64(_idNode.Generate().Int64())
+func NextID() int64 {
+	return _idNode.Generate().Int64()
 }

@@ -6,7 +6,7 @@ import "testing"
 func BenchmarkNew_Xxx(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		_ = New()
+		_ = ID()
 	}
 }
 
@@ -30,7 +30,7 @@ func TestNew_Xxx(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for i := 0; i < total; i++ {
-				got := New()
+				got := ID()
 				if _, ok := idMap[got]; ok {
 					t.Errorf("重复ID：%d\n", got)
 					return
