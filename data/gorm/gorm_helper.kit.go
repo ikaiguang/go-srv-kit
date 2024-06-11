@@ -40,9 +40,13 @@ func SetCreateTime(updates map[string]interface{}) {
 	updates[FieldCreatedTime] = time.Now()
 }
 
-func DeleteData(dbConn *gorm.DB) *gorm.DB {
+func SoftDelete(dbConn *gorm.DB) *gorm.DB {
 	return dbConn.UpdateColumns(map[string]interface{}{
 		FieldIsDeleted:   1,
 		FieldDeletedTime: time.Now(),
 	})
+}
+
+func Deleted(dbConn *gorm.DB, value interface{}, conditions ...interface{}) *gorm.DB {
+	return dbConn.Delete(value, conditions)
 }
