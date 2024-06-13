@@ -23,6 +23,7 @@ var ERROR_http_code = map[string]int{
 	"INTERNAL_ERROR":                     500,
 	"PANIC":                              500,
 	"FATAL":                              500,
+	"DUPLICATE_KEY":                      400,
 	"DB":                                 500,
 	"MYSQL":                              500,
 	"MONGO":                              500,
@@ -189,6 +190,12 @@ func DefaultErrorPanic() *errors.Error {
 func DefaultErrorFatal() *errors.Error {
 	e := errors.New(500, ERROR_FATAL.String(), "")
 	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_FATAL.Number()))}
+	return e
+}
+
+func DefaultErrorDuplicateKey() *errors.Error {
+	e := errors.New(400, ERROR_DUPLICATE_KEY.String(), "")
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_DUPLICATE_KEY.Number()))}
 	return e
 }
 

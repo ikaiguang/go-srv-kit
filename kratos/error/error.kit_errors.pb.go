@@ -210,6 +210,20 @@ func ErrorFatal(format string, args ...interface{}) *errors.Error {
 	return e
 }
 
+func IsDuplicateKey(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ERROR_DUPLICATE_KEY.String() && e.Code == 400
+}
+
+func ErrorDuplicateKey(format string, args ...interface{}) *errors.Error {
+	e := errors.New(400, ERROR_DUPLICATE_KEY.String(), fmt.Sprintf(format, args...))
+	e.Metadata = map[string]string{"reason": strconv.Itoa(int(ERROR_DUPLICATE_KEY.Number()))}
+	return e
+}
+
 // DB database
 func IsDb(err error) bool {
 	if err == nil {
