@@ -18,6 +18,14 @@ func ParsePageRequest(pageRequest *PageRequest) (*PageRequest, *PageOption) {
 	return pageRequest, opt
 }
 
+func ParsePageRequestArgs(page, pageSize uint32) (*PageRequest, *PageOption) {
+	pageRequest := &PageRequest{
+		Page:     0,
+		PageSize: 0,
+	}
+	return ParsePageRequest(pageRequest)
+}
+
 // ParsePage 页码
 func ParsePage(pageNumber uint32) uint32 {
 	if pageNumber < 1 {
