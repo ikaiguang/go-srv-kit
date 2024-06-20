@@ -13,12 +13,11 @@ import (
 func DefaultServerMiddlewares(logHelper *log.Helper) []middleware.Middleware {
 	return []middleware.Middleware{
 		recovery.Recovery(recovery.WithHandler(RecoveryHandler())),
+		metadata.Server(),
 		tracing.Server(),
 		RequestAndResponseHeader(),
 		apppkg.ServerLog(logHelper),
-		metadata.Server(),
-		//validate.Validator(),
-		Validator(),
+		Validator(), // validate.Validator(),
 	}
 }
 
@@ -26,8 +25,8 @@ func DefaultServerMiddlewares(logHelper *log.Helper) []middleware.Middleware {
 func DefaultClientMiddlewares(logHelper *log.Helper) []middleware.Middleware {
 	return []middleware.Middleware{
 		recovery.Recovery(recovery.WithHandler(RecoveryHandler())),
+		metadata.Client(),
 		tracing.Client(),
 		apppkg.ClientLog(logHelper),
-		metadata.Client(),
 	}
 }
