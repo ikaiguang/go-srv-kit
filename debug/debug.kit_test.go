@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	pkgerrors "github.com/pkg/errors"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )
 
 func TestMain(m *testing.M) {
@@ -34,8 +34,8 @@ func TestDebug(t *testing.T) {
 
 // go test -v ./debug/ -count=1 -test.run=TestDebugf
 func TestDebugf(t *testing.T) {
-	Debugf("%+v", pkgerrors.New("error 1"))
-	Debugf("%+v", pkgerrors.New("error 2"))
+	Debugf("%+v", errorpkg.WithStack(errorpkg.ErrorBadRequest("error 1")))
+	Debugf("%+v", errorpkg.WithStack(errorpkg.ErrorBadRequest("error 2")))
 }
 
 // go test -v ./debug/ -count=1 -test.run=TestFatal
