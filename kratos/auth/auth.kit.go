@@ -3,12 +3,13 @@ package authpkg
 import (
 	"context"
 	"encoding/json"
+	stderrors "errors"
 	"strconv"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )
@@ -254,20 +255,15 @@ func Server(signKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 					tokenInfo, err = jwt.Parse(jwtToken, keyFunc)
 				}
 				if err != nil {
-					ve, ok := err.(*jwt.ValidationError)
-					if !ok {
+					if stderrors.Is(err, jwt.ErrTokenMalformed) || stderrors.Is(err, jwt.ErrTokenUnverifiable) {
 						e := ErrInvalidAuthToken()
 						return nil, errorpkg.WithStack(e)
 					}
-					if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-						e := ErrTokenInvalid()
-						return nil, errorpkg.WithStack(e)
-					}
-					if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
+					if stderrors.Is(err, jwt.ErrTokenNotValidYet) || stderrors.Is(err, jwt.ErrTokenExpired) {
 						e := ErrTokenExpired()
 						return nil, errorpkg.WithStack(e)
 					}
-					e := ErrTokenParseFail()
+					e := ErrInvalidAuthToken()
 					e.Metadata = map[string]string{"error": err.Error()}
 					return nil, errorpkg.WithStack(e)
 				}

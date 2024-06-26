@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	aespkg "github.com/ikaiguang/go-srv-kit/kit/aes"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
@@ -164,6 +164,8 @@ type authRepo struct {
 	signEncryptor SignEncryptor
 	refreshCrypto RefreshEncryptor
 	tokenManger   TokenManger
+
+	jwtValidator *jwt.Validator
 }
 
 // NewAuthRepo ...
@@ -198,6 +200,8 @@ func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManger) (Aut
 		log:           log.NewHelper(log.With(logger, "module", "kit.auth.token.repo")),
 		tokenManger:   tokenManger,
 		// tokenManger:   NewTokenManger(redisCC, authCacheKeyPrefix),
+
+		jwtValidator: jwt.NewValidator(),
 	}, nil
 }
 
@@ -467,7 +471,8 @@ func (s *authRepo) DecodeAccessToken(ctx context.Context, accessToken string) (*
 		return nil, err
 	}
 	// 验证有效性
-	if err = claims.Valid(); err != nil {
+	//if err = claims.Valid(); err != nil {
+	if err = s.jwtValidator.Validate(claims); err != nil {
 		e := ErrorTokenExpired("access token expired")
 		err = errorpkg.Wrap(e, err)
 		return nil, err
@@ -482,7 +487,8 @@ func (s *authRepo) DecodeRefreshToken(ctx context.Context, refreshToken string) 
 		return nil, err
 	}
 	// 验证有效性
-	if err = claims.Valid(); err != nil {
+	//if err = claims.Valid(); err != nil {
+	if err = s.jwtValidator.Validate(claims); err != nil {
 		e := ErrorTokenExpired("refresh token expired")
 		err = errorpkg.Wrap(e, err)
 		return nil, err

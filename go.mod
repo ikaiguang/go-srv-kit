@@ -9,8 +9,8 @@ require (
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20230424154814-520b321fe99b
 	github.com/go-kratos/kratos/contrib/registry/etcd/v2 v2.0.0-20231023125239-6cdd81811e10
 	github.com/go-kratos/kratos/v2 v2.7.3
-	github.com/go-redsync/redsync/v4 v4.12.1
-	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/go-redsync/redsync/v4 v4.12.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/websocket v1.5.1
