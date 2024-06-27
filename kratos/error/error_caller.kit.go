@@ -80,3 +80,13 @@ func CallerWithSkip(err error, skip int) (callers []string) {
 	}
 	return callers[skip:]
 }
+
+func TracerDepth(callers []string, depth int) []string {
+	if depth < 1 {
+		return callers
+	}
+	if len(callers) > depth {
+		return callers[:depth]
+	}
+	return callers
+}
