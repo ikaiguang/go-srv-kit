@@ -65,6 +65,34 @@ func Caller(err error) (callers []string) {
 	return callers
 }
 
+func CallStackWithSkipAndDepth(err error, skip, depth int) (callers []string) {
+	trace, ok := err.(stackTracer)
+	if !ok {
+		pc, _, _, _ := runtime.Caller(1)
+		callers = []string{
+			fmt.Sprintf("%+v", Frame(pc)),
+		}
+		return callers
+	}
+
+	// stack trace
+	st := trace.StackTrace()
+	// depth
+	if depth > 0 && len(st) > depth {
+		st = st[:depth]
+	}
+	// skip
+	if skip > 0 && len(st) > skip {
+		st = st[skip:]
+	}
+	// make
+	callers = make([]string, len(st))
+	for i := range st {
+		callers[i] = fmt.Sprintf("%+v", st[i])
+	}
+	return callers
+}
+
 // CallerWithSkip 序列化调用者：file:line
 func CallerWithSkip(err error, skip int) (callers []string) {
 	callers = Caller(err)
@@ -79,14 +107,4 @@ func CallerWithSkip(err error, skip int) (callers []string) {
 		return callers[callCounter-1:]
 	}
 	return callers[skip:]
-}
-
-func TracerDepth(callers []string, depth int) []string {
-	if depth < 1 {
-		return callers
-	}
-	if len(callers) > depth {
-		return callers[:depth]
-	}
-	return callers
 }
