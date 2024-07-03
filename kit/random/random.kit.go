@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+const (
+	CharsetLowercase = "abcdefghijklmnopqrstuvwxyz"
+	CharsetAlphabet  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	CharsetNumeral   = "1234567890"
+	CharsetHex       = "1234567890abcdef"
+)
+
 // NewRandHandler ...
 func NewRandHandler() *rand.Rand {
 	return rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -74,6 +81,27 @@ func Numeric(size int) string {
 		res[i] = byte(randHandler.Intn(9) + 48)
 	}
 	return string(res)
+}
+
+// AlphabetLower 从小写字符集生成指定长度的随机字符串
+func AlphabetLower(n int) string {
+	return String(n, CharsetLowercase)
+}
+
+func Hex(n int) string {
+	return String(n, CharsetHex)
+}
+
+// String returns a random string n characters long, composed of entities from charset.
+func String(n int, charset string) string {
+	randomHandler := NewRandHandler()
+	randStr := make([]byte, n) // Random string to return
+	charLen := len(charset)
+	for i := 0; i < n; i++ {
+		j := randomHandler.Intn(charLen)
+		randStr[i] = charset[j]
+	}
+	return string(randStr)
 }
 
 // Int32Between random number between min-max
