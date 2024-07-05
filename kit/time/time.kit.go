@@ -13,8 +13,12 @@ const (
 	YmdH              = "2006-01-02 15"
 	Ymd               = "2006-01-02"
 	Ym                = "2006-01"
+	Y                 = "2006"
 	YSecond           = "20060102150405"
+	YMinute           = "200601021504"
+	YHour             = "2006010215"
 	YDay              = "20060102"
+	YMonth            = "200601"
 	MDay              = "0102"
 	YmdHmsMillisecond = "2006-01-02 15:04:05.999"
 	YmdHmsMicrosecond = "2006-01-02 15:04:05.999999"
@@ -83,6 +87,11 @@ func TimestampToDate(u int64, format string) string {
 // DateToTime date to time
 func DateToTime(format, date string) (time.Time, error) {
 	return time.ParseInLocation(format, date, time.Local)
+}
+
+func Time9999() time.Time {
+	t, _ := time.Parse(YmdHms, "9999-12-31 23:59:59")
+	return t
 }
 
 // FormatRFC3339 to RFC3339
