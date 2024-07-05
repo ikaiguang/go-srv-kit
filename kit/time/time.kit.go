@@ -90,8 +90,7 @@ func DateToTime(format, date string) (time.Time, error) {
 }
 
 func Time9999() time.Time {
-	t, _ := time.Parse(YmdHms, "9999-12-31 23:59:59")
-	return t
+	return time.Date(9999, 12, 31, 23, 59, 59, 0, time.Local)
 }
 
 // FormatRFC3339 to RFC3339
