@@ -8,7 +8,7 @@ import (
 
 var (
 	// DefaultStackTracerDepth 错误追踪最深层数
-	DefaultStackTracerDepth = 10
+	DefaultStackTracerDepth = 6
 )
 
 // Println 输出错误

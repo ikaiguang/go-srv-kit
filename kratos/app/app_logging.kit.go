@@ -75,9 +75,7 @@ func (s *ErrMessage) GetErrorDetail() string {
 
 // options ...
 type options struct {
-	withSkip        bool
 	withSkipDepth   int
-	withDepth       bool
 	withTracerDepth int
 }
 
@@ -87,7 +85,6 @@ type Option func(options *options)
 // WithDefaultSkip ...
 func WithDefaultSkip() Option {
 	return func(o *options) {
-		o.withSkip = true
 		o.withSkipDepth = 1
 	}
 }
@@ -95,7 +92,6 @@ func WithDefaultSkip() Option {
 // WithCallerSkip ...
 func WithCallerSkip(skip int) Option {
 	return func(o *options) {
-		o.withSkip = true
 		o.withSkipDepth = skip
 	}
 }
@@ -103,7 +99,6 @@ func WithCallerSkip(skip int) Option {
 // WithDefaultDepth ...
 func WithDefaultDepth() Option {
 	return func(o *options) {
-		o.withSkip = true
 		o.withSkipDepth = errorpkg.DefaultStackTracerDepth
 	}
 }
@@ -111,7 +106,6 @@ func WithDefaultDepth() Option {
 // WithCallerDepth ...
 func WithCallerDepth(depth int) Option {
 	return func(o *options) {
-		o.withDepth = true
 		o.withTracerDepth = depth
 	}
 }
@@ -190,15 +184,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 					errMessage.Reason = se.Reason
 				}
 				// 错误调用
-				var callers []string
-				if opt.withSkip && opt.withSkipDepth > 0 {
-					callers = errorpkg.CallerWithSkip(err, opt.withSkipDepth)
-				} else {
-					callers = errorpkg.Stack(err)
-				}
-				if opt.withDepth && opt.withTracerDepth > 0 {
-					callers = errorpkg.TracerDepth(callers, opt.withTracerDepth)
-				}
+				var callers = errorpkg.CallStackWithSkipAndDepth(err, opt.withSkipDepth, opt.withTracerDepth)
 				if len(callers) > 0 {
 					errMessage.Stack = strings.Join(callers, "\n\t")
 				}
