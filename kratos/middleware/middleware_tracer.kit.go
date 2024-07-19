@@ -17,8 +17,8 @@ const (
 
 // tracerOptions ...
 type tracerOptions struct {
-	jaegerExporterType     TracerExporterType
-	jaegerExporterInstance *jaeger.Exporter
+	exporterType   TracerExporterType
+	jaegerExporter *jaeger.Exporter
 }
 
 // TracerOption is config option.
@@ -27,8 +27,8 @@ type TracerOption func(*tracerOptions)
 // WithTracerJaegerExporter with config writer.
 func WithTracerJaegerExporter(exporter *jaeger.Exporter) TracerOption {
 	return func(o *tracerOptions) {
-		o.jaegerExporterType = TracerExporterTypeJaeger
-		o.jaegerExporterInstance = exporter
+		o.exporterType = TracerExporterTypeJaeger
+		o.jaegerExporter = exporter
 	}
 }
 
@@ -51,11 +51,11 @@ func SetTracer(serviceNameKey string, opts ...TracerOption) error {
 			//attribute.String("branch", appConfig.EnvBranch),
 		)),
 	}
-	switch opt.jaegerExporterType {
+	switch opt.exporterType {
 	case TracerExporterTypeJaeger:
-		if opt.jaegerExporterInstance != nil {
+		if opt.jaegerExporter != nil {
 			// Always be sure to batch in production.
-			providerOptions = append(providerOptions, tracesdk.WithBatcher(opt.jaegerExporterInstance))
+			providerOptions = append(providerOptions, tracesdk.WithBatcher(opt.jaegerExporter))
 		}
 	}
 	tp := tracesdk.NewTracerProvider(providerOptions...)
