@@ -1,6 +1,6 @@
 module github.com/ikaiguang/go-srv-kit
 
-go 1.20
+go 1.21
 
 require (
 	github.com/ThreeDotsLabs/watermill v1.2.0

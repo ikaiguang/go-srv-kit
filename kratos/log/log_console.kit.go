@@ -44,7 +44,7 @@ func (s *Std) sync() error {
 
 // Close zap.Logger.Sync
 func (s *Std) Close() error {
-	return s.loggerHandler.Sync()
+	return s.sync()
 }
 
 // Log .

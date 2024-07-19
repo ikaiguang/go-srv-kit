@@ -68,7 +68,7 @@ func (s *File) sync() error {
 
 // Close zap.Logger.Sync
 func (s *File) Close() error {
-	return s.loggerHandler.Sync()
+	return s.sync()
 }
 
 // Log .

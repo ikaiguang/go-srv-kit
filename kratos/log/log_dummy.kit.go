@@ -7,7 +7,7 @@ import (
 // dummy .
 type dummy struct{}
 
-// NewDummyLogger 假啊日志手柄
+// NewDummyLogger ...
 func NewDummyLogger() (log.Logger, error) {
 	return &dummy{}, nil
 }
