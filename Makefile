@@ -81,12 +81,6 @@ init:
 	go install github.com/golang/mock/mockgen@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 
-.PHONY: generate
-# generate
-generate:
-	#go mod tidy
-	go generate ./...
-
 # ===== include =====
 # ===== include =====
 # ===== include =====
@@ -113,3 +107,10 @@ echo:
 	@echo "==> CURRENT_PATH: $(CURRENT_PATH)"
 	@echo "==> PROJECT_PATH: $(PROJECT_PATH)"
 	@echo "==> APP_RELATIVE_PATH: $(APP_RELATIVE_PATH)"
+
+.PHONY: generate
+# generate : go:generate
+generate:
+	#go mod tidy
+	go generate ./...
+
