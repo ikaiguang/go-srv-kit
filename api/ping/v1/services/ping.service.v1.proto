@@ -9,7 +9,7 @@ option java_package = "kit.api.ping.servicev1";
 option java_outer_classname = "KitApiPingServiceV1";
 
 import "google/api/annotations.proto";
-import "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources/ping.resource.v1.proto";
+import "api/ping/v1/resources/ping.resource.v1.proto";
 
 // SrvPing ping服务
 service SrvPing {

@@ -9,7 +9,7 @@ option java_package = "kit.api.testdata.servicev1";
 option java_outer_classname = "KitApiTestdataServiceV1";
 
 import "google/api/annotations.proto";
-import "github.com/ikaiguang/go-srv-kit/api/testdata/v1/resources/testdata.resource.v1.proto";
+import "api/testdata/v1/resources/testdata.resource.v1.proto";
 
 // SrvTestdata 测试
 service SrvTestdata {

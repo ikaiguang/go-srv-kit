@@ -108,5 +108,6 @@ dist
 /cache
 .cache
 openapi.yaml
+*.swagger.json
 _output
 mytest
