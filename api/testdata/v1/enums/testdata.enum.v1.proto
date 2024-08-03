@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package kit.api.testdataenumv1;
+package kit.api.testdata.enumv1;
 
-option go_package = "github.com/ikaiguang/go-srv-kit/api/testdata/v1/enums;testdataenumv1";
+option go_package = "github.com/ikaiguang/go-srv-kit/api/testdata/v1/enums;enumv1";
 option java_multiple_files = true;
-option java_package = "kit.api.testdataenumv1";
+option java_package = "kit.api.testdata.enumv1";
 option java_outer_classname = "KitApiTestdataEnumV1";
 
 // TestdataInitEnum TestdataInitEnum enum

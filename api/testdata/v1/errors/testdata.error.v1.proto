@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package kit.api.testdataerrorv1;
+package kit.api.testdata.errorv1;
 
 import "errors/errors.proto";
 
 // 多语言特定包名，用于源代码引用
-option go_package = "github.com/ikaiguang/go-srv-kit/api/testdata/v1/errors;testdataerrorv1";
+option go_package = "github.com/ikaiguang/go-srv-kit/api/testdata/v1/errors;errorv1";
 option java_multiple_files = true;
-option java_package = "kit.api.testdataerrorv1";
+option java_package = "kit.api.testdata.errorv1";
 option java_outer_classname = "KitApiTestdataErrorV1";
 
 // ERROR .
