@@ -3,6 +3,8 @@ package apppkg
 import (
 	"context"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+	stdhttp "net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -19,7 +21,8 @@ import (
 
 var (
 	// _maxRequestArgs 设置最大请求参数
-	_maxRequestArgs uint = 1024 * 1024
+	_maxRequestArgs   uint  = 1024 * 1024
+	_minInfoLevelCode int32 = 1000
 )
 
 // SetMaxRequestArgSize 设置最大请求参数
@@ -27,50 +30,55 @@ func SetMaxRequestArgSize(size uint) {
 	_maxRequestArgs = size
 }
 
-// RequestMessage 请求信息
-type RequestMessage struct {
-	Kind      string
-	Component string
-	Method    string
-	Operation string
-
-	ExecTime time.Duration
-	ClientIP string
+type RequestInfoForServer struct {
+	Kind      string        `json:"kind"`
+	Component string        `json:"component"`
+	Latency   time.Duration `json:"latency"`
+	ClientIP  string        `json:"client_ip"`
 }
 
-// GetRequestInfo 获取服务信息
-func (s *RequestMessage) GetRequestInfo() string {
-	str := "kind=" + `"` + s.Kind + `"`
-	str += " component=" + `"` + s.Component + `"`
-	str += " ip=" + `"` + s.ClientIP + `"`
-	str += " latency=" + `"` + s.ExecTime.String() + `"`
-	return str
+func (s *RequestInfoForServer) String() string {
+	res := `{`
+	res += `"kind":"` + s.Kind + `",`
+	res += `"component":"` + s.Component + `",`
+	res += `"latency":"` + s.Latency.String() + `",`
+	res += `"client_ip":"` + s.ClientIP + `"`
+	res += `}`
+
+	return res
 }
 
-// GetOperationInfo .
-func (s *RequestMessage) GetOperationInfo() string {
-	str := "method=" + `"` + s.Method + `"`
-	str += " operation=" + fmt.Sprintf("%q", s.Operation)
-	return str
+type OperationInfo struct {
+	Method    string `json:"method"`
+	Operation string `json:"operation"`
+	Args      string `json:"args"`
+}
+
+func (s *OperationInfo) String() string {
+	res := `{`
+	res += `"method":"` + s.Method + `",`
+	res += `"operation":"` + s.Operation + `",`
+	res += `"args":"` + s.Args + `"`
+	res += `}`
+
+	return res
 }
 
 // ErrMessage 响应信息
 type ErrMessage struct {
-	Code   int32
-	Reason string
-	Msg    string
-	Stack  string
-
-	RequestArgs string
+	Code    int32  `json:"code"`
+	Reason  string `json:"reason"`
+	Message string `json:"message"`
 }
 
-// GetErrorDetail ...
-func (s *ErrMessage) GetErrorDetail() string {
-	message := "code=" + `"` + strconv.FormatInt(int64(s.Code), 10) + `"`
-	message += " reason=" + `"` + s.Reason + `"`
-	message += " detail=" + fmt.Sprintf("%q", s.Msg)
+func (s *ErrMessage) String() string {
+	res := `{`
+	res += `"code":"` + strconv.Itoa(int(s.Code)) + `",`
+	res += `"reason":"` + s.Reason + `",`
+	res += `"message":"` + s.Message + `"`
+	res += `}`
 
-	return message
+	return res
 }
 
 // options ...
@@ -120,12 +128,13 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			var (
-				isWebsocket    = false
-				loggingLevel   = log.LevelInfo
-				requestMessage = &RequestMessage{
+				isWebsocket  = false
+				loggingLevel = log.LevelInfo
+				requestInfo  = &RequestInfoForServer{
 					Kind: "server",
 				}
-				errMessage = &ErrMessage{
+				operationInfo = &OperationInfo{}
+				errMessage    = &ErrMessage{
 					Code: 0,
 				}
 			)
@@ -133,8 +142,9 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			// 信息
 			tr, ok := transport.FromServerContext(ctx)
 			if ok {
-				requestMessage.Component = tr.Kind().String()
-				requestMessage.Operation = tr.Operation()
+				requestInfo.Component = tr.Kind().String()
+				operationInfo.Method = tr.Kind().String()
+				operationInfo.Operation = tr.Operation()
 			}
 
 			// 时间
@@ -146,59 +156,69 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			//if err != nil {}
 
 			// 执行时间
-			requestMessage.ExecTime = time.Since(startTime)
+			requestInfo.Latency = time.Since(startTime)
 
 			// request
 			if httpTr, isHTTP := tr.(http.Transporter); isHTTP {
-				requestMessage.Method = httpTr.Request().Method
-				requestMessage.Operation = httpTr.Request().URL.String()
+				operationInfo.Method = httpTr.Request().Method
+				operationInfo.Operation = httpTr.Request().URL.String()
 				if headerpkg.GetIsWebsocket(httpTr.Request().Header) {
 					isWebsocket = true
-					requestMessage.Method = "WS"
+					operationInfo.Method = "WS"
 				}
-				requestMessage.ClientIP = contextpkg.ClientIPFromHTTP(ctx, httpTr.Request())
-			} else {
-				requestMessage.Method = "GRPC"
-				requestMessage.ClientIP = contextpkg.ClientIPFromGRPC(ctx)
-			}
-
-			// 打印日志
-			var kv = []interface{}{
-				"request", requestMessage.GetRequestInfo(),
-				"operation", requestMessage.GetOperationInfo(),
+				requestInfo.ClientIP = contextpkg.ClientIPFromHTTP(ctx, httpTr.Request())
+			} else if _, isGRPC := tr.(*grpc.Transport); isGRPC {
+				operationInfo.Method = "GRPC"
+				requestInfo.ClientIP = contextpkg.ClientIPFromGRPC(ctx)
 			}
 
 			// websocket 不输出错误
 			if isWebsocket {
+				var kv = []interface{}{
+					"request", requestInfo.String(),
+					"operation", requestInfo.String(),
+				}
 				logHelper.WithContext(ctx).Log(loggingLevel, kv...)
 				return
+			}
+
+			// 请求参数
+			args := extractArgs(req)
+			if len(args) > int(_maxRequestArgs) {
+				args = args[:_maxRequestArgs]
+			}
+			operationInfo.Args = args
+
+			// 打印日志
+			var kv = []interface{}{
+				"request", requestInfo.String(),
+				"operation", requestInfo.String(),
 			}
 
 			// 有错误的
 			if err != nil {
 				loggingLevel = log.LevelError
 				// 错误信息
-				errMessage.Msg = err.Error()
-				if se := errorpkg.FromError(err); se != nil {
+				errMessage.Message = err.Error()
+				se := errorpkg.FromError(err)
+				if se != nil {
 					errMessage.Code = se.Code
 					errMessage.Reason = se.Reason
 				}
+				if se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode {
+					loggingLevel = log.LevelInfo
+				}
 				// 错误调用
+				var stackMessage string
 				var callers = errorpkg.CallStackWithSkipAndDepth(err, opt.withSkipDepth, opt.withTracerDepth)
 				if len(callers) > 0 {
-					errMessage.Stack = strings.Join(callers, "\n\t")
-				}
-				// 请求参数
-				errMessage.RequestArgs = extractArgs(req)
-				if len(errMessage.RequestArgs) > int(_maxRequestArgs) {
-					errMessage.RequestArgs = errMessage.RequestArgs[:_maxRequestArgs]
+					stackMessage = strings.Join(callers, "\n\t")
 				}
 
 				// 打印日志
 				kv = append(kv,
-					"error", errMessage.GetErrorDetail(),
-					"args", errMessage.RequestArgs,
-					"stack", errMessage.Stack,
+					"error", errMessage.String(),
+					"stack", stackMessage,
 				)
 			}
 
@@ -210,51 +230,84 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 	}
 }
 
+type RequestInfoForClient struct {
+	Kind      string        `json:"kind"`
+	Component string        `json:"component"`
+	Latency   time.Duration `json:"latency"`
+}
+
+func (s *RequestInfoForClient) String() string {
+	res := `{`
+	res += `"kind":"` + s.Kind + `",`
+	res += `"component":"` + s.Component + `",`
+	res += `"latency":"` + s.Latency.String() + `"`
+	res += `}`
+
+	return res
+}
+
 // ClientLog is an client logging middleware.
 // logging.Client(logger)
 func ClientLog(logHelper *log.Helper) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			var (
+				startTime = time.Now()
+				level     = log.LevelInfo
 				code      int32
 				reason    string
 				kind      string
-				operation string
 			)
-			startTime := time.Now()
+
+			// 请求信息
+			operationInfo := &OperationInfo{}
 			if info, ok := transport.FromClientContext(ctx); ok {
 				kind = info.Kind().String()
-				operation = info.Operation()
+				operationInfo.Method = info.Kind().String()
+				operationInfo.Operation = info.Operation()
+			}
+
+			// 请求参数
+			args := extractArgs(req)
+			if len(args) > int(_maxRequestArgs) {
+				args = args[:_maxRequestArgs]
+			}
+			operationInfo.Args = args
+
+			// 请求信息
+			requestInfo := &RequestInfoForClient{
+				Kind:      "client",
+				Component: kind,
+				Latency:   time.Since(startTime),
 			}
 
 			// log
-			requestStr := `kind="client"`
-			requestStr += " component=" + `"` + kind + `"`
-			requestStr += " latency=" + `"` + time.Since(startTime).String() + `"`
 			var (
-				level log.Level
-				stack string
-				kv    = []interface{}{
-					"request", requestStr,
-					"operation", operation,
-					//"code", code,
-					//"reason", reason,
-					//"args", extractArgs(req),
-					//"stack", stack,
+				kv = []interface{}{
+					"request", requestInfo.String(),
+					"operation", operationInfo.String(),
 				}
 			)
 
 			reply, err = handler(ctx, req)
 			if err != nil {
-				if se := errorpkg.FromError(err); se != nil {
+				se := errorpkg.FromError(err)
+				if se != nil {
 					code = se.Code
 					reason = se.Reason
 				}
+				var stack string
 				level, stack = extractError(err)
-				message := "code=" + `"` + strconv.FormatInt(int64(code), 10) + `"`
-				message += " reason=" + `"` + reason + `"`
+				if se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode {
+					level = log.LevelInfo
+				}
+				errMessage := &ErrMessage{
+					Code:   code,
+					Reason: reason,
+					//Message: err.Error(),
+				}
 				kv = append(kv,
-					"error", message,
+					"error", errMessage.String(),
 					"args", extractArgs(req),
 					"stack", stack,
 				)
