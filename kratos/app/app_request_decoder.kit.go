@@ -39,7 +39,7 @@ func RequestDecoder(r *http.Request, v interface{}) error {
 	if !ok {
 		msg := fmt.Sprintf("[CODEC] unregister Content-Type: %s", r.Header.Get(headerpkg.ContentType))
 		e := errorpkg.ErrorInvalidParameter(msg)
-		return errorpkg.Wrap(e)
+		return errorpkg.WithStack(e)
 	}
 	// 不解析 multipart/form-data : encoding.RegisterCodec(&multipartForm{})
 	if codec.Name() == codecNameMultipartForm {

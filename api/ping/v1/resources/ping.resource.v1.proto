@@ -3,9 +3,9 @@ syntax = "proto3";
 package kit.api.ping.resourcev1;
 
 // 多语言特定包名，用于源代码引用
-option go_package = "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources;resourcev1";
-option java_multiple_files = true;
-option java_package = "kit.api.ping.resourcev1";
+option go_package           = "github.com/ikaiguang/go-srv-kit/api/ping/v1/resources;resourcev1";
+option java_multiple_files  = true;
+option java_package         = "kit.api.ping.resourcev1";
 option java_outer_classname = "KitApiPingResourceV1";
 
 import "google/api/field_behavior.proto";
@@ -15,13 +15,20 @@ import "google/api/field_behavior.proto";
 // ping请求
 message PingReq {
   // message 请求消息
-  string message = 1 [ (google.api.field_behavior) = REQUIRED ];
+  string message = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // PingResp ping响应
 //
 // ping响应
 message PingResp {
-  // message 响应消息
-  string message = 1;
+  int32 code                   = 1;
+  string reason                = 2;
+  string message               = 3;
+  map<string, string> metadata = 4;
+
+  PingRespData data = 100;
+}
+
+message PingRespData {
 }

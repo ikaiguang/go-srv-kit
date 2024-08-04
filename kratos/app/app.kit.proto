@@ -34,10 +34,10 @@ message Response {
   int32 code = 1;
   string reason = 2;
   string message = 3;
-  string requestId = 4;
+  string request_id = 4;
+  map<string, string> metadata = 5;
 
-  google.protobuf.Any data = 5;
-  map<string, string> metadata = 6;
+  google.protobuf.Any data = 100;
 };
 
 // ResponseData data
