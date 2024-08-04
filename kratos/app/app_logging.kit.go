@@ -57,8 +57,8 @@ type OperationInfo struct {
 func (s *OperationInfo) String() string {
 	res := `{`
 	res += `"method":"` + s.Method + `",`
-	res += `"operation":"` + s.Operation + `",`
-	res += `"args":"` + s.Args + `"`
+	res += `"operation":"` + fmt.Sprintf("%q", s.Operation) + `",`
+	res += `"args":"` + fmt.Sprintf("%q", s.Args) + `"`
 	res += `}`
 
 	return res
