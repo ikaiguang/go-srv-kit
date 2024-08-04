@@ -293,6 +293,8 @@ func (m *PingRespData) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Message
+
 	if len(errors) > 0 {
 		return PingRespDataMultiError(errors)
 	}

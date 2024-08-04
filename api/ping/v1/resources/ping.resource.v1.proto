@@ -31,4 +31,5 @@ message PingResp {
 }
 
 message PingRespData {
+  string message = 1;
 }

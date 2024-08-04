@@ -25,4 +25,5 @@ message TestResp {
 }
 
 message TestRespData {
+  string message = 1;
 }
