@@ -57,8 +57,8 @@ type OperationInfo struct {
 func (s *OperationInfo) String() string {
 	res := `{`
 	res += `"method":"` + s.Method + `",`
-	res += `"operation":"` + fmt.Sprintf("%q", s.Operation) + `",`
-	res += `"args":"` + fmt.Sprintf("%q", s.Args) + `"`
+	res += `"operation":` + fmt.Sprintf("%q", s.Operation) + `,`
+	res += `"args":` + fmt.Sprintf("%q", s.Args) + ``
 	res += `}`
 
 	return res
@@ -175,8 +175,8 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			// websocket 不输出错误
 			if isWebsocket {
 				var kv = []interface{}{
-					"request", requestInfo.String(),
 					"operation", operationInfo.String(),
+					"request", requestInfo.String(),
 				}
 				logHelper.WithContext(ctx).Log(loggingLevel, kv...)
 				return
@@ -191,8 +191,8 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 
 			// 打印日志
 			var kv = []interface{}{
-				"request", requestInfo.String(),
 				"operation", operationInfo.String(),
+				"request", requestInfo.String(),
 			}
 
 			// 有错误的
@@ -284,8 +284,8 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 			// log
 			var (
 				kv = []interface{}{
-					"request", requestInfo.String(),
 					"operation", operationInfo.String(),
+					"request", requestInfo.String(),
 				}
 			)
 
@@ -308,7 +308,6 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 				}
 				kv = append(kv,
 					"error", errMessage.String(),
-					"args", extractArgs(req),
 					"stack", stack,
 				)
 			}
