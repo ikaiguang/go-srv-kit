@@ -58,7 +58,7 @@ func (s *OperationInfo) String() string {
 	res := `{`
 	res += `"method":"` + s.Method + `",`
 	res += `"operation":` + fmt.Sprintf("%q", s.Operation) + `,`
-	res += `"args":` + fmt.Sprintf("%q", s.Args) + ``
+	res += `"args":` + fmt.Sprintf("%q", s.Args)
 	res += `}`
 
 	return res
@@ -75,7 +75,7 @@ func (s *ErrMessage) String() string {
 	res := `{`
 	res += `"code":"` + strconv.Itoa(int(s.Code)) + `",`
 	res += `"reason":"` + s.Reason + `",`
-	res += `"message":"` + s.Message + `"`
+	res += `"message":` + fmt.Sprintf("%q", s.Message)
 	res += `}`
 
 	return res
