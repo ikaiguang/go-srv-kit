@@ -16,7 +16,7 @@ func DefaultServerMiddlewares(logHelper *log.Helper) []middleware.Middleware {
 		metadata.Server(),
 		tracing.Server(),
 		RequestAndResponseHeader(),
-		apppkg.ServerLog(logHelper, apppkg.WithDefaultSkip(), apppkg.WithDefaultDepth()),
+		apppkg.ServerLog(logHelper, apppkg.WithDefaultDepth()),
 		Validator(), // validate.Validator(),
 	}
 }
