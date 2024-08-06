@@ -176,7 +176,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			if isWebsocket {
 				var kv = []interface{}{
 					"request", requestInfo.String(),
-					"operation", requestInfo.String(),
+					"operation", operationInfo.String(),
 				}
 				logHelper.WithContext(ctx).Log(loggingLevel, kv...)
 				return
@@ -192,7 +192,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			// 打印日志
 			var kv = []interface{}{
 				"request", requestInfo.String(),
-				"operation", requestInfo.String(),
+				"operation", operationInfo.String(),
 			}
 
 			// 有错误的
