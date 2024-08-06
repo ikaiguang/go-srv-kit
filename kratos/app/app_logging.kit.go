@@ -107,7 +107,7 @@ func WithCallerSkip(skip int) Option {
 // WithDefaultDepth ...
 func WithDefaultDepth() Option {
 	return func(o *options) {
-		o.withSkipDepth = errorpkg.DefaultStackTracerDepth
+		o.withTracerDepth = errorpkg.DefaultStackTracerDepth
 	}
 }
 
