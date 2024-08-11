@@ -9,7 +9,7 @@ else
 	KIT_TESTDATA_PROTO_FILES=$(KIT_TESTDATA_API_PROTO)
 endif
 .PHONY: protoc-testdata-protobuf
-# protoc :-->: generate testdata protobuf
+# protoc :-->: generate testdata service protobuf
 protoc-testdata-protobuf:
-	@echo "# generate ${service} protobuf"
+	@echo "# generate testdata service protobuf"
 	$(call protoc_protobuf,$(KIT_TESTDATA_PROTO_FILES))

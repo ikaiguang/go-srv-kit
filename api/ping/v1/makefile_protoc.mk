@@ -9,7 +9,7 @@ else
 	KIT_PING_V1_PROTO_FILES=$(KIT_PING_V1_API_PROTO)
 endif
 .PHONY: protoc-ping-v1-protobuf
-# protoc :-->: generate ping protobuf
+# protoc :-->: generate ping service v1 protobuf
 protoc-ping-v1-protobuf:
-	@echo "# generate ${service} protobuf"
+	@echo "# generate ping service v1 protobuf"
 	$(call protoc_protobuf,$(KIT_PING_V1_PROTO_FILES))
