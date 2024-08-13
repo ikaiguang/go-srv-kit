@@ -1,18 +1,13 @@
 # 定义环境变量
-GOHOSTOS=$(shell go env GOHOSTOS)
-GOPATH=$(shell go env GOPATH)
-VERSION=$(shell git describe --tags --always)
+GOHOSTOS := $(shell go env GOHOSTOS)
+GOPATH := $(shell go env GOPATH)
+VERSION := $(shell git describe --tags --always)
 
 # 定义项目变量
-MAKE_FILE_PATH= $(abspath $(lastword $(MAKEFILE_LIST)))
-CURRENT_ABS_PATH=$(shell dirname $(MAKE_FILE_PATH))
-CURRENT_PATH=$(shell basename $(CURRENT_ABS_PATH))
-PROJECT_PATH=$(shell echo "../../")
-APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && echo $${a})
-ifeq ($(APP_RELATIVE_PATH), $(CURRENT_PATH))
-	PROJECT_PATH=./
-	APP_RELATIVE_PATH=
-endif
+PROJECT_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+PROJECT_ABS_PATH := $(patsubst %/,%,$(dir $(PROJECT_MAKEFILE)))
+PROJECT_PATH_NAME := $(notdir $(PROJECT_ABS_PATH))
+PROJECT_REL_PATH := "./"
 
 # 示例
 ifeq ($(GOHOSTOS), windows)
@@ -27,7 +22,6 @@ endif
 # 定义编译 protobuf
 define protoc_protobuf
     if [ "$1" != "" ]; then \
-		cd $(PROJECT_PATH); \
 		protoc \
 			--proto_path=. \
 			--proto_path=$(GOPATH)/src \
@@ -102,11 +96,10 @@ echo:
 	@echo "==> GOHOSTOS: $(GOHOSTOS)"
 	@echo "==> GOPATH: $(GOPATH)"
 	@echo "==> VERSION: $(VERSION)"
-	@echo "==> MAKE_FILE_PATH: $(MAKE_FILE_PATH)"
-	@echo "==> CURRENT_ABS_PATH: $(CURRENT_ABS_PATH)"
-	@echo "==> CURRENT_PATH: $(CURRENT_PATH)"
-	@echo "==> PROJECT_PATH: $(PROJECT_PATH)"
-	@echo "==> APP_RELATIVE_PATH: $(APP_RELATIVE_PATH)"
+	@echo "==> PROJECT_MAKEFILE: $(PROJECT_MAKEFILE)"
+	@echo "==> PROJECT_ABS_PATH: $(PROJECT_ABS_PATH)"
+	@echo "==> PROJECT_PATH_NAME: $(PROJECT_PATH_NAME)"
+	@echo "==> PROJECT_REL_PATH: $(PROJECT_REL_PATH)"
 
 .PHONY: generate
 # generate : go:generate

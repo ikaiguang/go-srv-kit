@@ -1,5 +1,9 @@
+override ABSOLUTE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+override ABSOLUTE_PATH := $(patsubst %/,%,$(dir $(ABSOLUTE_MAKEFILE)))
+override REL_PROJECT_PATH := $(subst $(PROJECT_ABS_PATH)/,,$(ABSOLUTE_PATH))
+
 # saas services
-KIT_API_PROTO_FILES=$(shell cd $(PROJECT_PATH) && find api -name "*.proto")
+KIT_API_PROTO_FILES := $(shell find ./$(REL_PROJECT_PATH) -name "*.proto")
 .PHONY: protoc-api-protobuf
 # protoc :-->: generate services api protobuf
 protoc-api-protobuf:
@@ -7,7 +11,7 @@ protoc-api-protobuf:
 	$(call protoc_protobuf,$(KIT_API_PROTO_FILES))
 
 # specified server
-KIT_API_SPECIFIED_FILES=$(shell cd $(PROJECT_PATH) && find ./api/${service} -name "*.proto")
+KIT_API_SPECIFIED_FILES := $(shell find ./$(REL_PROJECT_PATH)/${service} -name "*.proto")
 .PHONY: protoc-specified-api
 # protoc :-->: example: make protoc-specified-api service=ping-service
 protoc-specified-api:
