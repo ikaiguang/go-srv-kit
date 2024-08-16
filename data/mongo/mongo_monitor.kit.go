@@ -26,9 +26,10 @@ func NewMonitor(logger log.Logger, opts ...MonitorOption) *event.CommandMonitor 
 	for i := range opts {
 		opts[i](options)
 	}
+	loggerHandler := log.NewHelper(log.With(logger, "module", "mongo-driver-monitor"))
 	return &event.CommandMonitor{
 		Started: func(ctx context.Context, evt *event.CommandStartedEvent) {
-			_ = log.WithContext(ctx, logger).Log(log.LevelDebug,
+			loggerHandler.WithContext(ctx).Debugw(
 				"request_id", evt.RequestID,
 				"database", evt.DatabaseName,
 				"command_name", evt.CommandName,
@@ -36,16 +37,18 @@ func NewMonitor(logger log.Logger, opts ...MonitorOption) *event.CommandMonitor 
 			)
 		},
 		Succeeded: func(ctx context.Context, evt *event.CommandSucceededEvent) {
-			lv := log.LevelDebug
-			if options.slowThreshold > 0 && evt.Duration >= options.slowThreshold {
-				lv = log.LevelWarn
-			}
-			_ = log.WithContext(ctx, logger).Log(lv,
+			kvs := []interface{}{
 				"request_id", evt.RequestID,
 				"command_name", evt.CommandName,
 				"duration", evt.Duration.String(),
 				// "result", evt.Reply.String(),
-			)
+			}
+
+			if options.slowThreshold > 0 && evt.Duration >= options.slowThreshold {
+				loggerHandler.WithContext(ctx).Warnw(kvs...)
+			} else {
+				loggerHandler.WithContext(ctx).Debugw(kvs...)
+			}
 		},
 	}
 }
