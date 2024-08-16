@@ -3,27 +3,27 @@ package mongopkg
 import (
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // Config ...
 type Config struct {
+	Debug             bool
+	AppName           string
 	Hosts             []string
 	Addr              string
-	AppName           string
-	MaxPoolSize       uint64
-	MinPoolSize       uint64
-	MaxConnecting     uint64
-	ConnectTimeout    time.Duration
-	HeartbeatInterval time.Duration
-	MaxConnIdleTime   time.Duration
-	Timeout           time.Duration
-	Debug             bool
+	MaxPoolSize       uint32
+	MinPoolSize       uint32
+	MaxConnecting     uint32
+	ConnectTimeout    *durationpb.Duration
+	Timeout           *durationpb.Duration
+	HeartbeatInterval *durationpb.Duration
+	MaxConnIdleTime   *durationpb.Duration
+	SlowThreshold     *durationpb.Duration
 }
 
 // NewMongoClient ...
@@ -36,29 +36,31 @@ func NewMongoClient(config *Config, logger log.Logger) (*mongo.Client, error) {
 	if config.AppName != "" {
 		clientOpt.SetAppName(config.AppName)
 	}
-	if config.ConnectTimeout > 0 {
-		clientOpt.SetConnectTimeout(config.ConnectTimeout)
+	if config.ConnectTimeout.AsDuration() > 0 {
+		clientOpt.SetConnectTimeout(config.ConnectTimeout.AsDuration())
 	}
-	if config.HeartbeatInterval > 0 {
-		clientOpt.SetHeartbeatInterval(config.HeartbeatInterval)
+	if config.HeartbeatInterval.AsDuration() > 0 {
+		clientOpt.SetHeartbeatInterval(config.HeartbeatInterval.AsDuration())
 	}
-	if config.MaxConnIdleTime > 0 {
-		clientOpt.SetMaxConnIdleTime(config.MaxConnIdleTime)
+	if config.MaxConnIdleTime.AsDuration() > 0 {
+		clientOpt.SetMaxConnIdleTime(config.MaxConnIdleTime.AsDuration())
 	}
-	if config.Timeout > 0 {
-		clientOpt.SetTimeout(config.Timeout)
+	if config.Timeout.AsDuration() > 0 {
+		clientOpt.SetTimeout(config.Timeout.AsDuration())
 	}
 	if config.MaxPoolSize > 0 {
-		clientOpt.SetMaxPoolSize(config.MaxPoolSize)
+		clientOpt.SetMaxPoolSize(uint64(config.MaxPoolSize))
 	}
 	if config.MinPoolSize > 0 {
-		clientOpt.SetMinPoolSize(config.MinPoolSize)
+		clientOpt.SetMinPoolSize(uint64(config.MinPoolSize))
 	}
 	if config.MaxConnecting > 0 {
-		clientOpt.SetMaxConnecting(config.MaxConnecting)
+		clientOpt.SetMaxConnecting(uint64(config.MaxConnecting))
 	}
+
+	// logger
 	if config.Debug {
-		clientOpt.SetMonitor(NewMonitor(logger))
+		clientOpt.SetMonitor(NewMonitor(logger, WithSlowThreshold(config.SlowThreshold.AsDuration())))
 	}
 
 	client, err := mongo.Connect(context.Background(), clientOpt)
