@@ -11,8 +11,8 @@ import (
 type TracerExporterType string
 
 const (
-	TracerExporterTypeUnknown TracerExporterType = "UNKNOWN"
-	TracerExporterTypeJaeger  TracerExporterType = "JAEGER"
+	TracerExporterTypeUnknown TracerExporterType = "unknown"
+	TracerExporterTypeJaeger  TracerExporterType = "jaeger"
 )
 
 // tracerOptions ...
