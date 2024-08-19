@@ -57,6 +57,9 @@ func NewHTTPExporter(conf *Config) (*otlptrace.Exporter, error) {
 	if conf.IsInsecure {
 		opts = append(opts, otlptracehttp.WithInsecure())
 	}
+	if conf.Timeout.AsDuration() > 0 {
+		opts = append(opts, otlptracehttp.WithTimeout(conf.Timeout.AsDuration()))
+	}
 	exp, err := otlptracehttp.New(context.Background(), opts...)
 	if err != nil {
 		err = fmt.Errorf("new http exporter error : %w", err)
@@ -71,6 +74,9 @@ func NewGRPCExporter(conf *Config) (*otlptrace.Exporter, error) {
 	}
 	if conf.IsInsecure {
 		opts = append(opts, otlptracegrpc.WithInsecure())
+	}
+	if conf.Timeout.AsDuration() > 0 {
+		opts = append(opts, otlptracegrpc.WithTimeout(conf.Timeout.AsDuration()))
 	}
 	exp, err := otlptracegrpc.New(context.Background(), opts...)
 	if err != nil {
