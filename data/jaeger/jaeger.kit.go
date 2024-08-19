@@ -22,10 +22,10 @@ type Config struct {
 	Kind              Kind
 	Addr              string
 	IsInsecure        bool
+	Timeout           *durationpb.Duration
 	WithHttpBasicAuth bool
 	Username          string
 	Password          string
-	Timeout           *durationpb.Duration
 }
 
 // NewJaegerExporter ...
