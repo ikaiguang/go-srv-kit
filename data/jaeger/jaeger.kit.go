@@ -1,73 +1,81 @@
 package jaegerpkg
 
 import (
+	"context"
 	"fmt"
-	stdhttp "net/http"
+	connectionpkg "github.com/ikaiguang/go-srv-kit/kit/connection"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+	"google.golang.org/protobuf/types/known/durationpb"
+)
 
-	"go.opentelemetry.io/otel/exporters/jaeger"
+type Kind string
+
+const (
+	KingHTTP Kind = "http"
+	KingGRPC Kind = "grpc"
 )
 
 // Config jaeger config
 type Config struct {
-	Endpoint          string
+	Kind              Kind
+	Addr              string
+	IsInsecure        bool
 	WithHttpBasicAuth bool
 	Username          string
 	Password          string
+	Timeout           *durationpb.Duration
 }
 
 // NewJaegerExporter ...
-func NewJaegerExporter(conf *Config, opts ...Option) (*jaeger.Exporter, error) {
+func NewJaegerExporter(conf *Config, opts ...Option) (*otlptrace.Exporter, error) {
 	return NewExporter(conf, opts...)
 }
 
 // NewExporter jaeger.Exporter
-func NewExporter(conf *Config, opts ...Option) (*jaeger.Exporter, error) {
-	var jaegerOptions []jaeger.CollectorEndpointOption
-	if conf.Endpoint != "" {
-		jaegerOptions = append(jaegerOptions, jaeger.WithEndpoint(conf.Endpoint))
-	}
-	if conf.WithHttpBasicAuth {
-		jaegerOptions = append(jaegerOptions, jaeger.WithUsername(conf.Username))
-		jaegerOptions = append(jaegerOptions, jaeger.WithPassword(conf.Password))
-	}
-
-	isValidConnection, err := checkConnection(conf)
+func NewExporter(conf *Config, opts ...Option) (*otlptrace.Exporter, error) {
+	isValidConnection, err := connectionpkg.CheckEndpointValidity(conf.Addr)
 	if err != nil {
-		err = fmt.Errorf("check connection error : %w", err)
+		err = fmt.Errorf("address error : %w", err)
 		return nil, err
 	}
 	if !isValidConnection {
-		err = fmt.Errorf("invalid jaeger endpoint")
+		err = fmt.Errorf("address error : invalid connection")
 		return nil, err
 	}
-
-	return jaeger.New(jaeger.WithCollectorEndpoint(jaegerOptions...))
+	if conf.Kind == KingHTTP {
+		return NewHTTPExporter(conf)
+	}
+	return NewGRPCExporter(conf)
 }
 
-// checkConnection 检查链接可用性
-func checkConnection(conf *Config) (isValid bool, err error) {
-	httpClient := stdhttp.Client{}
-	defer httpClient.CloseIdleConnections()
-	httpRequest, err := stdhttp.NewRequest(stdhttp.MethodPost, conf.Endpoint, nil)
+func NewHTTPExporter(conf *Config) (*otlptrace.Exporter, error) {
+	opts := []otlptracehttp.Option{
+		otlptracehttp.WithEndpoint(conf.Addr),
+	}
+	if conf.IsInsecure {
+		opts = append(opts, otlptracehttp.WithInsecure())
+	}
+	exp, err := otlptracehttp.New(context.Background(), opts...)
 	if err != nil {
-		return isValid, err
+		err = fmt.Errorf("new http exporter error : %w", err)
+		return nil, err
 	}
-	if conf.WithHttpBasicAuth {
-		httpRequest.SetBasicAuth(conf.Username, conf.Password)
-	}
-	httpResp, err := httpClient.Do(httpRequest)
-	if err != nil {
-		return isValid, err
-	}
-	defer func() { _ = httpResp.Body.Close() }()
+	return exp, nil
+}
 
-	// 有效的链接
-	isValid = true
-	//httpBodyBytes, err := ioutil.ReadAll(httpResp.Body)
-	//if err != nil {
-	//	return isValid, err
-	//}
-	//_ = httpResp.StatusCode
-	//_ = httpBodyBytes
-	return isValid, err
+func NewGRPCExporter(conf *Config) (*otlptrace.Exporter, error) {
+	opts := []otlptracegrpc.Option{
+		otlptracegrpc.WithEndpoint(conf.Addr),
+	}
+	if conf.IsInsecure {
+		opts = append(opts, otlptracegrpc.WithInsecure())
+	}
+	exp, err := otlptracegrpc.New(context.Background(), opts...)
+	if err != nil {
+		err = fmt.Errorf("new grpc exporter error : %w", err)
+		return nil, err
+	}
+	return exp, nil
 }
