@@ -1,6 +1,7 @@
 package gormpkg
 
 import (
+	"context"
 	"database/sql"
 	"gorm.io/gorm"
 	"regexp"
@@ -23,6 +24,7 @@ func Transaction(dbConn *gorm.DB, fc func(tx *gorm.DB) error, opts ...*sql.TxOpt
 }
 
 type TransactionInstance interface {
+	Do(ctx context.Context, fc func(context.Context, *gorm.DB) error) error
 	Rollback() error
 	Commit() error
 }
@@ -43,4 +45,8 @@ func (s *transaction) Rollback() error {
 
 func (s *transaction) Commit() error {
 	return s.tx.Commit().Error
+}
+
+func (s *transaction) Do(ctx context.Context, fc func(context.Context, *gorm.DB) error) error {
+	return fc(ctx, s.tx)
 }
