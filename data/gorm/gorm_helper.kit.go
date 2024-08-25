@@ -1,7 +1,6 @@
 package gormpkg
 
 import (
-	stderrors "errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -41,11 +40,6 @@ type ModelForPostgres struct {
 	UpdatedTime time.Time `gorm:"column:updated_time;type:time;not null;default:current_timestamp;comment:更新时间" json:"updated_time"`
 	IsDeleted   bool      `gorm:"column:is_deleted;type:uint;default:0;comment:是否已删除" json:"is_deleted"`
 	DeletedTime time.Time `gorm:"column:deleted_time;type:time;comment:删除时间" json:"deleted_time"`
-}
-
-// IsErrRecordNotFound ...
-func IsErrRecordNotFound(err error) bool {
-	return stderrors.Is(err, gorm.ErrRecordNotFound)
 }
 
 // QueryUndeletedData 未删除的数据
