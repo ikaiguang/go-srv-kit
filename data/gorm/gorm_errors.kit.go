@@ -1,7 +1,6 @@
 package gormpkg
 
 import (
-	"errors"
 	stderrors "errors"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -19,7 +18,7 @@ func IsErrDuplicatedKey(err error) bool {
 	if err == nil {
 		return false
 	}
-	if errors.Is(err, gorm.ErrDuplicatedKey) {
+	if stderrors.Is(err, gorm.ErrDuplicatedKey) {
 		return true
 	}
 	var pgErr *pgconn.PgError
