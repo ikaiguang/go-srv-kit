@@ -24,7 +24,7 @@ func ExecWithTransaction(dbConn *gorm.DB, fc func(tx *gorm.DB) error, opts ...*s
 }
 
 type TransactionInterface interface {
-	Do(ctx context.Context, fc func(context.Context, *gorm.DB) error) error
+	Do(ctx context.Context, fc func(ctx2 context.Context, tx *gorm.DB) error) error
 	Commit(ctx context.Context) error
 	Rollback(ctx context.Context) error
 	CommitAndErrRollback(ctx context.Context, resultErr error) (err error)
@@ -40,7 +40,7 @@ type transaction struct {
 	tx *gorm.DB
 }
 
-func (s *transaction) Do(ctx context.Context, fc func(context.Context, *gorm.DB) error) error {
+func (s *transaction) Do(ctx context.Context, fc func(ctx2 context.Context, tx *gorm.DB) error) error {
 	return fc(ctx, s.tx)
 }
 
