@@ -28,7 +28,7 @@ type TransactionInstance interface {
 	Do(ctx context.Context, fc func(context.Context, *gorm.DB) error) error
 	Commit(ctx context.Context) error
 	Rollback(ctx context.Context) error
-	CommitAndErrRollback(ctx context.Context) (err error)
+	CommitAndErrRollback(ctx context.Context, resultErr error) (err error)
 }
 
 func NewTransaction(ctx context.Context, db *gorm.DB, opts ...*sql.TxOptions) TransactionInstance {
@@ -53,7 +53,7 @@ func (s *transaction) Rollback(ctx context.Context) error {
 	return s.tx.WithContext(ctx).Rollback().Error
 }
 
-func (s *transaction) CommitAndErrRollback(ctx context.Context) (err error) {
+func (s *transaction) CommitAndErrRollback(ctx context.Context, resultErr error) (err error) {
 	defer func() {
 		if err != nil {
 			rollbackErr := s.Rollback(ctx)
@@ -62,6 +62,10 @@ func (s *transaction) CommitAndErrRollback(ctx context.Context) (err error) {
 			}
 		}
 	}()
+	if resultErr != nil {
+		err = resultErr
+		return err
+	}
 	err = s.Commit(ctx)
 	if err != nil {
 		return err
