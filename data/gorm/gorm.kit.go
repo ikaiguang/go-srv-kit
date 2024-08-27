@@ -25,12 +25,12 @@ func Transaction(dbConn *gorm.DB, fc func(tx *gorm.DB) error, opts ...*sql.TxOpt
 
 type TransactionInstance interface {
 	Do(ctx context.Context, fc func(context.Context, *gorm.DB) error) error
-	Rollback() error
-	Commit() error
+	Rollback(ctx context.Context) error
+	Commit(ctx context.Context) error
 }
 
-func NewTransaction(db *gorm.DB, opts ...*sql.TxOptions) TransactionInstance {
-	tx := db.Begin(opts...)
+func NewTransaction(ctx context.Context, db *gorm.DB, opts ...*sql.TxOptions) TransactionInstance {
+	tx := db.WithContext(ctx).Begin(opts...)
 
 	return &transaction{tx: tx}
 }
@@ -39,12 +39,12 @@ type transaction struct {
 	tx *gorm.DB
 }
 
-func (s *transaction) Rollback() error {
-	return s.tx.Rollback().Error
+func (s *transaction) Rollback(ctx context.Context) error {
+	return s.tx.WithContext(ctx).Rollback().Error
 }
 
-func (s *transaction) Commit() error {
-	return s.tx.Commit().Error
+func (s *transaction) Commit(ctx context.Context) error {
+	return s.tx.WithContext(ctx).Commit().Error
 }
 
 func (s *transaction) Do(ctx context.Context, fc func(context.Context, *gorm.DB) error) error {
