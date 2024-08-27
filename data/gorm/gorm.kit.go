@@ -9,29 +9,28 @@ import (
 )
 
 var (
-	// regColumn 正则表达式:列
-	regColumn = regexp.MustCompile("^[A-Za-z-_]+$")
+	isValidColumnNameRegex = regexp.MustCompile("^[A-Za-z-_]+$") // 正则表达式:列
 )
 
-// IsValidField 判断是否为有效的字段名
-func IsValidField(field string) bool {
-	return regColumn.MatchString(field)
+// IsValidColumnName 判断是否为有效的字段名
+func IsValidColumnName(field string) bool {
+	return isValidColumnNameRegex.MatchString(field)
 }
 
-// Transaction 在事务中执行一系列操作; 无需手动开启事务
+// ExecWithTransaction 在事务中执行一系列操作; 无需手动开启事务
 // DOCS: https://gorm.io/zh_CN/docs/transactions.html
-func Transaction(dbConn *gorm.DB, fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error) {
+func ExecWithTransaction(dbConn *gorm.DB, fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error) {
 	return dbConn.Transaction(fc, opts...)
 }
 
-type TransactionInstance interface {
+type TransactionInterface interface {
 	Do(ctx context.Context, fc func(context.Context, *gorm.DB) error) error
 	Commit(ctx context.Context) error
 	Rollback(ctx context.Context) error
 	CommitAndErrRollback(ctx context.Context, resultErr error) (err error)
 }
 
-func NewTransaction(ctx context.Context, db *gorm.DB, opts ...*sql.TxOptions) TransactionInstance {
+func NewTransaction(ctx context.Context, db *gorm.DB, opts ...*sql.TxOptions) TransactionInterface {
 	tx := db.WithContext(ctx).Begin(opts...)
 
 	return &transaction{tx: tx}

@@ -45,7 +45,7 @@ func AssembleOrders(db *gorm.DB, orders []*Order) *gorm.DB {
 
 	for i := range orders {
 		column := orders[i].Field
-		if !IsValidField(column) {
+		if !IsValidColumnName(column) {
 			//column = DefaultOrderColumn
 			column = "bad_order_from_invalid_column"
 			if db.Logger != nil {

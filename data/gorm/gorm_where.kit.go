@@ -39,7 +39,7 @@ func AssembleWheres(db *gorm.DB, wheres []*Where) *gorm.DB {
 	}
 	for i := range wheres {
 		column := wheres[i].Field
-		if !IsValidField(column) {
+		if !IsValidColumnName(column) {
 			//column = DefaultOrderColumn
 			column = "bad_where_from_invalid_column"
 			if db.Logger != nil {
