@@ -2,17 +2,27 @@ package errorpkg
 
 import (
 	"fmt"
-	"io"
 	"strconv"
 
 	"github.com/go-kratos/kratos/v2/errors"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 const (
 	EnumMetadataKey = "reason"
 	EnumErrorKey    = "with_error"
 )
+
+func Kvs(e *errors.Error, kvs ...string) {
+	if e.Metadata == nil {
+		e.Metadata = make(map[string]string)
+	}
+	if len(kvs)%2 != 0 {
+		kvs = append(kvs, "KEYVALS UNPAIRED")
+	}
+	for i := 0; i < len(kvs); i += 2 {
+		e.Metadata[kvs[i]] = kvs[i+1]
+	}
+}
 
 // WithStack returns an error
 func WithStack(e *errors.Error) *Error {
@@ -45,7 +55,7 @@ func WrapKvs(e *errors.Error, kvs ...string) *Error {
 		kvs = append(kvs, "KEYVALS UNPAIRED")
 	}
 	for i := 0; i < len(kvs); i += 2 {
-		e.Metadata[fmt.Sprint(kvs[i])] = fmt.Sprint(kvs[i+1])
+		e.Metadata[kvs[i]] = kvs[i+1]
 	}
 	return &Error{
 		status: &status{Error: e},
@@ -139,120 +149,4 @@ func errorMetadata(metadata map[string]string, eSlice []error) map[string]string
 		}
 	}
 	return metadata
-}
-
-type status struct {
-	*errors.Error
-}
-
-// Error ...
-type Error struct {
-	*status
-	stack *stack
-}
-
-func (e *Error) Error() string {
-	if e.status == nil || e.status.Error == nil {
-		return ""
-	}
-	return e.status.Error.Error()
-}
-
-func (e *Error) Message() string {
-	return e.Error()
-}
-
-func (e *Error) Cause() error {
-	return e.status.Error
-}
-
-func (e *Error) GetCode() int32 {
-	return e.status.Code
-}
-
-func (e *Error) GetReason() string {
-	return e.status.Reason
-}
-
-func (e *Error) GetMessage() string {
-	return e.status.Message
-}
-
-func (e *Error) GetMetadata() map[string]string {
-	return e.status.Metadata
-}
-
-func (e *Error) GetMetadataReason() string {
-	if e.status.Metadata == nil {
-		return ""
-	}
-	if v, ok := e.status.Metadata[EnumMetadataKey]; ok {
-		return v
-	}
-	return ""
-}
-
-func (e *Error) Format(s fmt.State, verb rune) {
-	switch verb {
-	case 'v':
-		if s.Flag('+') {
-			_, _ = io.WriteString(s, e.Message())
-			if e.stack != nil {
-				e.stack.Format(s, verb)
-			}
-			return
-		}
-		fallthrough
-	case 's':
-		_, _ = io.WriteString(s, e.Message())
-	case 'q':
-		_, _ = fmt.Fprintf(s, "%q", e.Message())
-	}
-}
-
-// StackTrace ...
-func (e *Error) StackTrace() StackTrace {
-	if e.stack == nil {
-		return nil
-	}
-	return e.stack.StackTrace()
-}
-
-type Enum interface {
-	String() string
-	Number() protoreflect.EnumNumber
-	HTTPCode() int
-}
-
-func Err(e Enum, msg string) *Error {
-	return NewWithMetadata(
-		e.HTTPCode(),
-		e.String(),
-		msg,
-		map[string]string{EnumMetadataKey: strconv.Itoa(int(e.Number()))},
-	)
-}
-
-func Errf(e Enum, format string, a ...interface{}) *Error {
-	return NewWithMetadata(
-		e.HTTPCode(),
-		e.String(),
-		fmt.Sprintf(format, a...),
-		map[string]string{EnumMetadataKey: strconv.Itoa(int(e.Number()))},
-	)
-}
-
-// ErrWithMetadata ...
-func ErrWithMetadata(enum Enum, message string, md map[string]string) *Error {
-	e := errors.New(enum.HTTPCode(), enum.String(), message)
-	e.Metadata = md
-	if md != nil {
-		if _, ok := md[EnumMetadataKey]; !ok {
-			md[EnumMetadataKey] = strconv.Itoa(int(enum.Number()))
-		}
-	}
-	return &Error{
-		status: &status{Error: e},
-		stack:  callers(),
-	}
 }
