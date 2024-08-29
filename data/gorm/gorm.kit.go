@@ -53,6 +53,9 @@ func (s *transaction) Rollback(ctx context.Context) error {
 }
 
 func (s *transaction) CommitAndErrRollback(ctx context.Context, resultErr error) (err error) {
+	if resultErr != nil {
+		return s.Rollback(ctx)
+	}
 	defer func() {
 		if err != nil {
 			rollbackErr := s.Rollback(ctx)
@@ -61,10 +64,6 @@ func (s *transaction) CommitAndErrRollback(ctx context.Context, resultErr error)
 			}
 		}
 	}()
-	if resultErr != nil {
-		err = resultErr
-		return err
-	}
 	err = s.Commit(ctx)
 	if err != nil {
 		return err
