@@ -1,58 +1,70 @@
 package jaegerpkg
 
 import (
-	"io/ioutil"
-	stdhttp "net/http"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"testing"
-
-	"github.com/stretchr/testify/require"
+	"time"
 )
 
 // go test -v ./data/jaeger/ -count=1 -test.run=TestNewJaegerExporter_Xxx
-// jaeger.kit_test.go:51: ==> httpResp StatusCode : 400
-// jaeger.kit_test.go:55: ==> httpResp Body : Cannot parse content type: mime: no media type
 func TestNewJaegerExporter_Xxx(t *testing.T) {
-	var tests = []struct {
-		name string
+	type args struct {
 		conf *Config
+		opts []Option
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *otlptrace.Exporter
+		wantErr bool
 	}{
 		{
-			name: "#WithHttpBasicAuth:NO",
-			conf: &Config{
-				Endpoint: "http://127.0.0.1:14268/api/traces",
+			name: "#NewJaegerExporter_GRPC",
+			args: args{
+				conf: &Config{
+					Kind:              KingGRPC,
+					Addr:              "my-jaeger-hostname:4317",
+					IsInsecure:        true,
+					Timeout:           durationpb.New(time.Second * 30),
+					WithHttpBasicAuth: false,
+					Username:          "",
+					Password:          "",
+				},
+				opts: nil,
 			},
+			want:    nil,
+			wantErr: false,
 		},
 		{
-			name: "#WithHttpBasicAuth:YES",
-			conf: &Config{
-				Endpoint:          "http://127.0.0.1:14268/api/traces",
-				WithHttpBasicAuth: true,
-				Username:          "ikaiguang",
-				Password:          "123456",
+			name: "#NewJaegerExporter_HTTP",
+			args: args{
+				conf: &Config{
+					Kind:              KingGRPC,
+					Addr:              "my-jaeger-hostname:4318",
+					IsInsecure:        true,
+					Timeout:           durationpb.New(time.Second * 30),
+					WithHttpBasicAuth: false,
+					Username:          "",
+					Password:          "",
+				},
+				opts: nil,
 			},
+			want:    nil,
+			wantErr: false,
 		},
 	}
-
-	for _, v := range tests {
-		t.Run(v.name, func(t *testing.T) {
-			httpClient := stdhttp.Client{}
-			httpURL := v.conf.Endpoint
-			httpRequest, err := stdhttp.NewRequest(stdhttp.MethodPost, httpURL, nil)
-			require.Nil(t, err)
-			if v.conf.WithHttpBasicAuth {
-				httpRequest.SetBasicAuth(v.conf.Username, v.conf.Password)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewJaegerExporter(tt.args.conf, tt.args.opts...)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewJaegerExporter() error = %+v, wantErr %v", err, tt.wantErr)
+				return
 			}
-			httpResp, err := httpClient.Do(httpRequest)
-			if err != nil {
-				t.Error("==> httpClient.Do(httpRequest) error :", err.Error())
-			}
-			require.Nil(t, err)
-			t.Log("==> httpResp StatusCode :", httpResp.StatusCode)
-			defer func() { _ = httpResp.Body.Close() }()
-			httpBodyBytes, err := ioutil.ReadAll(httpResp.Body)
-			require.Nil(t, err)
-			t.Log("==> httpResp Body :", string(httpBodyBytes))
-
+			//if !reflect.DeepEqual(got, tt.want) {
+			//	t.Errorf("NewJaegerExporter() got = %v, want %v", got, tt.want)
+			//}
+			t.Logf("==> got: %#v\n", got)
 		})
 	}
 }

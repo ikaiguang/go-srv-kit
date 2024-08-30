@@ -25,6 +25,9 @@ func IsWebSocketConn(r *http.Request) bool {
 
 // CheckEndpointValidity ...
 func CheckEndpointValidity(endpoint string) (bool, error) {
+	if !strings.Contains(endpoint, "://") && !strings.HasPrefix(endpoint, "//") {
+		endpoint = "//" + endpoint
+	}
 	u, err := url.Parse(endpoint)
 	if err != nil {
 		return false, err
