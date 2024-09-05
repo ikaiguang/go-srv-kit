@@ -18,7 +18,7 @@ require (
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/redis/go-redis/v9 v9.6.1
-	github.com/rs/xid v1.5.0
+	github.com/rs/xid v1.6.0
 	github.com/sony/sonyflake v1.2.0
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/sjson v1.2.5
