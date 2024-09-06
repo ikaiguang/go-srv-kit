@@ -51,7 +51,7 @@ func (e *Error) GetMetadataReason() string {
 	if e.status.Metadata == nil {
 		return ""
 	}
-	if v, ok := e.status.Metadata[EnumMetadataKey]; ok {
+	if v, ok := e.status.Metadata[EnumMDReasonKey]; ok {
 		return v
 	}
 	return ""

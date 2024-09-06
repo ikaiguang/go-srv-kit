@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	EnumMetadataKey = "reason"
-	EnumErrorKey    = "with_error"
+	EnumMDReasonKey = "reason" // 错误代码；例：100000001
+	EnumMDCauseKey  = "cause"  // 错误原因；例：链接错误
+	EnumMDErrorKey  = "error"  // 具体错误；例：db error
 )
 
 func FormatError(err error) *Error {
@@ -145,10 +146,10 @@ func errorMetadata(metadata map[string]string, eSlice []error) map[string]string
 	}
 
 	var (
-		errorKey = EnumErrorKey
+		errorKey = EnumMDErrorKey
 	)
 	for i := range eSlice {
-		key := errorKey + "." + strconv.Itoa(i+1)
+		key := errorKey + "." + strconv.Itoa(i)
 		if eSlice[i] == nil {
 			metadata[key] = "nil"
 		} else {

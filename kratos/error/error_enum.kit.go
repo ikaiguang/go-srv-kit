@@ -18,7 +18,7 @@ func Err(e Enum, msg string) *Error {
 		e.HTTPCode(),
 		e.String(),
 		msg,
-		map[string]string{EnumMetadataKey: strconv.Itoa(int(e.Number()))},
+		map[string]string{EnumMDReasonKey: strconv.Itoa(int(e.Number()))},
 	)
 }
 
@@ -27,7 +27,7 @@ func Errf(e Enum, format string, a ...interface{}) *Error {
 		e.HTTPCode(),
 		e.String(),
 		fmt.Sprintf(format, a...),
-		map[string]string{EnumMetadataKey: strconv.Itoa(int(e.Number()))},
+		map[string]string{EnumMDReasonKey: strconv.Itoa(int(e.Number()))},
 	)
 }
 
@@ -36,8 +36,8 @@ func ErrWithMetadata(enum Enum, message string, md map[string]string) *Error {
 	e := errors.New(enum.HTTPCode(), enum.String(), message)
 	e.Metadata = md
 	if md != nil {
-		if _, ok := md[EnumMetadataKey]; !ok {
-			md[EnumMetadataKey] = strconv.Itoa(int(enum.Number()))
+		if _, ok := md[EnumMDReasonKey]; !ok {
+			md[EnumMDReasonKey] = strconv.Itoa(int(enum.Number()))
 		}
 	}
 	return &Error{

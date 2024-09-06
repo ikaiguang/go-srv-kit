@@ -2,6 +2,7 @@ package errorpkg
 
 import (
 	"runtime"
+	"strconv"
 
 	"github.com/go-kratos/kratos/v2/errors"
 )
@@ -32,10 +33,30 @@ func Is(err, target error) bool {
 	if err == nil {
 		return false
 	}
-	errCause := FromError(err)
-	targetCause := FromError(target)
+	srcErr := FromError(err)
+	targetErr := FromError(target)
 
-	return errors.Is(errCause, targetCause)
+	return errors.Is(srcErr, targetErr)
+}
+
+func IsCustomError(err error, enum Enum) bool {
+	if err == nil {
+		return false
+	}
+	srcErr := FromError(err)
+	if srcErr.Reason != enum.String() {
+		return false
+	}
+	if srcErr.Metadata != nil {
+		codeStr, ok := srcErr.Metadata[EnumMDReasonKey]
+		if ok {
+			codeNum, codeErr := strconv.Atoi(codeStr)
+			if codeErr == nil {
+				return codeNum == int(enum.Number())
+			}
+		}
+	}
+	return true
 }
 
 // IsCode .
