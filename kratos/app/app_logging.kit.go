@@ -234,13 +234,15 @@ type RequestInfoForClient struct {
 	Kind      string        `json:"kind"`
 	Component string        `json:"component"`
 	Latency   time.Duration `json:"latency"`
+	ClientIP  string        `json:"client_ip"`
 }
 
 func (s *RequestInfoForClient) String() string {
 	res := `{`
 	res += `"kind":"` + s.Kind + `",`
 	res += `"component":"` + s.Component + `",`
-	res += `"latency":"` + s.Latency.String() + `"`
+	res += `"latency":"` + s.Latency.String() + `",`
+	res += `"client_ip":"` + s.ClientIP + `"`
 	res += `}`
 
 	return res
@@ -261,10 +263,11 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 
 			// 请求信息
 			operationInfo := &OperationInfo{}
-			if info, ok := transport.FromClientContext(ctx); ok {
-				kind = info.Kind().String()
-				operationInfo.Method = info.Kind().String()
-				operationInfo.Operation = info.Operation()
+			tr, ok := transport.FromClientContext(ctx)
+			if ok {
+				kind = tr.Kind().String()
+				operationInfo.Method = tr.Kind().String()
+				operationInfo.Operation = tr.Operation()
 			}
 
 			// 请求参数
@@ -279,6 +282,19 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 				Kind:      "client",
 				Component: kind,
 				Latency:   time.Since(startTime),
+			}
+
+			// request
+			if httpTr, isHTTP := tr.(http.Transporter); isHTTP {
+				operationInfo.Method = httpTr.Request().Method
+				operationInfo.Operation = httpTr.Request().URL.String()
+				if headerpkg.GetIsWebsocket(httpTr.Request().Header) {
+					operationInfo.Method = "WS"
+				}
+				//requestInfo.ClientIP = contextpkg.ClientIPFromHTTP(ctx, httpTr.Request())
+			} else if _, isGRPC := tr.(*grpc.Transport); isGRPC {
+				operationInfo.Method = "GRPC"
+				//requestInfo.ClientIP = contextpkg.ClientIPFromGRPC(ctx)
 			}
 
 			// log
