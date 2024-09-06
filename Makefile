@@ -80,11 +80,11 @@ init:
 # ===== include =====
 
 # api
-include api/makefile_protoc.mk
-include api/ping/makefile_protoc.mk
-include api/ping/v1/makefile_protoc.mk
-include api/testdata/makefile_protoc.mk
-include api/testdata/v1/makefile_protoc.mk
+#include api/makefile_protoc.mk
+#include api/ping/makefile_protoc.mk
+#include api/ping/v1/makefile_protoc.mk
+#include api/testdata/makefile_protoc.mk
+#include api/testdata/v1/makefile_protoc.mk
 
 # ===== include =====
 # ===== include =====

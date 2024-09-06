@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -37,7 +38,7 @@ func main() {
 		fmt.Println("==> 请添加启动参数：-path")
 		return
 	}
-	_, _ = debugpkg.Setup()
+	debugpkg.Setup(log.DefaultLogger)
 
 	var dirs = []string{
 		*protoPath,

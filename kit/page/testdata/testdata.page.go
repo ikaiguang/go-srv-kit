@@ -1,21 +1,21 @@
 package pagetestdata
 
 import (
-	pagev1 "github.com/ikaiguang/go-srv-kit/api/page"
+	pagepkg "github.com/ikaiguang/go-srv-kit/kit/page"
 )
 
 // UserListReq 用户列表请求
 type UserListReq struct {
 	UserID      int64
-	PageRequest *pagev1.PageRequest
-	//CursorRequest *pagev1.CursorRequest
+	PageRequest *pagepkg.PageRequest
+	//CursorRequest *pagepkg.CursorRequest
 }
 
 // UserListResp 用户列表响应
 type UserListResp struct {
 	Data        []*User
-	PageRequest *pagev1.PageResponse
-	//CursorRequest *pagev1.CursorResponse
+	PageRequest *pagepkg.PageResponse
+	//CursorRequest *pagepkg.CursorResponse
 }
 
 // User 用户
