@@ -49,14 +49,13 @@ func IsCustomError(err error, enum Enum) bool {
 	}
 	if srcErr.Metadata != nil {
 		codeStr, ok := srcErr.Metadata[EnumMDReasonKey]
-		if ok {
-			codeNum, codeErr := strconv.Atoi(codeStr)
-			if codeErr == nil {
-				return codeNum == int(enum.Number())
-			}
+		if !ok {
+			return false
 		}
+		codeNum, codeErr := strconv.Atoi(codeStr)
+		return codeErr == nil && codeNum == int(enum.Number())
 	}
-	return true
+	return false
 }
 
 // IsCode .
