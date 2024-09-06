@@ -12,15 +12,14 @@ const (
 	EnumErrorKey    = "with_error"
 )
 
-func Kvs(e *errors.Error, kvs ...string) {
-	if e.Metadata == nil {
-		e.Metadata = make(map[string]string)
+func FormatError(err error) *Error {
+	if err == nil {
+		return nil
 	}
-	if len(kvs)%2 != 0 {
-		kvs = append(kvs, "KEYVALS UNPAIRED")
-	}
-	for i := 0; i < len(kvs); i += 2 {
-		e.Metadata[kvs[i]] = kvs[i+1]
+	e := FromError(err)
+	return &Error{
+		status: &status{Error: e},
+		stack:  callers(),
 	}
 }
 
@@ -48,15 +47,7 @@ func WrapKvs(e *errors.Error, kvs ...string) *Error {
 	if e == nil {
 		return nil
 	}
-	if e.Metadata == nil {
-		e.Metadata = make(map[string]string)
-	}
-	if len(kvs)%2 != 0 {
-		kvs = append(kvs, "KEYVALS UNPAIRED")
-	}
-	for i := 0; i < len(kvs); i += 2 {
-		e.Metadata[kvs[i]] = kvs[i+1]
-	}
+	WithKvs(e)
 	return &Error{
 		status: &status{Error: e},
 		stack:  callers(),
@@ -118,6 +109,22 @@ func WrapWithMetadata(e *errors.Error, md map[string]string) error {
 	return &Error{
 		status: &status{Error: e},
 		stack:  callers(),
+	}
+}
+
+func WithKvs(e *errors.Error, kvs ...string) {
+	Kvs(e, kvs...)
+}
+
+func Kvs(e *errors.Error, kvs ...string) {
+	if e.Metadata == nil {
+		e.Metadata = make(map[string]string)
+	}
+	if len(kvs)%2 != 0 {
+		kvs = append(kvs, "KEYVALS UNPAIRED")
+	}
+	for i := 0; i < len(kvs); i += 2 {
+		e.Metadata[kvs[i]] = kvs[i+1]
 	}
 }
 
