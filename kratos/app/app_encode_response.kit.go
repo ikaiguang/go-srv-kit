@@ -66,7 +66,11 @@ func ErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err erro
 	//if !IsDebugMode() {
 	//	se.Metadata = nil
 	//}
-	w.WriteHeader(int(se.Code))
+	if se.Code < _minInfoLevelCode {
+		w.WriteHeader(int(se.Code))
+	} else {
+		w.WriteHeader(stdhttp.StatusBadRequest)
+	}
 	_, _ = w.Write(body)
 }
 

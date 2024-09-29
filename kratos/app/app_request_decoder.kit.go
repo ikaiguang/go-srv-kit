@@ -17,13 +17,15 @@ var (
 )
 
 const (
-	codecNameMultipartForm = "form-data" // 表单提交
-	DefaultUploadMaxSize   = 20 << 20    // 20M
+	CodecNameMultipartForm = "form-data"    // 表单提交
+	CodecNameOctetStream   = "octet-stream" // 字节流
+	DefaultUploadMaxSize   = 20 << 20       // 20M
 )
 
 // RegisterCodec ...
 func RegisterCodec() {
 	encoding.RegisterCodec(&multipartForm{})
+	encoding.RegisterCodec(&octetStream{})
 }
 
 // RequestDecoder ...
@@ -38,11 +40,11 @@ func RequestDecoder(r *http.Request, v interface{}) error {
 	codec, ok := http.CodecForRequest(r, headerpkg.ContentType)
 	if !ok {
 		msg := fmt.Sprintf("[CODEC] unregister Content-Type: %s", r.Header.Get(headerpkg.ContentType))
-		e := errorpkg.ErrorInvalidParameter(msg)
+		e := errorpkg.ErrorBadRequest(msg)
 		return errorpkg.WithStack(e)
 	}
 	// 不解析 multipart/form-data : encoding.RegisterCodec(&multipartForm{})
-	if codec.Name() == codecNameMultipartForm {
+	if codec.Name() == CodecNameMultipartForm {
 		return nil
 	}
 
@@ -92,14 +94,25 @@ func ContentSubtype(contentType string) string {
 // multipartForm multipart/form-data headerpkg.ContentTypeMultipartForm
 type multipartForm struct{}
 
+func (f *multipartForm) Name() string {
+	return CodecNameMultipartForm
+}
+
 func (f *multipartForm) Marshal(v interface{}) ([]byte, error) {
 	return nil, nil
 }
-
 func (f *multipartForm) Unmarshal(data []byte, v interface{}) error {
 	return nil
 }
 
-func (f *multipartForm) Name() string {
-	return codecNameMultipartForm
+type octetStream struct{}
+
+func (s *octetStream) Name() string {
+	return CodecNameOctetStream
+}
+func (s *octetStream) Marshal(v interface{}) ([]byte, error) {
+	return nil, nil
+}
+func (s *octetStream) Unmarshal(data []byte, v interface{}) error {
+	return nil
 }
