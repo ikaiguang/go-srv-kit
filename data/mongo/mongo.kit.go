@@ -12,7 +12,6 @@ import (
 
 // Config ...
 type Config struct {
-	Debug             bool
 	AppName           string
 	Hosts             []string
 	Addr              string
@@ -24,6 +23,9 @@ type Config struct {
 	HeartbeatInterval *durationpb.Duration
 	MaxConnIdleTime   *durationpb.Duration
 	SlowThreshold     *durationpb.Duration
+
+	// Debug Deprecated
+	Debug bool
 }
 
 // NewMongoClient ...
@@ -59,9 +61,7 @@ func NewMongoClient(config *Config, logger log.Logger) (*mongo.Client, error) {
 	}
 
 	// logger
-	if config.Debug {
-		clientOpt.SetMonitor(NewMonitor(logger, WithSlowThreshold(config.SlowThreshold.AsDuration())))
-	}
+	clientOpt.SetMonitor(NewMonitor(logger, WithSlowThreshold(config.SlowThreshold.AsDuration())))
 
 	client, err := mongo.Connect(context.Background(), clientOpt)
 	if err != nil {

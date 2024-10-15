@@ -29,7 +29,7 @@ func NewMonitor(logger log.Logger, opts ...MonitorOption) *event.CommandMonitor 
 	loggerHandler := log.NewHelper(log.With(logger, "module", "mongo-driver-monitor"))
 	return &event.CommandMonitor{
 		Started: func(ctx context.Context, evt *event.CommandStartedEvent) {
-			loggerHandler.WithContext(ctx).Debugw(
+			loggerHandler.WithContext(ctx).Infow(
 				"request_id", evt.RequestID,
 				"database", evt.DatabaseName,
 				"command_name", evt.CommandName,
