@@ -39,9 +39,10 @@ func NewMonitor(logger log.Logger, opts ...MonitorOption) *event.CommandMonitor 
 		Succeeded: func(ctx context.Context, evt *event.CommandSucceededEvent) {
 			kvs := []interface{}{
 				"request_id", evt.RequestID,
+				"database", evt.DatabaseName,
 				"command_name", evt.CommandName,
 				"duration", evt.Duration.String(),
-				// "result", evt.Reply.String(),
+				//"result", evt.Reply.String(),
 			}
 
 			if options.slowThreshold > 0 && evt.Duration >= options.slowThreshold {
@@ -49,6 +50,15 @@ func NewMonitor(logger log.Logger, opts ...MonitorOption) *event.CommandMonitor 
 			} else {
 				loggerHandler.WithContext(ctx).Debugw(kvs...)
 			}
+		},
+		Failed: func(ctx context.Context, evt *event.CommandFailedEvent) {
+			loggerHandler.WithContext(ctx).Warnw(
+				"request_id", evt.RequestID,
+				"database", evt.DatabaseName,
+				"command_name", evt.CommandName,
+				"duration", evt.Duration.String(),
+				"error", evt.Failure,
+			)
 		},
 	}
 }
