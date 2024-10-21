@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package saas.api.kit.configs;
+
+option go_package           = "github.com/go-micro-saas/go-srv-kit/api/config;configpb";
+option java_multiple_files  = true;
+option java_package         = "saas.api.kit.configs";
+option java_outer_classname = "SaasApiKitConfigs";
+
+message TestingConfig {
+  message Testdata {
+    string key   = 1;
+    string value = 2;
+  }
+  Testdata testdata = 1;
+}
