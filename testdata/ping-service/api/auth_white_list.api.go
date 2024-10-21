@@ -1,8 +1,8 @@
 package pingapi
 
 import (
-	middlewareutil "github.com/go-micro-saas/go-srv-kit/middleware"
-	pingservicev1 "github.com/go-micro-saas/go-srv-kit/testdata/ping-service/api/ping-service/v1/services"
+	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
+	pingservicev1 "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service/v1/services"
 )
 
 // GetAuthWhiteList 验证白名单

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kit.api.configs;
 
-option go_package           = "github.com/go-micro-saas/go-srv-kit/api/config;configpb";
+option go_package           = "github.com/ikaiguang/go-srv-kit/api/config;configpb";
 option java_multiple_files  = true;
 option java_package         = "kit.api.configs";
 option java_outer_classname = "KitApiConfigs";

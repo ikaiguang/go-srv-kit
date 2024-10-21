@@ -11,7 +11,6 @@ require (
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20240902085548-6963a8a438be
 	github.com/go-kratos/kratos/contrib/registry/etcd/v2 v2.0.0-20240902085548-6963a8a438be
 	github.com/go-kratos/kratos/v2 v2.8.1
-	github.com/go-micro-saas/service-kit v0.0.25
 	github.com/go-redsync/redsync/v4 v4.12.1
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1

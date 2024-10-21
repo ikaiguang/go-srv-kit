@@ -9,7 +9,7 @@ run-ping-service:
 # run service :-->: run ping-service
 run-service:
 	#@$(MAKE) run-ping-service
-	go run ./testdata/ping-service/cmd/... -conf=./testdata/ping-service/configs
+	go run ./testdata/ping-service/cmd/ping-service/... -conf=./testdata/ping-service/configs
 
 .PHONY: testing-ping-service
 # testing service :-->: testing ping-service

@@ -1,7 +1,7 @@
 package configutil
 
 import (
-	configpb "github.com/go-micro-saas/service-kit/api/config"
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"os"
 	"testing"
 )
@@ -46,14 +46,13 @@ func TestLoading_Config(t *testing.T) {
 func TestCurrentPath(t *testing.T) {
 	// get $GOPATH
 	gopath := os.Getenv("GOPATH")
-	// get $GOPATH/src/github.com/go-micro-saas/service-kit/config
 	tests := []struct {
 		name string
 		want string
 	}{
 		{
 			name: "#TestCurrentPath",
-			want: gopath + "/src/github.com/go-micro-saas/service-kit/config",
+			want: gopath + "/src/github.com/ikaiguang/go-srv-kit/service/config",
 		},
 	}
 	for _, tt := range tests {

@@ -6,8 +6,8 @@
 package serviceapi
 
 import (
-	"github.com/go-micro-saas/service-kit/cluster_service_api"
-	pingservicev1 "github.com/go-micro-saas/service-kit/testdata/ping-service/api/ping-service/v1/services"
+	"github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
+	pingservicev1 "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service/v1/services"
 )
 
 // 示例：仅供参考

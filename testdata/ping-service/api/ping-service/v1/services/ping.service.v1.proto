@@ -3,7 +3,7 @@ syntax = "proto3";
 package kit.api.ping.servicev1;
 
 // 多语言特定包名，用于源代码引用
-option go_package           = "github.com/go-micro-saas/go-srv-kit/testdata/ping-service/api/ping-service/v1/services;servicev1";
+option go_package           = "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service/v1/services;servicev1";
 option java_multiple_files  = true;
 option java_package         = "kit.api.ping.servicev1";
 option java_outer_classname = "KitApiPingServiceV1";

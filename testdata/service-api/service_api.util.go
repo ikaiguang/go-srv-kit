@@ -2,6 +2,7 @@ package serviceapi
 
 import (
 	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
+	pingservicev1 "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service/v1/services"
 )
 
 // 示例：仅供参考

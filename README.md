@@ -24,22 +24,16 @@
 ```shell
 
 # 启动项目
-go run ./example/cmd/main/... -conf=./example/configs
+make run-service
+go run ./testdata/ping-service/cmd/ping-service/... -conf=./testdata/ping-service/configs
 
 # 运行测试 HTTP JSON
-curl http://127.0.0.1:8081/api/v1/ping/hello
-# curl http://127.0.0.1:8081/api/v1/ping/error
-# curl http://127.0.0.1:8081/api/v1/ping/logger
+make testing-service
+curl http://127.0.0.1:10101/api/v1/ping/logger && echo "\n"
+curl http://127.0.0.1:10101/api/v1/ping/error && echo "\n"
+curl http://127.0.0.1:10101/api/v1/ping/panic && echo "\n"
+curl http://127.0.0.1:10101/api/v1/ping/say_hello && echo "\n"
 
-# 运行测试 HTTP PROTOBUF
-curl -X GET \
-    -H "Content-Type: application/proto" \
-    -H "Accept: application/proto" \
-    http://127.0.0.1:8081/api/v1/ping/hello
-curl -X GET \
-    -H "Content-Type: application/proto" \
-    -H "Accept: application/proto" \
-    http://127.0.0.1:8081/api/v1/ping/error
 ```
 
 ## 感谢支持

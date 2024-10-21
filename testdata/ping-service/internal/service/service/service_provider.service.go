@@ -5,6 +5,8 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/gorilla/mux"
 	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
+	pingservicev1 "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service/v1/services"
+	testdataservicev1 "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/testdata-service/v1/services"
 	stdlog "log"
 )
 

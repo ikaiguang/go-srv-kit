@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kit.api.ping.enumv1;
 
-option go_package           = "github.com/go-micro-saas/go-srv-kit/testdata/ping-service/api/ping-service/v1/enums;enumv1";
+option go_package           = "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service/v1/enums;enumv1";
 option java_multiple_files  = true;
 option java_package         = "kit.api.ping,enumv1";
 option java_outer_classname = "KitApiPingEnumV1";
