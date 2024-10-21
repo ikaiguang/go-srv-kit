@@ -8,7 +8,7 @@ require (
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20240902085548-6963a8a438be
 	github.com/go-kratos/kratos/contrib/registry/etcd/v2 v2.0.0-20240902085548-6963a8a438be
-	github.com/go-kratos/kratos/v2 v2.8.0
+	github.com/go-kratos/kratos/v2 v2.8.1
 	github.com/go-redsync/redsync/v4 v4.12.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
@@ -47,6 +47,7 @@ require (
 )
 
 require (
+	dario.cat/mergo v1.0.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
@@ -59,12 +60,14 @@ require (
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-kratos/aegis v0.2.0 // indirect
+	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20241014124617-8b8dc4b0f8be // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/form/v4 v4.2.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/wire v0.6.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
