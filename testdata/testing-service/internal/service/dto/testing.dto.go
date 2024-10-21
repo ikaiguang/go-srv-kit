@@ -6,17 +6,17 @@ import (
 )
 
 var (
-	TestingDto testing
+	TestingDto testingDto
 )
 
-type testing struct{}
+type testingDto struct{}
 
-func (s *testing) ToBoXxx() *bo.Testdata {
+func (s *testingDto) ToBoXxx() *bo.Testdata {
 	res := &bo.Testdata{}
 	return res
 }
 
-func (s *testing) ToPbXxx() *emptypb.Empty {
+func (s *testingDto) ToPbXxx() *emptypb.Empty {
 	res := &emptypb.Empty{}
 
 	return res
