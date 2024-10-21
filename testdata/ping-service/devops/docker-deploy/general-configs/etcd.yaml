@@ -1,0 +1,11 @@
+# etcd k-v
+etcd:
+  enable: true
+  endpoints:
+    #- 127.0.0.1:2379
+    - my-etcd:2379
+  username:
+  password:
+  dial_timeout: 0s
+  ca_cert:
+  insecure_skip_verify: false

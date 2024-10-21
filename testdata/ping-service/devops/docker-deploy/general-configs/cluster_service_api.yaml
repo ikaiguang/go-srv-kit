@@ -1,0 +1,21 @@
+# cluster_service_api 项目集群客户端api
+# transport_type 传输协议：http、grpc、...；默认: HTTP
+# registry_type 注册类型：endpoint、consul、...；配置中心配置：${registry_type}；例： Bootstrap.Consul
+# service_target 服务目标：endpoint或registry，例：http://127.0.0.1:8899、discovery:///${registry_endpoint}
+cluster_service_api:
+  - service_name: ping-service-http
+    transport_type: http
+    registry_type: endpoint
+    service_target: http://my-ping-service:20101
+  - service_name: ping-service-grpc
+    transport_type: grpc
+    registry_type: consul
+    service_target: discovery:///go-micro-saas:ping-service:testing:v1.0.0
+  - service_name: nodeid-service-http
+    transport_type: http
+    registry_type: endpoint
+    service_target: http://127.0.0.1:20201
+  - service_name: nodeid-service-grpc
+    transport_type: grpc
+    registry_type: endpoint
+    service_target: grpc://127.0.0.1:20202

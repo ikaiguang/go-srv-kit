@@ -1,0 +1,19 @@
+# consul 服务注册与发现
+consul:
+  scheme:
+  #address: 127.0.0.1:8500
+  address: my-consul-hostname:8500
+  path_prefix:
+  datacenter:
+  wait_time: 0s
+  token:
+  namespace:
+  partition:
+  with_http_basic_auth: false
+  auth_username:
+  auth_password:
+  insecure_skip_verify: true
+  tls_address:
+  tls_ca_pem:
+  tls_cert_pem:
+  tls_key_pem:

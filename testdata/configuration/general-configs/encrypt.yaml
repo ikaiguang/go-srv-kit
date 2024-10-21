@@ -1,0 +1,11 @@
+# encrypt 加密
+encrypt:
+  transfer_encrypt:
+    public_key:
+    private_key:
+  service_encrypt:
+    public_key:
+    private_key:
+  token_encrypt:
+    sign_key: SlUuI12txD4iBMT6oAYHXezQq38cfhbN
+    refresh_key: JZuD1Pq3lnNUi907MdFLyjY8VzrXcBK2

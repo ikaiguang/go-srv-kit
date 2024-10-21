@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package kit.api.testdata.resourcev1;
+
+// 多语言特定包名，用于源代码引用
+option go_package           = "github.com/go-micro-saas/go-srv-kit/testdata/ping-service/api/testdata-service/v1/resources;resourcev1";
+option java_multiple_files  = true;
+option java_package         = "kit.api.testdata.resourcev1";
+option java_outer_classname = "KitApiTestdataResourceV1";
+
+// TestReq 请求
+message TestReq {
+  // 请求消息
+  string message = 1;
+}
+
+// TestResp 响应
+message TestResp {
+  int32 code                   = 1;
+  string reason                = 2;
+  string message               = 3;
+  map<string, string> metadata = 4;
+
+  TestRespData data = 100;
+}
+
+message TestRespData {
+  string message = 1;
+}

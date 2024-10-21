@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package kit.api.ping.conf;
+
+option go_package           = "github.com/go-micro-saas/go-srv-kit/testdata/ping-service/internal/conf;conf";
+option java_multiple_files  = true;
+option java_package         = "kit.api.ping.conf";
+option java_outer_classname = "KitApiPingConf";
+
+import "validate/validate.proto";
+
+message ServiceConfig {
+  message PingService {
+    string key = 1 [(validate.rules).string = { ignore_empty: true }];
+  }
+  PingService ping_service = 1;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package kit.api.testdata.enumv1;
+
+option go_package           = "github.com/go-micro-saas/go-srv-kit/testdata/ping-service/api/testdata-service/v1/enums;enumv1";
+option java_multiple_files  = true;
+option java_package         = "kit.api.testdata.enumv1";
+option java_outer_classname = "KitApiTestdataEnumV1";
+
+// TestdataInitEnum TestdataInitEnum enum
+message TestdataInitEnum {
+  // TestdataInit TestdataInit enum
+  enum TestdataInit {
+    // UNSPECIFIED 未指定
+    UNSPECIFIED = 0;
+  }
+}

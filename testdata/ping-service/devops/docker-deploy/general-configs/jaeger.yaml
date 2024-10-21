@@ -1,0 +1,13 @@
+# jaeger 服务追踪
+jaeger:
+  enable: true
+  # kind: grpc、http 类型
+  kind: grpc
+  # addr: grpc=4317 http=4318
+  # addr: 127.0.0.1:4317
+  addr: my-jaeger:4317
+  is_insecure: true
+  timeout: 0s
+  with_http_basic_auth: false
+  username:
+  password:

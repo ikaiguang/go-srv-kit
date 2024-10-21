@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  my-ping-service:
+    image: ping-service:latest
+    container_name: my-ping-service
+    ports:
+      - "20101:20101"
+      - "20102:20102"
+    networks:
+      - my-network
+    volumes:
+      - my_ping_service_data:/myworkspace/golang/src/workspace/runtime
+      - ./configs:/myworkspace/golang/src/workspace/configs
+    environment:
+      TZ: Asia/Shanghai
+    #entrypoint: ["/bin/bash"]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:20101/api/v1/ping/pong" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  my-network: # 已有的网络的名称
+    external: true  # 标记为外部网络，表示这是已存在的网络
+
+volumes:
+  my_ping_service_data:
+    driver: local

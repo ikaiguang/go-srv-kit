@@ -1,0 +1,259 @@
+# app 程序
+app:
+  project_name: go-micro-saas
+  server_name: ping-service
+  # 开发环境；值：develop、testing、preview、production
+  server_env: production
+  server_version: v1.0.0
+  # ID: apputil.ID 服务唯一标识; 也用于服务注册发现
+  id: "${app.project_name}:${app.server_name}:${app.server_env}:${app.server_version}"
+  # 配置方式；值：local、consul
+  config_method: local
+  config_path_for_general: "${app.project_name}/general-configs/develop"
+  config_path_for_server: "${app.project_name}/ping-service/production/v1.0.0"
+  registry_endpoints:
+  # 服务注册，局域网地址或者集群地址
+  # - http://127.0.0.1:10101
+  # - grpc://127.0.0.1:10102
+  internal_domains:
+    - http://xxx-service.namespace.svc.cluster.local:10001
+    - grpc://xxx-service.namespace:10002
+  external_domains:
+    - http://uufff.com:10001
+    - grpc://uufff.com:10002
+  metadata:
+    id: "${app.project_name}:${app.server_name}:${app.server_env}:${app.server_version}"
+
+# setting 业务
+setting:
+  enable_auth_middleware: false
+  enable_jaeger_tracer: false
+  enable_consul_registry: false
+  enable_migrate_db: false
+  enable_schedule_task: false
+  enable_snowflake_worker: false
+  # captcha 验证码
+  captcha:
+    captcha_len: 4
+    captcha_ttl: 900s
+  # login 登录
+  login:
+    # 密码连续输错N次后短暂锁定账号
+    password_err_serial_times: 5
+    # N分钟内连续输出密码
+    password_err_serial_duration: 300s
+    # 密码连续错误后,锁定N分钟后重试
+    password_err_lock_duration: 180s
+    # 当日密码错误上限
+    password_err_daily_limit_times: 6
+
+# server 服务
+server:
+  http:
+    enable: true
+    network:
+    addr: 0.0.0.0:10101
+    timeout: 60s
+  grpc:
+    enable: true
+    network:
+    addr: 0.0.0.0:10102
+    timeout: 60s
+
+# log 日志
+log:
+  console:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: debug
+  file:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: DEBUG
+    dir: ./runtime/logs
+    filename: "${app.project_name}_${app.server_name}_${app.server_env}_${app.server_version}"
+    # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
+    # 轮询规则：默认为：RotateTime
+    rotate_time: 86400s
+    # rotate_size 轮询规则：按文件大小(默认：52428800 # 50<<20 = 50M)
+    # 轮询规则：默认为：RotateTime
+    rotate_size: 52428800
+    # storage_age 存储规则：n久(默认：30天)
+    # 存储规则：默认为：StorageAge
+    storage_age: 2592000s
+    # storage_counter 存储规则：n个(默认：10086个)
+    # 存储规则：默认为：StorageAge
+    storage_counter: 10086
+
+# mysql MySQL
+mysql:
+  enable: false
+  dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
+  # slow_threshold 慢查询时间
+  slow_threshold: 0.1s
+  logger_enable: true
+  logger_colorful: true
+  # logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR
+  logger_level: DEBUG
+  # conn_max_active 连接的最大数量
+  conn_max_active: 100
+  # conn_max_lifetime 连接可复用的最大时间
+  conn_max_lifetime: 300s
+  # conn_max_idle 连接池中空闲连接的最大数量
+  conn_max_idle: 10
+  # conn_max_idle_time 设置连接空闲的最长时间
+  conn_max_idle_time: 600s
+
+# psql postgres
+psql:
+  enable: false
+  dsn: "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+  # slow_threshold 慢查询时间
+  slow_threshold: 0.1s
+  logger_enable: true
+  logger_colorful: true
+  # logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR
+  logger_level: DEBUG
+  # conn_max_active 连接的最大数量
+  conn_max_active: 100
+  # conn_max_lifetime 连接可复用的最大时间
+  conn_max_lifetime: 300s
+  # conn_max_idle 连接池中空闲连接的最大数量
+  conn_max_idle: 10
+  # conn_max_idle_time 设置连接空闲的最长时间
+  conn_max_idle_time: 600s
+
+# redis
+redis:
+  enable: false
+  addresses:
+    - 127.0.0.1:6379
+  username:
+  password: Redis.123456
+  db: 0
+  dial_timeout: 3s
+  read_timeout: 3s
+  write_timeout: 3s
+  # conn_max_active 连接的最大数量
+  conn_max_active: 100
+  # conn_max_lifetime 连接可复用的最大时间
+  conn_max_lifetime: 300s
+  # conn_max_idle 连接池中空闲连接的最大数量
+  conn_max_idle: 10
+  # conn_max_idle_time 设置连接空闲的最长时间
+  conn_max_idle_time: 600s
+
+# rabbitmq 消息队列rabbitmq
+rabbitmq:
+  enable: false
+  url: amqp://rabbitmq:Rabbitmq.123456@127.0.0.1:5672/
+  tls_address:
+  tls_ca_pem:
+  tls_cert_pem:
+  tls_key_pem:
+
+# consul 服务注册与发现
+consul:
+  enable: false
+  scheme:
+  address: 127.0.0.1:8500
+  # address: my-consul-hostname:8500
+  path_prefix:
+  datacenter:
+  wait_time: 0s
+  token:
+  namespace:
+  partition:
+  with_http_basic_auth: false
+  auth_username:
+  auth_password:
+  insecure_skip_verify: true
+  tls_address:
+  tls_ca_pem:
+  tls_cert_pem:
+  tls_key_pem:
+
+# etcd k-v
+etcd:
+  enable: false
+  endpoints:
+    - 127.0.0.1:2379
+  username:
+  password:
+  dial_timeout: 0s
+  ca_cert:
+  insecure_skip_verify: false
+
+# jaeger 服务追踪
+jaeger:
+  enable: false
+  # kind: grpc、http 类型
+  kind: grpc
+  # addr: grpc=4317 http=4318
+  addr: 127.0.0.1:4317
+  # addr: my-jaeger-hostname:4317
+  is_insecure: true
+  timeout: 0s
+  with_http_basic_auth: false
+  username:
+  password:
+
+# encrypt 加密
+encrypt:
+  transfer_encrypt:
+    public_key:
+    private_key:
+  service_encrypt:
+    public_key:
+    private_key:
+  token_encrypt:
+    sign_key: SlUuI12txD4iBMT6oAYHXezQq38cfhbN
+    refresh_key: JZuD1Pq3lnNUi907MdFLyjY8VzrXcBK2
+
+# cluster_service_api 项目集群客户端api
+# transport_type 传输协议：http、grpc、...；默认: HTTP
+# registry_type 注册类型：endpoint、consul、...；配置中心配置：${registry_type}；例： Bootstrap.Consul
+# service_target 服务目标：endpoint或registry，例：http://127.0.0.1:8899、discovery:///${registry_endpoint}
+cluster_service_api:
+  - service_name: ping-service-http
+    transport_type: http
+    registry_type: endpoint
+    service_target: http://127.0.0.1:10101
+  - service_name: ping-service-grpc
+    transport_type: grpc
+    # registry_type: consul
+    # service_target: discovery:///go-micro-saas:ping-service:production:v1.0.0
+    registry_type: endpoint
+    service_target: grpc://127.0.0.1:10102
+
+# third_party_api 第三方api
+third_party_api:
+  - name: feishu-openapi
+    http_host: https://open.feishu.cn
+    grpc_host: https://open.feishu.cn
+    is_debug: false
+    access_id:
+    access_secret:
+    encrypt_id:
+    encrypt_secret:
+  - name: dingtalk-openapi
+    http_host: https://api.dingtalk.com
+    grpc_host: https://api.dingtalk.com
+    is_debug: false
+    access_id:
+    access_secret:
+    encrypt_id:
+    encrypt_secret:
+  - name: dingtalk-openapi-old
+    http_host: https://oapi.dingtalk.com
+    grpc_host: https://oapi.dingtalk.com
+    is_debug: false
+    access_id:
+    access_secret:
+    encrypt_id:
+    encrypt_secret:
+
+# testdata
+testdata:
+  key: testdata_key
+  value: testdata_value

@@ -1,0 +1,25 @@
+# app 程序
+app:
+  project_name: go-micro-saas
+  server_name: ping-service
+  # 开发环境；值：develop、testing、preview、production
+  server_env: testing
+  server_version: v1.0.0
+  # ID: apputil.ID 服务唯一标识; 也用于服务注册发现
+  id: "${app.project_name}:${app.server_name}:${app.server_env}:${app.server_version}"
+  # 配置方式；值：local、consul、etcd
+  config_method: consul
+  config_path_for_general: "${app.project_name}/general-configs/testing"
+  config_path_for_server: "${app.project_name}/${app.server_name}/${app.server_env}/${app.version}"
+  registry_endpoints:
+  # 服务注册，局域网地址或者集群地址
+  # - http://127.0.0.1:20101
+  # - grpc://127.0.0.1:20102
+  internal_domains:
+    - http://xxx-service.namespace.svc.cluster.local:20101
+    - grpc://xxx-service.namespace:20102
+  external_domains:
+    - http://uufff.com:20101
+    - grpc://uufff.com:20102
+  metadata:
+    id: "${app.project_name}:${app.server_name}:${app.server_env}:${app.server_version}"

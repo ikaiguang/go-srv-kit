@@ -1,0 +1,20 @@
+# redis
+redis:
+  enable: true
+  addresses:
+    #- 127.0.0.1:6379
+    - my-redis:6379
+  username:
+  password: Redis.123456
+  db: 0
+  dial_timeout: 3s
+  read_timeout: 3s
+  write_timeout: 3s
+  # conn_max_active 连接的最大数量
+  conn_max_active: 100
+  # conn_max_lifetime 连接可复用的最大时间
+  conn_max_lifetime: 300s
+  # conn_max_idle 连接池中空闲连接的最大数量
+  conn_max_idle: 10
+  # conn_max_idle_time 设置连接空闲的最长时间
+  conn_max_idle_time: 600s

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package kit.api.testdata.errorv1;
+
+import "errors/errors.proto";
+
+// 多语言特定包名，用于源代码引用
+option go_package           = "github.com/go-micro-saas/go-srv-kit/testdata/ping-service/api/testdata-service/v1/errors;errorv1";
+option java_multiple_files  = true;
+option java_package         = "kit.api.testdata.errorv1";
+option java_outer_classname = "KitApiTestdataErrorV1";
+
+// ERROR .
+enum ERROR {
+  option (errors.default_code) = 500;
+
+  UNKNOWN = 0 [(errors.code) = 500];
+}

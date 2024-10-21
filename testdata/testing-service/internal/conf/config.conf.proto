@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package kit.api.testing.conf;
+
+option go_package           = "github.com/go-micro-saas/go-srv-kit/testdata/testing-service/internal/conf;conf";
+option java_multiple_files  = true;
+option java_package         = "kit.api.testing.conf";
+option java_outer_classname = "KitApiTestingConf";
+
+import "validate/validate.proto";
+
+message ServiceConfig {
+  message TestingService {
+    string key = 1 [(validate.rules).string = { ignore_empty: true }];
+  }
+  TestingService test_service = 1;
+}

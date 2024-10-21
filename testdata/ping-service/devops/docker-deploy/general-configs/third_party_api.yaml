@@ -1,0 +1,26 @@
+# third_party_api 第三方api
+third_party_api:
+  - name: feishu-openapi
+    http_host: https://open.feishu.cn
+    grpc_host: https://open.feishu.cn
+    is_debug: false
+    access_id:
+    access_secret:
+    encrypt_id:
+    encrypt_secret:
+  - name: dingtalk-openapi
+    http_host: https://api.dingtalk.com
+    grpc_host: https://api.dingtalk.com
+    is_debug: false
+    access_id:
+    access_secret:
+    encrypt_id:
+    encrypt_secret:
+  - name: dingtalk-openapi-old
+    http_host: https://oapi.dingtalk.com
+    grpc_host: https://oapi.dingtalk.com
+    is_debug: false
+    access_id:
+    access_secret:
+    encrypt_id:
+    encrypt_secret:

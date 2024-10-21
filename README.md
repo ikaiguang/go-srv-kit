@@ -5,8 +5,6 @@
 - 按需配置启动基础组件，如：数据库、缓存、消息队列等。
 - 提供一些基础的工具，如：日志、配置、HTTP、GRPC、JWT、SnowflakeId等。
 
-创建新项目请阅读: [README-NEW-PROJECT.md](./README-NEW-PROJECT.md)
-
 ## 概述
 
 - 本工具的服务框架是： [go-kratos](https://github.com/go-kratos/kratos)

@@ -1,0 +1,19 @@
+# mysql MySQL
+mysql:
+  enable: true
+  #dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
+  dsn: root:Mysql.123456@tcp(my-mysql:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
+  # slow_threshold 慢查询时间
+  slow_threshold: 0.1s
+  logger_enable: true
+  logger_colorful: true
+  # logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR
+  logger_level: DEBUG
+  # conn_max_active 连接的最大数量
+  conn_max_active: 100
+  # conn_max_lifetime 连接可复用的最大时间
+  conn_max_lifetime: 300s
+  # conn_max_idle 连接池中空闲连接的最大数量
+  conn_max_idle: 10
+  # conn_max_idle_time 设置连接空闲的最长时间
+  conn_max_idle_time: 600s

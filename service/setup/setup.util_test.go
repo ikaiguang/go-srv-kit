@@ -1,6 +1,7 @@
 package setuputil
 
 import (
+	configtestdata "github.com/ikaiguang/go-srv-kit/testdata/configs"
 	"testing"
 )
 
