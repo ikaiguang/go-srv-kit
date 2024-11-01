@@ -1,6 +1,7 @@
 package serviceexporter
 
 import (
+	cleanuputil "github.com/ikaiguang/go-srv-kit/service/cleanup"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
 	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
@@ -19,7 +20,7 @@ func ExportAuthWhitelist() []map[string]middlewareutil.TransportServiceKind {
 	}
 }
 
-func ExportServices(launcherManager setuputil.LauncherManager, serverManager serverutil.ServerManager) (serverutil.ServiceInterface, error) {
+func ExportServices(launcherManager setuputil.LauncherManager, serverManager serverutil.ServerManager) (cleanuputil.CleanupManager, error) {
 	hs, err := serverManager.GetHTTPServer()
 	if err != nil {
 		return nil, err

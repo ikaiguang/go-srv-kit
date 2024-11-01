@@ -9,8 +9,8 @@ package serviceexporter
 import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+	"github.com/ikaiguang/go-srv-kit/service/cleanup"
+	"github.com/ikaiguang/go-srv-kit/service/setup"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/biz/biz"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/data/data"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/service/service"
@@ -18,7 +18,7 @@ import (
 
 // Injectors from wire.go:
 
-func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (serverutil.ServiceInterface, error) {
+func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
 	logger, err := setuputil.GetLogger(launcherManager)
 	if err != nil {
 		return nil, err
@@ -34,9 +34,9 @@ func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, 
 	pingBizRepo := biz.NewPingBiz(logger, serviceAPIManager, pingDataRepo)
 	srvPingServer := service.NewPingService(logger, pingBizRepo)
 	srvTestdataServer := service.NewTestdataService(logger, websocketBizRepo)
-	serviceInterface, err := service.RegisterServices(hs, gs, homeService, websocketService, srvPingServer, srvTestdataServer)
+	cleanupManager, err := service.RegisterServices(hs, gs, homeService, websocketService, srvPingServer, srvTestdataServer)
 	if err != nil {
 		return nil, err
 	}
-	return serviceInterface, nil
+	return cleanupManager, nil
 }

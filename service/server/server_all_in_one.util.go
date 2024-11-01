@@ -10,14 +10,7 @@ import (
 	stdlog "log"
 )
 
-type ServiceExporter func(launcherManager setuputil.LauncherManager, serverManager ServerManager) (ServiceInterface, error)
-
-type ServiceInterface interface {
-	// GetServices 暂时没有想好应用场景
-	GetServices() []interface{}
-	// GetCleanup 关闭
-	GetCleanup() func()
-}
+type ServiceExporter func(launcherManager setuputil.LauncherManager, serverManager ServerManager) (cleanuputil.CleanupManager, error)
 
 func RunServer(app *kratos.App, cleanup func()) {
 	defer func() {
@@ -61,22 +54,22 @@ func AllInOneServer(
 
 	// whitelist
 	whitelist := middlewareutil.MergeWhitelist(authWhitelist...)
-	serverManager, err := NewServerManager(launcherManager, whitelist)
+	srvManager, err := NewServerManager(launcherManager, whitelist)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	// services
 	for i := range services {
-		serviceInstance, serviceErr := services[i](launcherManager, serverManager)
+		srvCleanup, serviceErr := services[i](launcherManager, srvManager)
 		if serviceErr != nil {
 			err = serviceErr
 			return nil, nil, err
 		}
-		cleanupManager.Append(serviceInstance.GetCleanup())
+		cleanupManager.Append(srvCleanup.Cleanup)
 	}
 
-	app, err := serverManager.GetApp()
+	app, err := srvManager.GetApp()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -88,27 +81,4 @@ func AllInOneServer(
 	}
 	cleanupManager.Append(stopApp)
 	return app, cleanupManager.Cleanup, nil
-}
-
-func NewServiceInterface(cleanup func(), services ...interface{}) ServiceInterface {
-	if cleanup == nil {
-		cleanup = func() {}
-	}
-	return &serviceInterface{
-		services: services,
-		cleanup:  cleanup,
-	}
-}
-
-type serviceInterface struct {
-	services []interface{}
-	cleanup  func()
-}
-
-func (s *serviceInterface) GetServices() []interface{} {
-	return s.services
-}
-
-func (s *serviceInterface) GetCleanup() func() {
-	return s.cleanup
 }
