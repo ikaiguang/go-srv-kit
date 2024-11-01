@@ -10,8 +10,6 @@ import (
 	stdlog "log"
 )
 
-type ServiceExporter func(launcherManager setuputil.LauncherManager, serverManager ServerManager) (cleanuputil.CleanupManager, error)
-
 func RunServer(app *kratos.App, cleanup func()) {
 	defer func() {
 		if cleanup != nil {
@@ -22,6 +20,20 @@ func RunServer(app *kratos.App, cleanup func()) {
 	if err := app.Run(); err != nil {
 		stdlog.Fatalf("==> app.Run failed: %+v\n", err)
 	}
+}
+
+type ServiceExporter func(launcherManager setuputil.LauncherManager, serverManager ServerManager) (cleanuputil.CleanupManager, error)
+
+func MergeCleanup(cleanupManager cleanuputil.CleanupManager, cleanup func(), err error) (cleanuputil.CleanupManager, error) {
+	if cleanupManager == nil {
+		cleanupManager = cleanuputil.NewCleanupManager()
+	}
+	if err != nil {
+		cleanupManager.Cleanup()
+		return nil, err
+	}
+	cleanupManager.Append(cleanup)
+	return cleanupManager, nil
 }
 
 func AllInOneServer(

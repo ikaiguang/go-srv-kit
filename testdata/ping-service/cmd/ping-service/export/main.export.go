@@ -30,4 +30,5 @@ func ExportServices(launcherManager setuputil.LauncherManager, serverManager ser
 		return nil, err
 	}
 	return exportServices(launcherManager, hs, gs)
+	//return serverutil.MergeCleanup(exportServices(launcherManager, hs, gs))
 }
