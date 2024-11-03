@@ -6,7 +6,7 @@ import (
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
 	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	pingapi "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api"
+	pingapi "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/conf"
 )
 
