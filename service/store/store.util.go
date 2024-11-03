@@ -3,6 +3,7 @@ package storeutil
 import (
 	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	stdlog "log"
 	"os"
 	"path/filepath"
 )
@@ -33,6 +34,7 @@ func ReadStoreFiles(sourceDir, storeDir string) (map[string][]byte, error) {
 		}
 		destPath := filepath.Join(storeDir, fs[i].Name())
 		filePath := filepath.Join(sourceDir, fs[i].Name())
+		stdlog.Println("|*** 读取文件：", filePath)
 		content, err := os.ReadFile(filePath)
 		if err != nil {
 			e := errorpkg.ErrorInternalError(err.Error())
