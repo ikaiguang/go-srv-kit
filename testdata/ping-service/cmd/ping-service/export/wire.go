@@ -24,6 +24,7 @@ func exportPingData(launcherManager setuputil.LauncherManager) (datarepo.PingDat
 		// data
 		data.NewPingData,
 	))
+	return nil, nil
 }
 
 func exportWebsocketBiz(launcherManager setuputil.LauncherManager) (bizrepo.WebsocketBizRepo, error) {
@@ -32,6 +33,7 @@ func exportWebsocketBiz(launcherManager setuputil.LauncherManager) (bizrepo.Webs
 		// biz
 		biz.NewWebsocketBiz,
 	))
+	return nil, nil
 }
 
 func exportPingBiz(launcherManager setuputil.LauncherManager) (bizrepo.PingBizRepo, error) {
@@ -42,6 +44,7 @@ func exportPingBiz(launcherManager setuputil.LauncherManager) (bizrepo.PingBizRe
 		// biz
 		biz.NewPingBiz,
 	))
+	return nil, nil
 }
 
 func exportPingService(launcherManager setuputil.LauncherManager) (pingservicev1.SrvPingServer, error) {
@@ -51,6 +54,7 @@ func exportPingService(launcherManager setuputil.LauncherManager) (pingservicev1
 		// service
 		service.NewPingService,
 	))
+	return nil, nil
 }
 
 func exportTestdataService(launcherManager setuputil.LauncherManager) (testdataservicev1.SrvTestdataServer, error) {
@@ -60,6 +64,7 @@ func exportTestdataService(launcherManager setuputil.LauncherManager) (testdatas
 		// service
 		service.NewTestdataService,
 	))
+	return nil, nil
 }
 
 func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
@@ -73,4 +78,5 @@ func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, 
 		// register services
 		service.RegisterServices,
 	))
+	return nil, nil
 }

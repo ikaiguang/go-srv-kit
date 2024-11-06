@@ -88,7 +88,6 @@ include testdata/ping-service/api/ping-service/v1/makefile_protoc.mk
 include testdata/ping-service/api/testdata-service/makefile_protoc.mk
 include testdata/ping-service/api/testdata-service/v1/makefile_protoc.mk
 include testdata/ping-service/internal/conf/makefile_protoc.mk
-include testdata/testing-service/internal/conf/makefile_protoc.mk
 
 # run
 include testdata/ping-service/cmd/makefile_run.mk
