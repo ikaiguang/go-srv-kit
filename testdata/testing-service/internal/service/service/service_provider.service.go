@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
+	cleanuputil "github.com/ikaiguang/go-srv-kit/service/cleanup"
 	servicev1 "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/testdata-service/v1/services"
 	stdlog "log"
 )
@@ -15,18 +15,15 @@ import (
 func RegisterServices(
 	hs *http.Server, gs *grpc.Server,
 	testingV1Service servicev1.SrvTestdataServer,
-) (serverutil.ServiceInterface, error) {
+) (cleanuputil.CleanupManager, error) {
 	// 先进后出
-	var cleanup = func() {}
+	var cleanupManager = cleanuputil.NewCleanupManager()
 	// grpc
 	if gs != nil {
 		stdlog.Println("|*** REGISTER_ROUTER：GRPC: testingV1Service")
 		servicev1.RegisterSrvTestdataServer(gs, testingV1Service)
 
-		// cleanup example
-		//cleanup = func() {
-		//	cleanup()
-		//}
+		//cleanupManager.Append(cleanup)
 	}
 
 	// http
@@ -37,13 +34,10 @@ func RegisterServices(
 		// special
 		//RegisterSpecialRouters(hs, homeService, websocketService)
 
-		// cleanup example
-		//cleanup = func() {
-		//	cleanup()
-		//}
+		//cleanupManager.Append(cleanup)
 	}
 
-	return serverutil.NewServiceInterface(cleanup), nil
+	return cleanupManager, nil
 }
 
 //func RegisterSpecialRouters(hs *http.Server, homeService *HomeService, websocketService *WebsocketService) {

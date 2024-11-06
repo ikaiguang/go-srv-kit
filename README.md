@@ -1,19 +1,17 @@
 # 服务工具
 
-`go-srv-kit`为微服务和业务系统开发提供开箱即用的工具；
+`go-srv-kit`为微服务、业务系统开发提供开箱即用的工具；
 
 - 按需配置启动基础组件，如：数据库、缓存、消息队列等。
-- 提供一些基础的工具，如：日志、配置、HTTP、GRPC、JWT、SnowflakeId等。
+- 提供基础的工具，如：日志、配置、HTTP、GRPC、JWT、SnowflakeId、...
 
 ## 概述
 
-- 本工具的服务框架是： [go-kratos](https://github.com/go-kratos/kratos)
-- 项目的目录结构参考： DDD(领域驱动设计)
+- 使用服务框架： [go-kratos](https://github.com/go-kratos/kratos)
 
-参考链接
+**参考链接**
 
 - [github.com/go-kratos/kratos](https://github.com/go-kratos/kratos)
-- [Domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design)
 - [github.com/uber-go/guide](https://github.com/uber-go/guide)
 - [Go Package names](https://blog.golang.org/package-names)
 
@@ -35,6 +33,10 @@ curl http://127.0.0.1:10101/api/v1/ping/panic && echo "\n"
 curl http://127.0.0.1:10101/api/v1/ping/say_hello && echo "\n"
 
 ```
+
+## 创建新项目
+
+参考： [service-layout](https://github.com/ikaiguang/service-layout)
 
 ## 感谢支持
 
