@@ -30,3 +30,15 @@ func (s *cleanup) Cleanup() {
 	}
 	s.cleanupList = nil
 }
+
+func Merge(cleanupManager CleanupManager, cleanup func(), err error) (CleanupManager, error) {
+	if cleanupManager == nil {
+		cleanupManager = NewCleanupManager()
+	}
+	if err != nil {
+		cleanupManager.Cleanup()
+		return nil, err
+	}
+	cleanupManager.Append(cleanup)
+	return cleanupManager, nil
+}
