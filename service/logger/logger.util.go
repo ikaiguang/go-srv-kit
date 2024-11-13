@@ -4,7 +4,6 @@ import (
 	stderrors "errors"
 	"github.com/go-kratos/kratos/v2/log"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	"io"
 	stdlog "log"
 	"sync"
@@ -44,11 +43,17 @@ type LoggerManager interface {
 
 func NewLoggerManager(conf *configpb.Log, appConfig *configpb.App) (LoggerManager, error) {
 	if appConfig == nil {
-		e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = app")
-		return nil, errorpkg.WithStack(e)
-	} else if conf == nil {
-		e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = log")
-		return nil, errorpkg.WithStack(e)
+		stdlog.Println("[CONFIGURATION] Configuration not found, key = app; Use default configuration")
+		//e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = app")
+		//e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = app")
+		//return nil, errorpkg.WithStack(e)
+		appConfig = &_defaultAppConfig
+	}
+	if conf == nil {
+		stdlog.Println("[CONFIGURATION] Configuration not found, key = log; Use default configuration")
+		//e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = log")
+		//return nil, errorpkg.WithStack(e)
+		conf = _defaultLogConfig
 	}
 	manager := &loggerManager{
 		appConfig: appConfig,
