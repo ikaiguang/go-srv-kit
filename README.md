@@ -23,10 +23,12 @@
 
 # 启动项目
 make run-service
+# or
 go run ./testdata/ping-service/cmd/ping-service/... -conf=./testdata/ping-service/configs
 
 # 运行测试 HTTP JSON
 make testing-service
+# or
 curl http://127.0.0.1:10101/api/v1/ping/logger && echo "\n"
 curl http://127.0.0.1:10101/api/v1/ping/error && echo "\n"
 curl http://127.0.0.1:10101/api/v1/ping/panic && echo "\n"
