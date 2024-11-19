@@ -47,8 +47,8 @@ RUN go mod download && go mod tidy
 
 # go build -ldflags="-s -w -X 'main.Version=1.0.0' -extldflags '-static'"
 RUN go build -ldflags="-s -w -X 'main.Version=${VERSION}' -extldflags '-static'" \
-    -o ./bin/main \
-    ./${APP_DIR}/${SERVICE_NAME}/cmd/${SERVICE_NAME}/main.go
+    -o ./bin/ping-service \
+    ./${APP_DIR}/${SERVICE_NAME}/cmd/ping-service/main.go
 
 FROM ${RUN_SERVICE_IMAGE}
 
@@ -74,7 +74,7 @@ RUN apt-get update && \
     apt-get autoremove -y && apt-get autoclean -y && apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder ${WORK_DIR}/bin/main ./main
+COPY --from=builder ${WORK_DIR}/bin/ping-service ./ping-service
 #COPY --from=builder ${WORK_DIR}/${APP_DIR}/${SERVICE_NAME}/configs ./configs
 
 # http 8080 8081
@@ -82,4 +82,4 @@ EXPOSE 8080
 # grpc 50051 50052
 EXPOSE 50051
 
-ENTRYPOINT ["./main", "-conf=./configs"]
+ENTRYPOINT ["./ping-service", "-conf=./configs"]
