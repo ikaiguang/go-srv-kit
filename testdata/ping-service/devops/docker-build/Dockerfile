@@ -8,6 +8,7 @@ ARG VERSION=v1.0.0
 # system arg
 ARG GOPATH=/myworkspace/golang
 ARG GOPROXY=https://goproxy.io,direct
+ARG GOPRIVATE=gitlab.uufff.com
 ARG GOMODCACHE=/myworkspace/golang/pkg/mod
 ARG GOCACHE=/myworkspace/golang/build_cache
 ARG WORK_DIR=/myworkspace/golang/src/workspace
@@ -23,6 +24,7 @@ ARG VERSION
 # golang arg
 ARG GOPATH
 ARG GOPROXY
+ARG GOPRIVATE
 ARG GOMODCACHE
 ARG GOCACHE
 ARG WORK_DIR
@@ -32,6 +34,7 @@ ARG TZ
 ENV GO111MODULE=on
 ENV GOPATH=${GOPATH}
 ENV GOPROXY=${GOPROXY}
+ENV GOPRIVATE=${GOPRIVATE}
 ENV GOMODCACHE=${GOMODCACHE}
 ENV GOCACHE=${GOCACHE}
 ENV TZ=${TZ}
