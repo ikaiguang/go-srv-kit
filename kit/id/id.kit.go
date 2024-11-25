@@ -18,6 +18,16 @@ var (
 // BenchmarkNew_SonySonyflake-8			31080             38894 ns/op               0 B/op          0 allocs/op
 // BenchmarkNew_BwmarrinSnowflake-8		76981             15611 ns/op               0 B/op          0 allocs/op
 // ===== Benchmark =====
+// SonySonyflake :
+// The lifetime (174 years) is longer than that of Snowflake (69 years)
+// It can work in more distributed machines (2^16) than Snowflake (2^10)
+// It can generate 2^8 IDs per 10 msec at most in a single machine/thread (slower than Snowflake)
+// =====
+// BwmarrinSnowflake :
+// You can alter the number of bits used for the node id and step number (sequence) by
+// setting the snowflake.NodeBits and snowflake.StepBits values.
+// Remember that There is a maximum of 22 bits available that
+// can be shared between these two values. You do not have to use all 22 bits.
 func init() {
 	nodeID, err := GenNodeID()
 	if err != nil {
