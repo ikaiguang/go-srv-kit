@@ -19,9 +19,9 @@ func TestWaldDir(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./pkg/filepath -test.run=TestReadDir
+// go test -v -count=1 ./kit/filepath -test.run=TestReadDir
 func TestReadDir(t *testing.T) {
-	rootPath := "./../../pkg"
+	rootPath := "./../"
 	fi, err := ReadDir(rootPath)
 	require.Nil(t, err)
 	for i := range fi {
