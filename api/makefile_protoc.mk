@@ -3,12 +3,11 @@ override ABSOLUTE_PATH := $(patsubst %/,%,$(dir $(ABSOLUTE_MAKEFILE)))
 override REL_PROJECT_PATH := $(subst $(PROJECT_ABS_PATH)/,,$(ABSOLUTE_PATH))
 
 # saas services
-SAAS_SERVICE_PROTO_FILES := $(shell find ./$(REL_PROJECT_PATH) -name "*.proto")
-.PHONY: protoc-api-protobuf
+.PHONY: protoc-config-protobuf
 # protoc :-->: generate services api protobuf
 protoc-api-protobuf:
 	@echo "# generate services api protobuf"
-	$(call protoc_protobuf,$(SAAS_SERVICE_PROTO_FILES))
+	$(MAKE) protoc-ping-protobuf
 
 # specified server
 SAAS_SERVICE_SPECIFIED_FILES := $(shell find ./$(REL_PROJECT_PATH)/${service} -name "*.proto")
