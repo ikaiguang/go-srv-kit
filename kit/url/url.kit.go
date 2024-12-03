@@ -7,6 +7,13 @@ import (
 	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 )
 
+func Encode(raw string) string {
+	return strings.Replace(raw, "+", "%20", -1)
+}
+func EncodeValues(values url.Values) string {
+	return Encode(values.Encode())
+}
+
 // GenRequestURL ...
 func GenRequestURL(endpoint, apiPath string) string {
 	buf := bufferpkg.GetBuffer()
