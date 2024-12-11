@@ -6,6 +6,7 @@
 ```text
 
 # develop env
+127.0.0.1 testing-service-hostname
 127.0.0.1 my-service-hostname
 127.0.0.1 my-consul-hostname
 127.0.0.1 my-etcd-hostname
