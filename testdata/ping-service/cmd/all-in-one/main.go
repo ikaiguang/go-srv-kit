@@ -22,7 +22,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-// go run ./testdata/all-in-one/main.go -conf=./app/nodeid-service/configs
+// go run ./testdata/all-in-one/main.go -conf=./testdata/ping-service/configs
 func main() {
 	if !flag.Parsed() {
 		flag.Parse()

@@ -10,10 +10,10 @@
 # 执行
 make store-configuration
 # or
-go run ./app/nodeid-service/cmd/store-configuration/... -conf=./app/nodeid-service/configs
+go run ./testdata/ping-service/cmd/store-configuration/... -conf=./testdata/ping-service/configs
 # or
-go run ./app/nodeid-service/cmd/store-configuration/... -conf=./app/nodeid-service/configs \
-  -source_dir=./app/nodeid-service/configs
+go run ./testdata/ping-service/cmd/store-configuration/... -conf=./testdata/ping-service/configs \
+  -source_dir=./testdata/ping-service/configs
   -store_dir=
 
 ```

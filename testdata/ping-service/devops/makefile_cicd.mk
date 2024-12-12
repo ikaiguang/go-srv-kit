@@ -1,3 +1,25 @@
+.PHONY: rm-none-image
+# rm none:none images
+rm-none-image:
+	@echo "rm :-->: rm none images"
+	/bin/sh ./testdata/ping-service/devops/docker-build/service-image/rm_none_images.sh
+
+.PHONY: build-base-image
+# build :-->: base image
+build-base-image:
+	@echo "build :-->: build base image"
+	/bin/sh ./testdata/ping-service/devops/docker-build/service-image/build_base_image.sh
+	/bin/sh ./testdata/ping-service/devops/docker-build/service-image/build_release_image.sh
+	$(MAKE) rm-none-image
+
+.PHONY: build-service-image
+# build :-->: service image
+build-service-image:
+	@echo "build :-->: build service image"
+	$(MAKE) build-base-image
+	/bin/sh ./testdata/ping-service/devops/docker-build/service-image/build_service_image.sh
+	$(MAKE) rm-none-image
+
 # build-image
 .PHONY: build
 # build :-->: service image

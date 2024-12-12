@@ -1,0 +1,80 @@
+# service arg
+ARG BUILD_FROM_IMAGE=golang:1.22.8
+ARG RUN_SERVICE_IMAGE=debian:stable-20240926-slim
+ARG APP_DIR=testdata
+ARG SERVICE_NAME=ping-service
+ARG VERSION=v1.0.0
+
+# system arg
+ARG GOPATH=/myworkspace/golang
+ARG GOPROXY=https://goproxy.io,direct
+ARG GOPRIVATE=gitlab.uufff.com
+ARG GOMODCACHE=/myworkspace/golang/pkg/mod
+ARG GOCACHE=/myworkspace/golang/build_cache
+ARG WORK_DIR=/myworkspace/golang/src/workspace
+ARG TZ=Asia/Shanghai
+
+FROM ${BUILD_FROM_IMAGE} AS builder
+
+# service arg
+ARG APP_DIR
+ARG SERVICE_NAME
+ARG VERSION
+
+# golang arg
+ARG GOPATH
+ARG GOPROXY
+ARG GOPRIVATE
+ARG GOMODCACHE
+ARG GOCACHE
+ARG WORK_DIR
+ARG TZ
+
+# golang env
+ENV GO111MODULE=on
+ENV GOPATH=${GOPATH}
+ENV GOPROXY=${GOPROXY}
+ENV GOPRIVATE=${GOPRIVATE}
+ENV GOMODCACHE=${GOMODCACHE}
+ENV GOCACHE=${GOCACHE}
+ENV TZ=${TZ}
+
+WORKDIR ${WORK_DIR}
+
+COPY . .
+
+RUN go mod download && go mod tidy
+
+# go build -ldflags="-s -w -X 'main.Version=1.0.0' -extldflags '-static'"
+RUN go build -ldflags="-s -w -X 'main.Version=${VERSION}' -extldflags '-static'" \
+    -o ./bin/ping-service \
+    ./${APP_DIR}/${SERVICE_NAME}/cmd/ping-service/main.go
+# all-in-one
+RUN go build -ldflags="-s -w -X 'main.Version=${VERSION}' -extldflags '-static'" \
+    -o ./bin/all-in-one \
+    ./${APP_DIR}/${SERVICE_NAME}/cmd/all-in-one/main.go
+
+FROM ${RUN_SERVICE_IMAGE}
+
+# arg
+ARG WORK_DIR
+ARG SERVICE_NAME
+ARG TZ
+
+# env
+ENV TZ=$TZ
+ENV DEBIAN_FRONTEND=noninteractive
+
+WORKDIR ${WORK_DIR}
+
+COPY --from=builder ${WORK_DIR}/bin/ping-service ./ping-service
+COPY --from=builder ${WORK_DIR}/bin/all-in-one ./all-in-one
+#COPY --from=builder ${WORK_DIR}/${APP_DIR}/${SERVICE_NAME}/configs ./configs
+
+# http 8080 8081
+EXPOSE 8080
+# grpc 50051 50052
+EXPOSE 50051
+
+#ENTRYPOINT ["./ping-service", "-conf=./configs"]
+ENTRYPOINT ["./all-in-one", "-conf=./configs"]
