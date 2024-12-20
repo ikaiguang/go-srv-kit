@@ -11,11 +11,11 @@ var (
 	postCodeRegex = regexp.MustCompile(`^\d{6}$`)
 )
 
-func IsValidPhone(phone string) bool {
+func IsPhone(phone string) bool {
 	return phoneRegex.MatchString(phone)
 }
 
-func IsValidEmail(email string) bool {
+func IsEmail(email string) bool {
 	return emailRegex.MatchString(email)
 }
 
