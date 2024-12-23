@@ -53,7 +53,7 @@ func NewConnection(conf *Config, opts ...Option) (*ConnectionWrapper, error) {
 func NewSubscriberWithConnection(conn *ConnectionWrapper, opts ...Option) (*amqp.Subscriber, error) {
 	var (
 		op         = newOptions(opts...)
-		amqpConfig = newPubSubConfig(conn.config, op)
+		amqpConfig = newQueueConfig(conn.config, op)
 	)
 	return amqp.NewSubscriberWithConnection(amqpConfig, op.logger, conn.ConnectionWrapper)
 }
@@ -63,17 +63,17 @@ func NewSubscriberWithConnection(conn *ConnectionWrapper, opts ...Option) (*amqp
 func NewPublisherWithConnection(conn *ConnectionWrapper, opts ...Option) (*amqp.Publisher, error) {
 	var (
 		op         = newOptions(opts...)
-		amqpConfig = newPubSubConfig(conn.config, op)
+		amqpConfig = newQueueConfig(conn.config, op)
 	)
 	return amqp.NewPublisherWithConnection(amqpConfig, op.logger, conn.ConnectionWrapper)
 }
 
-// NewPublisherAndSubscriber 发布订阅
+// NewPublisherAndSubscriberWithConnection 发布订阅
 // 注意：Close 同步调用了 conn.Close
-func NewPublisherAndSubscriber(conn *ConnectionWrapper, opts ...Option) (publisher message.Publisher, subscriber message.Subscriber, err error) {
+func NewPublisherAndSubscriberWithConnection(conn *ConnectionWrapper, opts ...Option) (publisher message.Publisher, subscriber message.Subscriber, err error) {
 	var (
 		op         = newOptions(opts...)
-		amqpConfig = newPubSubConfig(conn.config, op)
+		amqpConfig = newQueueConfig(conn.config, op)
 	)
 	publisher, err = amqp.NewPublisherWithConnection(amqpConfig, op.logger, conn.ConnectionWrapper)
 	if err != nil {
@@ -108,19 +108,18 @@ func NewPublisher(conf *Config, opts ...Option) (*amqp.Publisher, error) {
 	return amqp.NewPublisher(amqpConfig, op.logger)
 }
 
-// NewPubSub 发布订阅
+// NewPublisherAndSubscriber 发布订阅
 // 注意：Close 同步调用了 conn.Close
-func NewPubSub(conf *Config, opts ...Option) (publisher message.Publisher, subscriber message.Subscriber, err error) {
+func NewPublisherAndSubscriber(conf *Config, opts ...Option) (publisher message.Publisher, subscriber message.Subscriber, err error) {
 	// 配置
 	var (
 		op         = newOptions(opts...)
-		amqpConfig = newPubSubConfig(conf, op)
+		amqpConfig = newQueueConfig(conf, op)
 	)
 	publisher, err = amqp.NewPublisher(amqpConfig, op.logger)
 	if err != nil {
 		return publisher, subscriber, err
 	}
-
 	subscriber, err = amqp.NewSubscriber(amqpConfig, op.logger)
 	if err != nil {
 		return publisher, subscriber, err
@@ -148,21 +147,6 @@ func newQueueConfig(conf *Config, op *options) amqp.Config {
 		amqpConfig = amqp.NewNonDurableQueueConfig(conf.Url)
 	} else {
 		amqpConfig = amqp.NewDurableQueueConfig(conf.Url)
-	}
-	if op.tlsConfig != nil {
-		amqpConfig.Connection.TLSConfig = op.tlsConfig
-	}
-	return amqpConfig
-}
-
-// newPubSubConfig ...
-func newPubSubConfig(conf *Config, op *options) amqp.Config {
-	// 配置
-	var amqpConfig amqp.Config
-	if op.isNonDurable {
-		amqpConfig = amqp.NewNonDurablePubSubConfig(conf.Url, amqp.GenerateQueueNameTopicName)
-	} else {
-		amqpConfig = amqp.NewDurablePubSubConfig(conf.Url, amqp.GenerateQueueNameTopicName)
 	}
 	if op.tlsConfig != nil {
 		amqpConfig.Connection.TLSConfig = op.tlsConfig

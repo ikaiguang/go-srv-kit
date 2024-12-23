@@ -8,8 +8,7 @@ import (
 
 // options ...
 type options struct {
-	// isNonDurable 非持久性
-	isNonDurable bool
+	isNonDurable bool // 非持久性
 	logger       watermill.LoggerAdapter
 
 	tlsConfig *tls.Config

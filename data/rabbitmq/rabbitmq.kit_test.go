@@ -65,8 +65,7 @@ func doPub(publisher *amqp.Publisher, topic string) {
 	var i = 0
 	for {
 		i++
-		msg := message.NewMessage(uuidpkg.NewUUID(), []byte(
-			fmt.Sprintf("%d : Hello, world!", i)))
+		msg := message.NewMessage(uuidpkg.NewUUID(), []byte(fmt.Sprintf("%d : Hello, world!", i)))
 
 		if err := publisher.Publish(topic, msg); err != nil {
 			//panic(err)
