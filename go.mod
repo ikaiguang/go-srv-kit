@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/ThreeDotsLabs/watermill v1.4.1
-	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.1.3
+	github.com/ThreeDotsLabs/watermill-amqp/v3 v3.0.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/envoyproxy/protoc-gen-validate v1.1.0
 	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20241014124617-8b8dc4b0f8be

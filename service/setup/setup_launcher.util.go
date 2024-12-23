@@ -2,10 +2,10 @@ package setuputil
 
 import (
 	stderrors "errors"
-	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	"github.com/go-kratos/kratos/v2/log"
 	consulapi "github.com/hashicorp/consul/api"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	authutil "github.com/ikaiguang/go-srv-kit/service/auth"
@@ -312,7 +312,7 @@ func (s *launcherManager) getSingletonRabbitmqManager() (rabbitmqutil.RabbitmqMa
 	return s.rabbitmqManager, err
 }
 
-func (s *launcherManager) GetRabbitmqConn() (*amqp.ConnectionWrapper, error) {
+func (s *launcherManager) GetRabbitmqConn() (*rabbitmqpkg.ConnectionWrapper, error) {
 	rabbitmqManager, err := s.getSingletonRabbitmqManager()
 	if err != nil {
 		return nil, err

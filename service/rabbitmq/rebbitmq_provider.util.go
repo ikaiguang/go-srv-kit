@@ -1,8 +1,8 @@
 package rabbitmqutil
 
 import (
-	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 	"sync"
 )
@@ -23,6 +23,6 @@ func NewSingletonRabbitmqManager(conf *configpb.Rabbitmq, loggerManager loggerut
 	return singletonRabbitmqManager, err
 }
 
-func GetRabbitmqConn(rabbitmqManager RabbitmqManager) (*amqp.ConnectionWrapper, error) {
+func GetRabbitmqConn(rabbitmqManager RabbitmqManager) (*rabbitmqpkg.ConnectionWrapper, error) {
 	return rabbitmqManager.GetClient()
 }

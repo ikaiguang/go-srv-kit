@@ -1,7 +1,6 @@
 package rabbitmqutil
 
 import (
-	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
@@ -15,12 +14,12 @@ type rabbitmqManager struct {
 	loggerManager loggerutil.LoggerManager
 
 	rabbitmqOnce sync.Once
-	rabbitmqConn *amqp.ConnectionWrapper
+	rabbitmqConn *rabbitmqpkg.ConnectionWrapper
 }
 
 type RabbitmqManager interface {
 	Enable() bool
-	GetClient() (*amqp.ConnectionWrapper, error)
+	GetClient() (*rabbitmqpkg.ConnectionWrapper, error)
 	Close() error
 }
 
@@ -35,7 +34,7 @@ func NewRabbitmqManager(conf *configpb.Rabbitmq, loggerManager loggerutil.Logger
 	}, nil
 }
 
-func (s *rabbitmqManager) GetClient() (*amqp.ConnectionWrapper, error) {
+func (s *rabbitmqManager) GetClient() (*rabbitmqpkg.ConnectionWrapper, error) {
 	var err error
 	s.rabbitmqOnce.Do(func() {
 		s.rabbitmqConn, err = s.loadingRabbitmqClient()
@@ -62,7 +61,7 @@ func (s *rabbitmqManager) Enable() bool {
 	return s.conf.GetEnable()
 }
 
-func (s *rabbitmqManager) loadingRabbitmqClient() (*amqp.ConnectionWrapper, error) {
+func (s *rabbitmqManager) loadingRabbitmqClient() (*rabbitmqpkg.ConnectionWrapper, error) {
 	stdlog.Println("|*** LOADING: Rabbitmq connection: ...")
 	logger, err := s.loggerManager.GetLogger()
 	if err != nil {

@@ -1,9 +1,9 @@
 package setuputil
 
 import (
-	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	"github.com/go-kratos/kratos/v2/log"
 	consulapi "github.com/hashicorp/consul/api"
+	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	"github.com/redis/go-redis/v9"
@@ -70,7 +70,7 @@ func GetConsulClient(launcherManager LauncherManager) (*consulapi.Client, error)
 func GetJaegerExporter(launcherManager LauncherManager) (*otlptrace.Exporter, error) {
 	return launcherManager.GetJaegerExporter()
 }
-func GetRabbitmqConn(launcherManager LauncherManager) (*amqp.ConnectionWrapper, error) {
+func GetRabbitmqConn(launcherManager LauncherManager) (*rabbitmqpkg.ConnectionWrapper, error) {
 	return launcherManager.GetRabbitmqConn()
 }
 func GetTokenManager(launcherManager LauncherManager) (authpkg.TokenManger, error) {

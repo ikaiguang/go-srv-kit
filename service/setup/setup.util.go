@@ -1,10 +1,10 @@
 package setuputil
 
 import (
-	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	"github.com/go-kratos/kratos/v2/log"
 	consulapi "github.com/hashicorp/consul/api"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
 	debugpkg "github.com/ikaiguang/go-srv-kit/debug"
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
@@ -31,7 +31,7 @@ type LauncherManager interface {
 	GetMongoClient() (*mongo.Client, error)
 	GetConsulClient() (*consulapi.Client, error)
 	GetJaegerExporter() (*otlptrace.Exporter, error)
-	GetRabbitmqConn() (*amqp.ConnectionWrapper, error)
+	GetRabbitmqConn() (*rabbitmqpkg.ConnectionWrapper, error)
 
 	GetTokenManager() (authpkg.TokenManger, error)
 	GetAuthManager() (authpkg.AuthRepo, error)

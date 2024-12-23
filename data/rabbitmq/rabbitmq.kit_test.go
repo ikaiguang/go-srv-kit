@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
-	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
+	"github.com/ThreeDotsLabs/watermill-amqp/v3/pkg/amqp"
 	"github.com/ThreeDotsLabs/watermill/message"
 	timepkg "github.com/ikaiguang/go-srv-kit/kit/time"
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
@@ -18,7 +18,8 @@ import (
 // go test -v ./data/rabbitmq/ -count=1 -test.run=TestNewSubscriber
 func TestNewSubscriber(t *testing.T) {
 	var (
-		amqpURI = "amqp://guest:guest@127.0.0.1:5672/"
+		//amqpURI = "amqp://guest:guest@127.0.0.1:5672/"
+		amqpURI = "amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq-hostname:5672/"
 		topic   = "example.topic"
 	)
 	logger := newMultiLogger()
