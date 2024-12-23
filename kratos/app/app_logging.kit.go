@@ -317,6 +317,9 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 				if se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode {
 					level = log.LevelInfo
 				}
+				if level == log.LevelError {
+					level = log.LevelWarn // no error level in client
+				}
 				errMessage := &ErrMessage{
 					Code:   code,
 					Reason: reason,
