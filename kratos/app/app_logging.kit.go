@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
 	stdhttp "net/http"
 	"strconv"
 	"strings"
@@ -282,6 +283,7 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 				Kind:      "client",
 				Component: kind,
 				Latency:   time.Since(startTime),
+				ClientIP:  ippkg.LocalIP(),
 			}
 
 			// request
