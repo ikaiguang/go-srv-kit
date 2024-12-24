@@ -2,40 +2,35 @@ package threadpkg
 
 import (
 	"context"
-	"runtime/debug"
-
+	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
 	"github.com/ikaiguang/go-srv-kit/kratos/log"
-	"go.opentelemetry.io/otel/trace"
+	"runtime"
 )
 
 // GoSafe runs the given fn using another goroutine, recovers if fn panics.
 func GoSafe(fn func()) {
 	go func() {
-		defer Recover()
+		defer Recover(context.Background())
 		fn()
 	}()
 }
 
-// GoWithCtx 新开启协程执行fn，并将trace-id传递到新的协程
-func GoWithCtx(ctx context.Context, fn func(ctx context.Context)) {
-	span := trace.SpanFromContext(ctx)
-	newCtx := trace.ContextWithSpan(context.Background(), span)
+// GoSafeWithContext ...
+func GoSafeWithContext(ctx context.Context, fn func(ctx context.Context)) {
+	newCtx := contextpkg.NewContext(ctx)
 	go func() {
-		defer Recover()
+		defer Recover(ctx)
 		fn(newCtx)
 	}()
 }
 
 // Recover is used with defer to do cleanup on panics.
-// Use it like:
-// defer Recover(func() {})
-func Recover(cleanups ...func()) {
-	for _, cleanup := range cleanups {
-		cleanup()
-	}
-
-	if p := recover(); p != nil {
-		logpkg.Error(p)
-		logpkg.Error(string(debug.Stack()))
+// Use it like: defer Recover(func() {})
+func Recover(ctx context.Context) {
+	if rerr := recover(); rerr != nil {
+		buf := make([]byte, 64<<10) //nolint:mnd
+		n := runtime.Stack(buf, false)
+		buf = buf[:n]
+		logpkg.ErrorfWithContext(ctx, "threadpkg.Recover: %+v\n%s\n", rerr, buf)
 	}
 }

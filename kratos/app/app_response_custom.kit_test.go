@@ -8,7 +8,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-// go test -v -count=1 ./business/app -test.run=TestCustomDecodeProtobufResponse
+// go test -v -count=1 ./kratos/app -test.run=TestCustomDecodeProtobufResponse
 func TestCustomDecodeProtobufResponse(t *testing.T) {
 	var (
 		err      error

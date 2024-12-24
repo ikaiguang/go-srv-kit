@@ -2,10 +2,10 @@ package contextpkg
 
 import (
 	"context"
-
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // FromServerContext 等于 transport.FromServerContext
@@ -72,4 +72,9 @@ func ToHTTPTransporter(kratosTr transport.Transporter) (httpTr http.Transporter,
 func ToGRPCTransporter(kratosTr transport.Transporter) (grpcTr *grpc.Transport, ok bool) {
 	grpcTr, ok = kratosTr.(*grpc.Transport)
 	return grpcTr, ok
+}
+
+func NewContext(ctx context.Context) context.Context {
+	span := trace.SpanFromContext(ctx)
+	return trace.ContextWithSpan(context.Background(), span)
 }
