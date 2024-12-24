@@ -71,7 +71,7 @@ log:
     # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
     level: DEBUG
     dir: ./runtime/logs
-    filename: "${app.project_name}_${app.server_name}_${app.server_env}_${app.version}"
+    filename: "${app.project_name}_${app.server_name}_${app.server_env}_${app.server_version}"
     # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
     # 轮询规则：默认为：RotateTime
     rotate_time: 86400s

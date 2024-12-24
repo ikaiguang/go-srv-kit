@@ -4,7 +4,7 @@
 
 如果路径不是绝对路径，则：路径统一为`./testdata/configuration/xxx`
 
-路径前缀：${app.project_name}/${app.server_name}/${app.server_env}/${app.version}；例如：
+路径前缀：${app.project_name}/${app.server_name}/${app.server_env}/${app.server_version}；例如：
 
 > 使用`-path go-micro-saas/base-config`覆写路径前缀
 

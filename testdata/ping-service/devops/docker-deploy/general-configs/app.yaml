@@ -10,7 +10,7 @@ app:
   # 配置方式；值：local、consul
   config_method: consul
   config_path_for_general: "${app.project_name}/general-configs/testing"
-  config_path_for_server: "${app.project_name}/${app.server_name}/${app.server_env}/${app.version}"
+  config_path_for_server: "${app.project_name}/${app.server_name}/${app.server_env}/${app.server_version}"
   registry_endpoints:
   # 服务注册，局域网地址或者集群地址
   # - http://127.0.0.1:20101
