@@ -4,6 +4,7 @@ go 1.22
 
 require (
 	github.com/ThreeDotsLabs/watermill v1.4.1
+	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.1.3
 	github.com/ThreeDotsLabs/watermill-amqp/v3 v3.0.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/envoyproxy/protoc-gen-validate v1.1.0
@@ -65,6 +66,7 @@ require (
 	github.com/go-kratos/aegis v0.2.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/form/v4 v4.2.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
@@ -88,6 +90,7 @@ require (
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/lestrrat-go/strftime v1.1.0 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
+	github.com/lufia/plan9stats v0.0.0-20230326075908-cb1d2100619a // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-sqlite3 v1.14.24 // indirect
@@ -97,14 +100,20 @@ require (
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
+	github.com/shirou/gopsutil/v3 v3.23.6 // indirect
+	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/tidwall/gjson v1.14.2 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/tklauser/go-sysconf v0.3.11 // indirect
+	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
+	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.16 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.16 // indirect
 	go.opentelemetry.io/otel/metric v1.31.0 // indirect
