@@ -114,6 +114,6 @@ echo:
 # generate : go:generate
 generate:
 	#go mod tidy
-	go generate ./...
+	#go generate ./...
 	wire ./testdata/ping-service/cmd/ping-service/export
 

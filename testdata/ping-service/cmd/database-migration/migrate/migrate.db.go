@@ -2,45 +2,44 @@ package dbmigrate
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/log"
 	migrationpkg "github.com/ikaiguang/go-srv-kit/data/migration"
-	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	stdlog "log"
+	dbutil "github.com/ikaiguang/go-srv-kit/service/database"
+	"gorm.io/gorm"
 )
 
 // Run 运行迁移
-func Run(launcherManager setuputil.LauncherManager, opts ...Option) {
-	opt := &options{}
+func Run(dbConn *gorm.DB, opts ...dbutil.MigrationOption) {
+	opt := dbutil.DefaultMigrationOptions()
 	for i := range opts {
 		opts[i](opt)
 	}
 
 	// 关闭
-	if opt.closeEngine {
-		defer func() { _ = launcherManager.Close() }()
-	}
-
-	// 数据库链接
-	//dbConn, err := setuputil.GetMysqlDBConn(launcherManager)
-	dbConn, err := setuputil.GetPostgresDBConn(launcherManager)
-	if err != nil {
-		stdlog.Fatalf("%+v\n", err)
-		return
+	if opt.Close {
+		defer func() {
+			db, err := dbConn.DB()
+			if err != nil {
+				return
+			}
+			_ = db.Close()
+		}()
 	}
 
 	// migrateHandler 迁移手柄
 	var (
 		ctx         = context.Background()
 		migrateRepo = migrationpkg.NewMigrateRepo(dbConn)
+		logHandler  = log.NewHelper(log.With(opt.Logger, "module", "database/migration"))
 	)
 
 	// 初始化迁移记录
-	if err = migrateRepo.InitializeSchema(ctx); err != nil {
-		logpkg.Fatalf("migrateHandler.InitializeSchema failed: %+v", err)
+	if err := migrateRepo.InitializeSchema(ctx); err != nil {
+		logHandler.Fatalf("migrateHandler.InitializeSchema failed: %+v", err)
 	}
 
 	// v1.0.0
-	//if err = dbv1_0_0.Upgrade(ctx, dbConn, migrateRepo); err != nil {
-	//	logpkg.Fatalf("dbv1_0_0.Upgrade failed: %+v", err)
+	//if err := dbv1_0_0.Upgrade(ctx, dbConn, migrateRepo); err != nil {
+	//	logHandler.Fatalf("dbv1_0_0.Upgrade failed: %+v", err)
 	//}
 }
