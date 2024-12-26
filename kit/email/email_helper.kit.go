@@ -64,3 +64,23 @@ func (s *client) SendCode(message *CodeMessage) error {
 func (s *client) Close() error {
 	return s.conn.Close()
 }
+
+type defaultClient struct {
+	sender *Sender
+}
+
+func DefaultClient(sender Sender) (Client, error) {
+	return &defaultClient{sender: &sender}, nil
+}
+
+func (s *defaultClient) Send(message *Message) error {
+	return Send(s.sender, message)
+}
+
+func (s *defaultClient) SendCode(message *CodeMessage) error {
+	return SendCode(s.sender, message)
+}
+
+func (s *defaultClient) Close() error {
+	return nil
+}
