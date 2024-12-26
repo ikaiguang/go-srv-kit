@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+  <title>您的验证码</title>
+  <style type="text/css">
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+      }
+      .container {
+          width: 100%;
+          max-width: 600px;
+          margin: auto;
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+          text-align: center;
+          color: #333;
+          margin-bottom: 20px;
+      }
+      .code {
+          font-size: 24px;
+          font-weight: bold;
+          color: #1a73e8;
+          text-align: center;
+          margin: 20px 0;
+      }
+      .footer {
+          text-align: center;
+          color: #999;
+          margin-top: 20px;
+      }
+      a {
+          color: #1a73e8;
+          text-decoration: none;
+      }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h2>欢迎使用我们的服务</h2>
+  </div>
+  <p>亲爱的用户，感谢您使用我们的服务。请使用以下验证码完成验证：</p>
+  <div class="code">{{.VerificationCode}}</div>
+  <p>此验证码将在10分钟后过期，请尽快使用。</p>
+  <div class="footer">
+    如果这不是您本人操作，请忽略此邮件。<br>
+    © 2024 {{.Issuer}} All rights reserved.
+  </div>
+</div>
+</body>
+</html>

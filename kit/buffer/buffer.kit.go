@@ -15,7 +15,6 @@ var (
 
 // GetBuffer .
 func GetBuffer() *bytes.Buffer {
-	// bytebufferpool.Get()
 	return bufferPool.Get().(*bytes.Buffer)
 }
 
