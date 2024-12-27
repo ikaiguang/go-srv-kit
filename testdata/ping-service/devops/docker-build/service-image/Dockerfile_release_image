@@ -6,7 +6,7 @@ ARG VERSION=v1.0.0
 
 # system arg
 ARG GOPATH=/myworkspace/golang
-ARG GOPROXY=https://goproxy.io,direct
+ARG GOPROXY=https://goproxy.cn,direct
 ARG GOPRIVATE=gitlab.uufff.com
 ARG GOMODCACHE=/myworkspace/golang/pkg/mod
 ARG GOCACHE=/myworkspace/golang/build_cache
