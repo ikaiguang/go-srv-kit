@@ -66,3 +66,9 @@ deploy-database-migration:
 deploy-on-docker:
 	docker-compose -f ./testdata/ping-service/devops/docker-deploy/docker-compose.yaml up -d
 
+.PHONY: stop-docker-deploy
+# stop :-->: docker container
+stop-docker-deploy:
+	@echo "deploy-on-docker :-->: deploying on docker"
+	docker-compose -f ./testdata/ping-service/devops/docker-deploy/docker-compose.yaml down
+
