@@ -23,9 +23,10 @@ const (
 	BearerWord       = "Bearer"
 	BearerFormat     = "Bearer %s"
 
-	PayloadIdentifierPrefixDefault = "default_"
-	PayloadIdentifierPrefixUser    = "user_"
-	PayloadIdentifierPrefixAdmin   = "admin_"
+	PayloadIdentifierPrefixDefault  = "default_"
+	PayloadIdentifierPrefixUser     = "user_"
+	PayloadIdentifierPrefixAdmin    = "admin_"
+	PayloadIdentifierPrefixEmployee = "employee_"
 )
 
 // Payload 授权信息
@@ -62,6 +63,8 @@ func (s *Payload) UserIdentifier() string {
 		identifier = PayloadIdentifierPrefixUser + identifier
 	case TokenTypeEnum_ADMIN:
 		identifier = PayloadIdentifierPrefixAdmin + identifier
+	case TokenTypeEnum_EMPLOYEE:
+		identifier = PayloadIdentifierPrefixEmployee + identifier
 	}
 	return identifier
 }
