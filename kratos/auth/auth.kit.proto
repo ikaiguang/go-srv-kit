@@ -68,5 +68,6 @@ message TokenTypeEnum {
     UNSPECIFIED = 0;
     ADMIN       = 1;
     USER        = 2;
+    EMPLOYEE    = 3;
   }
 }
