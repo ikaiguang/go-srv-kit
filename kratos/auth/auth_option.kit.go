@@ -43,8 +43,8 @@ func WithAccessTokenHeader(header map[string]interface{}) Option {
 }
 
 // WithAccessTokenValidator token验证
-func WithAccessTokenValidator(tokenValidator AccessTokenValidate) Option {
+func WithAccessTokenValidator(tokenValidators ...AccessTokenValidate) Option {
 	return func(o *options) {
-		o.accessTokenValidators = append(o.accessTokenValidators, tokenValidator)
+		o.accessTokenValidators = append(o.accessTokenValidators, tokenValidators...)
 	}
 }

@@ -22,7 +22,7 @@ func MustInTokenTypes(_ context.Context, claims *Claims) error {
 	return nil
 }
 
-func MustAdminToken(_ context.Context, claims *Claims) error {
+func MustAdminTokenType(_ context.Context, claims *Claims) error {
 	if claims.Payload.TokenType != TokenTypeEnum_ADMIN {
 		e := ErrInvalidClaims()
 		return errorpkg.WithStack(e)
@@ -30,7 +30,7 @@ func MustAdminToken(_ context.Context, claims *Claims) error {
 	return nil
 }
 
-func MustUserToken(_ context.Context, claims *Claims) error {
+func MustUserTokenType(_ context.Context, claims *Claims) error {
 	if claims.Payload.TokenType != TokenTypeEnum_USER {
 		e := ErrInvalidClaims()
 		return errorpkg.WithStack(e)
@@ -38,7 +38,7 @@ func MustUserToken(_ context.Context, claims *Claims) error {
 	return nil
 }
 
-func MustEmployeeToken(_ context.Context, claims *Claims) error {
+func MustEmployeeTokenType(_ context.Context, claims *Claims) error {
 	if claims.Payload.TokenType != TokenTypeEnum_EMPLOYEE {
 		e := ErrInvalidClaims()
 		return errorpkg.WithStack(e)

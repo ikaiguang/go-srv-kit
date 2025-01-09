@@ -74,14 +74,27 @@ func NewWhiteListMatcher(whiteList map[string]TransportServiceKind) selector.Mat
 	}
 }
 
+func DefaultAuthValidators(authTokenRepo authpkg.AuthRepo, tokenTypes ...authpkg.TokenTypeEnum_TokenType) []authpkg.AccessTokenValidate {
+	for i := range tokenTypes {
+		authpkg.RegisterMultiTokenType(tokenTypes[i])
+	}
+	return []authpkg.AccessTokenValidate{
+		authTokenRepo.VerifyAccessToken,
+		authpkg.MustInTokenTypes,
+	}
+}
+
 // NewAuthMiddleware 验证中间
 func NewAuthMiddleware(authTokenRepo authpkg.AuthRepo, whiteList map[string]TransportServiceKind) (m middleware.Middleware, err error) {
+	authOpts := []authpkg.AccessTokenValidate{
+		authTokenRepo.VerifyAccessToken,
+	}
 	m = selector.Server(
 		authpkg.Server(
 			authTokenRepo.JWTSigningKeyFunc,
 			authpkg.WithSigningMethod(authTokenRepo.JWTSigningMethod()),
 			authpkg.WithClaims(authTokenRepo.JWTSigningClaims),
-			authpkg.WithAccessTokenValidator(authTokenRepo.VerifyAccessToken),
+			authpkg.WithAccessTokenValidator(authOpts...),
 		),
 	).
 		Match(NewWhiteListMatcher(whiteList)).
