@@ -2,22 +2,21 @@ package authpkg
 
 import (
 	"context"
-
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// AccessTokenValidateFunc 自定义验证
-type AccessTokenValidateFunc func(context.Context, *Claims) error
+// AccessTokenValidate 自定义验证
+type AccessTokenValidate func(context.Context, *Claims) error
 
 // Option is jwt option.
 type Option func(*options)
 
 // Parser is a jwt parser
 type options struct {
-	signingMethod            jwt.SigningMethod
-	claims                   func() jwt.Claims
-	accessTokenHeader        map[string]interface{}
-	accessTokenValidatorFunc AccessTokenValidateFunc
+	signingMethod         jwt.SigningMethod
+	claims                func() jwt.Claims
+	accessTokenHeader     map[string]interface{}
+	accessTokenValidators []AccessTokenValidate
 }
 
 // WithSigningMethod with signing method option.
@@ -44,8 +43,8 @@ func WithAccessTokenHeader(header map[string]interface{}) Option {
 }
 
 // WithAccessTokenValidator token验证
-func WithAccessTokenValidator(tokenValidator AccessTokenValidateFunc) Option {
+func WithAccessTokenValidator(tokenValidator AccessTokenValidate) Option {
 	return func(o *options) {
-		o.accessTokenValidatorFunc = tokenValidator
+		o.accessTokenValidators = append(o.accessTokenValidators, tokenValidator)
 	}
 }

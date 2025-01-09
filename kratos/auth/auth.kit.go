@@ -278,14 +278,16 @@ func Server(signKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 					e := ErrUnSupportSigningMethod()
 					return nil, errorpkg.WithStack(e)
 				}
-				if o.accessTokenValidatorFunc != nil {
+				if len(o.accessTokenValidators) > 0 {
 					authClaims, ok := tokenInfo.Claims.(*Claims)
 					if !ok {
 						e := ErrTokenInvalid()
 						return nil, errorpkg.WithStack(e)
 					}
-					if err = o.accessTokenValidatorFunc(ctx, authClaims); err != nil {
-						return nil, err
+					for ai := range o.accessTokenValidators {
+						if err = o.accessTokenValidators[ai](ctx, authClaims); err != nil {
+							return nil, err
+						}
 					}
 				}
 				ctx = PutAuthClaimsIntoContext(ctx, tokenInfo.Claims)
@@ -339,14 +341,16 @@ func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				e := ErrSignToken()
 				return nil, errorpkg.WithStack(e)
 			}
-			if o.accessTokenValidatorFunc != nil {
+			if len(o.accessTokenValidators) > 0 {
 				authClaims, ok := token.Claims.(*Claims)
 				if !ok {
 					e := ErrTokenInvalid()
 					return nil, errorpkg.WithStack(e)
 				}
-				if err = o.accessTokenValidatorFunc(ctx, authClaims); err != nil {
-					return nil, err
+				for ai := range o.accessTokenValidators {
+					if err = o.accessTokenValidators[ai](ctx, authClaims); err != nil {
+						return nil, err
+					}
 				}
 			}
 			if clientContext, ok := transport.FromClientContext(ctx); ok {

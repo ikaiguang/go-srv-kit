@@ -214,10 +214,10 @@ func (s *tokenManger) AddBlacklist(ctx context.Context, userIdentifier string, t
 		var blackKey = ""
 		if tokenItems[i].IsRefreshToken {
 			hashKeys = append(hashKeys, tokenItems[i].RefreshTokenID)
-			blackKey = s.genBlackTokenKey(tokenItems[i].RefreshTokenID)
+			blackKey = s.genBlacklistTokenKey(tokenItems[i].RefreshTokenID)
 		} else {
 			hashKeys = append(hashKeys, tokenItems[i].TokenID)
-			blackKey = s.genBlackTokenKey(tokenItems[i].TokenID)
+			blackKey = s.genBlacklistTokenKey(tokenItems[i].TokenID)
 		}
 		// 加入黑名单
 		d := s.calcExpireTime(tokenItems[i].ExpiredAt, nowUnix)
@@ -326,7 +326,7 @@ func (s *tokenManger) AddLoginLimit(ctx context.Context, tokenItems []*TokenItem
 
 // IsBlacklist ...
 func (s *tokenManger) IsBlacklist(ctx context.Context, tokenID string) (bool, error) {
-	blackKey := s.genBlackTokenKey(tokenID)
+	blackKey := s.genBlacklistTokenKey(tokenID)
 	i, err := s.redisCC.Exists(ctx, blackKey).Result()
 	if err != nil {
 		e := errorpkg.ErrorInternalServer("")
@@ -445,8 +445,8 @@ func (s *tokenManger) genTokensKey(userIdentifier string) string {
 	return s.authCacheKeyPrefix.TokensKeyPrefix.String() + userIdentifier
 }
 
-// genBlackTokenKey ...
-func (s *tokenManger) genBlackTokenKey(tokenID string) string {
+// genBlacklistTokenKey ...
+func (s *tokenManger) genBlacklistTokenKey(tokenID string) string {
 	return s.authCacheKeyPrefix.BlackTokenKeyPrefix.String() + tokenID
 }
 
