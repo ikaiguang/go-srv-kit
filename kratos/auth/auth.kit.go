@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	stderrors "errors"
+	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/middleware"
@@ -17,7 +19,7 @@ import (
 const (
 	AccessTokenExpire   = time.Hour * 24 * 2
 	RefreshTokenExpire  = time.Hour * 24 * 7
-	PreviousTokenExpire = time.Minute * 10
+	PreviousTokenExpire = time.Minute
 
 	AuthorizationKey = "Authorization"
 	BearerWord       = "Bearer"
@@ -226,69 +228,10 @@ func Server(signKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 	}
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
-			if header, ok := transport.FromServerContext(ctx); ok {
-				var keyFunc jwt.Keyfunc
-				if signKeyFunc == nil {
-					e := ErrMissingSignKeyFunc()
-					return nil, errorpkg.WithStack(e)
-				}
-				keyFunc = signKeyFunc(ctx)
-				if keyFunc == nil {
-					e := ErrMissingSignKeyFunc()
-					return nil, errorpkg.WithStack(e)
-				}
-				//auths := strings.SplitN(header.RequestHeader().Get(AuthorizationKey), " ", 2)
-				//if len(auths) != 2 || !strings.EqualFold(auths[0], BearerWord) {
-				//	e := ErrMissingToken()
-				//	return nil, errorpkg.WithStack(e)
-				//}
-				//jwtToken := auths[1]
-				jwtToken := header.RequestHeader().Get(AuthorizationKey)
-				if jwtToken == "" {
-					e := ErrMissingToken()
-					return nil, errorpkg.WithStack(e)
-				}
-				var (
-					tokenInfo *jwt.Token
-					err       error
-				)
-				if o.claims != nil {
-					tokenInfo, err = jwt.ParseWithClaims(jwtToken, o.claims(), keyFunc)
-				} else {
-					tokenInfo, err = jwt.Parse(jwtToken, keyFunc)
-				}
+			if transporter, ok := transport.FromServerContext(ctx); ok {
+				tokenInfo, err := validateAuthorizationToken(ctx, transporter, signKeyFunc, o)
 				if err != nil {
-					if stderrors.Is(err, jwt.ErrTokenMalformed) || stderrors.Is(err, jwt.ErrTokenUnverifiable) {
-						e := ErrInvalidAuthToken()
-						return nil, errorpkg.WithStack(e)
-					}
-					if stderrors.Is(err, jwt.ErrTokenNotValidYet) || stderrors.Is(err, jwt.ErrTokenExpired) {
-						e := ErrTokenExpired()
-						return nil, errorpkg.WithStack(e)
-					}
-					e := ErrInvalidAuthToken()
-					e.Metadata = map[string]string{"error": err.Error()}
-					return nil, errorpkg.WithStack(e)
-				}
-				if !tokenInfo.Valid {
-					e := ErrTokenInvalid()
-					return nil, errorpkg.WithStack(e)
-				}
-				if tokenInfo.Method != o.signingMethod {
-					e := ErrUnSupportSigningMethod()
-					return nil, errorpkg.WithStack(e)
-				}
-				if len(o.accessTokenValidators) > 0 {
-					authClaims, ok := tokenInfo.Claims.(*Claims)
-					if !ok {
-						e := ErrTokenInvalid()
-						return nil, errorpkg.WithStack(e)
-					}
-					for ai := range o.accessTokenValidators {
-						if err = o.accessTokenValidators[ai](ctx, authClaims); err != nil {
-							return nil, err
-						}
-					}
+					return nil, err
 				}
 				ctx = PutAuthClaimsIntoContext(ctx, tokenInfo.Claims)
 				return handler(ctx, req)
@@ -297,6 +240,75 @@ func Server(signKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 			return nil, errorpkg.WithStack(e)
 		}
 	}
+}
+
+func validateAuthorizationToken(
+	ctx context.Context,
+	transporter transport.Transporter,
+	signKeyFunc KeyFunc,
+	o *options,
+) (*jwt.Token, error) {
+	var keyFunc jwt.Keyfunc
+	if signKeyFunc == nil {
+		e := ErrMissingSignKeyFunc()
+		return nil, errorpkg.WithStack(e)
+	}
+	keyFunc = signKeyFunc(ctx)
+	if keyFunc == nil {
+		e := ErrMissingSignKeyFunc()
+		return nil, errorpkg.WithStack(e)
+	}
+	jwtToken := transporter.RequestHeader().Get(AuthorizationKey)
+	if auths := strings.SplitN(jwtToken, " ", 2); len(auths) == 2 && strings.EqualFold(auths[0], BearerWord) {
+		jwtToken = auths[1]
+	}
+	if jwtToken == "" {
+		e := ErrMissingToken()
+		return nil, errorpkg.WithStack(e)
+	}
+	var (
+		tokenInfo *jwt.Token
+		err       error
+	)
+	if o.claims != nil {
+		tokenInfo, err = jwt.ParseWithClaims(jwtToken, o.claims(), keyFunc)
+	} else {
+		tokenInfo, err = jwt.Parse(jwtToken, keyFunc)
+	}
+	if err != nil {
+		if stderrors.Is(err, jwt.ErrTokenMalformed) || stderrors.Is(err, jwt.ErrTokenUnverifiable) {
+			e := ErrInvalidAuthToken()
+			return nil, errorpkg.WithStack(e)
+		}
+		if stderrors.Is(err, jwt.ErrTokenNotValidYet) || stderrors.Is(err, jwt.ErrTokenExpired) {
+			e := ErrTokenExpired()
+			return nil, errorpkg.WithStack(e)
+		}
+		e := ErrInvalidAuthToken()
+		e.Metadata = map[string]string{"error": err.Error()}
+		return nil, errorpkg.WithStack(e)
+	}
+	if !tokenInfo.Valid {
+		e := ErrTokenInvalid()
+		return nil, errorpkg.WithStack(e)
+	}
+	if tokenInfo.Method != o.signingMethod {
+		e := ErrUnSupportSigningMethod()
+		return nil, errorpkg.WithStack(e)
+	}
+	if len(o.accessTokenValidators) > 0 {
+		authClaims, ok := tokenInfo.Claims.(*Claims)
+		if !ok {
+			e := ErrTokenInvalid()
+			return nil, errorpkg.WithStack(e)
+		}
+		for atvIndex := range o.accessTokenValidators {
+			if err = o.accessTokenValidators[atvIndex](ctx, authClaims); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return tokenInfo, nil
 }
 
 // Client is a client jwt middleware.
@@ -341,21 +353,9 @@ func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				e := ErrSignToken()
 				return nil, errorpkg.WithStack(e)
 			}
-			if len(o.accessTokenValidators) > 0 {
-				authClaims, ok := token.Claims.(*Claims)
-				if !ok {
-					e := ErrTokenInvalid()
-					return nil, errorpkg.WithStack(e)
-				}
-				for ai := range o.accessTokenValidators {
-					if err = o.accessTokenValidators[ai](ctx, authClaims); err != nil {
-						return nil, err
-					}
-				}
-			}
 			if clientContext, ok := transport.FromClientContext(ctx); ok {
-				//clientContext.RequestHeader().Set(AuthorizationKey, fmt.Sprintf(BearerFormat, tokenStr))
-				clientContext.RequestHeader().Set(AuthorizationKey, tokenStr)
+				clientContext.RequestHeader().Set(AuthorizationKey, fmt.Sprintf(BearerFormat, tokenStr))
+				//clientContext.RequestHeader().Set(AuthorizationKey, tokenStr)
 				return handler(ctx, req)
 			}
 			e := ErrWrongContext()

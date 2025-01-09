@@ -78,3 +78,7 @@ func NewContext(ctx context.Context) context.Context {
 	span := trace.SpanFromContext(ctx)
 	return trace.ContextWithSpan(context.Background(), span)
 }
+
+func SpanContext(ctx context.Context) trace.SpanContext {
+	return trace.SpanContextFromContext(ctx)
+}

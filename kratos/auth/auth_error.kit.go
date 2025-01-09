@@ -49,6 +49,9 @@ func ErrInvalidClaims() *errors.Error {
 func ErrBlacklist() *errors.Error {
 	return ErrorTokenDeprecated("[validator] Deprecated token")
 }
+func ErrLoginLimit() *errors.Error {
+	return ErrorTokenDeprecated("[validator] do not allow login")
+}
 func ErrWhitelist() *errors.Error {
 	return ErrorTokenNotInWhitelist("[validator] The token is not in the valid list")
 }

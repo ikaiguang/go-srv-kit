@@ -532,13 +532,35 @@ func (s *authRepo) checkTokenBlackAndWhite(ctx context.Context, authClaims *Clai
 		return errorpkg.WithStack(e)
 	}
 
-	// 白名单
-	isExist, err := s.tokenManger.IsExistToken(ctx, authClaims.Payload.UserIdentifier(), authClaims.ID)
+	// 登录限制
+	isLoginLimit, _, err := s.tokenManger.IsLoginLimit(ctx, authClaims.ID)
 	if err != nil {
 		return err
 	}
-	if !isExist {
+	if isLoginLimit {
+		e := ErrLoginLimit()
+		return errorpkg.WithStack(e)
+	}
+
+	// 白名单
+	//isExist, err := s.tokenManger.IsExistToken(ctx, authClaims.Payload.UserIdentifier(), authClaims.ID)
+	//if err != nil {
+	//	return err
+	//}
+	//if !isExist {
+	//	e := ErrWhitelist()
+	//	return errorpkg.WithStack(e)
+	//}
+	tokenItem, isNotFound, err := s.tokenManger.GetToken(ctx, authClaims.Payload.UserIdentifier(), authClaims.ID)
+	if err != nil {
+		return err
+	}
+	if isNotFound {
 		e := ErrWhitelist()
+		return errorpkg.WithStack(e)
+	}
+	if tokenItem.ExpiredAt <= time.Now().Unix() {
+		e := ErrTokenExpired()
 		return errorpkg.WithStack(e)
 	}
 	return nil
