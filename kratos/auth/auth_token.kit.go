@@ -528,17 +528,16 @@ func (s *authRepo) checkTokenBlackAndWhite(ctx context.Context, authClaims *Clai
 		return err
 	}
 	if isBlacklist {
+		// 登录限制
+		isLoginLimit, _, err := s.tokenManger.IsLoginLimit(ctx, authClaims.ID)
+		if err != nil {
+			return err
+		}
+		if isLoginLimit {
+			e := ErrLoginLimit()
+			return errorpkg.WithStack(e)
+		}
 		e := ErrBlacklist()
-		return errorpkg.WithStack(e)
-	}
-
-	// 登录限制
-	isLoginLimit, _, err := s.tokenManger.IsLoginLimit(ctx, authClaims.ID)
-	if err != nil {
-		return err
-	}
-	if isLoginLimit {
-		e := ErrLoginLimit()
 		return errorpkg.WithStack(e)
 	}
 

@@ -122,11 +122,7 @@ func (s *tokenManger) SaveAccessTokens(ctx context.Context, userIdentifier strin
 		expire  = time.Duration(0)
 	)
 	for i := range tokenItems {
-		if tokenItems[i].IsRefreshToken {
-			kvs = append(kvs, tokenItems[i].RefreshTokenID)
-		} else {
-			kvs = append(kvs, tokenItems[i].TokenID)
-		}
+		kvs = append(kvs, tokenItems[i].ID())
 		itemStr, err := tokenItems[i].EncodeToString()
 		if err != nil {
 			e := errorpkg.ErrorBadRequest("encode token item failed")
@@ -175,11 +171,7 @@ func (s *tokenManger) ResetPreviousTokens(ctx context.Context, userIdentifier st
 		kvs = make([]interface{}, 0, 2*len(tokenItems))
 	)
 	for i := range tokenItems {
-		if tokenItems[i].IsRefreshToken {
-			kvs = append(kvs, tokenItems[i].RefreshTokenID)
-		} else {
-			kvs = append(kvs, tokenItems[i].TokenID)
-		}
+		kvs = append(kvs, tokenItems[i].ID())
 		itemStr, err := tokenItems[i].EncodeToString()
 		if err != nil {
 			e := errorpkg.ErrorBadRequest("encode token item failed")
@@ -211,14 +203,8 @@ func (s *tokenManger) AddBlacklist(ctx context.Context, userIdentifier string, t
 
 	pipe := s.redisCC.Pipeline()
 	for i := range tokenItems {
-		var blackKey = ""
-		if tokenItems[i].IsRefreshToken {
-			hashKeys = append(hashKeys, tokenItems[i].RefreshTokenID)
-			blackKey = s.genBlacklistTokenKey(tokenItems[i].RefreshTokenID)
-		} else {
-			hashKeys = append(hashKeys, tokenItems[i].TokenID)
-			blackKey = s.genBlacklistTokenKey(tokenItems[i].TokenID)
-		}
+		hashKeys = append(hashKeys, tokenItems[i].ID())
+		blackKey := s.genBlacklistTokenKey(tokenItems[i].ID())
 		// 加入黑名单
 		d := s.calcExpireTime(tokenItems[i].ExpiredAt, nowUnix)
 		if err := pipe.Set(ctx, blackKey, 0, d).Err(); err != nil {
@@ -285,11 +271,7 @@ func (s *tokenManger) DeleteTokens(ctx context.Context, userIdentifier string, t
 	)
 
 	for i := range tokenItems {
-		if tokenItems[i].IsRefreshToken {
-			hashKeys = append(hashKeys, tokenItems[i].RefreshTokenID)
-		} else {
-			hashKeys = append(hashKeys, tokenItems[i].TokenID)
-		}
+		hashKeys = append(hashKeys, tokenItems[i].ID())
 	}
 	if err := s.redisCC.HDel(ctx, tokensKey, hashKeys...).Err(); err != nil {
 		e := errorpkg.ErrorInternalServer("")

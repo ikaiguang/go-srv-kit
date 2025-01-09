@@ -179,6 +179,13 @@ type TokenItem struct {
 	Payload *Payload `json:"p,omitempty"`
 }
 
+func (s *TokenItem) ID() string {
+	if s.IsRefreshToken {
+		return s.RefreshTokenID
+	}
+	return s.TokenID
+}
+
 // EncodeToString ...
 func (s *TokenItem) EncodeToString() (string, error) {
 	res, err := json.Marshal(s)
