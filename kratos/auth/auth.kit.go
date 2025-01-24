@@ -236,7 +236,8 @@ func Server(signKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
 			if transporter, ok := transport.FromServerContext(ctx); ok {
-				tokenInfo, err := validateAuthorizationToken(ctx, transporter, signKeyFunc, o)
+				jwtToken := transporter.RequestHeader().Get(AuthorizationKey)
+				tokenInfo, err := validateAuthorizationToken(ctx, jwtToken, signKeyFunc, o)
 				if err != nil {
 					return nil, err
 				}
@@ -251,7 +252,7 @@ func Server(signKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 
 func validateAuthorizationToken(
 	ctx context.Context,
-	transporter transport.Transporter,
+	tokenStr string,
 	signKeyFunc KeyFunc,
 	o *options,
 ) (*jwt.Token, error) {
@@ -265,11 +266,10 @@ func validateAuthorizationToken(
 		e := ErrMissingSignKeyFunc()
 		return nil, errorpkg.WithStack(e)
 	}
-	jwtToken := transporter.RequestHeader().Get(AuthorizationKey)
-	if auths := strings.SplitN(jwtToken, " ", 2); len(auths) == 2 && strings.EqualFold(auths[0], BearerWord) {
-		jwtToken = auths[1]
+	if auths := strings.SplitN(tokenStr, " ", 2); len(auths) == 2 && strings.EqualFold(auths[0], BearerWord) {
+		tokenStr = auths[1]
 	}
-	if jwtToken == "" {
+	if tokenStr == "" {
 		e := ErrMissingToken()
 		return nil, errorpkg.WithStack(e)
 	}
@@ -278,9 +278,9 @@ func validateAuthorizationToken(
 		err       error
 	)
 	if o.claims != nil {
-		tokenInfo, err = jwt.ParseWithClaims(jwtToken, o.claims(), keyFunc)
+		tokenInfo, err = jwt.ParseWithClaims(tokenStr, o.claims(), keyFunc)
 	} else {
-		tokenInfo, err = jwt.Parse(jwtToken, keyFunc)
+		tokenInfo, err = jwt.Parse(tokenStr, keyFunc)
 	}
 	if err != nil {
 		if stderrors.Is(err, jwt.ErrTokenMalformed) || stderrors.Is(err, jwt.ErrTokenUnverifiable) {
