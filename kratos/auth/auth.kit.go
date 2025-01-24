@@ -241,6 +241,8 @@ func Server(signKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				if err != nil {
 					return nil, err
 				}
+
+				// values
 				ctx = PutAuthClaimsIntoContext(ctx, tokenInfo.Claims)
 				return handler(ctx, req)
 			}
