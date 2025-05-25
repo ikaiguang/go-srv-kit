@@ -125,7 +125,11 @@ func (s *loggerManager) setupLogger() error {
 	// for gorm
 	gormLoggerConf := s.conf.GetGorm()
 	if gormLoggerConf.GetEnable() {
-		loggerForGORM, loggerClosers, err := s.loadingLoggerWithCallerSkip(helperSkip, gormLoggerConf, writer)
+		gormLoggerWriter, err := s.GetWriterForGORM()
+		if err != nil {
+			return err
+		}
+		loggerForGORM, loggerClosers, err := s.loadingLoggerWithCallerSkip(helperSkip, gormLoggerConf, gormLoggerWriter)
 		if err != nil {
 			return err
 		}
@@ -141,7 +145,11 @@ func (s *loggerManager) setupLogger() error {
 	// for rabbitmq
 	rabbitmqLoggerConf := s.conf.GetRabbitmq()
 	if rabbitmqLoggerConf.GetEnable() {
-		loggerForRabbitmq, loggerClosers, err := s.loadingLoggerWithCallerSkip(helperSkip, rabbitmqLoggerConf, writer)
+		rabbitmqLoggerWriter, err := s.GetWriterForRabbitmq()
+		if err != nil {
+			return err
+		}
+		loggerForRabbitmq, loggerClosers, err := s.loadingLoggerWithCallerSkip(helperSkip, rabbitmqLoggerConf, rabbitmqLoggerWriter)
 		if err != nil {
 			return err
 		}

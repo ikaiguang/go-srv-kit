@@ -121,6 +121,24 @@ func (s *loggerManager) Close() error {
 			}
 		}
 	}
+	if s.writerForGORM != nil {
+		if writerCloser, ok := s.writerForGORM.(io.Closer); ok {
+			stdlog.Println("|*** STOP: close: gorm Writer")
+			if err := writerCloser.Close(); err != nil {
+				stdlog.Println("|*** STOP: close: gorm Writer failed: ", err.Error())
+				errs = append(errs, err)
+			}
+		}
+	}
+	if s.writerForRabbitmq != nil {
+		if writerCloser, ok := s.writer.(io.Closer); ok {
+			stdlog.Println("|*** STOP: close: rabbitmq Writer")
+			if err := writerCloser.Close(); err != nil {
+				stdlog.Println("|*** STOP: close: rabbitmq Writer failed: ", err.Error())
+				errs = append(errs, err)
+			}
+		}
+	}
 
 	if len(errs) > 0 {
 		return stderrors.Join(errs...)

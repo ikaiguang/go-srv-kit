@@ -63,7 +63,7 @@ func (s *rabbitmqManager) Enable() bool {
 
 func (s *rabbitmqManager) loadingRabbitmqClient() (*rabbitmqpkg.ConnectionWrapper, error) {
 	stdlog.Println("|*** LOADING: Rabbitmq connection: ...")
-	logger, err := s.loggerManager.GetLogger()
+	logger, err := s.loggerManager.GetLoggerForRabbitmq()
 	if err != nil {
 		return nil, err
 	}

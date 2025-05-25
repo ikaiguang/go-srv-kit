@@ -79,7 +79,7 @@ func (s *mysqlManager) loadingMysqlDB() (*gorm.DB, error) {
 		writers = append(writers, gormpkg.NewStdWriter())
 	}
 	if s.loggerManager.EnableFile() {
-		writer, err := s.loggerManager.GetWriter()
+		writer, err := s.loggerManager.GetWriterForGORM()
 		if err != nil {
 			return nil, err
 		}
