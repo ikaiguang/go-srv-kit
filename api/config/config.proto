@@ -123,6 +123,8 @@ message Log {
 
   Console console = 1;  // console 输出到控制台
   File file       = 2;  // file 输出到文件
+  File gorm       = 3;  // gorm 日志
+  File rabbitmq   = 4;  // rabbitmq 日志
 }
 
 // MySQL MySQL

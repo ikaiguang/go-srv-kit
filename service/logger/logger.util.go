@@ -14,14 +14,20 @@ type loggerManager struct {
 	conf      *configpb.Log
 
 	// 不要直接使用 s.writer, 请使用 GetWriter()
-	writer     io.Writer
-	writerOnce sync.Once
+	writer                io.Writer
+	writerOnce            sync.Once
+	writerForGORM         io.Writer
+	writerForGORMOnce     sync.Once
+	writerForRabbitmq     io.Writer
+	writerForRabbitmqOnce sync.Once
 
 	// 不要直接使用 s.loggerXxx, 请使用 GetLoggers()
 	loggerOnce          sync.Once
 	logger              log.Logger
 	loggerForMiddleware log.Logger
 	loggerForHelper     log.Logger
+	loggerForGORM       log.Logger
+	loggerForRabbitmq   log.Logger
 	loggerCloser        io.Closer
 }
 
@@ -29,15 +35,26 @@ type Loggers struct {
 	Logger              log.Logger
 	LoggerForMiddleware log.Logger
 	LoggerForHelper     log.Logger
+	LoggerForGORM       log.Logger
+	LoggerForRabbitmq   log.Logger
 }
 
 type LoggerManager interface {
 	EnableConsole() bool
 	EnableFile() bool
+	EnableGORM() bool
+	EnableRabbitmq() bool
+
 	GetWriter() (io.Writer, error)
+	GetWriterForGORM() (io.Writer, error)
+	GetWriterForRabbitmq() (io.Writer, error)
+
 	GetLogger() (log.Logger, error)
 	GetLoggerForMiddleware() (log.Logger, error)
 	GetLoggerForHelper() (log.Logger, error)
+	GetLoggerForGORM() (log.Logger, error)
+	GetLoggerForRabbitmq() (log.Logger, error)
+
 	Close() error
 }
 
@@ -72,6 +89,14 @@ func (s *loggerManager) EnableConsole() bool {
 
 func (s *loggerManager) EnableFile() bool {
 	return s.conf.GetFile().GetEnable()
+}
+
+func (s *loggerManager) EnableGORM() bool {
+	return s.conf.GetGorm().GetEnable()
+}
+
+func (s *loggerManager) EnableRabbitmq() bool {
+	return s.conf.GetRabbitmq().GetEnable()
 }
 
 func (s *loggerManager) Close() error {

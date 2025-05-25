@@ -1163,6 +1163,64 @@ func (m *Log) validate(all bool) error {
 		}
 	}
 
+	if all {
+		switch v := interface{}(m.GetGorm()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, LogValidationError{
+					field:  "Gorm",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, LogValidationError{
+					field:  "Gorm",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetGorm()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return LogValidationError{
+				field:  "Gorm",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetRabbitmq()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, LogValidationError{
+					field:  "Rabbitmq",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, LogValidationError{
+					field:  "Rabbitmq",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetRabbitmq()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return LogValidationError{
+				field:  "Rabbitmq",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
 		return LogMultiError(errors)
 	}
