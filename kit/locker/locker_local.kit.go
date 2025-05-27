@@ -4,6 +4,7 @@ import (
 	"context"
 	stderrors "errors"
 	"sync"
+	"time"
 )
 
 var _ LocalLocker = (*local)(nil)
@@ -29,11 +30,20 @@ func (s *local) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
 }
 
 func (s *local) Once(ctx context.Context, lockName string) (Unlocker, error) {
-	return s.Mutex(ctx, lockName)
+	locker, err := s.Mutex(ctx, lockName)
+	if err != nil {
+		return locker, err
+	}
+	defer func() {
+		time.AfterFunc(_cacheLockerExpire, func() {
+			_, _ = locker.Unlock(ctx)
+		})
+	}()
+	return locker, nil
 }
 
 func (s *local) Unlock(ctx context.Context, lockName string) {
-	lockerInterface, ok := s.sm.Load(lockName)
+	lockerInterface, ok := s.sm.LoadAndDelete(lockName)
 	if !ok {
 		return
 	}
