@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// go test -v -count=1 ./setup/ -test.run=TestNewLauncherManager
+// go test -v -count=1 ./setup/ -run TestNewLauncherManager
 func TestNewLauncherManager(t *testing.T) {
 	confPath := configtestdata.ConfigPath()
 	type args struct {

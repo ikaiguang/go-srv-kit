@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -v -count=1 ./kit/page -test.run=TestPaginate_ConvertToPageOption
+// go test -v -count=1 ./kit/page -run TestPaginate_ConvertToPageOption
 func TestPaginate_ConvertToPageOption(t *testing.T) {
 	defaultRequest := DefaultPageRequest()
 	pageRequestFor10 := &PageRequest{
@@ -45,7 +45,7 @@ func TestPaginate_ConvertToPageOption(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./kit/page -test.run=TestPaginate_ParsePageRequest
+// go test -v -count=1 ./kit/page -run TestPaginate_ParsePageRequest
 func TestPaginate_ParsePageRequest(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -103,7 +103,7 @@ func TestPaginate_ParsePageRequest(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./kit/page -test.run=TestPaginate_DefaultPageRequest
+// go test -v -count=1 ./kit/page -run TestPaginate_DefaultPageRequest
 func TestPaginate_DefaultPageRequest(t *testing.T) {
 	tests := []struct {
 		name string

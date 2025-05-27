@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v -count=1 ./log/helper/ -test.run=TestSetup_Xxx
+// go test -v -count=1 ./log/helper/ -run TestSetup_Xxx
 func TestSetup_Xxx(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -108,7 +108,7 @@ func TestSetup_Xxx(t *testing.T) {
 	}
 }
 
-// go test -v ./log/helper/ -count=1 -test.run=TestSetup_OneLogger_Xxx
+// go test -v ./log/helper/ -count=1 -run TestSetup_OneLogger_Xxx
 func TestSetup_OneLogger_Xxx(t *testing.T) {
 	stdLoggerConfig := &ConfigStd{
 		Level:      log.LevelDebug,
@@ -126,7 +126,7 @@ func TestSetup_OneLogger_Xxx(t *testing.T) {
 	Debug("TestSetup_OneLogger Then Debug")
 }
 
-// go test -v ./log/helper/ -count=1 -test.run=TestSetup_OneLogger_With
+// go test -v ./log/helper/ -count=1 -run TestSetup_OneLogger_With
 func TestSetup_OneLogger_With(t *testing.T) {
 	stdLoggerConfig := &ConfigStd{
 		Level:      log.LevelDebug,
@@ -145,7 +145,7 @@ func TestSetup_OneLogger_With(t *testing.T) {
 	Debug("TestSetup_OneLogger_With Then Debug")
 }
 
-// go test -v ./log/helper/ -count=1 -test.run=TestSetup_MultiLogger
+// go test -v ./log/helper/ -count=1 -run TestSetup_MultiLogger
 func TestSetup_MultiLogger(t *testing.T) {
 	stdLoggerConfig := &ConfigStd{
 		Level:      log.LevelDebug,

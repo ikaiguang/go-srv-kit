@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./data/gorm/ -count=1 -test.run=TestPaging
+// go test -v ./data/gorm/ -count=1 -run TestPaging
 func TestPaging(t *testing.T) {
 	var data = []struct {
 		name          string
@@ -209,7 +209,7 @@ func TestPaging(t *testing.T) {
 	}
 }
 
-// go test -v ./data/gorm/ -count=1 -test.run=TestTest_CreateUser
+// go test -v ./data/gorm/ -count=1 -run TestTest_CreateUser
 func TestTest_CreateUser(t *testing.T) {
 	userModel := &User{
 		Id:   0,

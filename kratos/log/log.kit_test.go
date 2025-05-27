@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./log/ -count=1 -test.run=TestNewMultiLogger
+// go test -v ./log/ -count=1 -run TestNewMultiLogger
 func TestNewMultiLogger(t *testing.T) {
 	// std logger
 	stdLoggerConfig := &ConfigStd{
@@ -52,7 +52,7 @@ func TestNewMultiLogger(t *testing.T) {
 	logHandler.Infow("key", "value", "remain")
 }
 
-// go test -v ./log/ -count=1 -test.run=TestParseLevel
+// go test -v ./log/ -count=1 -run TestParseLevel
 func TestParseLevel(t *testing.T) {
 	tests := []struct {
 		name  string

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -v ./pkg/crypto -count=1 -test.run=TestMd5
+// go test -v ./pkg/crypto -count=1 -run TestMd5
 func TestMd5(t *testing.T) {
 	tests := []struct {
 		name      string

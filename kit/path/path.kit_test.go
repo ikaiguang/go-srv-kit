@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./path/ -count=1 -test.run=TestPath
+// go test -v ./path/ -count=1 -run TestPath
 func TestPath(t *testing.T) {
 	currentPath := filepath.Join(
 		os.Getenv("GOPATH"),

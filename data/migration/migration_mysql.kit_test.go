@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// go test -v -count=1 ./data/migration -test.run=TestMigrateALL_MySQL
+// go test -v -count=1 ./data/migration -run TestMigrateALL_MySQL
 func TestMigrateALL_MySQL(t *testing.T) {
 	dbConn, err := newMysqlDB()
 	require.Nil(t, err)

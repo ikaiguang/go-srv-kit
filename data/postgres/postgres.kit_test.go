@@ -22,7 +22,7 @@ var (
 	}
 )
 
-// go test -v ./data/postgres/ -count=1 -test.run=TestNewDB_Xxx
+// go test -v ./data/postgres/ -count=1 -run TestNewDB_Xxx
 //
 // ===== 创建用户：修改密码：分配权限 =====
 // CREATE DATABASE test ENCODING = 'utf8';

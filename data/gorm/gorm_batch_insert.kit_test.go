@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./data/gorm/ -count=1 -test.run=TestBatchInsert_ForMySQL
+// go test -v ./data/gorm/ -count=1 -run TestBatchInsert_ForMySQL
 func TestBatchInsert_ForMySQL(t *testing.T) {
 	dataModels := getDataModels()
 
@@ -42,7 +42,7 @@ func TestBatchInsert_ForMySQL(t *testing.T) {
 	}
 }
 
-// go test -v ./data/gorm/ -count=1 -test.run=TestBatchInsert_ForPostgres
+// go test -v ./data/gorm/ -count=1 -run TestBatchInsert_ForPostgres
 func TestBatchInsert_ForPostgres(t *testing.T) {
 	dataModels := getDataModels()
 

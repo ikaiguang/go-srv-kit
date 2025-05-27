@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v -count=1 ./pkg/file -test.run=TestMoveFileToDir
+// go test -v -count=1 ./pkg/file -run TestMoveFileToDir
 func TestMoveFileToDir(t *testing.T) {
 	var (
 		filePath = "./../../test/temp1/temp1.txt"

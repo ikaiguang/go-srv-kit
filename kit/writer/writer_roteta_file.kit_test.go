@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./kit/writer/ -count=1 -test.run=TestNewRotateFile
+// go test -v ./kit/writer/ -count=1 -run TestNewRotateFile
 func TestNewRotateFile(t *testing.T) {
 	conf := &ConfigRotate{
 		Dir:      ".",

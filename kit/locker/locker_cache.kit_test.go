@@ -10,7 +10,7 @@ const (
 	cacheKeyName = "test-redsync"
 )
 
-// go test -v -count=1 ./kit/locker -test.run=TestCache_LockOnce
+// go test -v -count=1 ./kit/locker -run TestCache_LockOnce
 func TestCache_LockOnce(t *testing.T) {
 
 	locker := NewCacheLocker()
@@ -69,7 +69,7 @@ func TestCache_LockOnce(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./kit/locker -test.run=TestCache_LockMutex
+// go test -v -count=1 ./kit/locker -run TestCache_LockMutex
 func TestCache_LockMutex(t *testing.T) {
 
 	locker := NewCacheLocker()

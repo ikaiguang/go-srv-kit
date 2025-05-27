@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// go test -v -count=1 ./kratos/thread -test.run=TestGoSafe
+// go test -v -count=1 ./kratos/thread -run TestGoSafe
 func TestGoSafe(t *testing.T) {
 	logpkg.Setup(log.DefaultLogger)
 	type args struct {

@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// go test -v -count=1 ./mytest/error_pkg -test.run=TestCaller
+// go test -v -count=1 ./mytest/error_pkg -run TestCaller
 func TestCaller(t *testing.T) {
 	tests := []struct {
 		name        string

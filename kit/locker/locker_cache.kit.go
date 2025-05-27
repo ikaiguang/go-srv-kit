@@ -30,31 +30,20 @@ func NewCacheLocker() Locker {
 }
 
 func (s *cache) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
-	mu := &sync.Mutex{}
-	muInterface, _ := s.sm.LoadOrStore(lockName, mu)
-	mu = muInterface.(*sync.Mutex)
-	mu.Lock()
-	defer mu.Unlock()
-
-	lockerInstance, ok := s.cache.Get(lockName)
-	if ok {
-		locker := lockerInstance.(*cacheLock)
-		if !locker.mu.TryLock() {
-			err := ErrorLockerFailed(lockName, stderrors.New("try lock failed"))
-			return locker, err
-		}
-		return locker, nil
+	locker, err := s.getLocker(ctx, lockName)
+	if err != nil {
+		return nil, err
 	}
-	locker := newCacheLock(lockName, s.cache, &sync.Mutex{}, false)
-	locker.mu.Lock()
-
-	s.cache.Set(lockName, locker, _cacheLockerExpire)
 	go locker.extend(ctx)
 
 	return locker, nil
 }
 
 func (s *cache) Once(ctx context.Context, lockName string) (Unlocker, error) {
+	return s.getLocker(ctx, lockName)
+}
+
+func (s *cache) getLocker(ctx context.Context, lockName string) (*cacheLock, error) {
 	mu := &sync.Mutex{}
 	muInterface, _ := s.sm.LoadOrStore(lockName, mu)
 	mu = muInterface.(*sync.Mutex)
@@ -74,7 +63,6 @@ func (s *cache) Once(ctx context.Context, lockName string) (Unlocker, error) {
 	locker.mu.Lock()
 
 	s.cache.Set(lockName, locker, _cacheLockerExpire)
-
 	return locker, nil
 }
 
@@ -86,6 +74,7 @@ func (s *cache) Unlock(ctx context.Context, lockName string) {
 	locker := lockerInstance.(*cacheLock)
 	locker.mu.TryLock()
 	_, _ = locker.Unlock(ctx)
+	s.cache.Delete(lockName)
 	return
 }
 
@@ -122,6 +111,7 @@ func (s *cacheLock) Unlock(ctx context.Context) (bool, error) {
 
 	_ = s.mu.TryLock()
 	s.mu.Unlock()
+	s.cache.Delete(s.lockName)
 	return true, nil
 }
 

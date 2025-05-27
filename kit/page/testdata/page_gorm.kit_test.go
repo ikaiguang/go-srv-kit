@@ -6,7 +6,7 @@ import (
 	pagepkg "github.com/ikaiguang/go-srv-kit/kit/page"
 )
 
-// go test -v -count=1 ./kit/page/testdata -test.run=TestPage_Page
+// go test -v -count=1 ./kit/page/testdata -run TestPage_Page
 func TestPaging_Page(t *testing.T) {
 	data := []struct {
 		name        string
@@ -51,7 +51,7 @@ func TestPaging_Page(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./kit/page/testdata -test.run=TestPaging_Cursor
+// go test -v -count=1 ./kit/page/testdata -run TestPaging_Cursor
 func TestPaging_Cursor(t *testing.T) {
 
 }

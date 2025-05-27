@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./data/rabbitmq/ -count=1 -test.run=TestNewSubscriber
+// go test -v ./data/rabbitmq/ -count=1 -run TestNewSubscriber
 func TestNewSubscriber(t *testing.T) {
 	var (
 		//amqpURI = "amqp://guest:guest@127.0.0.1:5672/"

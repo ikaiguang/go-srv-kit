@@ -26,7 +26,7 @@ var (
 	}
 )
 
-// go test -v ./data/mongo/ -count=1 -test.run=TestNewMongoClient
+// go test -v ./data/mongo/ -count=1 -run TestNewMongoClient
 func TestNewMongoClient(t *testing.T) {
 	type args struct {
 		config *Config

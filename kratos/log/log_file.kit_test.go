@@ -12,7 +12,7 @@ import (
 	writerpkg "github.com/ikaiguang/go-srv-kit/kit/writer"
 )
 
-// go test -v ./log/ -count=1 -test.run=TestNewFileLogger_Xxx
+// go test -v ./log/ -count=1 -run TestNewFileLogger_Xxx
 func TestNewFileLogger_Xxx(t *testing.T) {
 	cfg := &ConfigFile{
 		Level:      log.LevelDebug,
@@ -51,7 +51,7 @@ func TestNewFileLogger_Xxx(t *testing.T) {
 	logHandler.Infow("key", "value", "remain")
 }
 
-// go test -v ./log/ -count=1 -test.run=TestNewFileLogger_WithWriter
+// go test -v ./log/ -count=1 -run TestNewFileLogger_WithWriter
 func TestNewFileLogger_WithWriter(t *testing.T) {
 	cfg := &ConfigFile{
 		Level:      log.LevelDebug,

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// go test -v ./data/jaeger/ -count=1 -test.run=TestNewJaegerExporter_Xxx
+// go test -v ./data/jaeger/ -count=1 -run TestNewJaegerExporter_Xxx
 func TestNewJaegerExporter_Xxx(t *testing.T) {
 	type args struct {
 		conf *Config

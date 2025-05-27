@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v ./log/ -count=1 -test.run=TestNewStdLogger
+// go test -v ./log/ -count=1 -run TestNewStdLogger
 func TestNewStdLogger(t *testing.T) {
 	cfg := &ConfigStd{
 		Level:      log.LevelDebug,
@@ -51,7 +51,7 @@ func TestNewStdLogger(t *testing.T) {
 	*/
 }
 
-// go test -v ./log/ -count=1 -test.run=TestKratos_NewStdLogger
+// go test -v ./log/ -count=1 -run TestKratos_NewStdLogger
 //func TestKratos_NewStdLogger(t *testing.T) {
 //	logImpl := log.NewStdLogger(os.Stderr)
 //

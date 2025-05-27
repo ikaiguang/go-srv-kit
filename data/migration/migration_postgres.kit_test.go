@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// go test -v -count=1 ./data/migration -test.run=TestMigrateALL_Postgres
+// go test -v -count=1 ./data/migration -run TestMigrateALL_Postgres
 func TestMigrateALL_Postgres(t *testing.T) {
 	dbConn, err := newPostgresDB()
 	require.Nil(t, err)

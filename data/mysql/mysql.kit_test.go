@@ -28,7 +28,7 @@ var (
 	}
 )
 
-// go test -v ./data/mysql/ -count=1 -test.run=TestNewDB_Xxx
+// go test -v ./data/mysql/ -count=1 -run TestNewDB_Xxx
 func TestNewDB_Xxx(t *testing.T) {
 	db, err := NewMysqlDB(dbConfig)
 	require.Nil(t, err)
@@ -37,7 +37,7 @@ func TestNewDB_Xxx(t *testing.T) {
 	testDBConn(t, db)
 }
 
-// go test -v ./data/mysql/ -count=1 -test.run=TestNewDB_WithWriters
+// go test -v ./data/mysql/ -count=1 -run TestNewDB_WithWriters
 func TestNewDB_WithWriters(t *testing.T) {
 	writerConfig := &writerpkg.ConfigRotate{
 		Dir:      ".",
@@ -58,7 +58,7 @@ func TestNewDB_WithWriters(t *testing.T) {
 	testDBConn(t, db)
 }
 
-// go test -v ./data/mysql/ -count=1 -test.run=TestDefaultGorm_Xxx
+// go test -v ./data/mysql/ -count=1 -run TestDefaultGorm_Xxx
 func TestDefaultGorm_Xxx(t *testing.T) {
 	// 拨号
 	dialect := mysql.Open(dbConfig.Dsn)

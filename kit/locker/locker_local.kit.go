@@ -8,7 +8,9 @@ import (
 
 var _ LocalLocker = (*local)(nil)
 
-type local struct{ sm sync.Map }
+type local struct {
+	sm sync.Map
+}
 
 // NewLocalLocker ...
 func NewLocalLocker() Locker {
@@ -16,7 +18,7 @@ func NewLocalLocker() Locker {
 }
 
 func (s *local) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
-	locker := newLocalLock(&sync.Mutex{}, lockName)
+	locker := newLocalLock(&s.sm, &sync.Mutex{}, lockName)
 	lockerInterface, _ := s.sm.LoadOrStore(lockName, locker)
 	locker = lockerInterface.(*localLock)
 	if !locker.mu.TryLock() {
@@ -43,18 +45,24 @@ func (s *local) Unlock(ctx context.Context, lockName string) {
 
 // localLock ...
 type localLock struct {
+	sm       *sync.Map
 	mu       *sync.Mutex
 	lockName string
 }
 
-func newLocalLock(mu *sync.Mutex, lockName string) *localLock {
-	return &localLock{mu: mu, lockName: lockName}
+func newLocalLock(sm *sync.Map, mu *sync.Mutex, lockName string) *localLock {
+	return &localLock{
+		sm:       sm,
+		mu:       mu,
+		lockName: lockName,
+	}
 }
 
 // Unlock ...
 func (s *localLock) Unlock(ctx context.Context) (bool, error) {
 	_ = s.mu.TryLock()
 	s.mu.Unlock()
+	s.sm.Delete(s.lockName)
 	return true, nil
 }
 
