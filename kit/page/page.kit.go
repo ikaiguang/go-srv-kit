@@ -5,6 +5,10 @@ const (
 	DefaultPageSize   = 20 // show records number (default : 20)
 )
 
+var (
+	MaxPageSize uint32 = 1000
+)
+
 // DefaultPageRequest 默认分页请求
 func DefaultPageRequest() *PageRequest {
 	return &PageRequest{

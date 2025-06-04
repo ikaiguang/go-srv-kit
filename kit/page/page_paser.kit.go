@@ -20,8 +20,8 @@ func ParsePageRequest(pageRequest *PageRequest) (*PageRequest, *PageOption) {
 
 func ParsePageRequestArgs(page, pageSize uint32) (*PageRequest, *PageOption) {
 	pageRequest := &PageRequest{
-		Page:     0,
-		PageSize: 0,
+		Page:     page,
+		PageSize: pageSize,
 	}
 	return ParsePageRequest(pageRequest)
 }
@@ -38,6 +38,9 @@ func ParsePage(pageNumber uint32) uint32 {
 func ParsePageSize(pageSize uint32) uint32 {
 	if pageSize < 1 {
 		return DefaultPageSize
+	}
+	if pageSize > MaxPageSize {
+		return MaxPageSize
 	}
 	return pageSize
 }
