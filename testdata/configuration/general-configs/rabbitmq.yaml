@@ -1,6 +1,6 @@
 # rabbitmq 消息队列rabbitmq
 rabbitmq:
-  enable: true
+  enable: false
   #url: amqp://rabbitmq:Rabbitmq.123456@127.0.0.1:5672/
   url: amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq-hostname:5672/
   tls_address:

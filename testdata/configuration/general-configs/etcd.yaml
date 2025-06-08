@@ -1,6 +1,6 @@
 # etcd k-v
 etcd:
-  enable: true
+  enable: false
   endpoints:
     #- 127.0.0.1:2379
     - my-etcd-hostname:2379
