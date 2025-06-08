@@ -1,6 +1,6 @@
 # setting 业务
 setting:
-  enable_auth_middleware: true
+  enable_auth_middleware: false
   enable_jaeger_tracer: true
   enable_consul_registry: true
   enable_migrate_db: true

@@ -19,11 +19,21 @@ go run testdata/configuration/main.go \
   -consul_config consul \
   -source_dir general-configs \
   -store_dir go-micro-saas/general-configs/develop
+# powershell
+go run testdata/configuration/main.go `
+  -consul_config consul `
+  -source_dir general-configs  `
+  -store_dir go-micro-saas/general-configs/develop
 
 # service config
 go run testdata/configuration/main.go \
   -consul_config consul \
   -source_dir service-configs \
   -store_dir ""
+# powershell
+go run testdata/configuration/main.go `
+  -consul_config consul `
+  -source_dir service-configs `
+  -store_dir=""
 
 ```
