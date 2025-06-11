@@ -256,8 +256,11 @@ message Encrypt {
   }
   // TokenEncrypt token
   message TokenEncrypt {
-    string sign_key    = 1;
-    string refresh_key = 2;
+    string sign_key                                = 1;
+    string refresh_key                             = 2;
+    google.protobuf.Duration access_token_expire   = 3;  // s
+    google.protobuf.Duration refresh_token_expire  = 4;  // s
+    google.protobuf.Duration previous_token_expire = 5;  // s
   }
   TransferEncrypt transfer_encrypt = 1;
   ServiceEncrypt service_encrypt   = 2;

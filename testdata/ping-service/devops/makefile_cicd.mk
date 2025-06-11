@@ -25,11 +25,11 @@ build-service-image:
 # build :-->: service image
 build:
 	#docker build -t ping-service -f ./testdata/ping-service/devops/Dockerfile .
-	#docker pull golang:1.22.8
-	#docker pull debian:stable-20240926-slim
+	#docker pull golang:1.23.10
+	#docker pull debian:stable-20250520
 	docker build \
-		--build-arg BUILD_FROM_IMAGE=golang:1.22.8 \
-		--build-arg RUN_SERVICE_IMAGE=debian:stable-20240926-slim \
+		--build-arg BUILD_FROM_IMAGE=golang:1.23.10 \
+		--build-arg RUN_SERVICE_IMAGE=debian:stable-20250520 \
 		--build-arg APP_DIR=testdata \
 		--build-arg SERVICE_NAME=ping-service \
 		--build-arg VERSION=latest \

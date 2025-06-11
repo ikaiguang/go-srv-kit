@@ -189,6 +189,11 @@ func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManger) (Aut
 	if config.PreviousTokenExpire < 1 {
 		config.PreviousTokenExpire = PreviousTokenExpire
 	}
+	if config.RefreshTokenExpire < config.AccessTokenExpire {
+		e := errorpkg.ErrorBadRequest("invalid RefreshTokenExpire: must be greater than AccessTokenExpire")
+		err := errorpkg.WithStack(e)
+		return nil, err
+	}
 	// authCacheKeyPrefix := CheckAuthCacheKeyPrefix(config.AuthCacheKeyPrefix)
 	return &authRepo{
 		accessTokenExpire:   config.AccessTokenExpire,

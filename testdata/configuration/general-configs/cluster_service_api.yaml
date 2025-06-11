@@ -3,11 +3,51 @@
 # registry_type 注册类型：endpoint、consul、...；配置中心配置：${registry_type}；例： Bootstrap.Consul
 # service_target 服务目标：endpoint或registry，例：http://127.0.0.1:8899、discovery:///${registry_endpoint}
 cluster_service_api:
+  - service_name: dtm-manager-http
+    transport_type: http
+    registry_type: endpoint
+    service_target: http://127.0.0.1:10001
+  - service_name: dtm-manager-grpc
+    transport_type: grpc
+    registry_type: consul
+    service_target: discovery:///go-micro-saas:dtm-manager:testing:latest
   - service_name: ping-service-http
     transport_type: http
     registry_type: endpoint
-    service_target: http://127.0.0.1:10101
+    service_target: http://127.0.0.1:20101
   - service_name: ping-service-grpc
     transport_type: grpc
     registry_type: consul
-    service_target: discovery:///go-micro-saas:ping-service:production:v1.0.0
+    service_target: discovery:///go-micro-saas:nodeid-service:testing:latest
+  - service_name: nodeid-service-http
+    transport_type: http
+    registry_type: endpoint
+    service_target: http://127.0.0.1:20201
+  - service_name: nodeid-service-grpc
+    transport_type: grpc
+    registry_type: consul
+    service_target: discovery:///go-micro-saas:nodeid-service:testing:latest
+  - service_name: account-service-http
+    transport_type: http
+    registry_type: endpoint
+    service_target: http://127.0.0.1:20301
+  - service_name: account-service-grpc
+    transport_type: grpc
+    registry_type: consul
+    service_target: discovery:///go-micro-saas:account-service:testing:latest
+  - service_name: admin-service-http
+    transport_type: http
+    registry_type: endpoint
+    service_target: http://127.0.0.1:20401
+  - service_name: admin-service-grpc
+    transport_type: grpc
+    registry_type: consul
+    service_target: discovery:///go-micro-saas:admin-service:testing:latest
+  - service_name: org-service-http
+    transport_type: http
+    registry_type: endpoint
+    service_target: http://127.0.0.1:20501
+  - service_name: org-service-grpc
+    transport_type: grpc
+    registry_type: consul
+    service_target: discovery:///go-micro-saas:org-service:testing:latest

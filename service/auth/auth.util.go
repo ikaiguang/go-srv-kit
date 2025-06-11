@@ -97,8 +97,11 @@ func (s *authInstance) loadingTokenManager() (authpkg.TokenManger, authpkg.AuthR
 	}
 	tokenManger := authpkg.NewTokenManger(logger, s.redisCC, authpkg.CheckAuthCacheKeyPrefix(nil))
 	config := &authpkg.Config{
-		SignCrypto:    authpkg.NewSignEncryptor(s.conf.GetSignKey()),
-		RefreshCrypto: authpkg.NewCBCCipher(s.conf.GetRefreshKey()),
+		SignCrypto:          authpkg.NewSignEncryptor(s.conf.GetSignKey()),
+		RefreshCrypto:       authpkg.NewCBCCipher(s.conf.GetRefreshKey()),
+		AccessTokenExpire:   s.conf.GetAccessTokenExpire().AsDuration(),
+		RefreshTokenExpire:  s.conf.GetRefreshTokenExpire().AsDuration(),
+		PreviousTokenExpire: s.conf.GetPreviousTokenExpire().AsDuration(),
 	}
 	stdlog.Println("|*** LOADING: AuthManger: ...")
 	authRepo, err := authpkg.NewAuthRepo(*config, logger, tokenManger)

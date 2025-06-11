@@ -3,7 +3,7 @@ app:
   project_name: go-micro-saas
   server_name: ping-service
   # 开发环境；值：develop、testing、preview、production
-  server_env: production
+  server_env: develop
   server_version: v1.0.0
   # ID: apputil.ID 服务唯一标识; 也用于服务注册发现
   id: "${app.project_name}:${app.server_name}:${app.server_env}:${app.server_version}"

@@ -4592,6 +4592,93 @@ func (m *Encrypt_TokenEncrypt) validate(all bool) error {
 
 	// no validation rules for RefreshKey
 
+	if all {
+		switch v := interface{}(m.GetAccessTokenExpire()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, Encrypt_TokenEncryptValidationError{
+					field:  "AccessTokenExpire",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, Encrypt_TokenEncryptValidationError{
+					field:  "AccessTokenExpire",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAccessTokenExpire()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return Encrypt_TokenEncryptValidationError{
+				field:  "AccessTokenExpire",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetRefreshTokenExpire()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, Encrypt_TokenEncryptValidationError{
+					field:  "RefreshTokenExpire",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, Encrypt_TokenEncryptValidationError{
+					field:  "RefreshTokenExpire",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetRefreshTokenExpire()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return Encrypt_TokenEncryptValidationError{
+				field:  "RefreshTokenExpire",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetPreviousTokenExpire()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, Encrypt_TokenEncryptValidationError{
+					field:  "PreviousTokenExpire",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, Encrypt_TokenEncryptValidationError{
+					field:  "PreviousTokenExpire",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPreviousTokenExpire()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return Encrypt_TokenEncryptValidationError{
+				field:  "PreviousTokenExpire",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
 		return Encrypt_TokenEncryptMultiError(errors)
 	}

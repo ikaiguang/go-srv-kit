@@ -1,6 +1,6 @@
 # service arg
-ARG BUILD_FROM_IMAGE=golang:1.22.8
-ARG RUN_SERVICE_IMAGE=debian:stable-20240926-slim
+ARG BUILD_FROM_IMAGE=golang:1.23.10
+ARG RUN_SERVICE_IMAGE=debian:stable-20250520
 ARG APP_DIR=app
 ARG SERVICE_NAME=ping-service
 ARG VERSION=v1.0.0
@@ -65,10 +65,10 @@ WORKDIR ${WORK_DIR}
 
 # https://developer.aliyun.com/mirror/debian
 # cat /etc/os-release && echo -e "\n\n\n" && cat /etc/apt/sources.list.d/debian.sources
-RUN sed -i 's|deb.debian.org|mirrors.aliyun.com|g' /etc/apt/sources.list.d/debian.sources
+#RUN sed -i 's|deb.debian.org|mirrors.aliyun.com|g' /etc/apt/sources.list.d/debian.sources
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends -y tzdata ca-certificates netbase telnet curl less && \
+    apt-get install -y --no-install-recommends -y tzdata curl less && \
     ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo ${TZ} > /etc/timezone && \
     apt-get autoremove -y && apt-get autoclean -y && apt-get clean -y && \
