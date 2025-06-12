@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	isValidColumnNameRegex = regexp.MustCompile("^[A-Za-z-_]+$") // 正则表达式:列
+	isValidColumnNameRegex = regexp.MustCompile("^[A-Za-z_]+$") // 正则表达式:列
 )
 
 // IsValidColumnName 判断是否为有效的字段名
