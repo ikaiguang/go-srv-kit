@@ -3,6 +3,7 @@ package setuputil
 import (
 	"github.com/go-kratos/kratos/v2/log"
 	consulapi "github.com/hashicorp/consul/api"
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
@@ -43,14 +44,17 @@ var GetDBConn = func(launcherManager LauncherManager) (*gorm.DB, error) {
 	return dbConn, nil
 }
 
+func GetConfig(launcherManager LauncherManager) *configpb.Bootstrap {
+	return launcherManager.GetConfig()
+}
 func GetLogger(launcherManager LauncherManager) (log.Logger, error) {
 	return launcherManager.GetLogger()
 }
 func GetLoggerForMiddleware(launcherManager LauncherManager) (log.Logger, error) {
 	return launcherManager.GetLoggerForMiddleware()
 }
-func GetLoggerForHelper() (log.Logger, error) {
-	return GetLoggerForHelper()
+func GetLoggerForHelper(launcherManager LauncherManager) (log.Logger, error) {
+	return launcherManager.GetLoggerForHelper()
 }
 func GetRedisClient(launcherManager LauncherManager) (redis.UniversalClient, error) {
 	return launcherManager.GetRedisClient()
