@@ -41,7 +41,7 @@ func PrivateIPv4() net.IP {
 		return _IP
 	}
 
-	ip, netErr := NetIP()
+	ip, netErr := NetLocalIP()
 	if netErr == nil && IsValidIP(ip.String()) {
 		return ip
 	}
@@ -60,7 +60,7 @@ func PrivateIPv4() net.IP {
 	return _IP
 }
 
-func NetIP() (net.IP, error) {
+func NetLocalIP() (net.IP, error) {
 	conn, err := net.DialTimeout("udp", "8.8.8.8:53", time.Microsecond*30)
 	if err != nil {
 		return nil, err
