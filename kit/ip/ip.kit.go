@@ -51,17 +51,19 @@ func PrivateIPv4() net.IP {
 		if !ok || ipNet.IP.IsLoopback() {
 			continue
 		}
-		return ipNet.IP.To4()
-		//ip = ipNet.IP.To4()
-		//if isPrivateIPv4(ip) {
-		//	return ip
-		//}
+		ip = ipNet.IP.To4()
+		if ip == nil {
+			continue
+		}
+		if IsValidIP(ip.String()) {
+			return ip
+		}
 	}
 	return _IP
 }
 
 func NetLocalIP() (net.IP, error) {
-	conn, err := net.DialTimeout("udp", "8.8.8.8:53", time.Microsecond*30)
+	conn, err := net.DialTimeout("udp", "8.8.8.8:53", time.Second)
 	if err != nil {
 		return nil, err
 	}
