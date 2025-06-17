@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v -count=1 ./kratos/error -run TestNew
+// go test -v -count 1 ./kratos/error -run TestNew
 func TestNew(t *testing.T) {
 	tests := []struct {
 		name       string

@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-// go test -v -count=1 ./kit/password -run=TestCompare
+// go test -v -count 1 ./kit/password -run TestCompare
 func TestCompare(t *testing.T) {
 	type args struct {
 		hashedPassword string
@@ -41,7 +41,7 @@ func TestCompare(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./kit/password -run=TestEncrypt
+// go test -v -count 1 ./kit/password -run TestEncrypt
 func TestEncrypt(t *testing.T) {
 	type args struct {
 		password string

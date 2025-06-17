@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// go test -v -count=1 ./kratos/error -run TestCause
+// go test -v -count 1 ./kratos/error -run TestCause
 func TestCause(t *testing.T) {
 	e := ErrorRecordNotFound("testdata")
 	err := WithStack(e)

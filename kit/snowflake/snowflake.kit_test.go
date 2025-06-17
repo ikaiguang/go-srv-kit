@@ -2,7 +2,7 @@ package snowflake
 
 import "testing"
 
-// go test -v -count=1 ./kit/snowflake -run=TestNextID
+// go test -v -count 1 ./kit/snowflake -run TestNextID
 func TestNextID(t *testing.T) {
 	tests := []struct {
 		name string

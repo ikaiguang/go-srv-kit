@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v -count=1 ./log/helper/ -run TestSetup_Xxx
+// go test -v -count 1 ./log/helper/ -run TestSetup_Xxx
 func TestSetup_Xxx(t *testing.T) {
 	tests := []struct {
 		name       string

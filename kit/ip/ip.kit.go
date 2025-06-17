@@ -3,6 +3,7 @@ package ippkg
 import (
 	"net"
 	"sync"
+	"time"
 )
 
 const (
@@ -40,18 +41,35 @@ func PrivateIPv4() net.IP {
 		return _IP
 	}
 
+	ip, netErr := NetIP()
+	if netErr == nil && IsValidIP(ip.String()) {
+		return ip
+	}
+
 	for _, a := range as {
 		ipNet, ok := a.(*net.IPNet)
 		if !ok || ipNet.IP.IsLoopback() {
 			continue
 		}
-
-		ip := ipNet.IP.To4()
-		if isPrivateIPv4(ip) {
-			return ip
-		}
+		return ipNet.IP.To4()
+		//ip = ipNet.IP.To4()
+		//if isPrivateIPv4(ip) {
+		//	return ip
+		//}
 	}
 	return _IP
+}
+
+func NetIP() (net.IP, error) {
+	conn, err := net.DialTimeout("udp", "8.8.8.8:53", time.Microsecond*30)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = conn.Close()
+	}()
+
+	return conn.LocalAddr().(*net.UDPAddr).IP, nil
 }
 
 // isPrivateIPv4 ...

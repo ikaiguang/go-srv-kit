@@ -9,7 +9,7 @@ setting:
   # captcha 验证码
   captcha:
     captcha_len: 4
-    captcha_ttl: 900s
+    captcha_ttl: 600s
   # login 登录
   login:
     # 密码连续输错N次后短暂锁定账号

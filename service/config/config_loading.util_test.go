@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// go test -v -count=1 ./config/ -run TestLoading_Config
+// go test -v -count 1 ./config/ -run TestLoading_Config
 func TestLoading_Config(t *testing.T) {
 	type args struct {
 		filePath string
@@ -42,7 +42,7 @@ func TestLoading_Config(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./config/ -run TestCurrentPath
+// go test -v -count 1 ./config/ -run TestCurrentPath
 func TestCurrentPath(t *testing.T) {
 	// get $GOPATH
 	gopath := os.Getenv("GOPATH")

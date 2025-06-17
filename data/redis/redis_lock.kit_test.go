@@ -14,7 +14,7 @@ const (
 	keyName = "test-redsync"
 )
 
-// go test -v -count=1 ./data/redis -run TestLockOnce
+// go test -v -count 1 ./data/redis -run TestLockOnce
 func TestLockOnce(t *testing.T) {
 
 	redisCC, err := NewDB(redisConfig)
@@ -75,7 +75,7 @@ func TestLockOnce(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./data/redis -run TestLockMutex
+// go test -v -count 1 ./data/redis -run TestLockMutex
 func TestLockMutex(t *testing.T) {
 
 	redisCC, err := NewDB(redisConfig)

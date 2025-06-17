@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v -count=1 ./data/gorm -run TestPaginate_ParseDirection
+// go test -v -count 1 ./data/gorm -run TestPaginate_ParseDirection
 func TestPaginate_ParseDirection(t *testing.T) {
 	tests := []struct {
 		name  string

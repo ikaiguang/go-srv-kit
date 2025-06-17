@@ -25,7 +25,7 @@ func fakeCodeMessage() *CodeMessage {
 	}
 }
 
-// go test -v -count=1 ./kit/email -run TestLocalIP
+// go test -v -count 1 ./kit/email -run TestLocalIP
 func TestSendCode(t *testing.T) {
 	type args struct {
 		sender *Sender

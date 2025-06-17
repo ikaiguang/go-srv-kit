@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// go test -v -count=1 ./config/ -run TestLoadingConfigFromConsul
+// go test -v -count 1 ./config/ -run TestLoadingConfigFromConsul
 func TestLoadingConfigFromConsul(t *testing.T) {
 	type args struct {
 		appConfig *configpb.App

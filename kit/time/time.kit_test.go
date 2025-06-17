@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// go test -v -count=1 ./kit/time -run=TestFormat
+// go test -v -count 1 ./kit/time -run TestFormat
 func TestFormat(t *testing.T) {
 	tNow := now()
 

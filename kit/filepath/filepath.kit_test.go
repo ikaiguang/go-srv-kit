@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v -count=1 ./pkg/filepath -run TestWaldDir
+// go test -v -count 1 ./pkg/filepath -run TestWaldDir
 func TestWaldDir(t *testing.T) {
 	rootPath := "./../../pkg"
 	fp, fi, err := WaldDir(rootPath)
@@ -19,7 +19,7 @@ func TestWaldDir(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./kit/filepath -run TestReadDir
+// go test -v -count 1 ./kit/filepath -run TestReadDir
 func TestReadDir(t *testing.T) {
 	rootPath := "./../"
 	fi, err := ReadDir(rootPath)

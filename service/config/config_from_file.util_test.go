@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// go test -v -count=1 ./config/ -run TestLoadingFile
+// go test -v -count 1 ./config/ -run TestLoadingFile
 func TestLoadingFile(t *testing.T) {
 	type args struct {
 		filePath string

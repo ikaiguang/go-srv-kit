@@ -8,7 +8,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-// go test -v -count=1 ./kratos/app -run TestCustomDecodeProtobufResponse
+// go test -v -count 1 ./kratos/app -run TestCustomDecodeProtobufResponse
 func TestCustomDecodeProtobufResponse(t *testing.T) {
 	var (
 		err      error
@@ -54,7 +54,7 @@ func TestCustomDecodeProtobufResponse(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./business/app -run TestCustomDecodeHTTPResponse
+// go test -v -count 1 ./business/app -run TestCustomDecodeHTTPResponse
 func TestCustomDecodeHTTPResponse(t *testing.T) {
 	body := []byte(`{"code":0,"reason":"","message":"","data":{"message":"Received Message : hello"},"request_id":""}`)
 	tests := []struct {
@@ -82,7 +82,7 @@ func TestCustomDecodeHTTPResponse(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./business/app -run TestCustomDecodeResponseError
+// go test -v -count 1 ./business/app -run TestCustomDecodeResponseError
 func TestCustomDecodeResponseError(t *testing.T) {
 	body := []byte(`{"code":400, "reason":"CONTENT_ERROR", "message":"testing error", "requestId":"", "data":null, "metadata":{"testdata":"testdata"}}`)
 	tests := []struct {

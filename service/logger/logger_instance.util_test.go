@@ -6,7 +6,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 )
 
-// go test -v -count=1 ./service/logger -run Test_loggerManager_GetLoggers
+// go test -v -count 1 ./service/logger -run Test_loggerManager_GetLoggers
 func Test_loggerManager_GetLoggers(t *testing.T) {
 	tests := []struct {
 		name    string
