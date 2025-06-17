@@ -13,8 +13,9 @@ type Client interface {
 }
 
 type client struct {
-	conn gomail.SendCloser
-	conf *Sender
+	//conn gomail.SendCloser
+	dialer *gomail.Dialer
+	conf   *Sender
 }
 
 func NewClient(sender Sender) (Client, error) {
@@ -22,13 +23,14 @@ func NewClient(sender Sender) (Client, error) {
 		return nil, err
 	}
 	d := gomail.NewDialer(sender.Host, sender.Port, sender.Username, sender.Password)
-	cc, err := d.Dial()
-	if err != nil {
-		return nil, err
-	}
+	//cc, err := d.Dial()
+	//if err != nil {
+	//	return nil, err
+	//}
 	return &client{
-		conn: cc,
-		conf: &sender,
+		//conn: cc,
+		dialer: d,
+		conf:   &sender,
 	}, nil
 }
 
@@ -36,7 +38,8 @@ func (s *client) Send(message *Message) error {
 	if err := message.Validate(); err != nil {
 		return err
 	}
-	return gomail.Send(s.conn, message.EmailMessage())
+	return s.dialer.DialAndSend(message.EmailMessage())
+	//return gomail.Send(s.conn, message.EmailMessage())
 }
 
 func (s *client) SendCode(message *CodeMessage) error {
@@ -62,7 +65,8 @@ func (s *client) SendCode(message *CodeMessage) error {
 }
 
 func (s *client) Close() error {
-	return s.conn.Close()
+	return nil
+	//return s.conn.Close()
 }
 
 type defaultClient struct {
