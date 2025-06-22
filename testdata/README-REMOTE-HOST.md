@@ -7,15 +7,15 @@
 
 # develop env
 127.0.0.1 testing-service-hostname
-127.0.0.1 my-service-hostname
-127.0.0.1 my-consul-hostname
-127.0.0.1 my-etcd-hostname
-127.0.0.1 my-jaeger-hostname
-127.0.0.1 my-mysql-hostname
-127.0.0.1 my-postgres-hostname
-127.0.0.1 my-rabbitmq-hostname
-127.0.0.1 my-redis-hostname
-127.0.0.1 my-mongo-hostname
+127.0.0.1 my-service
+127.0.0.1 my-consul
+127.0.0.1 my-etcd
+127.0.0.1 my-jaeger
+127.0.0.1 my-mysql
+127.0.0.1 my-postgres
+127.0.0.1 my-rabbitmq
+127.0.0.1 my-redis
+127.0.0.1 my-mongo
 127.0.0.1 my-mongo1
 127.0.0.1 my-mongo2
 127.0.0.1 my-mongo3

@@ -15,11 +15,12 @@ if [ "${IS_EXIST_BASE_IMAGE}" -eq 1 ]; then
 else
   echo "==> docker pull ${FROM_IMAGE_NAME}"
   docker pull ${FROM_IMAGE_NAME}
-fi
-echo "==> build base image FROM_IMAGE_NAME : ${FROM_IMAGE_NAME}"
 
-echo "==> build base image : ${BASE_IMAGE_NAME}"
-docker build \
-		--build-arg BUILD_FROM_IMAGE=${FROM_IMAGE_NAME} \
-		-t ${BASE_IMAGE_NAME} \
-		-f ${CURRENT_FILE_DIR}/Dockerfile_base_image .
+  echo "==> build base image FROM_IMAGE_NAME : ${FROM_IMAGE_NAME}"
+
+  echo "==> build base image : ${BASE_IMAGE_NAME}"
+  docker build \
+      --build-arg BUILD_FROM_IMAGE=${FROM_IMAGE_NAME} \
+      -t ${BASE_IMAGE_NAME} \
+      -f ${CURRENT_FILE_DIR}/Dockerfile_base_image .
+fi

@@ -193,7 +193,7 @@ consul:
   enable: false
   scheme:
   address: 127.0.0.1:8500
-  # address: my-consul-hostname:8500
+  # address: my-consul:8500
   path_prefix:
   datacenter:
   wait_time: 0s
@@ -227,7 +227,7 @@ jaeger:
   kind: grpc
   # addr: grpc=4317 http=4318
   addr: 127.0.0.1:4317
-  # addr: my-jaeger-hostname:4317
+  # addr: my-jaeger:4317
   is_insecure: true
   timeout: 0s
   with_http_basic_auth: false

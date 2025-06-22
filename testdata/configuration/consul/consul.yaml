@@ -2,7 +2,7 @@
 consul:
   scheme:
   #address: 127.0.0.1:8500
-  address: my-consul-hostname:8500
+  address: my-consul:8500
   path_prefix:
   datacenter:
   wait_time: 0s

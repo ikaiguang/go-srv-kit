@@ -3,7 +3,7 @@ etcd:
   enable: false
   endpoints:
     #- 127.0.0.1:2379
-    - my-etcd-hostname:2379
+    - my-etcd:2379
   username:
   password:
   dial_timeout: 0s

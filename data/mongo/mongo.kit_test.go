@@ -14,7 +14,7 @@ var (
 		Debug:             true,
 		AppName:           "mongo:test",
 		Hosts:             nil,
-		Addr:              "mongodb://mongo:Mongo.123456@my-mongo-hostname:27017/admin",
+		Addr:              "mongodb://mongo:Mongo.123456@my-mongo:27017/admin",
 		MaxPoolSize:       100,
 		MinPoolSize:       2,
 		MaxConnecting:     10,

@@ -125,7 +125,7 @@ log:
 mysql:
   enable: true
   #dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
-  dsn: root:Mysql.123456@tcp(my-mysql-hostname:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
+  dsn: root:Mysql.123456@tcp(my-mysql:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
   # slow_threshold 慢查询时间
   slow_threshold: 0.1s
   logger_enable: true
@@ -145,7 +145,7 @@ mysql:
 psql:
   enable: true
   #dsn: "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-  dsn: "host=my-postgres-hostname user=postgres password=Postgres.123456 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+  dsn: "host=my-postgres user=postgres password=Postgres.123456 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
   # slow_threshold 慢查询时间
   slow_threshold: 0.1s
   logger_enable: true
@@ -168,7 +168,7 @@ mongo:
   app_name: "${app.project_name}:${app.server_name}"
   #addr: mongodb://mongo:Mongo.123456@127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/admin?replicaSet=rs0
   hosts:
-  addr: mongodb://mongo:Mongo.123456@my-mongo-hostname:27017/admin
+  addr: mongodb://mongo:Mongo.123456@my-mongo:27017/admin
   database: testdata
   max_pool_size: 100
   min_pool_size: 2
@@ -184,7 +184,7 @@ redis:
   enable: true
   addresses:
     #- 127.0.0.1:6379
-    - my-redis-hostname:6379
+    - my-redis:6379
   username:
   password: Redis.123456
   db: 0
@@ -204,7 +204,7 @@ redis:
 rabbitmq:
   enable: true
   #url: amqp://rabbitmq:Rabbitmq.123456@127.0.0.1:5672/
-  url: amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq-hostname:5672/
+  url: amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq:5672/
   tls_address:
   tls_ca_pem:
   tls_cert_pem:
@@ -215,7 +215,7 @@ consul:
   enable: true
   scheme:
   #address: 127.0.0.1:8500
-  address: my-consul-hostname:8500
+  address: my-consul:8500
   path_prefix:
   datacenter:
   wait_time: 0s
@@ -236,7 +236,7 @@ etcd:
   enable: true
   endpoints:
     #- 127.0.0.1:2379
-    - my-etcd-hostname:2379
+    - my-etcd:2379
   username:
   password:
   dial_timeout: 0s
@@ -250,7 +250,7 @@ jaeger:
   kind: grpc
   # addr: grpc=4317 http=4318
   # addr: 127.0.0.1:4317
-  addr: my-jaeger-hostname:4317
+  addr: my-jaeger:4317
   is_insecure: true
   timeout: 0s
   with_http_basic_auth: false

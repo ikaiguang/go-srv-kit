@@ -69,6 +69,11 @@ deploy-on-docker:
 .PHONY: stop-docker-deploy
 # stop :-->: docker container
 stop-docker-deploy:
-	@echo "deploy-on-docker :-->: deploying on docker"
+	@echo "stop-docker-deploy :-->: stop docker container "
 	docker-compose -f ./testdata/ping-service/devops/docker-deploy/docker-compose.yaml down
 
+.PHONY: restart-docker-deploy
+# restart :-->: docker container
+restart-docker-deploy:
+	@echo "restart-docker-deploy :-->: restart docker container"
+	docker-compose -f ./testdata/ping-service/devops/docker-deploy/docker-compose.yaml restart

@@ -24,7 +24,7 @@ func TestNewJaegerExporter_Xxx(t *testing.T) {
 			args: args{
 				conf: &Config{
 					Kind:              KingGRPC,
-					Addr:              "my-jaeger-hostname:4317",
+					Addr:              "my-jaeger:4317",
 					IsInsecure:        true,
 					Timeout:           durationpb.New(time.Second * 30),
 					WithHttpBasicAuth: false,
@@ -41,7 +41,7 @@ func TestNewJaegerExporter_Xxx(t *testing.T) {
 			args: args{
 				conf: &Config{
 					Kind:              KingGRPC,
-					Addr:              "my-jaeger-hostname:4318",
+					Addr:              "my-jaeger:4318",
 					IsInsecure:        true,
 					Timeout:           durationpb.New(time.Second * 30),
 					WithHttpBasicAuth: false,

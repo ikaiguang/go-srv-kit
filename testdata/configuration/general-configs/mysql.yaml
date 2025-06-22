@@ -2,7 +2,7 @@
 mysql:
   enable: false
   #dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
-  dsn: root:Mysql.123456@tcp(my-mysql-hostname:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
+  dsn: root:Mysql.123456@tcp(my-mysql:3306)/mysql?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
   # slow_threshold 慢查询时间
   slow_threshold: 0.1s
   logger_enable: true

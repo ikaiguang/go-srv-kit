@@ -5,7 +5,7 @@ jaeger:
   kind: grpc
   # addr: grpc=4317 http=4318
   # addr: 127.0.0.1:4317
-  addr: my-jaeger-hostname:4317
+  addr: my-jaeger:4317
   is_insecure: true
   timeout: 0s
   with_http_basic_auth: false

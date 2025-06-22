@@ -165,7 +165,7 @@ mongo:
   debug: true
   app_name: "${app.project_name}:${app.server_name}"
   #addr: mongodb://mongo:Mongo.123456@127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/admin?replicaSet=rs0
-  addr: mongodb://mongo:Mongo.123456@my-mongo-hostname:27017/admin
+  addr: mongodb://mongo:Mongo.123456@my-mongo:27017/admin
   database: testdata
   max_pool_size: 100
   min_pool_size: 2
@@ -240,7 +240,7 @@ jaeger:
   kind: grpc
   # addr: grpc=4317 http=4318
   # addr: 127.0.0.1:4317
-  addr: my-jaeger-hostname:4317
+  addr: my-jaeger:4317
   is_insecure: true
   timeout: 0s
   with_http_basic_auth: false

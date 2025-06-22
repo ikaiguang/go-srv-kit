@@ -19,7 +19,7 @@ import (
 func TestNewSubscriber(t *testing.T) {
 	var (
 		//amqpURI = "amqp://guest:guest@127.0.0.1:5672/"
-		amqpURI = "amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq-hostname:5672/"
+		amqpURI = "amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq:5672/"
 		topic   = "example.topic"
 	)
 	logger := newMultiLogger()
