@@ -1,0 +1,60 @@
+# log 日志
+log:
+  console:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: debug
+  file:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: DEBUG
+    dir: ./runtime/logs
+    filename: "${app.server_name}_log"
+    # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
+    # 轮询规则：默认为：RotateTime
+    rotate_time: 86400s
+    # rotate_size 轮询规则：按文件大小(默认：52428800 # 50<<20 = 50M)
+    # 轮询规则：默认为：RotateTime
+    rotate_size: 52428800
+    # storage_age 存储规则：n久(默认：30天)
+    # 存储规则：默认为：StorageAge
+    storage_age: 2592000s
+    # storage_counter 存储规则：n个(默认：10086个)
+    # 存储规则：默认为：StorageAge
+    storage_counter: 10086
+  gorm:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: DEBUG
+    dir: ./runtime/logs
+    filename: "${app.server_name}_gorm"
+    # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
+    # 轮询规则：默认为：RotateTime
+    rotate_time: 86400s
+    # rotate_size 轮询规则：按文件大小(默认：52428800 # 50<<20 = 50M)
+    # 轮询规则：默认为：RotateTime
+    rotate_size: 52428800
+    # storage_age 存储规则：n久(默认：30天)
+    # 存储规则：默认为：StorageAge
+    storage_age: 2592000s
+    # storage_counter 存储规则：n个(默认：10086个)
+    # 存储规则：默认为：StorageAge
+    storage_counter: 10086
+  rabbitmq:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: DEBUG
+    dir: ./runtime/logs
+    filename: "${app.server_name}_rabbitmq"
+    # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
+    # 轮询规则：默认为：RotateTime
+    rotate_time: 86400s
+    # rotate_size 轮询规则：按文件大小(默认：52428800 # 50<<20 = 50M)
+    # 轮询规则：默认为：RotateTime
+    rotate_size: 52428800
+    # storage_age 存储规则：n久(默认：30天)
+    # 存储规则：默认为：StorageAge
+    storage_age: 2592000s
+    # storage_counter 存储规则：n个(默认：10086个)
+    # 存储规则：默认为：StorageAge
+    storage_counter: 10086

@@ -1,0 +1,17 @@
+# mongo
+mongo:
+  enable: false
+  debug: true
+  app_name: "${app.project_name}:${app.server_name}"
+  #addr: mongodb://mongo:Mongo.123456@127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/admin?replicaSet=rs0
+  hosts:
+  addr: mongodb://mongo:Mongo.123456@my-mongo:27017/admin
+  database: testdata
+  max_pool_size: 100
+  min_pool_size: 2
+  max_connecting: 10
+  connect_timeout: 3s
+  timeout: 3s
+  heartbeat_interval: 3s
+  max_conn_idle_time: 60s
+  slow_threshold: 0.1s

@@ -12,7 +12,7 @@ psql:
   # conn_max_active 连接的最大数量
   conn_max_active: 100
   # conn_max_lifetime 连接可复用的最大时间
-  conn_max_lifetime: 300s
+  conn_max_lifetime: 900s
   # conn_max_idle 连接池中空闲连接的最大数量
   conn_max_idle: 10
   # conn_max_idle_time 设置连接空闲的最长时间
