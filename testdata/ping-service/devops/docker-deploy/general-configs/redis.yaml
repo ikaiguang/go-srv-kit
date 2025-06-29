@@ -3,7 +3,7 @@ redis:
   enable: true
   addresses:
     #- 127.0.0.1:6379
-    - my-redis:6379
+    - my-redis-testing:6379
   username:
   password: Redis.123456
   db: 0

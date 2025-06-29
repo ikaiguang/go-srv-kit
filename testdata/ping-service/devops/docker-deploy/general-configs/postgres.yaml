@@ -2,7 +2,7 @@
 psql:
   enable: true
   #dsn: "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-  dsn: "host=my-postgres user=postgres password=Postgres.123456 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+  dsn: "host=my-postgres-testing user=postgres password=Postgres.123456 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
   # slow_threshold 慢查询时间
   slow_threshold: 0.1s
   logger_enable: true

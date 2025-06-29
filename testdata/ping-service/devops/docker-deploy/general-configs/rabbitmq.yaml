@@ -2,7 +2,7 @@
 rabbitmq:
   enable: true
   #url: amqp://rabbitmq:Rabbitmq.123456@127.0.0.1:5672/
-  url: amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq:5672/
+  url: amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq-testing:5672/
   tls_address:
   tls_ca_pem:
   tls_cert_pem:
