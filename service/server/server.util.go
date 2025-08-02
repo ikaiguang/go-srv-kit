@@ -27,7 +27,10 @@ type serverManager struct {
 	grpcServer     *grpc.Server
 }
 
-func NewServerManager(launcherManager setuputil.LauncherManager, authWhiteList map[string]middlewareutil.TransportServiceKind) (ServerManager, error) {
+func NewServerManager(
+	launcherManager setuputil.LauncherManager,
+	authWhiteList map[string]middlewareutil.TransportServiceKind,
+) (ServerManager, error) {
 	return &serverManager{
 		launcherManager: launcherManager,
 		authWhiteList:   authWhiteList,

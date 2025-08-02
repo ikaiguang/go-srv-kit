@@ -18,6 +18,7 @@ var _ metadata.Option
 func NewHTTPServer(
 	launcherManager setuputil.LauncherManager,
 	authWhiteList map[string]middlewareutil.TransportServiceKind,
+	serverOpts ...http.ServerOption,
 ) (*http.Server, error) {
 	httpConfig := configutil.HTTPConfig(launcherManager.GetConfig())
 	if !httpConfig.GetEnable() {
@@ -47,6 +48,7 @@ func NewHTTPServer(
 	}
 
 	// 编码 与 解码
+	apppkg.SetJSONMarshalOptions(&apppkg.MarshalOptions)
 	opts = append(opts, apputil.ServerDecoderEncoder()...)
 	opts = append(opts, apppkg.NotFound404())
 
@@ -74,6 +76,10 @@ func NewHTTPServer(
 
 	// 中间件选项
 	opts = append(opts, http.Middleware(middlewareSlice...))
+
+	// other
+	InjectHTTPServerOptions(&opts)
+	opts = append(opts, serverOpts...)
 
 	//v1.RegisterGreeterHTTPServer(srv, greeter)
 	return http.NewServer(opts...), err

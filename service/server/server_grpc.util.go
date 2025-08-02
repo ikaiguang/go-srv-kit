@@ -16,6 +16,7 @@ var _ metadata.Option
 func NewGRPCServer(
 	launcherManager setuputil.LauncherManager,
 	authWhiteList map[string]middlewareutil.TransportServiceKind,
+	serverOpts ...grpc.ServerOption,
 ) (*grpc.Server, error) {
 	grpcConfig := configutil.GRPCConfig(launcherManager.GetConfig())
 	if !grpcConfig.GetEnable() {
@@ -65,6 +66,10 @@ func NewGRPCServer(
 
 	// 中间件选项
 	opts = append(opts, grpc.Middleware(middlewareSlice...))
+
+	// other
+	InjectGRPCServerOptions(&opts)
+	opts = append(opts, serverOpts...)
 
 	//v1.RegisterGreeterServer(srv, greeter)
 	return grpc.NewServer(opts...), err
