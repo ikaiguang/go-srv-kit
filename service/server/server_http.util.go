@@ -48,7 +48,6 @@ func NewHTTPServer(
 	}
 
 	// 编码 与 解码
-	apppkg.SetJSONMarshalOptions(&apppkg.MarshalOptions)
 	opts = append(opts, apputil.ServerDecoderEncoder()...)
 	opts = append(opts, apppkg.NotFound404())
 
