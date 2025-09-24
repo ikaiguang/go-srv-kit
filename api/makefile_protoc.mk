@@ -3,7 +3,7 @@ override ABSOLUTE_PATH := $(patsubst %/,%,$(dir $(ABSOLUTE_MAKEFILE)))
 override REL_PROJECT_PATH := $(subst $(PROJECT_ABS_PATH)/,,$(ABSOLUTE_PATH))
 
 # saas services
-.PHONY: protoc-config-protobuf
+.PHONY: protoc-api-protobuf
 # protoc :-->: generate services api protobuf
 protoc-api-protobuf:
 	@echo "# generate services api protobuf"

@@ -110,4 +110,5 @@ dist
 openapi.yaml
 *.swagger.json
 _output
+_output_testdata
 mytest

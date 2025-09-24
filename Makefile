@@ -59,6 +59,7 @@ help:
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
+# `protoc`使用版本`v31.1`;下载链接： https://github.com/protocolbuffers/protobuf/releases/tag/v31.1
 .PHONY: init
 # init and install necessary software
 init:
