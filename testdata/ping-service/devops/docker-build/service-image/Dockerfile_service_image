@@ -1,6 +1,6 @@
 # service arg
-ARG BUILD_FROM_IMAGE=golang:1.23.10
-ARG RUN_SERVICE_IMAGE=debian:stable-20250520
+ARG BUILD_FROM_IMAGE=golang:1.24.10
+ARG RUN_SERVICE_IMAGE=debian:stable-20251117
 ARG APP_DIR=testdata
 ARG SERVICE_NAME=ping-service
 ARG VERSION=v1.0.0
@@ -66,6 +66,12 @@ ENV TZ=$TZ
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR ${WORK_DIR}
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates tzdata net-tools less netbase telnet curl \
+    && ln -sf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo ${TZ} > /etc/timezone \
+    && apt-get autoremove -y && apt-get autoclean -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder ${WORK_DIR}/bin/ping-service ./ping-service
 COPY --from=builder ${WORK_DIR}/bin/all-in-one ./all-in-one

@@ -1,5 +1,5 @@
 # service arg
-ARG BUILD_FROM_IMAGE=golang:1.23.10
+ARG BUILD_FROM_IMAGE=golang:1.24.10
 ARG RUN_SERVICE_IMAGE=debian:stable-20250520
 ARG APP_DIR=app
 ARG SERVICE_NAME=ping-service

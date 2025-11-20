@@ -7,7 +7,7 @@
 
 ```shell
 docker build \
-		--build-arg BUILD_FROM_IMAGE=golang:1.23.10 \
+		--build-arg BUILD_FROM_IMAGE=golang:1.24.10 \
 		--build-arg RUN_SERVICE_IMAGE=debian:stable-20250520 \
 		--build-arg APP_DIR=testdata \
 		--build-arg SERVICE_NAME=ping-service \
