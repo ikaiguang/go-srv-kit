@@ -25,3 +25,62 @@ func IsDefaultValue(i interface{}) bool {
 		return false
 	}
 }
+
+// IsEmpty gets whether the specified object is considered empty or not.
+func IsEmpty(object interface{}) bool {
+	// get nil case out of the way
+	if object == nil {
+		return true
+	}
+
+	objValue := reflect.ValueOf(object)
+
+	switch objValue.Kind() {
+	// collection types are empty when they have no element
+	case reflect.Chan, reflect.Map, reflect.Slice:
+		return objValue.Len() == 0
+	// pointers are empty if nil or if the value they point to is empty
+	case reflect.Ptr:
+		if objValue.IsNil() {
+			return true
+		}
+		deref := objValue.Elem().Interface()
+		return IsEmpty(deref)
+	// for all other types, compare against the zero value
+	// array types are empty when they match their zero-initialized state
+	default:
+		zero := reflect.Zero(objValue.Type())
+		return reflect.DeepEqual(object, zero.Interface())
+	}
+}
+
+func SwapObject(dst, src interface{}) {
+	dstType := reflect.TypeOf(dst)
+	if dstType.Kind() != reflect.Ptr {
+		return
+	}
+	srcType := reflect.TypeOf(src)
+	if srcType.Kind() != reflect.Ptr {
+		srcType = reflect.PointerTo(srcType)
+	}
+	if dstType.Kind() != srcType.Kind() {
+		return
+	}
+	dstValue := reflect.ValueOf(dst)
+	if dstValue.Kind() == reflect.Ptr {
+		dstValue = dstValue.Elem()
+	}
+	srcValue := reflect.ValueOf(src)
+	if srcValue.Kind() == reflect.Ptr {
+		srcValue = srcValue.Elem()
+	}
+	dstValue.Set(srcValue)
+}
+
+func NewObject(dst interface{}) interface{} {
+	typ := reflect.TypeOf(dst)
+	if typ.Kind() == reflect.Ptr {
+		typ = typ.Elem()
+	}
+	return reflect.New(typ).Interface()
+}
