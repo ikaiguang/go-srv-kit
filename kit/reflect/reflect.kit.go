@@ -63,7 +63,7 @@ func SwapObject(dst, src interface{}) {
 	if srcType.Kind() != reflect.Ptr {
 		srcType = reflect.PointerTo(srcType)
 	}
-	if dstType.Kind() != srcType.Kind() {
+	if dstType.String() != srcType.String() {
 		return
 	}
 	dstValue := reflect.ValueOf(dst)
