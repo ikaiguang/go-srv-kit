@@ -54,27 +54,34 @@ func IsEmpty(object interface{}) bool {
 	}
 }
 
-func SwapObject(dst, src interface{}) {
+func SwapObject(dst, src interface{}) bool {
 	dstType := reflect.TypeOf(dst)
 	if dstType.Kind() != reflect.Ptr {
-		return
+		return false
 	}
 	srcType := reflect.TypeOf(src)
 	if srcType.Kind() != reflect.Ptr {
 		srcType = reflect.PointerTo(srcType)
 	}
 	if dstType.String() != srcType.String() {
-		return
+		return false
 	}
 	dstValue := reflect.ValueOf(dst)
 	if dstValue.Kind() == reflect.Ptr {
 		dstValue = dstValue.Elem()
 	}
+	if !dstValue.IsValid() {
+		return false
+	}
 	srcValue := reflect.ValueOf(src)
 	if srcValue.Kind() == reflect.Ptr {
 		srcValue = srcValue.Elem()
 	}
+	if !srcValue.IsValid() {
+		return false
+	}
 	dstValue.Set(srcValue)
+	return true
 }
 
 func NewObject(dst interface{}) interface{} {
