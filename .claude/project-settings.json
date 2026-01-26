@@ -1,0 +1,94 @@
+{
+  "projectName": "go-srv-kit",
+  "description": "基于 go-kratos v2 框架的微服务开发工具包",
+  "version": "1.0.0",
+  "framework": "go-kratos v2.9.1",
+  "goVersion": "1.24.10",
+
+  "architecture": {
+    "pattern": "DDD (Domain-Driven Design)",
+    "layers": ["Service", "Business", "Data", "Infrastructure"],
+    "dataFlow": "Proto → DTO → BO → PO → Database",
+    "di": "Wire (compile-time dependency injection)"
+  },
+
+  "conventions": {
+    "protoLocation": "api/{service-name}/v1/",
+    "serviceLayer": "internal/service/service/",
+    "businessLayer": "internal/biz/biz/",
+    "dataLayer": "internal/data/data/",
+    "dtoLocation": "internal/service/dto/",
+    "boLocation": "internal/biz/bo/",
+    "poLocation": "internal/data/po/",
+    "repoInterface": "internal/biz/repo/",
+    "repoImpl": "internal/data/repo/"
+  },
+
+  "commands": {
+    "init": "make init",
+    "generate": "make generate",
+    "runService": "make run-service",
+    "testing": "make testing-service",
+    "build": "make build",
+    "deploy": "make deploy-on-docker"
+  },
+
+  "components": {
+    "database": ["MySQL", "PostgreSQL", "MongoDB"],
+    "cache": ["Redis"],
+    "messageQueue": ["RabbitMQ"],
+    "serviceDiscovery": ["Consul", "Etcd"],
+    "tracing": ["Jaeger", "OpenTelemetry"],
+    "logging": ["Zap"]
+  },
+
+  "middleware": [
+    "CORS",
+    "Recovery",
+    "Tracer",
+    "Validator",
+    "Header",
+    "Auth (JWT)",
+    "Rate Limiting"
+  ],
+
+  "importantFiles": {
+    "entryPoint": "testdata/ping-service/cmd/ping-service/main.go",
+    "wireDefinition": "testdata/ping-service/cmd/ping-service/export/wire.go",
+    "launcherManager": "service/setup/setup.util.go",
+    "serverInit": "service/server/server_all_in_one.util.go",
+    "configProto": "api/config/config.proto",
+    "projectDocs": "CLAUDE.md"
+  },
+
+  "rules": [
+    "coding-standards.md",
+    "api-development.md",
+    "testing.md",
+    "database.md",
+    "wire-dependency-injection.md",
+    "error-handling.md",
+    "logging.md",
+    "authentication.md",
+    "commit-message.md",
+    "code-review.md",
+    "project-workflow.md"
+  ],
+
+  "standards": {
+    "errorHandling": "kratos/error/ package",
+    "logging": "kratos/log/ package (Zap-based)",
+    "authentication": "JWT with whitelist pattern",
+    "validation": "protobuf validate rules",
+    "documentation": "required for exported symbols"
+  },
+
+  "keyPatterns": {
+    "interfaceDefinition": "Define in biz/repo/, implement in data/repo/",
+    "dtoConversion": "service/dto/ for Proto ↔ BO",
+    "wireOrder": "Infrastructure → Data → Business → Service",
+    "configExport": "ExportServiceConfig() in cmd/*/export/",
+    "authWhitelist": "ExportAuthWhitelist() in cmd/*/export/",
+    "serviceRegistration": "ExportServices() in cmd/*/export/"
+  }
+}

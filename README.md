@@ -40,12 +40,6 @@ curl http://127.0.0.1:10101/api/v1/ping/say_hello && echo "\n"
 
 参考： [service-layout](https://github.com/ikaiguang/service-layout)
 
-## 感谢支持
-
-| 感谢支持                                   | LOGO                                                                                                                           | 支持内容                            |
-|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
-| [JETBRAINS](https://www.jetbrains.com) | <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg"  width="120" alt="JetBrains Logo"> | Open Source Development License |
-
 ## Give a star! ⭐
 
 如果您觉得这个项目有趣，或者对您有帮助，请给个star吧！
