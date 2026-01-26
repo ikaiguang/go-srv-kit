@@ -1,6 +1,8 @@
 # Git 提交信息规范
 
-## 提交信息格式
+参考文档：[angular : Commit Message Format](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commit-message-format)
+
+## Commit Message 格式
 
 ```
 <type>(<scope>): <subject>
@@ -10,19 +12,22 @@
 <footer>
 ```
 
+- **header** 是必需的，**scope** 是可选的
+- 任何一行不能超过 100 个字符
+
 ## Type 类型
 
 | Type | 说明 | 示例 |
 |------|------|------|
-| feat | 新功能 | feat: 添加用户注册功能 |
-| fix | 修复 Bug | fix: 修复登录时密码验证错误 |
-| docs | 文档更新 | docs: 更新 API 文档 |
-| style | 代码格式调整（不影响功能） | style: 格式化代码 |
-| refactor | 重构（不是新功能也不是修复） | refactor: 重构用户服务层 |
-| perf | 性能优化 | perf: 优化数据库查询性能 |
-| test | 添加或修改测试 | test: 添加用户服务单元测试 |
-| chore | 构建/工具链/辅助工具变动 | chore: 更新依赖版本 |
-| revert | 回滚提交 | revert: 回滚用户注册功能 |
+| **feat** | 新功能 | feat: 添加用户注册功能 |
+| **fix** | Bug 修复 | fix: 修复登录时密码验证错误 |
+| **docs** | 文档变更 | docs: 更新 API 文档 |
+| **style** | 代码格式（不影响逻辑） | style: 格式化代码 |
+| **refactor** | 重构（不是新功能也不是修复） | refactor: 重构用户服务层 |
+| **perf** | 性能优化 | perf: 优化数据库查询性能 |
+| **test** | 添加或修改测试 | test: 添加用户服务单元测试 |
+| **chore** | 构建/工具链变动 | chore: 更新依赖版本 |
+| **revert** | 回滚提交 | revert: 回滚用户注册功能 |
 
 ## Scope 范围
 
@@ -115,3 +120,118 @@ git log --oneline
 # 查看最近 5 条提交
 git log -5 --pretty=format:"%h - %s (%cr)"
 ```
+
+---
+
+## Git 分支管理流程
+
+### 分支策略
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  prod (生产环境)                                              │
+│    ├── pre (预发布环境)                                       │
+│    │    └── test (测试环境)                                   │
+│    │         ├── feature/xxx (功能分支)                      │
+│    │         └── hotfix/xxx (紧急修复分支)                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 分支说明
+
+| 分支 | 用途 | 合并目标 |
+|------|------|----------|
+| `prod` | 生产环境 |不接受直接合并 |
+| `pre` | 预发布环境 | 合并到 prod |
+| `test` | 测试环境 | 合并到 pre |
+| `feature/xxx` | 新功能开发 | 合并到 test → pre → prod |
+| `hotfix/xxx` | 紧急 Bug 修复 | 合并到 test → pre → prod |
+
+### 开发流程
+
+#### 1. 创建功能分支
+
+```bash
+git checkout prod
+git checkout -b feature/user-service
+```
+
+#### 2. 开发并提交
+
+```bash
+git add .
+git commit -m "feat: 实现用户注册功能"
+```
+
+#### 3. 合并到 test（自测后）
+
+```bash
+git checkout test
+git merge feature/user-service
+```
+
+#### 4. 合并到 pre（测试通过后）
+
+```bash
+git checkout pre
+git merge feature/user-service
+```
+
+#### 5. 合并到 prod（预发布验证后）
+
+```bash
+git checkout prod
+git merge feature/user-service
+```
+
+### 紧急修复流程
+
+#### 1. 创建 hotfix 分支
+
+```bash
+git checkout prod
+git checkout -b hotfix/login-bug
+```
+
+#### 2. 修复并提交
+
+```bash
+git add .
+git commit -m "fix: 修复登录验证错误"
+```
+
+#### 3. 合并到 test
+
+```bash
+git checkout test
+git merge hotfix/login-bug
+```
+
+#### 4. 合并到 pre
+
+```bash
+git checkout pre
+git merge hotfix/login-bug
+```
+
+#### 5. 合并到 prod
+
+```bash
+git checkout prod
+git merge hotfix/login-bug
+```
+
+### 分支命名规范
+
+| 类型 | 命名格式 | 示例 |
+|------|----------|------|
+| 功能分支 | `feature/{功能名}` | `feature/user-service` |
+| 修复分支 | `hotfix/{问题名}` | `hotfix/login-bug` |
+| 优化分支 | `refactor/{模块名}` | `refactor/database-layer` |
+
+### 注意事项
+
+1. **从 prod 创建分支**：所有功能分支和修复分支都应从 prod 分支创建
+2. **逐步合并**：test → pre → prod，确保每个环境都经过验证
+3. **删除已合并分支**：功能完成后删除 feature 分支
+4. **保持分支简洁**：feature 分支只包含相关功能，不要混入其他修改

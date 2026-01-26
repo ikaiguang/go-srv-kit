@@ -72,6 +72,8 @@
     "authentication.md",
     "commit-message.md",
     "code-review.md",
+    "go-private-setup.md",
+    "git-submodule.md",
     "project-workflow.md"
   ],
 

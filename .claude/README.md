@@ -16,8 +16,10 @@
 | `error-handling.md` | 错误处理规范（kratos/error 包） |
 | `logging.md` | 日志记录规范（Zap 结构化日志） |
 | `authentication.md` | JWT 认证与授权规范 |
-| `commit-message.md` | Git 提交信息规范 |
+| `commit-message.md` | Git 提交信息规范和分支管理流程 |
 | `code-review.md` | Code Review 审查清单和流程 |
+| `go-private-setup.md` | Go 私有包配置（GOPROXY、GOPRIVATE） |
+| `git-submodule.md` | Git 子模块使用和管理 |
 | `project-workflow.md` | 项目开发工作流 |
 
 ### 项目设置 (.claude/project-settings.json)

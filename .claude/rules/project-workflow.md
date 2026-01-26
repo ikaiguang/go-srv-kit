@@ -96,18 +96,19 @@ wire ./cmd/my-service/export
 go run ./cmd/my-service/... -conf=./configs
 ```
 
-## 开发迭代流程
+## 日常开发流程
 
 ### 1. 拉取最新代码
 
 ```bash
-git pull origin main
+git pull origin prod
 ```
 
 ### 2. 创建功能分支
 
 ```bash
-git checkout -b feature/xxx
+git checkout prod
+git checkout -b feature/new-feature
 ```
 
 ### 3. 开发功能
@@ -116,20 +117,51 @@ git checkout -b feature/xxx
 - 运行 `make generate` 生成代码
 - 运行测试
 
+```bash
+# 生成 Wire 代码
+make generate
+
+# 运行测试
+go test ./...
+
+# 代码格式化
+gofmt -w .
+goimports -w .
+```
+
 ### 4. 提交代码
 
 ```bash
 git add .
-git commit -m "feat: xxx"
+git commit -m "feat: 添加新功能"
 ```
 
-### 5. 推送分支
+### 5. 合并到 test（自测后）
 
 ```bash
-git push origin feature/xxx
+git checkout test
+git merge feature/new-feature
 ```
 
-### 6. 创建 Pull Request
+### 6. 合并到 pre（测试通过后）
+
+```bash
+git checkout pre
+git merge feature/new-feature
+```
+
+### 7. 合并到 prod（预发布验证后）
+
+```bash
+git checkout prod
+git merge feature/new-feature
+```
+
+### 8. 推送到远程
+
+```bash
+git push origin prod
+```
 
 ## 代码检查
 
@@ -144,6 +176,9 @@ go test ./internal/service/...
 
 # 带覆盖率
 go test -coverprofile=coverage.out ./...
+
+# 查看覆盖率报告
+go tool cover -html=coverage.out
 ```
 
 ### 代码格式化
@@ -233,6 +268,19 @@ lsof -i :10101
 kill -9 <pid>
 ```
 
+### Go mod 依赖问题
+
+```bash
+# 清理依赖缓存
+go clean -modcache
+
+# 重新下载依赖
+go mod download
+
+# 整理依赖
+go mod tidy
+```
+
 ## 发布流程
 
 ### 1. 更新版本
@@ -242,21 +290,70 @@ kill -9 <pid>
 var Version = "1.0.0"
 ```
 
-### 2. 构建
+### 2. 打 Tag
+
+```bash
+git tag -a v1.0.0 -m "Release version 1.0.0"
+git push origin v1.0.0
+```
+
+### 3. 构建
 
 ```bash
 make build
 ```
 
-### 3. 部署
+### 4. 部署
 
 ```bash
 make deploy-on-docker
 ```
 
-### 4. 打 Tag
+## 紧急修复流程
+
+### 1. 创建 hotfix 分支
 
 ```bash
-git tag -a v1.0.0 -m "Release version 1.0.0"
-git push origin v1.0.0
+git checkout prod
+git checkout -b hotfix/critical-bug
+```
+
+### 2. 修复并测试
+
+```bash
+# 修复代码
+# 运行测试
+go test ./...
+```
+
+### 3. 提交修复
+
+```bash
+git add .
+git commit -m "fix: 修复关键问题"
+```
+
+### 4. 快速合并
+
+```bash
+# 合并到 test
+git checkout test
+git merge hotfix/critical-bug
+
+# 合并到 pre
+git checkout pre
+git merge hotfix/critical-bug
+
+# 合并到 prod
+git checkout prod
+git merge hotfix/critical-bug
+
+# 推送到远程
+git push origin prod
+```
+
+### 5. 删除 hotfix 分支
+
+```bash
+git branch -d hotfix/critical-bug
 ```
