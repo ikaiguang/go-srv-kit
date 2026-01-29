@@ -2,7 +2,9 @@ package loggerutil
 
 import (
 	"context"
-	"encoding/json"
+	"os"
+	"strconv"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
@@ -10,8 +12,6 @@ import (
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 	"go.opentelemetry.io/otel/trace"
-	"os"
-	"strconv"
 )
 
 type ServiceInfo struct {
@@ -24,9 +24,17 @@ type ServiceInfo struct {
 }
 
 func (s *ServiceInfo) Kvs() []interface{} {
-	buf, _ := json.Marshal(s)
+	//buf, _ := json.Marshal(s)
+	//return []interface{}{
+	//	"app", string(buf),
+	//}
+	//buf, _ := json.Marshal(s)
+	//var res = `{"hostname":"` + s.Hostname + `","ip":"` + s.IP + `"}`
 	return []interface{}{
-		"app", string(buf),
+		//"app", string(buf),
+		//"app", res,
+		"app", s.Name,
+		"ip", s.IP,
 	}
 }
 
@@ -77,12 +85,12 @@ func withTracerInfo() log.Valuer {
 		res += tid + `"`
 
 		// span
-		res += `,"span_id":"`
-		spanId := ""
-		if span.HasSpanID() {
-			spanId = span.SpanID().String()
-		}
-		res += spanId + `"`
+		//res += `,"span_id":"`
+		//spanId := ""
+		//if span.HasSpanID() {
+		//	spanId = span.SpanID().String()
+		//}
+		//res += spanId + `"`
 
 		// user
 		if claims, ok := authpkg.GetAuthClaimsFromContext(ctx); ok && claims.Payload != nil {
