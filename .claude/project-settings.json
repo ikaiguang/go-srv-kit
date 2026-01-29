@@ -64,6 +64,7 @@
   "rules": [
     "coding-standards.md",
     "api-development.md",
+    "proto-swagger.md",
     "testing.md",
     "database.md",
     "wire-dependency-injection.md",

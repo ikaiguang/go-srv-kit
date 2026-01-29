@@ -94,6 +94,16 @@ curl http://127.0.0.1:10101/api/v1/ping/panic && echo "\n"
 curl http://127.0.0.1:10101/api/v1/ping/say_hello && echo "\n"
 ```
 
+### 访问 API 文档
+
+```bash
+# Swagger UI (OpenAPI v2)
+http://127.0.0.1:10101/q/
+
+# OpenAPI v3 JSON
+http://127.0.0.1:10101/api/swagger/
+```
+
 ### 创建新服务
 
 参考：[service-layout](https://github.com/ikaiguang/service-layout)
@@ -207,6 +217,33 @@ export SERVER_HTTP_ADDR=0.0.0.0:8080
 5. 实现 Data 层
 6. 配置 Wire 依赖注入
 7. 运行 `wire` 生成代码
+
+### Proto 代码生成
+
+```bash
+# 生成所有 API
+make protoc-api-protobuf
+
+# 生成配置
+make protoc-config-protobuf
+
+# 生成指定服务
+make protoc-specified-api service=ping-service
+
+# 生成 ping-service v1
+make protoc-ping-v1-protobuf
+```
+
+### 生成的代码
+
+每个 `.proto` 文件会生成：
+- `{file}.pb.go` - Proto 消息定义
+- `{file}_grpc.pb.go` - gRPC 服务接口
+- `{file}_http.pb.go` - HTTP 服务接口
+- `{file}_errors.pb.go` - 错误定义
+- `{file}.validate.go` - 验证代码
+- `{file}.swagger.json` - OpenAPI v2 文档
+- `{file}.openapi.yaml` - OpenAPI v3 文档
 
 ### 常用命令
 

@@ -51,6 +51,21 @@ make generate
 wire ./testdata/ping-service/cmd/ping-service/export
 ```
 
+### Proto 代码生成
+```bash
+# 生成所有 API
+make protoc-api-protobuf
+
+# 生成配置
+make protoc-config-protobuf
+
+# 生成指定服务
+make protoc-specified-api service=ping-service
+
+# 生成 ping-service v1
+make protoc-ping-v1-protobuf
+```
+
 ### 运行测试服务
 ```bash
 # 启动 ping-service（使用 cmd 或 git-bash）
@@ -60,6 +75,15 @@ go run ./testdata/ping-service/cmd/ping-service/... -conf=./testdata/ping-servic
 
 # 运行 HTTP 测试
 make testing-service
+```
+
+### 访问 API 文档
+```bash
+# Swagger UI (OpenAPI v2)
+http://127.0.0.1:10101/q/
+
+# OpenAPI v3 JSON
+http://127.0.0.1:10101/api/swagger/
 ```
 
 ### Protocol Buffers 生成

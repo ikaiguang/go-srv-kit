@@ -10,6 +10,7 @@
 |------|------|
 | `coding-standards.md` | Go 通用编码规范和项目特定规范 |
 | `api-development.md` | API 开发完整流程（Proto → Service → Biz → Data） |
+| `proto-swagger.md` | Proto 与 Swagger 开发规范 |
 | `testing.md` | 单元测试、集成测试规范 |
 | `database.md` | 数据库操作规范（GORM、Redis、迁移） |
 | `wire-dependency-injection.md` | Wire 依赖注入使用规范 |
