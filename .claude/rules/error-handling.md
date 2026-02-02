@@ -155,7 +155,7 @@ func (s *service) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*pb.Cr
     user, err := s.userBiz.CreateUser(ctx, param)
     if err != nil {
         // 记录错误日志
-        log.Context(ctx).Errorf("create user failed: %v", err)
+        logpkg.WithContext(ctx).Errorf("create user failed: %v", err)
 
         // 返回给用户的错误
         return nil, errorpkg.WrapWithMetadata(err, metadata)
@@ -242,7 +242,7 @@ func (d *userData) CreateUser(ctx context.Context, param *bo.CreateUserParam) (*
 func (s *service) SomeMethod(ctx context.Context, req *pb.SomeReq) (*pb.SomeResp, error) {
     defer func() {
         if r := recover(); r != nil {
-            log.Context(ctx).Errorf("panic recovered: %v", r)
+            logpkg.WithContext(ctx).Errorf("panic recovered: %v", r)
         }
     }()
 

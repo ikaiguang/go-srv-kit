@@ -3,12 +3,13 @@ package apppkg
 import (
 	"context"
 	"fmt"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
 	stdhttp "net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
@@ -82,6 +83,14 @@ func (s *ErrMessage) String() string {
 	return res
 }
 
+func (s *ErrMessage) Kvs() []interface{} {
+	return []interface{}{
+		"code", s.Code,
+		"reason", s.Reason,
+		"message", s.Message,
+	}
+}
+
 // options ...
 type options struct {
 	withSkipDepth   int
@@ -116,6 +125,18 @@ func WithDefaultDepth() Option {
 func WithCallerDepth(depth int) Option {
 	return func(o *options) {
 		o.withTracerDepth = depth
+	}
+}
+
+func ServerLoggingKvs(requestInfo *RequestInfoForServer, operationInfo *OperationInfo) []interface{} {
+	return []interface{}{
+		"client_ip", requestInfo.ClientIP,
+		"latency", requestInfo.Latency,
+		"kind", requestInfo.Kind,
+		"component", requestInfo.Component,
+		"method", operationInfo.Method,
+		"operation", operationInfo.Operation,
+		"args", operationInfo.Args,
 	}
 }
 
@@ -247,6 +268,18 @@ func (s *RequestInfoForClient) String() string {
 	res += `}`
 
 	return res
+}
+
+func ClientLoggingKvs(requestInfo *RequestInfoForClient, operationInfo *OperationInfo) []interface{} {
+	return []interface{}{
+		"client_ip", requestInfo.ClientIP,
+		"latency", requestInfo.Latency,
+		"kind", requestInfo.Kind,
+		"component", requestInfo.Component,
+		"method", operationInfo.Method,
+		"operation", operationInfo.Operation,
+		"args", operationInfo.Args,
+	}
 }
 
 // ClientLog is an client logging middleware.

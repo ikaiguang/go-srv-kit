@@ -87,7 +87,7 @@ func (s *userService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*p
     // 3. 调用业务逻辑
     result, err := s.userBiz.CreateUser(ctx, param)
     if err != nil {
-        log.Context(ctx).Errorw("create user failed", "error", err)
+        logpkg.WithContext(ctx).Errorw("create user failed", "error", err)
         return nil, err
     }
 

@@ -44,19 +44,19 @@ return errorpkg.ErrorInternal("database connection failed")
 ## 日志记录片段
 ```go
 // Info 日志
-log.Context(ctx).Infow("user created",
+logpkg.WithContext(ctx).Infow("user created",
     "user_id", user.ID,
     "username", user.Username,
 )
 
 // Error 日志
-log.Context(ctx).Errorw("operation failed",
+logpkg.WithContext(ctx).Errorw("operation failed",
     "error", err.Error(),
     "user_id", userId,
 )
 
 // Debug 日志
-log.Context(ctx).Debugw("request params", "params", req)
+logpkg.WithContext(ctx).Debugw("request params", "params", req)
 ```
 
 ## GORM 操作片段

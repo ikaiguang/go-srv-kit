@@ -1,10 +1,11 @@
 package threadpkg
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
-	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 	"testing"
 	"time"
+
+	"github.com/go-kratos/kratos/v2/log"
+	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 )
 
 // go test -v -count 1 ./kratos/thread -run TestGoSafe

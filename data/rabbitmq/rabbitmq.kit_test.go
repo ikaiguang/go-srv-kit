@@ -12,6 +12,7 @@ import (
 	timepkg "github.com/ikaiguang/go-srv-kit/kit/time"
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
+	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	"github.com/stretchr/testify/require"
 )
 
@@ -36,8 +37,12 @@ func TestNewSubscriber(t *testing.T) {
 	defer func() { _ = sub.Close() }()
 	defer func() { _ = pub.Close() }()
 
-	go doSub(sub, topic)
-	go doPub(pub, topic)
+	threadpkg.GoSafe(func() {
+		doSub(sub, topic)
+	})
+	threadpkg.GoSafe(func() {
+		doPub(pub, topic)
+	})
 
 	time.Sleep(3 * time.Second)
 }

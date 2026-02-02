@@ -37,7 +37,7 @@ func (s *{Xxx}Service) {ApiName}(ctx context.Context, req *v1.{ApiName}Req) (*v1
     // 3. 调用业务逻辑
     result, err := s.{xxx}Biz.{ApiName}(ctx, param)
     if err != nil {
-        log.Context(ctx).Errorw("{api_name} failed", "error", err)
+        logpkg.WithContext(ctx).Errorw("{api_name} failed", "error", err)
         return nil, err
     }
 

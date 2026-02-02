@@ -16,7 +16,7 @@ func (s *xxxService) XxxMethod(ctx context.Context, req *pb.XxxReq) (*pb.XxxResp
     // 3. 调用业务逻辑
     result, err := s.xxxBiz.XxxMethod(ctx, param)
     if err != nil {
-        log.Context(ctx).Errorw("xxx failed", "error", err)
+        logpkg.WithContext(ctx).Errorw("xxx failed", "error", err)
         return nil, err
     }
 
@@ -95,7 +95,7 @@ if err != nil {
 ### Service 层错误包装
 ```go
 if err != nil {
-    log.Context(ctx).Errorw("operation failed", "error", err)
+    logpkg.WithContext(ctx).Errorw("operation failed", "error", err)
     return nil, errorpkg.WrapWithMetadata(err, metadata)
 }
 ```

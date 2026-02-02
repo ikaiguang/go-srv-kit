@@ -5,6 +5,7 @@ package migrationpkg
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -77,7 +78,7 @@ func (s *migrationRepo) QueryOneByIdentifier(ctx context.Context, identifier str
 		Where(FieldMigrationIdentifier+" = ?", identifier).
 		First(dataModel).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = nil
 			isNotFound = true
 		}

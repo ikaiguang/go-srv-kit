@@ -20,10 +20,10 @@ import (
 )
 
 // 1. Context 日志（推荐）
-log.Context(ctx).Info("user login", "user_id", userId)
+logpkg.WithContext(ctx).Info("user login", "user_id", userId)
 
 // 2. 结构化日志
-log.Context(ctx).Infow("user created",
+logpkg.WithContext(ctx).Infow("user created",
     "user_id", user.ID,
     "username", user.Username,
     "email", user.Email,
@@ -51,18 +51,18 @@ loggerHelper, err := launcherManager.GetLoggerForHelper()
 
 ```go
 func (s *userService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*pb.CreateUserResp, error) {
-    log.Context(ctx).Infow("create user request", "username", req.GetUsername())
+    logpkg.WithContext(ctx).Infow("create user request", "username", req.GetUsername())
 
     result, err := s.userBiz.CreateUser(ctx, param)
     if err != nil {
-        log.Context(ctx).Errorw("create user failed",
+        logpkg.WithContext(ctx).Errorw("create user failed",
             "error", err.Error(),
             "username", req.GetUsername(),
         )
         return nil, err
     }
 
-    log.Context(ctx).Infow("create user success", "user_id", result.ID)
+    logpkg.WithContext(ctx).Infow("create user success", "user_id", result.ID)
     return result, nil
 }
 ```
@@ -71,12 +71,12 @@ func (s *userService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*p
 
 ```go
 func (b *userBiz) CreateUser(ctx context.Context, param *bo.CreateUserParam) (*bo.CreateUserResult, error) {
-    log.Context(ctx).Debugw("create user in biz", "param", param)
+    logpkg.WithContext(ctx).Debugw("create user in biz", "param", param)
 
     // 业务逻辑
     result, err := b.userRepo.CreateUser(ctx, param)
     if err != nil {
-        log.Context(ctx).Errorw("create user failed in repo", "error", err)
+        logpkg.WithContext(ctx).Errorw("create user failed in repo", "error", err)
         return nil, err
     }
 
@@ -153,7 +153,7 @@ customLogger.Infow("custom log", "key", "value")
 
 ```go
 // 好的实践
-log.Context(ctx).Infow("user login", "user_id", userId)
+logpkg.WithContext(ctx).Infow("user login", "user_id", userId)
 
 // 不好的实践
 log.Info("user login", userId)  // 没有 TraceID
@@ -163,7 +163,7 @@ log.Info("user login", userId)  // 没有 TraceID
 
 ```go
 // 好的实践
-log.Context(ctx).Infow("order created",
+logpkg.WithContext(ctx).Infow("order created",
     "order_id", order.ID,
     "user_id", order.UserID,
     "amount", order.Amount,
@@ -178,7 +178,7 @@ log.Infof("order created: %+v", order)  // 不便于查询
 ```go
 import "github.com/ikaiguang/go-srv-kit/kit/stringutil"
 
-log.Context(ctx).Infow("user login",
+logpkg.WithContext(ctx).Infow("user login",
     "user_id", userId,
     "password", stringutil.MaskPassword(password),  // *******
     "phone", stringutilMaskPhone(phone),            // 138****5678
@@ -189,7 +189,7 @@ log.Context(ctx).Infow("user login",
 
 ```go
 // 记录错误堆栈
-log.Context(ctx).Errorw("operation failed",
+logpkg.WithContext(ctx).Errorw("operation failed",
     "error", err,
     "stack", stringutil.GetStackTrace(2),
 )
