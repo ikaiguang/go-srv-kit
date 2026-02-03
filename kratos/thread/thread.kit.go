@@ -32,6 +32,6 @@ func Recover(ctx context.Context) {
 		buf := make([]byte, 64<<10) //nolint:mnd
 		n := runtime.Stack(buf, false)
 		buf = buf[:n]
-		logpkg.WithContext(ctx).Errorf("threadpkg.Recover: %+v\n%s\n", rerr, buf)
+		logpkg.ErrorfWithContext(ctx, "threadpkg.Recover: %+v\n%s\n", rerr, buf)
 	}
 }

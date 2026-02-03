@@ -11,7 +11,7 @@ import (
 // 轮转日志参数
 const (
 	DefaultRotationTime            = time.Hour * 24      // 1天
-	DefaultRotationSize            = 50 << 20            // 50M
+	DefaultRotationSize            = 100 << 20           // 100M
 	DefaultRotationStorageAge      = time.Hour * 24 * 30 // 30天
 	DefaultRotationCounter         = 10086               // 10086个
 	_defaultRotationFilenameSuffix = "_%Y%m%d%H%M%S.log" // 文件名后缀
@@ -28,7 +28,7 @@ type ConfigRotate struct {
 	// RotateTime 轮询规则：n久(默认：86400s # 86400s = 1天)
 	// 轮询规则：默认为：RotateTime
 	RotateTime time.Duration
-	// RotateSize 轮询规则：按文件大小RotateSize(默认：52428800 # 50<<20 = 50M)
+	// RotateSize 轮询规则：按文件大小RotateSize(默认：52428800 # 100<<20 = 100M)
 	// 轮询规则：默认为：RotateTime
 	RotateSize int64
 

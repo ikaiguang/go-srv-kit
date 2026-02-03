@@ -1,8 +1,6 @@
 package logpkg
 
 import (
-	"context"
-
 	"github.com/go-kratos/kratos/v2/log"
 )
 
@@ -26,10 +24,6 @@ func defaultHandler() *log.Helper {
 	logger, _ := NewDummyLogger()
 
 	return log.NewHelper(logger)
-}
-
-func WithContext(ctx context.Context) *log.Helper {
-	return helper.WithContext(ctx)
 }
 
 // Log Print log by level and keyvals.

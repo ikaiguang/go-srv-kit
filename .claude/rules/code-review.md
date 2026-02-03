@@ -15,9 +15,11 @@
 - [ ] 代码是否符合 `coding-standards.md` 规范
 - [ ] 命名是否清晰易懂
 - [ ] 函数是否单一职责
+- [ ] 函数长度是否超过 150 行（需要拆分）
 - [ ] 是否有重复代码
 - [ ] 是否有魔法数字或硬编码
 - [ ] 注释是否准确且必要
+- [ ] 第三方 API 调用是否复用（而非重复实现）
 
 ### 错误处理
 
@@ -253,6 +255,411 @@ log.Infow("user login", "password", password)
 // ✅ 正确：脱敏
 log.Infow("user login", "password", stringutil.MaskPassword(password))
 ```
+
+### 函数过长
+
+**函数长度不能超过 150 行，超过则必须拆分。**
+
+#### ❌ 错误示例：函数过长
+
+```go
+// 这个函数有 200+ 行，违反了长度限制
+func (s *orderService) CreateOrder(ctx context.Context, req *pb.CreateOrderReq) (*pb.CreateOrderResp, error) {
+    // 1. 参数验证 (20 行)
+    if req.GetUserId() == 0 {
+        return nil, errorpkg.ErrorBadRequest("user_id is required")
+    }
+    // ... 更多验证
+
+    // 2. 查询用户信息 (15 行)
+    user, err := s.userBiz.GetUser(ctx, req.GetUserId())
+    // ... 处理逻辑
+
+    // 3. 查询商品信息 (30 行)
+    for _, item := range req.GetItems() {
+        product, err := s.productBiz.GetProduct(ctx, item.GetProductId())
+        // ... 处理逻辑
+    }
+
+    // 4. 计算价格 (25 行)
+    var totalAmount float64
+    for _, item := range req.GetItems() {
+        // ... 计算逻辑
+    }
+
+    // 5. 检查库存 (20 行)
+    for _, item := range req.GetItems() {
+        stock, err := s.stockBiz.CheckStock(ctx, item.GetProductId())
+        // ... 检查逻辑
+    }
+
+    // 6. 应用优惠券 (15 行)
+    if req.GetCouponCode() != "" {
+        coupon, err := s.couponBiz.GetCoupon(ctx, req.GetCouponCode())
+        // ... 处理逻辑
+    }
+
+    // 7. 创建订单 (20 行)
+    order := &po.Order{
+        // ... 订单信息
+    }
+
+    // 8. 扣减库存 (15 行)
+    for _, item := range req.GetItems() {
+        err := s.stockBiz.DeductStock(ctx, item.GetProductId(), item.GetQuantity())
+        // ... 处理逻辑
+    }
+
+    // 9. 发送通知 (10 行)
+    // ... 通知逻辑
+
+    // 10. 返回结果 (10 行)
+    return &pb.CreateOrderResp{OrderId: order.ID}, nil
+}
+```
+
+#### ✅ 正确示例：拆分为多个函数
+
+```go
+// 主函数：简洁清晰，只负责协调调用
+func (s *orderService) CreateOrder(ctx context.Context, req *pb.CreateOrderReq) (*pb.CreateOrderResp, error) {
+    // 1. 参数验证
+    if err := s.validateCreateOrderReq(req); err != nil {
+        return nil, err
+    }
+
+    // 2. 查询用户
+    user, err := s.userBiz.GetUser(ctx, req.GetUserId())
+    if err != nil {
+        return nil, err
+    }
+
+    // 3. 查询商品并计算
+    items, err := s.validateAndCalculateItems(ctx, req.GetItems())
+    if err != nil {
+        return nil, err
+    }
+
+    // 4. 应用优惠券
+    totalAmount := s.calculateTotalAmount(items)
+    if req.GetCouponCode() != "" {
+        totalAmount, err = s.applyCoupon(ctx, req.GetCouponCode(), totalAmount)
+        if err != nil {
+            return nil, err
+        }
+    }
+
+    // 5. 创建订单
+    order, err := s.createOrderWithItems(ctx, user, items, totalAmount)
+    if err != nil {
+        return nil, err
+    }
+
+    // 6. 异步处理后续操作
+    go s.afterOrderCreated(context.Background(), order, items)
+
+    return &pb.CreateOrderResp{OrderId: order.ID}, nil
+}
+
+// 辅助函数 1：参数验证
+func (s *orderService) validateCreateOrderReq(req *pb.CreateOrderReq) error {
+    if req.GetUserId() == 0 {
+        return errorpkg.ErrorBadRequest("user_id is required")
+    }
+    if len(req.GetItems()) == 0 {
+        return errorpkg.ErrorBadRequest("items is required")
+    }
+    return nil
+}
+
+// 辅助函数 2：验证商品并计算
+func (s *orderService) validateAndCalculateItems(ctx context.Context, reqItems []*pb.OrderItem) ([]*OrderItem, error) {
+    items := make([]*OrderItem, 0, len(reqItems))
+
+    for _, reqItem := range reqItems {
+        product, err := s.productBiz.GetProduct(ctx, reqItem.GetProductId())
+        if err != nil {
+            return nil, err
+        }
+
+        stock, err := s.stockBiz.CheckStock(ctx, reqItem.GetProductId())
+        if stock < reqItem.GetQuantity() {
+            return nil, errorpkg.ErrorConflict("insufficient stock")
+        }
+
+        items = append(items, &OrderItem{
+            ProductID: reqItem.GetProductId(),
+            Quantity:  reqItem.GetQuantity(),
+            Price:     product.Price,
+        })
+    }
+
+    return items, nil
+}
+
+// 辅助函数 3：计算总金额
+func (s *orderService) calculateTotalAmount(items []*OrderItem) float64 {
+    var total float64
+    for _, item := range items {
+        total += float64(item.Quantity) * item.Price
+    }
+    return total
+}
+
+// 辅助函数 4：应用优惠券
+func (s *orderService) applyCoupon(ctx context.Context, couponCode string, amount float64) (float64, error) {
+    coupon, err := s.couponBiz.GetCoupon(ctx, couponCode)
+    if err != nil {
+        return 0, err
+    }
+    return amount * (1 - coupon.Discount), nil
+}
+
+// 辅助函数 5：创建订单
+func (s *orderService) createOrderWithItems(ctx context.Context, user *User, items []*OrderItem, amount float64) (*Order, error) {
+    order := &Order{
+        UserID:    user.ID,
+        Items:     items,
+        Amount:    amount,
+        Status:    OrderStatusPending,
+    }
+    return s.orderBiz.CreateOrder(ctx, order)
+}
+
+// 辅助函数 6：订单创建后的异步处理
+func (s *orderService) afterOrderCreated(ctx context.Context, order *Order, items []*OrderItem) {
+    threadpkg.GoSafe(func() {
+        // 扣减库存
+        for _, item := range items {
+            s.stockBiz.DeductStock(ctx, item.ProductID, item.Quantity)
+        }
+        // 发送通知
+        s.notificationBiz.SendOrderCreated(ctx, order)
+    })
+}
+```
+
+#### 拆分函数的收益
+
+| 方面 | 函数过长 | 拆分函数 |
+|------|----------|----------|
+| **可读性** | 难以理解，需要滚屏 | 一目了然，逻辑清晰 |
+| **可测试性** | 难以单独测试某个逻辑 | 每个函数可独立测试 |
+| **可维护性** | 修改一处影响整体 | 修改局部不影响其他 |
+| **可复用性** | 无法复用 | 辅助函数可复用 |
+| **代码审查** | 难以发现错误 | 容易定位问题 |
+
+#### 函数拆分原则
+
+1. **单一职责**：每个函数只做一件事
+2. **长度限制**：不超过 150 行
+3. **参数合理**：参数不超过 5 个
+4. **命名清晰**：函数名准确描述其功能
+5. **合理抽象**：提取通用逻辑为辅助函数
+
+#### 拆分时机
+
+当函数出现以下情况时，应该拆分：
+
+- [ ] 函数超过 150 行
+- [ ] 函数有多层嵌套（超过 3 层）
+- [ ] 函数有多个独立的功能块
+- [ ] 函数有大量重复的验证逻辑
+- [ ] 函数难以理解或测试
+
+### 第三方 API 调用重复
+
+**禁止复制粘贴代码！** 发现重复的第三方 API 调用代码时，必须改写适配为可复用的组件。
+
+#### ❌ 错误示例：复制粘贴实现
+
+```go
+// 第一次实现：发送验证码短信
+func (s *userService) SendVerificationSMS(ctx context.Context, phone string) error {
+    client := &http.Client{Timeout: 30 * time.Second}
+    body := map[string]string{
+        "phone":   phone,
+        "message": "Your code is 123456",
+        "apikey":  "abc123",
+    }
+    jsonData, _ := json.Marshal(body)
+    req, _ := http.NewRequestWithContext(ctx, "POST", "https://api.sms.com/send", bytes.NewBuffer(jsonData))
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := client.Do(req)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+
+    if resp.StatusCode != 200 {
+        return fmt.Errorf("sms send failed")
+    }
+    return nil
+}
+
+// 第二次实现：发送通知短信（复制粘贴后修改）
+func (s *userService) SendNotificationSMS(ctx context.Context, phone string) error {
+    client := &http.Client{Timeout: 30 * time.Second}  // 重复！
+    body := map[string]string{
+        "phone":   phone,
+        "message": "You have a new notification",  // 修改了消息
+        "apikey":  "abc123",  // 重复！
+    }
+    jsonData, _ := json.Marshal(body)  // 重复！
+    req, _ := http.NewRequestWithContext(ctx, "POST", "https://api.sms.com/send", bytes.NewBuffer(jsonData))  // 重复！
+    req.Header.Set("Content-Type", "application/json")  // 重复！
+
+    resp, err := client.Do(req)  // 重复！
+    if err != nil {
+        return err  // 重复！
+    }
+    defer resp.Body.Close()  // 重复！
+
+    if resp.StatusCode != 200 {  // 重复！
+        return fmt.Errorf("sms send failed")  // 重复！
+    }
+    return nil
+}
+```
+
+#### ✅ 正确示例：改写适配为可复用组件
+
+```go
+// 第一步：定义通用的第三方客户端接口
+type SMSClient interface {
+    Send(ctx context.Context, phone, message string) error
+    SendVerification(ctx context.Context, phone string) error
+    SendNotification(ctx context.Context, phone string) error
+}
+
+// 第二步：实现客户端，封装所有第三方调用细节
+type smsClient struct {
+    client    *http.Client
+    apiKey    string
+    baseURL   string
+    timeout   time.Duration
+}
+
+func NewSmsClient(config *Config) SMSClient {
+    return &smsClient{
+        client: &http.Client{
+            Timeout: config.Timeout,
+            Transport: &http.Transport{
+                MaxIdleConns:        100,
+                MaxIdleConnsPerHost: 10,
+                IdleConnTimeout:     90 * time.Second,
+            },
+        },
+        apiKey:  config.SMSAPIKey,
+        baseURL: config.SMSBaseURL,
+    }
+}
+
+// 通用的发送方法
+func (c *smsClient) Send(ctx context.Context, phone, message string) error {
+    body := map[string]string{
+        "phone":   phone,
+        "message": message,
+        "apikey":  c.apiKey,
+    }
+    jsonData, err := json.Marshal(body)
+    if err != nil {
+        return errorpkg.FormatError(err)
+    }
+
+    req, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/send", bytes.NewBuffer(jsonData))
+    if err != nil {
+        return errorpkg.FormatError(err)
+    }
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return errorpkg.WrapWithMetadata(err, nil)
+    }
+    defer resp.Body.Close()
+
+    if resp.StatusCode != http.StatusOK {
+        return c.handleErrorResponse(resp)
+    }
+
+    return nil
+}
+
+// 适配具体业务场景的便捷方法
+func (c *smsClient) SendVerification(ctx context.Context, phone string) error {
+    return c.Send(ctx, phone, "Your verification code is: {{code}}")
+}
+
+func (c *smsClient) SendNotification(ctx context.Context, phone string) error {
+    return c.Send(ctx, phone, "You have a new notification")
+}
+
+// 统一的错误处理
+func (c *smsClient) handleErrorResponse(resp *http.Response) error {
+    switch resp.StatusCode {
+    case http.StatusBadRequest:
+        return errorpkg.ErrorBadRequest("invalid sms request")
+    case http.StatusUnauthorized:
+        return errorpkg.ErrorInternal("sms api key invalid")
+    case http.StatusTooManyRequests:
+        return errorpkg.ErrorConflict("sms rate limit exceeded")
+    default:
+        return errorpkg.ErrorInternal("sms service unavailable")
+    }
+}
+
+// 第三步：在 Biz 层使用
+type userBiz struct {
+    smsClient SMSClient  // 依赖接口，便于测试
+}
+
+func (b *userBiz) SendVerificationSMS(ctx context.Context, phone string) error {
+    return b.smsClient.SendVerification(ctx, phone)
+}
+
+func (b *userBiz) SendNotificationSMS(ctx context.Context, phone string) error {
+    return b.smsClient.SendNotification(ctx, phone)
+}
+```
+
+#### 改写适配的关键点
+
+| 方面 | 复制粘贴 | 改写适配 |
+|------|----------|----------|
+| **代码量** | 每次复制 30+ 行 | 调用 1 行 |
+| **维护成本** | 修改需要改 N 处 | 修改 1 处即可 |
+| **配置管理** | 硬编码在各处 | 集中配置 |
+| **错误处理** | 各不相同 | 统一转换 |
+| **测试难度** | 需要 mock HTTP | 可 mock 接口 |
+| **扩展性** | 添加功能需复制 | 添加方法即可 |
+
+#### 发现重复代码时的改写步骤
+
+1. **识别共同点**：找出重复的 HTTP 调用、请求构建、错误处理
+2. **定义接口**：根据业务场景定义清晰的接口方法
+3. **实现客户端**：封装第三方调用细节，统一配置和错误处理
+4. **适配业务**：为具体业务场景提供便捷方法
+5. **替换调用**：用新接口替换所有复制粘贴的代码
+6. **删除重复**：删除所有重复代码
+
+**审查清单：**
+- [ ] 是否有复制粘贴的第三方 API 调用代码
+- [ ] 是否将第三方服务封装为独立的 Client/Component
+- [ ] HTTP 客户端是否复用（而非每次创建新实例）
+- [ ] 请求构建逻辑是否抽取为通用函数
+- [ ] 错误处理和重试逻辑是否统一
+- [ ] 配置（API Key、Timeout）是否集中管理
+- [ ] 第三方错误是否转换为项目统一格式
+
+**审查原则：**
+1. **一次且仅一次** - 相同的第三方 API 调用逻辑只能出现一次
+2. **封装客户端** - 第三方服务必须封装为独立的 Client/Component
+3. **统一配置** - API Key、Timeout 等配置必须集中管理
+4. **统一错误处理** - 第三方错误必须转换为项目统一的错误格式
+5. **接口优先** - 定义接口而非直接依赖具体实现，便于测试和替换
+6. **改写适配** - 发现重复代码必须改写，禁止复制粘贴
 
 ## 审查评论模板
 
