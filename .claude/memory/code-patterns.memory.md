@@ -369,7 +369,7 @@ func (c *xxxClient) Method1(...) (...) {
 常见需要拆分的场景：
 - 包含多个独立的功能块
 - 有大量重复的验证逻辑
-- 嵌套层级超过 3 层
+- 嵌套层级超过 3 层（必须重构）
 - 难以理解或测试
 
 ### 拆分模式：提取验证函数
@@ -657,3 +657,176 @@ func (s *orderService) CreateOrder(ctx context.Context, req *pb.CreateOrderReq) 
 - [ ] 辅助函数可复用
 - [ ] 函数命名清晰准确
 - [ ] 避免过度拆分（不要为了拆而拆）
+- [ ] 嵌套层级不超过 3 层
+
+## 减少嵌套模式
+
+### 什么是嵌套层级？
+
+```
+0 层: statement1()
+1 层: if { statement1() }
+2 层: if { if { statement1() } }
+3 层: if { if { if { statement1() } } }  ← 允许的最大值
+4 层: if { if { if { if { statement1() } } } }  ← 超过限制，必须重构
+```
+
+### 提前返回模式（Guard Clauses）
+
+```go
+// ❌ 错误：深层嵌套
+func (s *orderService) ProcessOrder(ctx context.Context, orderID uint) error {
+    if orderID > 0 {
+        order, err := s.orderBiz.GetOrder(ctx, orderID)
+        if err == nil {
+            if order.Status == "pending" {
+                // ... 处理逻辑（嵌套层级：3）
+            }
+        }
+    }
+    return nil
+}
+
+// ✅ 正确：提前返回
+func (s *orderService) ProcessOrder(ctx context.Context, orderID uint) error {
+    // 先处理错误情况
+    if orderID == 0 {
+        return errorpkg.ErrorBadRequest("invalid order_id")
+    }
+
+    order, err := s.orderBiz.GetOrder(ctx, orderID)
+    if err != nil {
+        return err
+    }
+
+    if order.Status != "pending" {
+        return nil
+    }
+
+    // ... 处理逻辑（嵌套层级：0）
+}
+```
+
+### 提前返回原则
+
+| 原则 | 说明 |
+|------|------|
+| **快速失败** | 先检查错误条件，失败则立即返回 |
+| **卫语句** | 使用 `if !condition { return }` |
+| **平铺主逻辑** | 成功路径放在最后，无嵌套 |
+
+```go
+// ✅ 标准的提前返回模式
+func process(data *Data) error {
+    // 1. 参数验证
+    if data == nil {
+        return errorpkg.ErrorBadRequest("data is required")
+    }
+
+    // 2. 状态检查
+    if data.Status != StatusActive {
+        return nil
+    }
+
+    // 3. 权限检查
+    if !hasPermission(data.UserID) {
+        return errorpkg.ErrorForbidden("access denied")
+    }
+
+    // 4. 主逻辑（无嵌套）
+    return doProcess(data)
+}
+```
+
+### Continue 跳过模式
+
+```go
+// ❌ 错误：循环内深层嵌套
+func processItems(items []*Item) {
+    for _, item := range items {
+        if item != nil {
+            if item.ID > 0 {
+                if item.Status == "active" {
+                    // ... 处理逻辑（嵌套层级：3）
+                }
+            }
+        }
+    }
+}
+
+// ✅ 正确：使用 continue 减少嵌套
+func processItems(items []*Item) {
+    for _, item := range items {
+        if item == nil {
+            continue
+        }
+        if item.ID <= 0 {
+            continue
+        }
+        if item.Status != "active" {
+            continue
+        }
+        // ... 处理逻辑（嵌套层级：0）
+    }
+}
+```
+
+### 提取函数模式
+
+```go
+// ❌ 错误：一个函数内有 5 层嵌套
+func (s *service) ProcessOrder(ctx context.Context, orderID uint) error {
+    if orderID > 0 {
+        order, _ := s.getOrder(ctx, orderID)
+        if order != nil {
+            if order.Status == "pending" {
+                for _, item := range order.Items {
+                    if item.Quantity > 0 {
+                        // 处理商品（嵌套层级：5）
+                    }
+                }
+            }
+        }
+    }
+    return nil
+}
+
+// ✅ 正确：提取为多个函数
+func (s *service) ProcessOrder(ctx context.Context, orderID uint) error {
+    if orderID == 0 {
+        return errorpkg.ErrorBadRequest("invalid order_id")
+    }
+
+    order, err := s.getOrder(ctx, orderID)
+    if err != nil {
+        return err
+    }
+
+    return s.processOrderItems(ctx, order.Items)
+}
+
+func (s *service) processOrderItems(ctx context.Context, items []*Item) error {
+    for _, item := range items {
+        if err := s.processOrderItem(ctx, item); err != nil {
+            return err
+        }
+    }
+    return nil
+}
+
+func (s *service) processOrderItem(ctx context.Context, item *Item) error {
+    if item.Quantity <= 0 {
+        return errorpkg.ErrorBadRequest("invalid quantity")
+    }
+    // 处理商品（嵌套层级：0）
+    return nil
+}
+```
+
+### 嵌套层级检查清单
+
+- [ ] 函数嵌套不超过 3 层
+- [ ] 使用提前返回减少嵌套
+- [ ] 使用 continue/break 减少循环嵌套
+- [ ] 将深层嵌套的代码提取为独立函数
+- [ ] 主逻辑平铺，无嵌套

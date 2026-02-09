@@ -260,6 +260,230 @@ log.Infow("user login", "password", stringutil.MaskPassword(password))
 
 **函数长度不能超过 150 行，超过则必须拆分。**
 
+### 嵌套层级过深
+
+**函数嵌套层级不能超过 3 层，超过则必须重构。**
+
+#### 什么是嵌套层级？
+
+嵌套层级是指代码中 `if`、`for`、`switch` 等控制结构的嵌套深度。
+
+```go
+// 0 层 - 平铺代码
+func example() {
+    statement1()
+    statement2()
+}
+
+// 1 层
+func example() {
+    if condition {           // 第 1 层
+        statement1()
+    }
+}
+
+// 2 层
+func example() {
+    if condition {           // 第 1 层
+        if condition2 {      // 第 2 层
+            statement1()
+        }
+    }
+}
+
+// 3 层（允许的最大值）
+func example() {
+    if condition {           // 第 1 层
+        if condition2 {      // 第 2 层
+            if condition3 {  // 第 3 层
+                statement1()
+            }
+        }
+    }
+}
+
+// 4 层（超过限制，必须重构）
+func example() {
+    if condition {           // 第 1 层
+        if condition2 {      // 第 2 层
+            if condition3 {  // 第 3 层
+                if condition4 { // 第 4 层 - 超过限制！
+                    statement1()
+                }
+            }
+        }
+    }
+}
+```
+
+#### ❌ 错误示例：嵌套过深
+
+```go
+// 嵌套层级：5 层（超过限制）
+func (s *orderService) ProcessOrder(ctx context.Context, orderID uint) error {
+    // 第 1 层
+    if orderID > 0 {
+        order, err := s.orderBiz.GetOrder(ctx, orderID)
+        if err == nil {
+            // 第 2 层
+            if order.Status == "pending" {
+                // 第 3 层
+                for _, item := range order.Items {
+                    // 第 4 层
+                    if item.ProductID > 0 {
+                        stock, err := s.stockBiz.CheckStock(ctx, item.ProductID)
+                        if err == nil {
+                            // 第 5 层 - 超过限制！
+                            if stock >= item.Quantity {
+                                // ... 处理逻辑
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return nil
+}
+```
+
+#### ✅ 正确示例：减少嵌套
+
+```go
+// 方法 1：提前返回（Guard Clauses）
+func (s *orderService) ProcessOrder(ctx context.Context, orderID uint) error {
+    // 提前返回，减少嵌套
+    if orderID == 0 {
+        return errorpkg.ErrorBadRequest("invalid order_id")
+    }
+
+    order, err := s.orderBiz.GetOrder(ctx, orderID)
+    if err != nil {
+        return err
+    }
+
+    if order.Status != "pending" {
+        return nil
+    }
+
+    return s.processOrderItems(ctx, order.Items)
+}
+
+// 辅助函数：处理订单商品（独立函数，不会增加主函数嵌套）
+func (s *orderService) processOrderItems(ctx context.Context, items []*OrderItem) error {
+    for _, item := range items {
+        if err := s.processOrderItem(ctx, item); err != nil {
+            return err
+        }
+    }
+    return nil
+}
+
+// 辅助函数：处理单个商品
+func (s *orderService) processOrderItem(ctx context.Context, item *OrderItem) error {
+    if item.ProductID == 0 {
+        return errorpkg.ErrorBadRequest("invalid product_id")
+    }
+
+    stock, err := s.stockBiz.CheckStock(ctx, item.ProductID)
+    if err != nil {
+        return err
+    }
+
+    if stock < item.Quantity {
+        return errorpkg.ErrorConflict("insufficient stock")
+    }
+
+    return s.stockBiz.DeductStock(ctx, item.ProductID, item.Quantity)
+}
+
+// 方法 2：使用 continue 跳过无效数据
+func (s *orderService) ProcessOrderV2(ctx context.Context, orderID uint) error {
+    if orderID == 0 {
+        return errorpkg.ErrorBadRequest("invalid order_id")
+    }
+
+    order, err := s.orderBiz.GetOrder(ctx, orderID)
+    if err != nil {
+        return err
+    }
+
+    if order.Status != "pending" {
+        return nil
+    }
+
+    // 使用 continue 减少嵌套
+    for _, item := range order.Items {
+        if item.ProductID == 0 {
+            continue  // 跳过无效商品
+        }
+
+        stock, err := s.stockBiz.CheckStock(ctx, item.ProductID)
+        if err != nil {
+            return err
+        }
+
+        if stock >= item.Quantity {
+            s.stockBiz.DeductStock(ctx, item.ProductID, item.Quantity)
+        }
+    }
+
+    return nil
+}
+```
+
+#### 减少嵌套的技巧
+
+| 技巧 | 说明 |
+|------|------|
+| **提前返回** | 先处理错误情况，提前返回 |
+| **continue/break** | 在循环中使用 continue 跳过无效数据 |
+| **提取函数** | 将深层嵌套的代码提取为独立函数 |
+| **卫语句** | 使用 `if !condition { return }` 代替 `if condition { ... }` |
+
+```go
+// ❌ 错误：深层嵌套
+func process(data []string) {
+    for _, s := range data {
+        if s != "" {
+            if len(s) > 10 {
+                if strings.HasPrefix(s, "prefix") {
+                    // ... 处理逻辑
+                }
+            }
+        }
+    }
+}
+
+// ✅ 正确：提前返回 + 提取函数
+func process(data []string) {
+    for _, s := range data {
+        if s == "" {
+            continue
+        }
+        if len(s) <= 10 {
+            continue
+        }
+        if !strings.HasPrefix(s, "prefix") {
+            continue
+        }
+        // ... 处理逻辑
+    }
+}
+```
+
+#### 嵌套层级检查清单
+
+- [ ] 主函数嵌套不超过 3 层
+- [ ] 使用提前返回减少嵌套
+- [ ] 使用 continue/break 减少循环嵌套
+- [ ] 将深层逻辑提取为独立函数
+- [ ] 每个函数职责单一，避免复杂嵌套
+
+---
+
+### 函数过长（续）
+
 #### ❌ 错误示例：函数过长
 
 ```go
