@@ -112,3 +112,4 @@ openapi.yaml
 _output
 _output_testdata
 mytest
+/.kiro/specs/
