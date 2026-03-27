@@ -50,6 +50,15 @@ func (s *RequestInfoForServer) String() string {
 	return res
 }
 
+func (s *RequestInfoForServer) Kvs() []interface{} {
+	return []interface{}{
+		"kind", s.Kind,
+		"component", s.Component,
+		"latency", s.Latency.String(),
+		"client_ip", s.ClientIP,
+	}
+}
+
 type OperationInfo struct {
 	Method    string `json:"method"`
 	Operation string `json:"operation"`
@@ -64,6 +73,14 @@ func (s *OperationInfo) String() string {
 	res += `}`
 
 	return res
+}
+
+func (s *OperationInfo) Kvs() []interface{} {
+	return []interface{}{
+		"method", s.Method,
+		"operation", s.Operation,
+		"args", s.Args,
+	}
 }
 
 // ErrMessage 响应信息
@@ -196,10 +213,12 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 
 			// websocket 不输出错误
 			if isWebsocket {
-				var kv = []interface{}{
-					"operation", operationInfo.String(),
-					"request", requestInfo.String(),
-				}
+				//var kv = []interface{}{
+				//	"operation", operationInfo.String(),
+				//	"request", requestInfo.String(),
+				//}
+				var kv = operationInfo.Kvs()
+				kv = append(kv, requestInfo.Kvs()...)
 				logHelper.WithContext(ctx).Log(loggingLevel, kv...)
 				return
 			}
@@ -212,10 +231,12 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			operationInfo.Args = args
 
 			// 打印日志
-			var kv = []interface{}{
-				"operation", operationInfo.String(),
-				"request", requestInfo.String(),
-			}
+			//var kv = []interface{}{
+			//	"operation", operationInfo.String(),
+			//	"request", requestInfo.String(),
+			//}
+			var kv = operationInfo.Kvs()
+			kv = append(kv, requestInfo.Kvs()...)
 
 			// 有错误的
 			if err != nil {
@@ -238,10 +259,12 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 				}
 
 				// 打印日志
-				kv = append(kv,
-					"error", errMessage.String(),
-					"stack", stackMessage,
-				)
+				kv = append(kv, errMessage.Kvs()...)
+				kv = append(kv, "stack", stackMessage)
+				//kv = append(kv,
+				//	"error", errMessage.String(),
+				//	"stack", stackMessage,
+				//)
 			}
 
 			// 输出日志
@@ -268,6 +291,15 @@ func (s *RequestInfoForClient) String() string {
 	res += `}`
 
 	return res
+}
+
+func (s *RequestInfoForClient) Kvs() []interface{} {
+	return []interface{}{
+		"kind", s.Kind,
+		"component", s.Component,
+		"latency", s.Latency.String(),
+		"client_ip", s.ClientIP,
+	}
 }
 
 func ClientLoggingKvs(requestInfo *RequestInfoForClient, operationInfo *OperationInfo) []interface{} {
@@ -333,12 +365,14 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 			}
 
 			// log
-			var (
-				kv = []interface{}{
-					"operation", operationInfo.String(),
-					"request", requestInfo.String(),
-				}
-			)
+			//var (
+			//	kv = []interface{}{
+			//		"operation", operationInfo.String(),
+			//		"request", requestInfo.String(),
+			//	}
+			//)
+			var kv = operationInfo.Kvs()
+			kv = append(kv, requestInfo.Kvs()...)
 
 			reply, err = handler(ctx, req)
 			if err != nil {
