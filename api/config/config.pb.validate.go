@@ -405,6 +405,328 @@ func (m *Bootstrap) validate(all bool) error {
 		}
 	}
 
+	{
+		sorted_keys := make([]string, len(m.GetMysqlInstances()))
+		i := 0
+		for key := range m.GetMysqlInstances() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetMysqlInstances()[key]
+			_ = val
+
+			// no validation rules for MysqlInstances[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("MysqlInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("MysqlInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return BootstrapValidationError{
+						field:  fmt.Sprintf("MysqlInstances[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetPsqlInstances()))
+		i := 0
+		for key := range m.GetPsqlInstances() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetPsqlInstances()[key]
+			_ = val
+
+			// no validation rules for PsqlInstances[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("PsqlInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("PsqlInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return BootstrapValidationError{
+						field:  fmt.Sprintf("PsqlInstances[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetRedisInstances()))
+		i := 0
+		for key := range m.GetRedisInstances() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetRedisInstances()[key]
+			_ = val
+
+			// no validation rules for RedisInstances[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("RedisInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("RedisInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return BootstrapValidationError{
+						field:  fmt.Sprintf("RedisInstances[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetMongoInstances()))
+		i := 0
+		for key := range m.GetMongoInstances() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetMongoInstances()[key]
+			_ = val
+
+			// no validation rules for MongoInstances[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("MongoInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("MongoInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return BootstrapValidationError{
+						field:  fmt.Sprintf("MongoInstances[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetConsulInstances()))
+		i := 0
+		for key := range m.GetConsulInstances() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetConsulInstances()[key]
+			_ = val
+
+			// no validation rules for ConsulInstances[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("ConsulInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("ConsulInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return BootstrapValidationError{
+						field:  fmt.Sprintf("ConsulInstances[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetJaegerInstances()))
+		i := 0
+		for key := range m.GetJaegerInstances() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetJaegerInstances()[key]
+			_ = val
+
+			// no validation rules for JaegerInstances[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("JaegerInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("JaegerInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return BootstrapValidationError{
+						field:  fmt.Sprintf("JaegerInstances[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		sorted_keys := make([]string, len(m.GetRabbitmqInstances()))
+		i := 0
+		for key := range m.GetRabbitmqInstances() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetRabbitmqInstances()[key]
+			_ = val
+
+			// no validation rules for RabbitmqInstances[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("RabbitmqInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, BootstrapValidationError{
+							field:  fmt.Sprintf("RabbitmqInstances[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return BootstrapValidationError{
+						field:  fmt.Sprintf("RabbitmqInstances[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
 	if all {
 		switch v := interface{}(m.GetEncrypt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -4107,6 +4429,8 @@ func (m *Log_Console) validate(all bool) error {
 	// no validation rules for Enable
 
 	// no validation rules for Level
+
+	// no validation rules for UseJsonEncoder
 
 	if len(errors) > 0 {
 		return Log_ConsoleMultiError(errors)

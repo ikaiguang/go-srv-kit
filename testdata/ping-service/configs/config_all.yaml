@@ -66,6 +66,7 @@ log:
     enable: true
     # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
     level: debug
+    use_json_encoder: true
   file:
     enable: true
     # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL

@@ -103,3 +103,52 @@ func withTracerInfo() log.Valuer {
 		return res + `}`
 	}
 }
+
+type TracerInfoKvs struct {
+	TraceId log.Valuer
+	UserId  log.Valuer
+}
+
+func (s *TracerInfoKvs) Kvs() []interface{} {
+
+	return []interface{}{
+		"trace_id", s.TraceId,
+		"x_uid", s.UserId,
+	}
+}
+
+func NewTracerInfoKvs() *TracerInfoKvs {
+	res := &TracerInfoKvs{
+		TraceId: withTraceId(),
+		UserId:  withUserId(),
+	}
+	return res
+}
+
+func withTraceId() log.Valuer {
+	return func(ctx context.Context) interface{} {
+		// trace
+		span := trace.SpanContextFromContext(ctx)
+		tid := ""
+		if span.HasTraceID() {
+			return span.TraceID().String()
+		} else if tr, ok := transport.FromServerContext(ctx); ok {
+			tid = tr.RequestHeader().Get(headerpkg.RequestID)
+		}
+		return tid
+	}
+}
+
+func withUserId() log.Valuer {
+	return func(ctx context.Context) interface{} {
+		uid := ""
+		if claims, ok := authpkg.GetAuthClaimsFromContext(ctx); ok && claims.Payload != nil {
+			if claims.Payload.UserID > 0 {
+				uid = strconv.FormatUint(claims.Payload.UserID, 10)
+			} else if claims.Payload.UserUuid != "" {
+				uid = claims.Payload.UserUuid
+			}
+		}
+		return uid
+	}
+}

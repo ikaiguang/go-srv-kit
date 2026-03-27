@@ -1,13 +1,14 @@
 package loggerutil
 
 import (
+	"io"
+	stdlog "log"
+	"sync"
+
 	"github.com/go-kratos/kratos/v2/log"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
-	"io"
-	stdlog "log"
-	"sync"
 )
 
 func (s *loggerManager) GetLogger() (log.Logger, error) {
@@ -168,7 +169,8 @@ func (s *loggerManager) setupLogger() error {
 
 func (s *loggerManager) withLoggerPrefix() []interface{} {
 	var kvs = NewServiceInfo(s.appConfig).Kvs()
-	for _, kv := range NewTracerInfo().Kvs() {
+	//for _, kv := range NewTracerInfo().Kvs() {
+	for _, kv := range NewTracerInfoKvs().Kvs() {
 		kvs = append(kvs, kv)
 	}
 	return kvs
@@ -189,8 +191,9 @@ func (s *loggerManager) loadingLoggerWithCallerSkip(skip int, fileLoggerConf *co
 	consoleLoggerConfig := s.conf.GetConsole()
 	if consoleLoggerConfig != nil && consoleLoggerConfig.GetEnable() {
 		stdLoggerConfig := &logpkg.ConfigStd{
-			Level:      logpkg.ParseLevel(consoleLoggerConfig.GetLevel()),
-			CallerSkip: skip,
+			Level:          logpkg.ParseLevel(consoleLoggerConfig.GetLevel()),
+			CallerSkip:     skip,
+			UseJSONEncoder: consoleLoggerConfig.UseJsonEncoder,
 		}
 		stdLoggerImpl, err := logpkg.NewStdLogger(stdLoggerConfig)
 		if err != nil {

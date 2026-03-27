@@ -98,6 +98,15 @@ func (s *Std) InitLogger(conf *ConfigStd, opts ...Option) (err error) {
 		o(&option)
 	}
 
+	var (
+		encoding    = "console"
+		encodeLevel = zapcore.CapitalColorLevelEncoder
+	)
+	if conf.UseJSONEncoder {
+		encoding = "json"
+		encodeLevel = zapcore.CapitalLevelEncoder
+	}
+
 	// 参考 zap.NewDevelopmentEncoderConfig()
 	encoderConf := zapcore.EncoderConfig{
 		MessageKey:    LoggerKeyMessage.Value(),
@@ -109,7 +118,7 @@ func (s *Std) InitLogger(conf *ConfigStd, opts ...Option) (err error) {
 		StacktraceKey: LoggerKeyStacktrace.Value(),
 
 		LineEnding:  zapcore.DefaultLineEnding,
-		EncodeLevel: zapcore.CapitalColorLevelEncoder,
+		EncodeLevel: encodeLevel,
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendString(t.Format(option.timeFormat))
 		},
@@ -119,27 +128,29 @@ func (s *Std) InitLogger(conf *ConfigStd, opts ...Option) (err error) {
 	}
 	SetZapLoggerKeys(&encoderConf, option.loggerKeys)
 
-	// 参考 zap.NewDevelopmentConfig()
-	loggerConf := &zap.Config{
-		Level:            zap.NewAtomicLevelAt(ToZapLevel(conf.Level)),
-		Development:      true,
-		Sampling:         nil,
-		Encoding:         "console",
-		EncoderConfig:    encoderConf,
-		OutputPaths:      []string{"stderr"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
-
 	// logger
 	callerSkip := DefaultCallerSkip
 	if conf.CallerSkip > 0 {
 		callerSkip = conf.CallerSkip
 	}
 	stacktraceLevel := zapcore.DPanicLevel
-	s.loggerHandler, err = loggerConf.Build(
+	var zOpts = []zap.Option{
 		zap.AddCallerSkip(callerSkip),
 		zap.AddStacktrace(stacktraceLevel),
-	)
+	}
+
+	// 参考 zap.NewDevelopmentConfig()
+	loggerConf := &zap.Config{
+		Level:            zap.NewAtomicLevelAt(ToZapLevel(conf.Level)),
+		Development:      true,
+		Sampling:         nil,
+		Encoding:         encoding,
+		EncoderConfig:    encoderConf,
+		OutputPaths:      []string{"stderr"},
+		ErrorOutputPaths: []string{"stderr"},
+	}
+
+	s.loggerHandler, err = loggerConf.Build(zOpts...)
 	if err != nil {
 		return
 	}

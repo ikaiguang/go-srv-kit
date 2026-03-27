@@ -1,9 +1,10 @@
 package loggerutil
 
 import (
+	"time"
+
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"google.golang.org/protobuf/types/known/durationpb"
-	"time"
 )
 
 var (
@@ -16,8 +17,9 @@ var (
 	}
 	_defaultLogConfig = &configpb.Log{
 		Console: &configpb.Log_Console{
-			Enable: true,
-			Level:  "DEBUG",
+			Enable:         true,
+			Level:          "DEBUG",
+			UseJsonEncoder: false,
 		},
 		File: &configpb.Log_File{
 			Enable:         false,

@@ -15,6 +15,8 @@ ifeq ($(GOHOSTOS), windows)
 	#to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
 	#changed to use git-bash.exe to run find cli or other cli friendly, caused of every developer has a Git.
 	GIT_BASH= $(subst cmd\,bin\bash.exe,$(dir $(shell where git)))
+#	GIT_PATH := $(firstword $(shell where git))
+#	GIT_BASH := $(strip $(subst \cmd\,\\bin\\,$(dir $(GIT_PATH)))bash.exe)
 	COMMON_PROTO_FILES=$(shell $(GIT_BASH) -c "find $(PROJECT_PATH)api/common -name *.proto")
 else
 endif

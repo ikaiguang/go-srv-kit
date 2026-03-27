@@ -28,6 +28,15 @@ message Bootstrap {
   Jaeger jaeger     = 307;
   Mongo mongo       = 308;
 
+  // 命名多实例配置（支持多数据源）
+  map<string, MySQL> mysql_instances       = 351;
+  map<string, PSQL> psql_instances         = 352;
+  map<string, Redis> redis_instances       = 353;
+  map<string, Mongo> mongo_instances       = 354;
+  map<string, Consul> consul_instances     = 355;
+  map<string, Jaeger> jaeger_instances     = 356;
+  map<string, Rabbitmq> rabbitmq_instances = 357;
+
   Encrypt encrypt = 401;
 
   repeated ClusterServiceApi cluster_service_api = 501;  // 应用程序接口
@@ -105,8 +114,9 @@ message Server {
 message Log {
   // Console 输出到控制台
   message Console {
-    bool enable  = 1;  // 是否启用
-    string level = 2;  // 日志级别；DEBUG、INFO、WARN、ERROR、FATAL
+    bool enable           = 1;  // 是否启用
+    string level          = 2;  // 日志级别；DEBUG、INFO、WARN、ERROR、FATAL
+    bool use_json_encoder = 3;  // 使用json输出
   }
   // File 输出到文件
   message File {
