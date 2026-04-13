@@ -6,7 +6,7 @@ import (
 	dbutil "github.com/ikaiguang/go-srv-kit/service/database"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
 	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+	setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 	pingapi "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service"
 	dbmigrate "github.com/ikaiguang/go-srv-kit/testdata/ping-service/cmd/database-migration/migrate"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/conf"
@@ -22,7 +22,7 @@ func ExportAuthWhitelist() []map[string]middlewareutil.TransportServiceKind {
 	}
 }
 
-func ExportServices(launcherManager setuputil.LauncherManager, serverManager serverutil.ServerManager) (cleanuputil.CleanupManager, error) {
+func ExportServices(launcherManager setupv2.LauncherManager, serverManager serverutil.ServerManager) (cleanuputil.CleanupManager, error) {
 	hs, err := serverManager.GetHTTPServer()
 	if err != nil {
 		return nil, err

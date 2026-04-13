@@ -1,13 +1,14 @@
 package serverutil
 
 import (
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/v2"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	cleanuputil "github.com/ikaiguang/go-srv-kit/service/cleanup"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	stdlog "log"
+	setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 )
 
 func RunServer(app *kratos.App, cleanup func()) {
@@ -22,7 +23,7 @@ func RunServer(app *kratos.App, cleanup func()) {
 	}
 }
 
-type ServiceExporter func(launcherManager setuputil.LauncherManager, serverManager ServerManager) (cleanuputil.CleanupManager, error)
+type ServiceExporter func(launcherManager setupv2.LauncherManager, serverManager ServerManager) (cleanuputil.CleanupManager, error)
 
 func AllInOneServer(
 	configFilePath string,
@@ -46,7 +47,7 @@ func AllInOneServer(
 	}()
 
 	// launcher
-	launcherManager, cleanup, err := setuputil.NewLauncherManagerWithCleanup(configFilePath, configOpts...)
+	launcherManager, cleanup, err := setupv2.NewWithCleanup(configFilePath, configOpts...)
 	if err != nil {
 		return nil, nil, err
 	}

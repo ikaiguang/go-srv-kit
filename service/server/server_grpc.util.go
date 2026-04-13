@@ -1,20 +1,21 @@
 package serverutil
 
 import (
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	stdlog "log"
+	setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 )
 
 var _ metadata.Option
 
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(
-	launcherManager setuputil.LauncherManager,
+	launcherManager setupv2.LauncherManager,
 	authWhiteList map[string]middlewareutil.TransportServiceKind,
 	serverOpts ...grpc.ServerOption,
 ) (*grpc.Server, error) {

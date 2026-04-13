@@ -165,9 +165,9 @@ func (d *xxxData) XxxMethod(ctx context.Context, param *bo.XxxParam) (*bo.XxxRes
 在 `cmd/{service}/export/wire.go`:
 
 ```go
-func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
+func exportServices(launcherManager setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
     panic(wire.Build(
-        setuputil.GetLogger,
+        setupv2.GetLogger,
         data.NewXxxData,      // 添加
         biz.NewXxxBiz,        // 添加
         service.NewXxxService, // 添加

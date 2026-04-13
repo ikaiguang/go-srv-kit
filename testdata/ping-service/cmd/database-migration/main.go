@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	dbmigrate "github.com/ikaiguang/go-srv-kit/testdata/ping-service/cmd/database-migration/migrate"
 	stdlog "log"
+
+	dbutil "github.com/ikaiguang/go-srv-kit/service/database"
+	setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
+	dbmigrate "github.com/ikaiguang/go-srv-kit/testdata/ping-service/cmd/database-migration/migrate"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -26,11 +28,18 @@ func main() {
 		flag.Parse()
 	}
 
-	launcher, err := setuputil.NewLauncherManager(flagconf)
+	launcher, cleanup, err := setupv2.NewWithCleanup(flagconf)
+	if err != nil {
+		stdlog.Fatalf("%+v\n", err)
+		return
+	}
+	defer cleanup()
+
+	dbConn, err := setupv2.GetPostgresDBConn(launcher)
 	if err != nil {
 		stdlog.Fatalf("%+v\n", err)
 		return
 	}
 
-	dbmigrate.Run(launcher, dbmigrate.WithCloseEngineHandler())
+	dbmigrate.Run(dbConn, dbutil.WithClose())
 }

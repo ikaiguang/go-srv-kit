@@ -73,9 +73,9 @@ server:
 //go:build wireinject
 package exporter
 
-func exportServices(launcher setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) {
+func exportServices(launcher setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) {
     panic(wire.Build(
-        setuputil.GetLogger,
+        setupv2.GetLogger,
         data.NewMyData,
         biz.NewMyBiz,
         service.NewMyService,

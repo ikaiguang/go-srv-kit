@@ -170,10 +170,10 @@ func (d *userData) CreateUser(ctx context.Context, param *bo.CreateUserParam) (*
 
 ```go
 // ✅ 好的实践
-func exportServices(launcher setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) {
+func exportServices(launcher setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) {
     panic(wire.Build(
         // 基础设施
-        setuputil.GetLogger,
+        setupv2.GetLogger,
 
         // Data 层
         data.NewUserData,

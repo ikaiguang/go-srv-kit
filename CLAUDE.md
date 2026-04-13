@@ -161,7 +161,7 @@ import "github.com/google/wire"
 
 func exportServices(launcher, hs, gs) (Cleanup, error) {
     panic(wire.Build(
-        setuputil.GetLogger,
+        setupv2.GetLogger,
         data.NewPingData,      // Data 层
         biz.NewPingBiz,        // Business 层
         service.NewPingService, // Service 层

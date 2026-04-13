@@ -1,6 +1,9 @@
 package serverutil
 
 import (
+	stdlog "log"
+	"net/url"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
@@ -8,14 +11,12 @@ import (
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	registrypkg "github.com/ikaiguang/go-srv-kit/kratos/registry"
 	apputil "github.com/ikaiguang/go-srv-kit/service/app"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+	setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 	tracerutil "github.com/ikaiguang/go-srv-kit/service/tracer"
-	stdlog "log"
-	"net/url"
 )
 
 // NewApp .
-func NewApp(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (*kratos.App, error) {
+func NewApp(launcherManager setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) (*kratos.App, error) {
 	var (
 		conf               = launcherManager.GetConfig()
 		appConfig          = conf.GetApp()
@@ -89,7 +90,7 @@ func NewApp(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc
 	for _, item := range appConfig.GetRegistryEndpoints() {
 		u, err := url.Parse(item)
 		if err != nil {
-			e := errorpkg.ErrorInvalidParameter(err.Error())
+			e := errorpkg.ErrorInvalidParameter("%s", err.Error())
 			return nil, errorpkg.WithStack(e)
 		}
 		endpoints = append(endpoints, u)

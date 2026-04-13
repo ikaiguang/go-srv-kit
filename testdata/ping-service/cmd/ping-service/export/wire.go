@@ -8,16 +8,16 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/google/wire"
 	cleanuputil "github.com/ikaiguang/go-srv-kit/service/cleanup"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+	setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/biz/biz"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/data/data"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/service/service"
 )
 
-func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
+func exportServices(launcherManager setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
 	panic(wire.Build(
-		setuputil.GetLogger,
-		setuputil.GetServiceAPIManager,
+		setupv2.GetLogger,
+		setupv2.GetServiceAPIManager,
 		// data
 		data.NewPingData,
 		// biz

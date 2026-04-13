@@ -38,7 +38,7 @@ func (s *pingService) Ping(ctx context.Context, req *resourcev1.PingReq) (*resou
 
 	// error
 	if req.GetMessage() == "error" {
-		e := errorv1.ErrorContentError(req.GetMessage())
+		e := errorv1.ErrorContentError("%s", req.GetMessage())
 		md := map[string]string{
 			"testdata": "testdata",
 		}

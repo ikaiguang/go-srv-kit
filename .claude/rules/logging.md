@@ -36,7 +36,7 @@ log.Infof("user %s login at %s", username, time.Now())
 ### 获取 Logger
 
 ```go
-import setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+import setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 
 // 在 Wire 中注入
 logger, err := launcherManager.GetLogger()

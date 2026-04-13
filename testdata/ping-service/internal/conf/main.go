@@ -7,7 +7,7 @@ var (
 )
 
 // LoadServiceConfig 加载服务配置
-// 由 setuputil.NewLauncherManager 进行加载赋值
+// 由 setupv2.NewWithCleanup 进行加载赋值
 func LoadServiceConfig() []configutil.Option {
 	return []configutil.Option{
 		configutil.WithOtherConfig(serviceConfig),

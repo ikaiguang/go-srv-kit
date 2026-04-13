@@ -23,14 +23,14 @@ import (
     "github.com/go-kratos/kratos/v2/transport/grpc"
     "github.com/go-kratos/kratos/v2/transport/http"
     "github.com/google/wire"
-    setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+    setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 )
 
-func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (Cleanup, error) {
+func exportServices(launcherManager setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) (Cleanup, error) {
     panic(wire.Build(
         // 基础设施
-        setuputil.GetLogger,
-        setuputil.GetServiceAPIManager,
+        setupv2.GetLogger,
+        setupv2.GetServiceAPIManager,
 
         // Data 层 - 顺序：从底层到上层
         data.NewXxxData,
@@ -93,7 +93,7 @@ panic(wire.Build(
 
 ```go
 // 提供额外的依赖
-func provideGormDB(launcher setuputil.LauncherManager) (*gorm.DB, error) {
+func provideGormDB(launcher setupv2.LauncherManager) (*gorm.DB, error) {
     return launcher.GetMysqlDBConn()
 }
 
@@ -159,7 +159,7 @@ func exportServices(...) {
 ```go
 panic(wire.Build(
     // 1. 基础设施（Logger, Config, DB, Redis）
-    setuputil.GetLogger,
+    setupv2.GetLogger,
     provideDatabase,
     provideRedis,
 

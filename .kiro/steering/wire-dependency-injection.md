@@ -22,10 +22,10 @@ cmd/{service}/export/
 
 package exporter
 
-func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (Cleanup, error) {
+func exportServices(launcherManager setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) (Cleanup, error) {
     panic(wire.Build(
         // 1. 基础设施
-        setuputil.GetLogger,
+        setupv2.GetLogger,
 
         // 2. Data 层（从底层到上层）
         data.NewXxxData,

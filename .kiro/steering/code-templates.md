@@ -98,9 +98,9 @@ func (d *xxxData) Method(ctx context.Context, param *bo.Param) (*bo.Result, erro
 
 package exporter
 
-func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (Cleanup, error) {
+func exportServices(launcherManager setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) (Cleanup, error) {
     panic(wire.Build(
-        setuputil.GetLogger,
+        setupv2.GetLogger,
         data.NewXxxData,
         biz.NewXxxBiz,
         service.NewXxxService,

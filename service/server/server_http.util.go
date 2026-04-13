@@ -1,6 +1,8 @@
 package serverutil
 
 import (
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/transport/http"
@@ -8,15 +10,14 @@ import (
 	apputil "github.com/ikaiguang/go-srv-kit/service/app"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	stdlog "log"
+	setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 )
 
 var _ metadata.Option
 
 // NewHTTPServer new HTTP server.
 func NewHTTPServer(
-	launcherManager setuputil.LauncherManager,
+	launcherManager setupv2.LauncherManager,
 	authWhiteList map[string]middlewareutil.TransportServiceKind,
 	serverOpts ...http.ServerOption,
 ) (*http.Server, error) {

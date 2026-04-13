@@ -11,17 +11,17 @@ import (
     "github.com/go-kratos/kratos/v2/transport/grpc"
     "github.com/go-kratos/kratos/v2/transport/http"
     "github.com/google/wire"
-    setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+    setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
     "github.com/ikaiguang/go-srv-kit/testdata/{service_name}/internal/biz/biz"
     "github.com/ikaiguang/go-srv-kit/testdata/{service_name}/internal/data/data"
     "github.com/ikaiguang/go-srv-kit/testdata/{service_name}/internal/service/service"
 )
 
 // exportServices 导出服务
-func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
+func exportServices(launcherManager setupv2.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
     panic(wire.Build(
         // 基础设施
-        setuputil.GetLogger,
+        setupv2.GetLogger,
 
         // Data 层
         data.New{Xxx}Data,
@@ -50,12 +50,12 @@ panic(wire.Build(
 ## Provider 函数模板
 ```go
 // 提供数据库连接
-func provideDatabase(launcher setuputil.LauncherManager) (*gorm.DB, error) {
+func provideDatabase(launcher setupv2.LauncherManager) (*gorm.DB, error) {
     return launcher.GetMysqlDBConn()
 }
 
 // 提供缓存连接
-func provideRedis(launcher setuputil.LauncherManager) (*redis.Client, error) {
+func provideRedis(launcher setupv2.LauncherManager) (*redis.Client, error) {
     return launcher.GetRedisConn()
 }
 

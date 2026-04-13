@@ -1,12 +1,13 @@
 package serverutil
 
 import (
+	"sync"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	"sync"
+	setupv2 "github.com/ikaiguang/go-srv-kit/service/setup_v2"
 )
 
 type ServerManager interface {
@@ -16,7 +17,7 @@ type ServerManager interface {
 }
 
 type serverManager struct {
-	launcherManager setuputil.LauncherManager
+	launcherManager setupv2.LauncherManager
 	authWhiteList   map[string]middlewareutil.TransportServiceKind
 
 	appOnce        sync.Once
@@ -28,7 +29,7 @@ type serverManager struct {
 }
 
 func NewServerManager(
-	launcherManager setuputil.LauncherManager,
+	launcherManager setupv2.LauncherManager,
 	authWhiteList map[string]middlewareutil.TransportServiceKind,
 ) (ServerManager, error) {
 	return &serverManager{
