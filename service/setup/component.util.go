@@ -1,4 +1,4 @@
-package setupv2
+package setuputil
 
 import (
 	stderrors "errors"

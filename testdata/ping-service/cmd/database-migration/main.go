@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	stdlog "log"
+
+	dbutil "github.com/ikaiguang/go-srv-kit/service/database"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 	dbmigrate "github.com/ikaiguang/go-srv-kit/testdata/ping-service/cmd/database-migration/migrate"
-	stdlog "log"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -32,5 +34,10 @@ func main() {
 		return
 	}
 
-	dbmigrate.Run(launcher, dbmigrate.WithCloseEngineHandler())
+	db, err := setuputil.GetRecommendDBConn(launcher)
+	if err != nil {
+		stdlog.Fatalf("%+v\n", err)
+		return
+	}
+	dbmigrate.Run(db, dbutil.WithClose())
 }

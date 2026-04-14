@@ -1,4 +1,4 @@
-package setupv2
+package setuputil
 
 // 组件名称常量，用于 NewComponent、WithEagerInit 和日志输出
 const (

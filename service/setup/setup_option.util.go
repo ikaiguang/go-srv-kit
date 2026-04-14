@@ -1,4 +1,4 @@
-package setupv2
+package setuputil
 
 // Option 构造选项函数
 type Option func(*options)

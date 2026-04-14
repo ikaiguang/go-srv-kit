@@ -336,9 +336,83 @@ if !allowUserLogin {
 
 ## 函数规范
 
-### 【建议】函数参数
+### 【强制】函数参数
 
-- 参数数量不能超过 5 个
+参考: [Go Code Review Comments - Function Arguments](https://github.com/golang/go/wiki/CodeReviewComments#function-arguments) | [Uber Go Style Guide](https://github.com/uber-go/guide/blob/master/style.md)
+
+#### 参数数量
+
+- 参数数量不超过 4 个
+- 超过 4 个必须封装为结构体或使用 Options 模式
+- 官方原话：If you have more than four parameters, use a struct.
+
+#### 参数固定顺序（最重要）
+
+所有 Go 项目统一顺序：
+
+```
+ctx context.Context  →  必须第一个
+req/params 结构体    →  第二个
+其他普通参数         →  第三、四个
+...Option 可选参数   →  最后
+```
+
+#### ctx 规则
+
+- `context.Context` 必须作为第一个参数，且命名为 `ctx`
+- 禁止将 ctx 放在结构体中传递
+- 不需要 context 的函数不要强加 `ctx` 参数
+- 官方规则：Contexts should be the first parameter, and named ctx.
+
+```go
+// ❌ 错误：ctx 不在第一个
+func doSomething(userID int, ctx context.Context) error
+
+// ✅ 正确
+func doSomething(ctx context.Context, userID int) error
+```
+
+#### 标准函数签名示例
+
+```go
+// 业务函数：ctx + 参数结构体
+func CreateUser(ctx context.Context, param *CreateUserParam) (*CreateUserResult, error)
+
+// 构造函数：配置 + Options
+func NewServer(conf *configpb.Bootstrap, opts ...Option) (*Server, error)
+
+// Provider 函数：单一依赖参数
+func GetLogger(launcherManager LauncherManager) (log.Logger, error)
+
+// 参数过多时封装结构体
+// ❌ 错误
+func CreateUser(ctx context.Context, name, email, phone string, age int, role string) error
+// ✅ 正确
+func CreateUser(ctx context.Context, param *CreateUserParam) (*CreateUserResult, error)
+```
+
+### 【强制】函数返回值
+
+- `error` 必须是最后一个返回值
+- 返回值不超过 3 个（不含 error），超过优先使用结构体封装
+- 命名返回值仅在需要 defer 中修改时使用，其他场景使用匿名返回值
+- 构造函数返回值遵循：`(实例, error)` 或 `(实例, cleanup, error)`
+
+```go
+// ✅ 标准返回值
+func GetUser(ctx context.Context, id uint) (*User, error)
+func NewWithCleanup(path string) (LauncherManager, func(), error)
+
+// ❌ 错误：error 不在最后
+func GetUser(ctx context.Context, id uint) (error, *User)
+// ❌ 错误：返回值过多
+func GetOrder(ctx context.Context, id uint) (string, int, float64, time.Time, error)
+// ✅ 正确：封装结构体
+func GetOrder(ctx context.Context, id uint) (*OrderDetail, error)
+```
+
+### 【建议】值传递
+
 - 尽量用值传递，非指针传递
 - 传入参数是 map、slice、chan、interface 不要传递指针
 

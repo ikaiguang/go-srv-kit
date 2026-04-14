@@ -235,7 +235,7 @@ Proto (API 定义) → DTO (service/dto/) → BO (biz/bo/) → PO (data/po/) →
 
 | 文件 | 说明 |
 |------|------|
-| `service/setup/setup.util.go` | LauncherManager - 基础设施统一入口 |
+| `service/setup/setup.util.go` | LauncherManager - 纯懒加载、泛型组件容器、Lifecycle 生命周期管理 |
 | `service/server/server_all_in_one.util.go` | AllInOneServer - 服务器初始化 |
 | `api/config/config.proto` | 全局配置结构定义 |
 | `kratos/auth/` | JWT 认证实现 |
@@ -278,6 +278,22 @@ Proto (API 定义) → DTO (service/dto/) → BO (biz/bo/) → PO (data/po/) →
 errorpkg.ErrorBadRequest("message")
 errorpkg.WrapWithMetadata(err, metadata)
 errorpkg.FormatError(err) // 带堆栈信息
+```
+
+## 函数参数约定
+
+参考: [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments#function-arguments) | [Uber Go Style Guide](https://github.com/uber-go/guide/blob/master/style.md) | [Effective Go](https://go.dev/doc/effective_go#functions)
+
+- 参数数量 ≤ 4 个，超过封装结构体或 Options 模式
+- 固定顺序：`ctx context.Context` → 请求结构体 → 其他参数 → `...Option`
+- `context.Context` 必须第一个参数，命名 `ctx`，禁止放结构体中
+- `error` 必须最后一个返回值，返回值 ≤ 3 个（不含 error）
+
+```go
+// 标准签名
+func CreateUser(ctx context.Context, param *CreateUserParam) (*CreateUserResult, error)
+func NewServer(conf *configpb.Bootstrap, opts ...Option) (*Server, error)
+func NewWithCleanup(path string) (LauncherManager, func(), error)
 ```
 
 ## 日志系统

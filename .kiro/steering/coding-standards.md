@@ -40,9 +40,47 @@ import (
 
 - 函数长度不超过 150 行
 - 嵌套层级不超过 3 层（超过必须重构）
-- 参数数量不超过 5 个
 - 接收器命名用类名首字母小写，禁止 me/this/self
 - defer 在操作成功后再调用
+
+### 函数参数约定
+
+参考: [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments#function-arguments) | [Uber Go Style Guide](https://github.com/uber-go/guide/blob/master/style.md)
+
+- 参数数量不超过 4 个，超过必须封装为结构体或使用 Options 模式
+- 参数固定顺序：`ctx context.Context` → 请求结构体/主参数 → 其他参数 → 可选参数 `...Option`
+- `context.Context` 必须作为第一个参数，且命名为 `ctx`，禁止放在结构体中
+- 不需要 context 的函数不要强加 `ctx` 参数
+
+```go
+// ✅ 标准写法
+func CreateUser(ctx context.Context, param *CreateUserParam) (*CreateUserResult, error)
+func NewServer(conf *configpb.Bootstrap, opts ...Option) (*Server, error)
+func GetLogger(launcherManager LauncherManager) (log.Logger, error)
+
+// ❌ 错误：ctx 不在第一个
+func CreateUser(param *CreateUserParam, ctx context.Context) error
+// ❌ 错误：参数过多，应封装结构体
+func CreateUser(ctx context.Context, name string, email string, phone string, age int, role string) error
+```
+
+### 函数返回值约定
+
+- `error` 必须是最后一个返回值
+- 返回值不超过 3 个（不含 error），超过优先使用结构体封装
+- 命名返回值仅在需要 defer 中修改时使用，其他场景使用匿名返回值
+- 构造函数返回值遵循：`(实例, error)` 或 `(实例, cleanup, error)`
+
+```go
+// ✅ 标准返回值
+func GetUser(ctx context.Context, id uint) (*User, error)
+func NewWithCleanup(path string) (LauncherManager, func(), error)
+
+// ❌ 错误：error 不在最后
+func GetUser(ctx context.Context, id uint) (error, *User)
+// ❌ 错误：返回值过多，应封装结构体
+func GetOrder(ctx context.Context, id uint) (string, int, float64, time.Time, error)
+```
 
 ## 命名约定
 

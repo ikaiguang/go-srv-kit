@@ -1,7 +1,6 @@
 package setuputil
 
 import (
-	stderrors "errors"
 	"github.com/go-kratos/kratos/v2/log"
 	consulapi "github.com/hashicorp/consul/api"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
@@ -22,470 +21,416 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"gorm.io/gorm"
-	stdlog "log"
-	"sync"
 )
 
-type launcherManager struct {
-	conf *configpb.Bootstrap
+// ==================== 单实例 factory 方法 ====================
 
-	loggerManagerOnce     sync.Once
-	loggerManager         loggerutil.LoggerManager
-	redisManagerOnce      sync.Once
-	redisManager          redisutil.RedisManager
-	mysqlManagerOnce      sync.Once
-	mysqlManager          mysqlutil.MysqlManager
-	postgresManagerOnce   sync.Once
-	postgresManager       postgresutil.PostgresManager
-	mongoManagerOnce      sync.Once
-	mongoManager          mongoutil.MongoManager
-	consulManagerOnce     sync.Once
-	consulManager         consulutil.ConsulManager
-	jaegerManagerOnce     sync.Once
-	jaegerManager         jaegerutil.JaegerManager
-	rabbitmqManagerOnce   sync.Once
-	rabbitmqManager       rabbitmqutil.RabbitmqManager
-	authInstanceOnce      sync.Once
-	authInstance          authutil.AuthInstance
-	serviceAPIManagerOnce sync.Once
-	serviceAPIManager     clientutil.ServiceAPIManager
+// newLoggerManager 创建日志管理器
+func (lm *launcherManager) newLoggerManager() (loggerutil.LoggerManager, error) {
+	return loggerutil.NewLoggerManager(lm.conf.GetLog(), lm.conf.GetApp())
 }
 
-func (s *launcherManager) GetConfig() *configpb.Bootstrap {
-	return s.conf
+// newRedisManager 创建 Redis 管理器
+func (lm *launcherManager) newRedisManager() (redisutil.RedisManager, error) {
+	return redisutil.NewRedisManager(lm.conf.GetRedis())
 }
 
-func (s *launcherManager) getLoggerManager() (loggerutil.LoggerManager, error) {
-	logConfig := s.conf.GetLog()
-	appConfig := s.conf.GetApp()
-	loggerManager, err := loggerutil.NewLoggerManager(logConfig, appConfig)
+// newMysqlManager 创建 MySQL 管理器
+func (lm *launcherManager) newMysqlManager() (mysqlutil.MysqlManager, error) {
+	loggerManager, err := lm.loggerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	s.loggerManager = loggerManager
-	return loggerManager, nil
+	return mysqlutil.NewMysqlManager(lm.conf.GetMysql(), loggerManager)
 }
 
-func (s *launcherManager) getSingletonLoggerManager() (loggerutil.LoggerManager, error) {
-	var err error
-	s.loggerManagerOnce.Do(func() {
-		s.loggerManager, err = s.getLoggerManager()
-	})
-	if err != nil {
-		s.loggerManagerOnce = sync.Once{}
-	}
-	return s.loggerManager, err
-}
-
-func (s *launcherManager) GetLogger() (log.Logger, error) {
-	loggerManager, err := s.getSingletonLoggerManager()
+// newPostgresManager 创建 PostgreSQL 管理器
+func (lm *launcherManager) newPostgresManager() (postgresutil.PostgresManager, error) {
+	loggerManager, err := lm.loggerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	return loggerManager.GetLogger()
+	return postgresutil.NewPostgresManager(lm.conf.GetPsql(), loggerManager)
 }
 
-func (s *launcherManager) GetLoggerForMiddleware() (log.Logger, error) {
-	loggerManager, err := s.getSingletonLoggerManager()
+// newMongoManager 创建 MongoDB 管理器
+func (lm *launcherManager) newMongoManager() (mongoutil.MongoManager, error) {
+	loggerManager, err := lm.loggerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	return loggerManager.GetLoggerForMiddleware()
+	return mongoutil.NewMongoManager(lm.conf.GetMongo(), loggerManager)
 }
 
-func (s *launcherManager) GetLoggerForHelper() (log.Logger, error) {
-	loggerManager, err := s.getSingletonLoggerManager()
+// newConsulManager 创建 Consul 管理器
+func (lm *launcherManager) newConsulManager() (consulutil.ConsulManager, error) {
+	return consulutil.NewConsulManager(lm.conf.GetConsul())
+}
+
+// newJaegerManager 创建 Jaeger 管理器
+func (lm *launcherManager) newJaegerManager() (jaegerutil.JaegerManager, error) {
+	return jaegerutil.NewJaegerManager(lm.conf.GetJaeger())
+}
+
+// newRabbitmqManager 创建 RabbitMQ 管理器
+func (lm *launcherManager) newRabbitmqManager() (rabbitmqutil.RabbitmqManager, error) {
+	loggerManager, err := lm.loggerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	return loggerManager.GetLoggerForHelper()
+	return rabbitmqutil.NewRabbitmqManager(lm.conf.GetRabbitmq(), loggerManager)
 }
 
-func (s *launcherManager) getRedisManager() (redisutil.RedisManager, error) {
-	redisConfig := s.conf.GetRedis()
-	redisManager, err := redisutil.NewRedisManager(redisConfig)
+// newAuthInstance 创建认证实例
+func (lm *launcherManager) newAuthInstance() (authutil.AuthInstance, error) {
+	loggerManager, err := lm.loggerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	s.redisManager = redisManager
-	return redisManager, nil
-}
-
-func (s *launcherManager) getSingletonRedisManager() (redisutil.RedisManager, error) {
-	var err error
-	s.redisManagerOnce.Do(func() {
-		s.redisManager, err = s.getRedisManager()
-	})
-	if err != nil {
-		s.redisManagerOnce = sync.Once{}
-	}
-	return s.redisManager, err
-}
-
-func (s *launcherManager) GetRedisClient() (redis.UniversalClient, error) {
-	redisManager, err := s.getSingletonRedisManager()
+	redisClient, err := lm.GetRedisClient()
 	if err != nil {
 		return nil, err
 	}
-	return redisManager.GetClient()
+	return authutil.NewAuthInstance(lm.conf.GetEncrypt().GetTokenEncrypt(), redisClient, loggerManager)
 }
 
-func (s *launcherManager) getMysqlManager() (mysqlutil.MysqlManager, error) {
-	loggerManager, err := s.getSingletonLoggerManager()
+// newServiceAPIManager 创建集群服务 API 管理器
+func (lm *launcherManager) newServiceAPIManager() (clientutil.ServiceAPIManager, error) {
+	apiConfigs, diffRT, err := clientutil.ToConfig(lm.conf.GetClusterServiceApi())
 	if err != nil {
 		return nil, err
 	}
-	mysqlConfig := s.conf.GetMysql()
-	mysqlManager, err := mysqlutil.NewMysqlManager(mysqlConfig, loggerManager)
+	loggerForMiddleware, err := lm.GetLoggerForMiddleware()
 	if err != nil {
 		return nil, err
 	}
-	s.mysqlManager = mysqlManager
-	return mysqlManager, nil
-}
-
-func (s *launcherManager) getSingletonMysqlManager() (mysqlutil.MysqlManager, error) {
-	var err error
-	s.mysqlManagerOnce.Do(func() {
-		s.mysqlManager, err = s.getMysqlManager()
-	})
-	if err != nil {
-		s.mysqlManagerOnce = sync.Once{}
+	var opts = []clientutil.Option{clientutil.WithLogger(loggerForMiddleware)}
+	for rt := range diffRT {
+		switch rt {
+		case configpb.RegistryTypeEnum_CONSUL:
+			consulClient, err := lm.GetConsulClient()
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, clientutil.WithConsulClient(consulClient))
+		case configpb.RegistryTypeEnum_ETCD:
+			e := errorpkg.ErrorUnimplemented("uninitialized setup etcd")
+			return nil, errorpkg.WithStack(e)
+		}
 	}
-	return s.mysqlManager, err
+	return clientutil.NewServiceAPIManager(apiConfigs, opts...)
 }
 
-func (s *launcherManager) GetMysqlDBConn() (*gorm.DB, error) {
-	mysqlManager, err := s.getSingletonMysqlManager()
+// ==================== 命名实例 factory 方法 ====================
+
+// newNamedMysqlManager 根据实例名称生成 MySQL factory 函数
+func (lm *launcherManager) newNamedMysqlManager(name string) func() (mysqlutil.MysqlManager, error) {
+	return func() (mysqlutil.MysqlManager, error) {
+		instances := lm.conf.GetMysqlInstances()
+		mysqlConfig, ok := instances[name]
+		if !ok {
+			return nil, errorpkg.ErrorNotFound("mysql instance not found: %s", name)
+		}
+		loggerManager, err := lm.loggerComp.Get()
+		if err != nil {
+			return nil, err
+		}
+		return mysqlutil.NewMysqlManager(mysqlConfig, loggerManager)
+	}
+}
+
+// newNamedPostgresManager 根据实例名称生成 PostgreSQL factory 函数
+func (lm *launcherManager) newNamedPostgresManager(name string) func() (postgresutil.PostgresManager, error) {
+	return func() (postgresutil.PostgresManager, error) {
+		instances := lm.conf.GetPsqlInstances()
+		psqlConfig, ok := instances[name]
+		if !ok {
+			return nil, errorpkg.ErrorNotFound("postgres instance not found: %s", name)
+		}
+		loggerManager, err := lm.loggerComp.Get()
+		if err != nil {
+			return nil, err
+		}
+		return postgresutil.NewPostgresManager(psqlConfig, loggerManager)
+	}
+}
+
+// newNamedRedisManager 根据实例名称生成 Redis factory 函数
+func (lm *launcherManager) newNamedRedisManager(name string) func() (redisutil.RedisManager, error) {
+	return func() (redisutil.RedisManager, error) {
+		instances := lm.conf.GetRedisInstances()
+		redisConfig, ok := instances[name]
+		if !ok {
+			return nil, errorpkg.ErrorNotFound("redis instance not found: %s", name)
+		}
+		return redisutil.NewRedisManager(redisConfig)
+	}
+}
+
+// newNamedMongoManager 根据实例名称生成 MongoDB factory 函数
+func (lm *launcherManager) newNamedMongoManager(name string) func() (mongoutil.MongoManager, error) {
+	return func() (mongoutil.MongoManager, error) {
+		instances := lm.conf.GetMongoInstances()
+		mongoConfig, ok := instances[name]
+		if !ok {
+			return nil, errorpkg.ErrorNotFound("mongo instance not found: %s", name)
+		}
+		loggerManager, err := lm.loggerComp.Get()
+		if err != nil {
+			return nil, err
+		}
+		return mongoutil.NewMongoManager(mongoConfig, loggerManager)
+	}
+}
+
+// newNamedConsulManager 根据实例名称生成 Consul factory 函数
+func (lm *launcherManager) newNamedConsulManager(name string) func() (consulutil.ConsulManager, error) {
+	return func() (consulutil.ConsulManager, error) {
+		instances := lm.conf.GetConsulInstances()
+		consulConfig, ok := instances[name]
+		if !ok {
+			return nil, errorpkg.ErrorNotFound("consul instance not found: %s", name)
+		}
+		return consulutil.NewConsulManager(consulConfig)
+	}
+}
+
+// newNamedJaegerManager 根据实例名称生成 Jaeger factory 函数
+func (lm *launcherManager) newNamedJaegerManager(name string) func() (jaegerutil.JaegerManager, error) {
+	return func() (jaegerutil.JaegerManager, error) {
+		instances := lm.conf.GetJaegerInstances()
+		jaegerConfig, ok := instances[name]
+		if !ok {
+			return nil, errorpkg.ErrorNotFound("jaeger instance not found: %s", name)
+		}
+		return jaegerutil.NewJaegerManager(jaegerConfig)
+	}
+}
+
+// newNamedRabbitmqManager 根据实例名称生成 RabbitMQ factory 函数
+func (lm *launcherManager) newNamedRabbitmqManager(name string) func() (rabbitmqutil.RabbitmqManager, error) {
+	return func() (rabbitmqutil.RabbitmqManager, error) {
+		instances := lm.conf.GetRabbitmqInstances()
+		rabbitmqConfig, ok := instances[name]
+		if !ok {
+			return nil, errorpkg.ErrorNotFound("rabbitmq instance not found: %s", name)
+		}
+		loggerManager, err := lm.loggerComp.Get()
+		if err != nil {
+			return nil, err
+		}
+		return rabbitmqutil.NewRabbitmqManager(rabbitmqConfig, loggerManager)
+	}
+}
+
+// ==================== Provider 方法：ConfigProvider ====================
+
+// GetConfig 获取 Bootstrap 配置
+func (lm *launcherManager) GetConfig() *configpb.Bootstrap {
+	return lm.conf
+}
+
+// ==================== Provider 方法：LoggerProvider ====================
+
+// GetLogger 获取日志实例
+func (lm *launcherManager) GetLogger() (log.Logger, error) {
+	mgr, err := lm.loggerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	return mysqlManager.GetDB()
+	return mgr.GetLogger()
 }
 
-func (s *launcherManager) getPostgresManager() (postgresutil.PostgresManager, error) {
-	loggerManager, err := s.getSingletonLoggerManager()
+// GetLoggerForMiddleware 获取中间件日志实例
+func (lm *launcherManager) GetLoggerForMiddleware() (log.Logger, error) {
+	mgr, err := lm.loggerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	psqlConfig := s.conf.GetPsql()
-	postgresManager, err := postgresutil.NewPostgresManager(psqlConfig, loggerManager)
+	return mgr.GetLoggerForMiddleware()
+}
+
+// GetLoggerForHelper 获取辅助工具日志实例
+func (lm *launcherManager) GetLoggerForHelper() (log.Logger, error) {
+	mgr, err := lm.loggerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	s.postgresManager = postgresManager
-	return postgresManager, nil
+	return mgr.GetLoggerForHelper()
 }
 
-func (s *launcherManager) getSingletonPostgresManager() (postgresutil.PostgresManager, error) {
-	var err error
-	s.postgresManagerOnce.Do(func() {
-		s.postgresManager, err = s.getPostgresManager()
-	})
-	if err != nil {
-		s.postgresManagerOnce = sync.Once{}
-	}
-	return s.postgresManager, err
-}
+// ==================== Provider 方法：DatabaseProvider ====================
 
-func (s *launcherManager) GetPostgresDBConn() (*gorm.DB, error) {
-	postgresManager, err := s.getSingletonPostgresManager()
+// GetMysqlDBConn 获取 MySQL 数据库连接
+func (lm *launcherManager) GetMysqlDBConn() (*gorm.DB, error) {
+	mgr, err := lm.mysqlComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	return postgresManager.GetDB()
+	return mgr.GetDB()
 }
 
-func (s *launcherManager) getMongoManager() (mongoutil.MongoManager, error) {
-	loggerManager, err := s.getSingletonLoggerManager()
+// GetPostgresDBConn 获取 PostgreSQL 数据库连接
+func (lm *launcherManager) GetPostgresDBConn() (*gorm.DB, error) {
+	mgr, err := lm.postgresComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	mongoConfig := s.conf.GetMongo()
-	mongoManager, err := mongoutil.NewMongoManager(mongoConfig, loggerManager)
+	return mgr.GetDB()
+}
+
+// GetNamedMysqlDBConn 获取命名 MySQL 实例的数据库连接
+func (lm *launcherManager) GetNamedMysqlDBConn(name string) (*gorm.DB, error) {
+	mgr, err := lm.mysqlGroup.Get(name)
 	if err != nil {
 		return nil, err
 	}
-	s.mongoManager = mongoManager
-	return mongoManager, nil
+	return mgr.GetDB()
 }
 
-func (s *launcherManager) getSingletonMongoManager() (mongoutil.MongoManager, error) {
-	var err error
-	s.mongoManagerOnce.Do(func() {
-		s.mongoManager, err = s.getMongoManager()
-	})
-	if err != nil {
-		s.mongoManagerOnce = sync.Once{}
-	}
-	return s.mongoManager, err
-}
-
-func (s *launcherManager) GetMongoClient() (*mongo.Client, error) {
-	mongoManager, err := s.getSingletonMongoManager()
+// GetNamedPostgresDBConn 获取命名 PostgreSQL 实例的数据库连接
+func (lm *launcherManager) GetNamedPostgresDBConn(name string) (*gorm.DB, error) {
+	mgr, err := lm.postgresGroup.Get(name)
 	if err != nil {
 		return nil, err
 	}
-	return mongoManager.GetMongoClient()
+	return mgr.GetDB()
 }
 
-func (s *launcherManager) getConsulManager() (consulutil.ConsulManager, error) {
-	consulConfig := s.conf.GetConsul()
-	consulManager, err := consulutil.NewConsulManager(consulConfig)
+// ==================== Provider 方法：RedisProvider ====================
+
+// GetRedisClient 获取 Redis 客户端
+func (lm *launcherManager) GetRedisClient() (redis.UniversalClient, error) {
+	mgr, err := lm.redisComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	s.consulManager = consulManager
-	return consulManager, nil
+	return mgr.GetClient()
 }
 
-func (s *launcherManager) getSingletonConsulManager() (consulutil.ConsulManager, error) {
-	var err error
-	s.consulManagerOnce.Do(func() {
-		s.consulManager, err = s.getConsulManager()
-	})
-	if err != nil {
-		s.consulManagerOnce = sync.Once{}
-	}
-	return s.consulManager, err
-}
-
-func (s *launcherManager) GetConsulClient() (*consulapi.Client, error) {
-	consulManager, err := s.getSingletonConsulManager()
+// GetNamedRedisClient 获取命名 Redis 实例的客户端
+func (lm *launcherManager) GetNamedRedisClient(name string) (redis.UniversalClient, error) {
+	mgr, err := lm.redisGroup.Get(name)
 	if err != nil {
 		return nil, err
 	}
-	return consulManager.GetClient()
+	return mgr.GetClient()
 }
 
-func (s *launcherManager) getJaegerManager() (jaegerutil.JaegerManager, error) {
-	jaegerConfig := s.conf.GetJaeger()
-	jaegerManager, err := jaegerutil.NewJaegerManager(jaegerConfig)
+// ==================== Provider 方法：MongoProvider ====================
+
+// GetMongoClient 获取 MongoDB 客户端
+func (lm *launcherManager) GetMongoClient() (*mongo.Client, error) {
+	mgr, err := lm.mongoComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	s.jaegerManager = jaegerManager
-	return jaegerManager, nil
+	return mgr.GetMongoClient()
 }
 
-func (s *launcherManager) getSingletonJaegerManager() (jaegerutil.JaegerManager, error) {
-	var err error
-	s.jaegerManagerOnce.Do(func() {
-		s.jaegerManager, err = s.getJaegerManager()
-	})
-	if err != nil {
-		s.jaegerManagerOnce = sync.Once{}
-	}
-	return s.jaegerManager, err
-}
-
-func (s *launcherManager) GetJaegerExporter() (*otlptrace.Exporter, error) {
-	jaegerManager, err := s.getSingletonJaegerManager()
+// GetNamedMongoClient 获取命名 MongoDB 实例的客户端
+func (lm *launcherManager) GetNamedMongoClient(name string) (*mongo.Client, error) {
+	mgr, err := lm.mongoGroup.Get(name)
 	if err != nil {
 		return nil, err
 	}
-	return jaegerManager.GetExporter()
+	return mgr.GetMongoClient()
 }
 
-func (s *launcherManager) getRabbitmqManager() (rabbitmqutil.RabbitmqManager, error) {
-	loggerManager, err := s.getSingletonLoggerManager()
+// ==================== Provider 方法：ConsulProvider ====================
+
+// GetConsulClient 获取 Consul 客户端
+func (lm *launcherManager) GetConsulClient() (*consulapi.Client, error) {
+	mgr, err := lm.consulComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	rabbitmqConfig := s.conf.GetRabbitmq()
-	rabbitmqManager, err := rabbitmqutil.NewRabbitmqManager(rabbitmqConfig, loggerManager)
+	return mgr.GetClient()
+}
+
+// GetNamedConsulClient 获取命名 Consul 实例的客户端
+func (lm *launcherManager) GetNamedConsulClient(name string) (*consulapi.Client, error) {
+	mgr, err := lm.consulGroup.Get(name)
 	if err != nil {
 		return nil, err
 	}
-	s.rabbitmqManager = rabbitmqManager
-	return rabbitmqManager, nil
+	return mgr.GetClient()
 }
 
-func (s *launcherManager) getSingletonRabbitmqManager() (rabbitmqutil.RabbitmqManager, error) {
-	var err error
-	s.rabbitmqManagerOnce.Do(func() {
-		s.rabbitmqManager, err = s.getRabbitmqManager()
-	})
-	if err != nil {
-		s.rabbitmqManagerOnce = sync.Once{}
-	}
-	return s.rabbitmqManager, err
-}
+// ==================== Provider 方法：TracerProvider ====================
 
-func (s *launcherManager) GetRabbitmqConn() (*rabbitmqpkg.ConnectionWrapper, error) {
-	rabbitmqManager, err := s.getSingletonRabbitmqManager()
+// GetJaegerExporter 获取 Jaeger 导出器
+func (lm *launcherManager) GetJaegerExporter() (*otlptrace.Exporter, error) {
+	mgr, err := lm.jaegerComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	return rabbitmqManager.GetClient()
+	return mgr.GetExporter()
 }
 
-func (s *launcherManager) getAuthInstance() (authutil.AuthInstance, error) {
-	// logger
-	loggerManager, err := s.getSingletonLoggerManager()
+// GetNamedJaegerExporter 获取命名 Jaeger 实例的导出器
+func (lm *launcherManager) GetNamedJaegerExporter(name string) (*otlptrace.Exporter, error) {
+	mgr, err := lm.jaegerGroup.Get(name)
 	if err != nil {
 		return nil, err
 	}
-	// redis
-	universalClient, err := s.GetRedisClient()
+	return mgr.GetExporter()
+}
+
+// ==================== Provider 方法：MessageQueueProvider ====================
+
+// GetRabbitmqConn 获取 RabbitMQ 连接
+func (lm *launcherManager) GetRabbitmqConn() (*rabbitmqpkg.ConnectionWrapper, error) {
+	mgr, err := lm.rabbitmqComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	// auth
-	encryptTokenEncrypt := s.conf.GetEncrypt().GetTokenEncrypt()
-	authInstance, err := authutil.NewAuthInstance(encryptTokenEncrypt, universalClient, loggerManager)
+	return mgr.GetClient()
+}
+
+// GetNamedRabbitmqConn 获取命名 RabbitMQ 实例的连接
+func (lm *launcherManager) GetNamedRabbitmqConn(name string) (*rabbitmqpkg.ConnectionWrapper, error) {
+	mgr, err := lm.rabbitmqGroup.Get(name)
 	if err != nil {
 		return nil, err
 	}
-	s.authInstance = authInstance
-	return authInstance, err
+	return mgr.GetClient()
 }
 
-func (s *launcherManager) getSingletonAuthInstance() (authutil.AuthInstance, error) {
-	var err error
-	s.authInstanceOnce.Do(func() {
-		s.authInstance, err = s.getAuthInstance()
-	})
-	if err != nil {
-		s.authInstanceOnce = sync.Once{}
-	}
-	return s.authInstance, err
-}
+// ==================== Provider 方法：AuthProvider ====================
 
-func (s *launcherManager) GetTokenManager() (authpkg.TokenManger, error) {
-	authInstance, err := s.getSingletonAuthInstance()
+// GetTokenManager 获取 Token 管理器
+func (lm *launcherManager) GetTokenManager() (authpkg.TokenManger, error) {
+	authInstance, err := lm.authComp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return authInstance.GetTokenManger()
 }
 
-func (s *launcherManager) GetAuthManager() (authpkg.AuthRepo, error) {
-	authInstance, err := s.getSingletonAuthInstance()
+// GetAuthManager 获取认证管理器
+func (lm *launcherManager) GetAuthManager() (authpkg.AuthRepo, error) {
+	authInstance, err := lm.authComp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return authInstance.GetAuthManger()
 }
 
-func (s *launcherManager) getServiceApiManager() (clientutil.ServiceAPIManager, error) {
-	apiConfigs, diffRT, err := clientutil.ToConfig(s.conf.GetClusterServiceApi())
+// ==================== Provider 方法：ServiceAPIProvider ====================
+
+// GetServiceApiManager 获取集群服务 API 管理器
+func (lm *launcherManager) GetServiceApiManager() (clientutil.ServiceAPIManager, error) {
+	mgr, err := lm.serviceAPIComp.Get()
 	if err != nil {
 		return nil, err
 	}
-	loggerForMiddleware, err := s.GetLoggerForMiddleware()
-	if err != nil {
-		return nil, err
-	}
-	var opts = []clientutil.Option{clientutil.WithLogger(loggerForMiddleware)}
-	for rt := range diffRT {
-		if rt == configpb.RegistryTypeEnum_CONSUL {
-			consulClient, err := s.GetConsulClient()
-			if err != nil {
-				return nil, err
-			}
-			opts = append(opts, clientutil.WithConsulClient(consulClient))
-		} else if rt == configpb.RegistryTypeEnum_ETCD {
-			e := errorpkg.ErrorUnimplemented("uninitialized setup etcd")
-			return nil, errorpkg.WithStack(e)
-			//etcdClient, err := s.GetEtcdClient()
-			//if err != nil {
-			//	return nil, err
-			//}
-			//opts = append(opts, clientutil.WithEtcdClient(etcdClient))
-		}
-	}
-	serviceAPIManager, err := clientutil.NewServiceAPIManager(apiConfigs, opts...)
-	if err != nil {
-		return nil, err
-	}
-	s.serviceAPIManager = serviceAPIManager
-	return serviceAPIManager, nil
+	return mgr, nil
 }
 
-func (s *launcherManager) getSingletonServiceApiManager() (clientutil.ServiceAPIManager, error) {
-	var err error
-	s.serviceAPIManagerOnce.Do(func() {
-		s.serviceAPIManager, err = s.getServiceApiManager()
-	})
-	if err != nil {
-		s.serviceAPIManagerOnce = sync.Once{}
-	}
-	return s.serviceAPIManager, err
-}
+// ==================== Closer ====================
 
-func (s *launcherManager) GetServiceApiManager() (clientutil.ServiceAPIManager, error) {
-	serviceAPIManager, err := s.getSingletonServiceApiManager()
-	if err != nil {
-		return nil, err
-	}
-	return serviceAPIManager, nil
-}
-
-func (s *launcherManager) Close() error {
-	// 退出程序
-	stdlog.Println("|==================== EXIT PROGRAM : START ====================|")
-	defer stdlog.Println("|==================== EXIT PROGRAM : END ====================|")
-	var errs []error
-
-	// redis
-	if s.redisManager != nil {
-		if err := s.redisManager.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	// mysql
-	if s.mysqlManager != nil {
-		if err := s.mysqlManager.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	// postgres
-	if s.postgresManager != nil {
-		if err := s.postgresManager.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	// mongo
-	if s.mongoManager != nil {
-		if err := s.mongoManager.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	// consul
-	if s.consulManager != nil {
-		if err := s.consulManager.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	// jaeger
-	if s.jaegerManager != nil {
-		if err := s.jaegerManager.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	// rabbitmq
-	if s.rabbitmqManager != nil {
-		if err := s.rabbitmqManager.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	// logger
-	if s.loggerManager != nil {
-		if err := s.loggerManager.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	if len(errs) > 0 {
-		return stderrors.Join(errs...)
-	}
-	return nil
+// Close 关闭所有已初始化的组件，委托给 Lifecycle
+func (lm *launcherManager) Close() error {
+	return lm.lc.Close()
 }
