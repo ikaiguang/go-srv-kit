@@ -1,19 +1,20 @@
 package configutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protoreflect"
 	stdlog "log"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 const (
-	CONFIG_METHOD_LOCAL  = "local"
-	CONFIG_METHOD_CONSUL = "consul"
+	ConfigMethodLocal  = "local"
+	ConfigMethodConsul = "consul"
 )
 
 func Loading(filePath string, loadingOpts ...Option) (*configpb.Bootstrap, error) {
@@ -29,7 +30,7 @@ func Loading(filePath string, loadingOpts ...Option) (*configpb.Bootstrap, error
 	switch method {
 	default:
 		return bootstrap, err
-	case CONFIG_METHOD_CONSUL:
+	case ConfigMethodConsul:
 		//从consul加载配置
 		if bootstrap.GetConsul() == nil {
 			e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = consul")

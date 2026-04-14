@@ -1,10 +1,11 @@
 package rabbitmqutil
 
 import (
+	"sync"
+
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	"sync"
 )
 
 var (

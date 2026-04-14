@@ -6,11 +6,6 @@ import (
 	"sync"
 )
 
-// Closer 关闭接口
-type Closer interface {
-	Close() error
-}
-
 // closerEntry 关闭器条目
 type closerEntry struct {
 	name   string

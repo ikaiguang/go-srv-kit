@@ -1,12 +1,13 @@
 package storeutil
 
 import (
-	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
-	ospkg "github.com/ikaiguang/go-srv-kit/kit/os"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	stdlog "log"
 	"os"
 	"path/filepath"
+
+	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
+	ospkg "github.com/ikaiguang/go-srv-kit/kit/os"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )
 
 type StoreManager interface {
@@ -17,15 +18,15 @@ type StoreManager interface {
 func ReadStoreFiles(sourceDir, storeDir string) (map[string][]byte, error) {
 	fs, err := filepathpkg.ReadDir(sourceDir)
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
-		return nil, errorpkg.WithStack(e)
+		e := errorpkg.ErrorInternalError("failed to read source directory")
+		return nil, errorpkg.Wrap(e, err)
 	}
 	if len(fs) == 0 {
-		e := errorpkg.ErrorBadRequest("资源目录查无配置文件：sourceDir=%s", sourceDir)
+		e := errorpkg.ErrorBadRequest("no config files found in source directory: sourceDir=%s", sourceDir)
 		return nil, errorpkg.WithStack(e)
 	}
 	if storeDir == "" {
-		e := errorpkg.ErrorBadRequest("请配置存储路径：storeDir")
+		e := errorpkg.ErrorBadRequest("store directory path is required: storeDir")
 		return nil, errorpkg.WithStack(e)
 	}
 	configDataM := make(map[string][]byte)
@@ -41,8 +42,8 @@ func ReadStoreFiles(sourceDir, storeDir string) (map[string][]byte, error) {
 		stdlog.Println("|*** 读取文件：", filePath)
 		content, err := os.ReadFile(filePath)
 		if err != nil {
-			e := errorpkg.ErrorInternalError(err.Error())
-			return nil, errorpkg.WithStack(e)
+			e := errorpkg.ErrorInternalError("failed to read file")
+			return nil, errorpkg.Wrap(e, err)
 		}
 		configDataM[destPath] = content
 	}

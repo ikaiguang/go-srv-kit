@@ -2,11 +2,12 @@ package loggerutil
 
 import (
 	stderrors "errors"
-	"github.com/go-kratos/kratos/v2/log"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"io"
 	stdlog "log"
 	"sync"
+
+	"github.com/go-kratos/kratos/v2/log"
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 )
 
 type loggerManager struct {
@@ -131,7 +132,7 @@ func (s *loggerManager) Close() error {
 		}
 	}
 	if s.writerForRabbitmq != nil {
-		if writerCloser, ok := s.writer.(io.Closer); ok {
+		if writerCloser, ok := s.writerForRabbitmq.(io.Closer); ok {
 			stdlog.Println("|*** STOP: close: rabbitmq Writer")
 			if err := writerCloser.Close(); err != nil {
 				stdlog.Println("|*** STOP: close: rabbitmq Writer failed: ", err.Error())

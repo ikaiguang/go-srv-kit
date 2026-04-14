@@ -20,13 +20,10 @@ func (s *cleanup) Append(cleanup func()) {
 }
 
 func (s *cleanup) Cleanup() {
-	lastIndex := len(s.cleanupList) - 1
-	for lastIndex >= 0 {
-		if s.cleanupList[lastIndex] == nil {
-			continue
+	for i := len(s.cleanupList) - 1; i >= 0; i-- {
+		if s.cleanupList[i] != nil {
+			s.cleanupList[i]()
 		}
-		s.cleanupList[lastIndex]()
-		lastIndex--
 	}
 	s.cleanupList = nil
 }

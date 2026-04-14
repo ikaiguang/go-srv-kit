@@ -1,11 +1,12 @@
 package clientutil
 
 import (
+	"strings"
+
 	"github.com/go-kratos/kratos/v2/transport/http"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	stdgrpc "google.golang.org/grpc"
-	"strings"
 )
 
 var (
@@ -13,6 +14,16 @@ var (
 	uninitializedEtcdClientError   = errorpkg.ErrorBadRequest("uninitialized: etcdClient == nil")
 	uninitializedGRPCConnError     = errorpkg.ErrorBadRequest("uninitialized: grpcConn == nil")
 	uninitializedHTTPClientError   = errorpkg.ErrorBadRequest("uninitialized: httpClient == nil")
+)
+
+// 传输协议和注册类型的字符串常量
+const (
+	transportTypeHTTP = "http"
+	transportTypeGRPC = "grpc"
+
+	registryTypeEndpoint = "endpoint"
+	registryTypeConsul   = "consul"
+	registryTypeEtcd     = "etcd"
 )
 
 type ServiceAPIManager interface {
@@ -52,20 +63,20 @@ func (s *Config) SetByPbClusterServiceApi(cfg *configpb.ClusterServiceApi) {
 	switch tt {
 	default:
 		s.TransportType = configpb.TransportTypeEnum_HTTP
-	case "http":
+	case transportTypeHTTP:
 		s.TransportType = configpb.TransportTypeEnum_HTTP
-	case "grpc":
+	case transportTypeGRPC:
 		s.TransportType = configpb.TransportTypeEnum_GRPC
 	}
 	rt := strings.ToLower(cfg.GetRegistryType())
 	switch rt {
 	default:
 		s.RegistryType = configpb.RegistryTypeEnum_ENDPOINT
-	case "endpoint":
+	case registryTypeEndpoint:
 		s.RegistryType = configpb.RegistryTypeEnum_ENDPOINT
-	case "consul":
+	case registryTypeConsul:
 		s.RegistryType = configpb.RegistryTypeEnum_CONSUL
-	case "etcd":
+	case registryTypeEtcd:
 		s.RegistryType = configpb.RegistryTypeEnum_ETCD
 	}
 	s.ServiceTarget = cfg.GetServiceTarget()

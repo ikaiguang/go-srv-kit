@@ -76,6 +76,11 @@ type ServiceAPIProvider interface {
 	GetServiceApiManager() (clientutil.ServiceAPIManager, error)
 }
 
+// Closer 关闭接口
+type Closer interface {
+	Close() error
+}
+
 // LauncherManager 组合接口，保持向后兼容
 type LauncherManager interface {
 	ConfigProvider

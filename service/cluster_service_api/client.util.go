@@ -2,6 +2,10 @@ package clientutil
 
 import (
 	"context"
+	"net/url"
+	"sync"
+	"time"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
@@ -10,9 +14,6 @@ import (
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 	registrypkg "github.com/ikaiguang/go-srv-kit/kratos/registry"
 	"google.golang.org/grpc/resolver"
-	"net/url"
-	"sync"
-	"time"
 )
 
 type serviceAPIManager struct {
@@ -120,8 +121,8 @@ func (s *serviceAPIManager) GetServiceAPIConfig(serviceName ServiceName) (*Confi
 func (s *serviceAPIManager) checkGeneralEndpointValidity(serviceTarget string) error {
 	ok, err := connectionpkg.CheckEndpointValidity(serviceTarget)
 	if err != nil {
-		e := errorpkg.ErrorServiceUnavailable(err.Error())
-		return errorpkg.WithStack(e)
+		e := errorpkg.ErrorServiceUnavailable("endpoint validity check failed")
+		return errorpkg.Wrap(e, err)
 	}
 	if !ok {
 		e := errorpkg.ErrorServiceUnavailable("checkGeneralEndpointValidity is not ok")
@@ -147,8 +148,8 @@ func (s *serviceAPIManager) getAndCheckRegistryDiscovery(apiConfig *Config, serv
 	defer cancel()
 	_, err = r.GetService(ctx, target.Endpoint())
 	if err != nil {
-		e := errorpkg.ErrorServiceUnavailable(err.Error())
-		return nil, errorpkg.WithStack(e)
+		e := errorpkg.ErrorServiceUnavailable("registry discovery failed")
+		return nil, errorpkg.Wrap(e, err)
 	}
 	//s.log.WithContext(ctx).Infow(
 	//	"msg", "registry.Discovery.GetService success",
@@ -160,7 +161,7 @@ func (s *serviceAPIManager) getAndCheckRegistryDiscovery(apiConfig *Config, serv
 func (s *serviceAPIManager) getRegistryDiscovery(apiConfig *Config) (registry.Discovery, error) {
 	switch apiConfig.RegistryType {
 	default:
-		e := errorpkg.ErrorUnimplemented(apiConfig.RegistryType.String())
+		e := errorpkg.ErrorUnimplemented("unsupported registry type")
 		return nil, errorpkg.WithStack(e)
 	case configpb.RegistryTypeEnum_CONSUL:
 		if s.opt.consulClient == nil {

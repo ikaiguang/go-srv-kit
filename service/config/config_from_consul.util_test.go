@@ -1,8 +1,9 @@
 package configutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"testing"
+
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 )
 
 // go test -v -count 1 ./config/ -run TestLoadingConfigFromConsul
@@ -14,7 +15,7 @@ func TestLoadingConfigFromConsul(t *testing.T) {
 
 	otherConfig := &configpb.TestingConfig{}
 	appConfig := &configpb.App{
-		ConfigMethod:         CONFIG_METHOD_CONSUL,
+		ConfigMethod:         ConfigMethodConsul,
 		ConfigPathForGeneral: "go-micro-saas/general-config",
 		ConfigPathForServer:  "go-micro-saas/ping-service/production/v1.0.0",
 	}

@@ -2,6 +2,7 @@ package middlewareutil
 
 import (
 	"context"
+
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
 	"github.com/go-kratos/kratos/v2/transport"
@@ -13,18 +14,18 @@ import (
 type TransportServiceKind string
 
 const (
-	TransportServiceKindALL           = "ALL"
-	TransportServiceKindHTTP          = "HTTP"
-	TransportServiceKindGRPC          = "GRPC"
-	TransportServiceKindMethodGet     = "GET"
-	TransportServiceKindMethodHead    = "HEAD"
-	TransportServiceKindMethodPost    = "POST"
-	TransportServiceKindMethodPut     = "PUT"
-	TransportServiceKindMethodPatch   = "PATCH"
-	TransportServiceKindMethodDelete  = "DELETE"
-	TransportServiceKindMethodConnect = "CONNECT"
-	TransportServiceKindMethodOptions = "OPTIONS"
-	TransportServiceKindMethodTrace   = "TRACE"
+	TransportServiceKindALL           TransportServiceKind = "ALL"
+	TransportServiceKindHTTP          TransportServiceKind = "HTTP"
+	TransportServiceKindGRPC          TransportServiceKind = "GRPC"
+	TransportServiceKindMethodGet     TransportServiceKind = "GET"
+	TransportServiceKindMethodHead    TransportServiceKind = "HEAD"
+	TransportServiceKindMethodPost    TransportServiceKind = "POST"
+	TransportServiceKindMethodPut     TransportServiceKind = "PUT"
+	TransportServiceKindMethodPatch   TransportServiceKind = "PATCH"
+	TransportServiceKindMethodDelete  TransportServiceKind = "DELETE"
+	TransportServiceKindMethodConnect TransportServiceKind = "CONNECT"
+	TransportServiceKindMethodOptions TransportServiceKind = "OPTIONS"
+	TransportServiceKindMethodTrace   TransportServiceKind = "TRACE"
 )
 
 func MergeWhitelist(whitelist ...map[string]TransportServiceKind) map[string]TransportServiceKind {
@@ -39,9 +40,7 @@ func MergeWhitelist(whitelist ...map[string]TransportServiceKind) map[string]Tra
 
 func (s TransportServiceKind) MatchServiceKind(ctx context.Context) bool {
 	switch s {
-	default:
-		return true
-	case TransportServiceKindALL:
+	case TransportServiceKindALL, "":
 		return true
 	case TransportServiceKindHTTP:
 		tr, ok := transport.FromServerContext(ctx)
@@ -49,8 +48,9 @@ func (s TransportServiceKind) MatchServiceKind(ctx context.Context) bool {
 	case TransportServiceKindGRPC:
 		tr, ok := transport.FromServerContext(ctx)
 		return ok && tr.Kind() == transport.KindGRPC
+	default:
+		return false
 	}
-	//return false
 }
 
 // NewWhiteListMatcher 路由白名单
