@@ -3,6 +3,7 @@ package mongopkg
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -70,6 +71,7 @@ func NewMongoClient(config *Config, logger log.Logger) (*mongo.Client, error) {
 	}
 	err = client.Ping(context.Background(), readpref.Primary())
 	if err != nil {
+		_ = client.Disconnect(context.Background())
 		err = fmt.Errorf("mongo ping failed: %w", err)
 		return nil, err
 	}

@@ -36,9 +36,6 @@ func NewEtcdClient(conf *Config) (*clientv3.Client, error) {
 		}
 		etcdConfig.TLS = tlsConfig
 	}
-	//if conf.InsecureSkipVerify {
-	//	etcdConfig.DialOptions = append(etcdConfig.DialOptions, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	//}
 	return NewClient(etcdConfig)
 }
 
@@ -49,7 +46,10 @@ func NewClient(config *clientv3.Config) (*clientv3.Client, error) {
 		return nil, err
 	}
 
-	_, err = etcdCC.Put(context.Background(), "/ping", "pong")
+	// ping 验证连接
+	const pingKey = "/ping"
+	const pingValue = "pong"
+	_, err = etcdCC.Put(context.Background(), pingKey, pingValue)
 	if err != nil {
 		return etcdCC, err
 	}

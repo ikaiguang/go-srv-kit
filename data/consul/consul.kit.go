@@ -88,17 +88,14 @@ func NewClient(conf *Config, opts ...Option) (*api.Client, error) {
 		return consulCC, err
 	}
 
-	// ping
-	kv := &api.KVPair{Key: "ping", Value: []byte("pong")}
+	// ping 验证连接
+	const pingKey = "ping"
+	const pingValue = "pong"
+	kv := &api.KVPair{Key: pingKey, Value: []byte(pingValue)}
 	_, err = consulCC.KV().Put(kv, nil)
 	if err != nil {
 		return consulCC, err
 	}
-	//newKv, _, err := consulCC.KV().Get(kv.Key, nil)
-	//if err != nil {
-	//	return consulCC, err
-	//}
-	//_ = newKv
 
 	return consulCC, err
 }

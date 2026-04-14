@@ -1,10 +1,11 @@
 package jaegerpkg
 
 import (
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
-	"google.golang.org/protobuf/types/known/durationpb"
 	"testing"
 	"time"
+
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // go test -v ./data/jaeger/ -count=1 -run TestNewJaegerExporter_Xxx
@@ -23,7 +24,7 @@ func TestNewJaegerExporter_Xxx(t *testing.T) {
 			name: "#NewJaegerExporter_GRPC",
 			args: args{
 				conf: &Config{
-					Kind:              KingGRPC,
+					Kind:              KindGRPC,
 					Addr:              "my-jaeger:4317",
 					IsInsecure:        true,
 					Timeout:           durationpb.New(time.Second * 30),
@@ -40,7 +41,7 @@ func TestNewJaegerExporter_Xxx(t *testing.T) {
 			name: "#NewJaegerExporter_HTTP",
 			args: args{
 				conf: &Config{
-					Kind:              KingGRPC,
+					Kind:              KindGRPC,
 					Addr:              "my-jaeger:4318",
 					IsInsecure:        true,
 					Timeout:           durationpb.New(time.Second * 30),

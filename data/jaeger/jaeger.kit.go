@@ -3,6 +3,7 @@ package jaegerpkg
 import (
 	"context"
 	"fmt"
+
 	connectionpkg "github.com/ikaiguang/go-srv-kit/kit/connection"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -13,8 +14,8 @@ import (
 type Kind string
 
 const (
-	KingHTTP Kind = "http"
-	KingGRPC Kind = "grpc"
+	KindHTTP Kind = "http"
+	KindGRPC Kind = "grpc"
 )
 
 // Config jaeger config
@@ -44,7 +45,7 @@ func NewExporter(conf *Config, opts ...Option) (*otlptrace.Exporter, error) {
 		err = fmt.Errorf("address error : invalid connection")
 		return nil, err
 	}
-	if conf.Kind == KingHTTP {
+	if conf.Kind == KindHTTP {
 		return NewHTTPExporter(conf)
 	}
 	return NewGRPCExporter(conf)

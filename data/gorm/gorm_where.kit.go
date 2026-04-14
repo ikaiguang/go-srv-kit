@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	DefaultPlaceholder = "?" // param placeholder
+	DefaultPlaceholder     = "?" // param placeholder
+	invalidWhereColumnName = "bad_where_from_invalid_column"
 )
 
 // Where 条件；例：where id = ?(where id = 1)
@@ -19,11 +20,11 @@ type Where struct {
 	// Placeholder 占位符
 	Placeholder string
 	// Value 数据
-	Value interface{}
+	Value any
 }
 
 // NewWhere where
-func NewWhere(field, operator string, value interface{}) *Where {
+func NewWhere(field, operator string, value any) *Where {
 	return &Where{
 		Field:       field,
 		Operator:    operator,
@@ -40,8 +41,7 @@ func AssembleWheres(db *gorm.DB, wheres []*Where) *gorm.DB {
 	for i := range wheres {
 		column := wheres[i].Field
 		if !IsValidColumnName(column) {
-			//column = DefaultOrderColumn
-			column = "bad_where_from_invalid_column"
+			column = invalidWhereColumnName
 			if db.Logger != nil {
 				db.Logger.Error(context.Background(), "invalid column(", wheres[i].Field, ")")
 			}
@@ -52,6 +52,7 @@ func AssembleWheres(db *gorm.DB, wheres []*Where) *gorm.DB {
 }
 
 // UnsafeAssembleWheres 不安全的组装条件
+// WARNING: 此函数不验证列名，可能导致 SQL 注入。仅在确认输入安全时使用。
 func UnsafeAssembleWheres(db *gorm.DB, wheres []*Where) *gorm.DB {
 	if len(wheres) == 0 {
 		return db
