@@ -43,7 +43,7 @@ func CheckEndpointValidity(endpoint string) (bool, error) {
 // IsValidConnection 检查链接有效性
 // @param address: hostname + ":" + port
 func IsValidConnection(address string) (bool, error) {
-	conn, err := net.DialTimeout("tcp", address, 30*time.Second)
+	conn, err := net.DialTimeout("tcp", address, 10*time.Second)
 	if err != nil {
 		return false, err
 	}
