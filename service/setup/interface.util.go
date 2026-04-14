@@ -67,7 +67,7 @@ type MessageQueueProvider interface {
 
 // AuthProvider 认证提供者
 type AuthProvider interface {
-	GetTokenManager() (authpkg.TokenManger, error)
+	GetTokenManager() (authpkg.TokenManager, error)
 	GetAuthManager() (authpkg.AuthRepo, error)
 }
 

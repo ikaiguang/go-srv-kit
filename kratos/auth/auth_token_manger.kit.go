@@ -47,25 +47,25 @@ func CheckAuthCacheKeyPrefix(inputKeyPrefix *AuthCacheKeyPrefix) *AuthCacheKeyPr
 	if inputKeyPrefix == nil {
 		return keyPrefix
 	}
-	if inputKeyPrefix.TokensKeyPrefix == "" {
+	if inputKeyPrefix.TokensKeyPrefix != "" {
 		keyPrefix.TokensKeyPrefix = inputKeyPrefix.TokensKeyPrefix
 	}
-	if inputKeyPrefix.BlackTokenKeyPrefix == "" {
+	if inputKeyPrefix.BlackTokenKeyPrefix != "" {
 		keyPrefix.BlackTokenKeyPrefix = inputKeyPrefix.BlackTokenKeyPrefix
 	}
-	if inputKeyPrefix.LimitTokenKeyPrefix == "" {
+	if inputKeyPrefix.LimitTokenKeyPrefix != "" {
 		keyPrefix.LimitTokenKeyPrefix = inputKeyPrefix.LimitTokenKeyPrefix
 	}
-	if inputKeyPrefix.ClearTokenKeyPrefix == "" {
+	if inputKeyPrefix.ClearTokenKeyPrefix != "" {
 		keyPrefix.ClearTokenKeyPrefix = inputKeyPrefix.ClearTokenKeyPrefix
 	}
 	return keyPrefix
 }
 
-var _ TokenManger = (*tokenManger)(nil)
+var _ TokenManager = (*tokenManger)(nil)
 
-// TokenManger ...
-type TokenManger interface {
+// TokenManager 令牌管理器接口
+type TokenManager interface {
 	SaveAccessTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
 	ResetPreviousTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
 	AddBlacklist(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
@@ -95,12 +95,12 @@ type tokenManger struct {
 	locker             lockerpkg.Locker
 }
 
-// NewTokenManger ...
-func NewTokenManger(
+// NewTokenManager 创建令牌管理器
+func NewTokenManager(
 	logger log.Logger,
 	redisCC redis.UniversalClient,
 	authCacheKeyPrefix *AuthCacheKeyPrefix,
-) TokenManger {
+) TokenManager {
 	authCacheKeyPrefix = CheckAuthCacheKeyPrefix(authCacheKeyPrefix)
 	return &tokenManger{
 		log:                log.NewHelper(log.With(logger, "module", "kit.auth.token.manger")),
@@ -372,14 +372,6 @@ func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, token
 
 // IsExistToken ...
 func (s *tokenManger) IsExistToken(ctx context.Context, userIdentifier string, tokenID string) (bool, error) {
-	//key := s.genTokensKey(userIdentifier)
-	//exist, err := s.redisCC.HExists(ctx, key, tokenID).Result()
-	//if err != nil {
-	//	e := errorpkg.ErrorInternalServer("")
-	//	err = errorpkg.Wrap(e, err)
-	//	return false, err
-	//}
-
 	tokenItem, isNotFound, err := s.GetToken(ctx, userIdentifier, tokenID)
 	if err != nil {
 		return false, err

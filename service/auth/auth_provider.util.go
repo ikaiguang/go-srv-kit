@@ -1,11 +1,12 @@
 package authutil
 
 import (
+	"sync"
+
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 	"github.com/redis/go-redis/v9"
-	"sync"
 )
 
 var (
@@ -32,6 +33,6 @@ func GetAuthManager(authInstance AuthInstance) (authpkg.AuthRepo, error) {
 	return authInstance.GetAuthManger()
 }
 
-func GetTokenManger(authInstance AuthInstance) (authpkg.TokenManger, error) {
+func GetTokenManger(authInstance AuthInstance) (authpkg.TokenManager, error) {
 	return authInstance.GetTokenManger()
 }

@@ -342,10 +342,6 @@ func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				e := ErrMissingSignKeyFunc()
 				return nil, errorpkg.WithStack(e)
 			}
-			if keyProvider == nil {
-				e := ErrNeedTokenProvider()
-				return nil, errorpkg.WithStack(e)
-			}
 			token := jwt.NewWithClaims(o.signingMethod, o.claims())
 			if o.accessTokenHeader != nil {
 				for k, v := range o.accessTokenHeader {
@@ -364,7 +360,6 @@ func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 			}
 			if clientContext, ok := transport.FromClientContext(ctx); ok {
 				clientContext.RequestHeader().Set(AuthorizationKey, fmt.Sprintf(BearerFormat, tokenStr))
-				//clientContext.RequestHeader().Set(AuthorizationKey, tokenStr)
 				return handler(ctx, req)
 			}
 			e := ErrWrongContext()

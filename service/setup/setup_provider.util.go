@@ -85,7 +85,7 @@ func GetRabbitmqConn(launcherManager LauncherManager) (*rabbitmqpkg.ConnectionWr
 }
 
 // GetTokenManager 获取 Token 管理器
-func GetTokenManager(launcherManager LauncherManager) (authpkg.TokenManger, error) {
+func GetTokenManager(launcherManager LauncherManager) (authpkg.TokenManager, error) {
 	return launcherManager.GetTokenManager()
 }
 

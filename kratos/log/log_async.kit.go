@@ -44,7 +44,7 @@ func (w *AsyncWriter) Write(p []byte) (n int, err error) {
 
 	// 缓冲池已满，主动丢弃
 	if len(w.c) >= w.size {
-		return 0, nil
+		return len(p), nil
 	}
 
 	// 异步情况下，不能直接使用传入的切片，需要拷贝，防止被篡改

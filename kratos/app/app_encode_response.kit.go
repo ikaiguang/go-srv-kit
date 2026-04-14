@@ -8,7 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/ikaiguang/go-srv-kit/kratos/error"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
@@ -20,8 +20,6 @@ const (
 
 // SuccessResponseEncoder http.DefaultResponseEncoder
 func SuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
-	//return http.DefaultResponseEncoder(w, r, v)
-	//return successResponseEncoder(w, r, v)
 	if v == nil {
 		return nil
 	}
@@ -37,12 +35,12 @@ func SuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v inte
 
 	data, err := codec.Marshal(v)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer(errorpkg.ERROR_INTERNAL_SERVER.String())
+		e := errorpkg.ErrorInternalServer("marshal response failed")
 		return errorpkg.Wrap(e, err)
 	}
 	_, err = w.Write(data)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer(errorpkg.ERROR_INTERNAL_SERVER.String())
+		e := errorpkg.ErrorInternalServer("write response failed")
 		return errorpkg.Wrap(e, err)
 	}
 	return nil
@@ -50,10 +48,7 @@ func SuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v inte
 
 // ErrorResponseEncoder http.DefaultErrorEncoder
 func ErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
-	// http.DefaultErrorEncoder(w, r, err)
-	// errorResponseEncoder(w, r, err)
 	codec, _ := http.CodecForRequest(r, "Accept")
-	//w.Header().Set(headerpkg.ContentType, ContentType(codec.Name()))
 	SetResponseContentType(w, codec)
 
 	se := errorpkg.FromError(err)

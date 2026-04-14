@@ -400,7 +400,7 @@ func (lm *launcherManager) GetNamedRabbitmqConn(name string) (*rabbitmqpkg.Conne
 // ==================== Provider 方法：AuthProvider ====================
 
 // GetTokenManager 获取 Token 管理器
-func (lm *launcherManager) GetTokenManager() (authpkg.TokenManger, error) {
+func (lm *launcherManager) GetTokenManager() (authpkg.TokenManager, error) {
 	authInstance, err := lm.authComp.Get()
 	if err != nil {
 		return nil, err

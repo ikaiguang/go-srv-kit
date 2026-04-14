@@ -1,10 +1,11 @@
 package authutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 	stdlog "log"
 	"sync"
+
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
@@ -17,18 +18,18 @@ type authInstance struct {
 	loggerManager loggerutil.LoggerManager
 
 	// 不要直接使用 s.tokenXxx, 请使用 GetAuthCollection()
-	tokenManager     authpkg.TokenManger
+	tokenManager     authpkg.TokenManager
 	tokenAuthRepo    authpkg.AuthRepo
 	tokenManagerOnce sync.Once
 }
 
 type AuthCollection struct {
-	TokenManager authpkg.TokenManger
+	TokenManager authpkg.TokenManager
 	AuthManager  authpkg.AuthRepo
 }
 
 type AuthInstance interface {
-	GetTokenManger() (authpkg.TokenManger, error)
+	GetTokenManger() (authpkg.TokenManager, error)
 	GetAuthManger() (authpkg.AuthRepo, error)
 }
 
@@ -63,7 +64,7 @@ func (s *authInstance) GetAuthCollection() (*AuthCollection, error) {
 	}, nil
 }
 
-func (s *authInstance) GetTokenManger() (authpkg.TokenManger, error) {
+func (s *authInstance) GetTokenManger() (authpkg.TokenManager, error) {
 	manager, err := s.GetAuthCollection()
 	if err != nil {
 		return nil, err
@@ -89,13 +90,13 @@ func (s *authInstance) loadingTokenManagerOnce() error {
 	return err
 }
 
-func (s *authInstance) loadingTokenManager() (authpkg.TokenManger, authpkg.AuthRepo, error) {
+func (s *authInstance) loadingTokenManager() (authpkg.TokenManager, authpkg.AuthRepo, error) {
 	stdlog.Println("|*** LOADING: TokenManger: ...")
 	logger, err := s.loggerManager.GetLoggerForMiddleware()
 	if err != nil {
 		return nil, nil, err
 	}
-	tokenManger := authpkg.NewTokenManger(logger, s.redisCC, authpkg.CheckAuthCacheKeyPrefix(nil))
+	tokenManger := authpkg.NewTokenManager(logger, s.redisCC, authpkg.CheckAuthCacheKeyPrefix(nil))
 	config := &authpkg.Config{
 		SignCrypto:          authpkg.NewSignEncryptor(s.conf.GetSignKey()),
 		RefreshCrypto:       authpkg.NewCBCCipher(s.conf.GetRefreshKey()),

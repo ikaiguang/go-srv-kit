@@ -163,13 +163,13 @@ type authRepo struct {
 	log           *log.Helper
 	signEncryptor SignEncryptor
 	refreshCrypto RefreshEncryptor
-	tokenManger   TokenManger
+	tokenManger   TokenManager
 
 	jwtValidator *jwt.Validator
 }
 
 // NewAuthRepo ...
-func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManger) (AuthRepo, error) {
+func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManager) (AuthRepo, error) {
 	if config.SignCrypto == nil {
 		e := errorpkg.ErrorBadRequest("invalid SignCrypto")
 		err := errorpkg.WithStack(e)
@@ -204,7 +204,6 @@ func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManger) (Aut
 		refreshCrypto: config.RefreshCrypto,
 		log:           log.NewHelper(log.With(logger, "module", "kit.auth.token.repo")),
 		tokenManger:   tokenManger,
-		// tokenManger:   NewTokenManger(redisCC, authCacheKeyPrefix),
 
 		jwtValidator: jwt.NewValidator(),
 	}, nil
