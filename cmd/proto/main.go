@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/go-kratos/kratos/v2/log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"sort"
 	"strings"
+
+	"github.com/go-kratos/kratos/v2/log"
 
 	debugpkg "github.com/ikaiguang/go-srv-kit/debug"
 	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
@@ -94,12 +95,11 @@ func genProtoScriptFileAndExecScript(dir string) (scriptFilePath string, err err
 		newArgs := append(args, scripts[i])
 		out, err := cmdpkg.RunCommand(command, newArgs)
 		if err != nil {
-			e := errorpkg.ErrorInternalError(err.Error())
-			return scriptFilePath, errorpkg.WithStack(e)
+			e := errorpkg.ErrorInternalError("command execution failed")
+			return scriptFilePath, errorpkg.Wrap(e, err)
 		}
 		if strings.Contains(string(out), "exit status 1") {
-			err = fmt.Errorf("\n\tscript : %s \n\terror : %s", scripts[i], out)
-			e := errorpkg.ErrorInternalError(err.Error())
+			e := errorpkg.ErrorInternalError("script execution failed")
 			return scriptFilePath, errorpkg.WithStack(e)
 		}
 		fmt.Println("==> Exec : ", scripts[i])
@@ -142,8 +142,8 @@ func (s *Proto) GenProtoScriptFile(filename string, scripts []string) (err error
 
 	err = os.WriteFile(filename, buf.Bytes(), filepkg.DefaultFileMode)
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
-		return errorpkg.WithStack(e)
+		e := errorpkg.ErrorInternalError("failed to write script file")
+		return errorpkg.Wrap(e, err)
 	}
 	return err
 }
@@ -166,8 +166,8 @@ func (s *Proto) GenProtoExecScripts(protoFiles []string) (scripts []string) {
 func (s *Proto) FindProtoFiles(dir string) (protoFiles []string, err error) {
 	filePaths, _, err := filepathpkg.WaldDir(dir)
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
-		return protoFiles, errorpkg.WithStack(e)
+		e := errorpkg.ErrorInternalError("failed to walk directory")
+		return protoFiles, errorpkg.Wrap(e, err)
 	}
 
 	for i := range filePaths {

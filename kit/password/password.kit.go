@@ -29,7 +29,7 @@ func NewPasswordHash() *PasswordHash {
 }
 
 func (e *PasswordHash) Encrypt(src string) (string, error) {
-	hashed, err := bcrypt.GenerateFromPassword([]byte(src), bcrypt.MinCost)
+	hashed, err := bcrypt.GenerateFromPassword([]byte(src), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}

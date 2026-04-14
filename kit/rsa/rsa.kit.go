@@ -18,10 +18,10 @@ type Encryptor interface {
 	DecryptToString(ciphertext string) (string, error)
 }
 
-// GenRsaKey RSA公钥私钥产生
+// GenRsaKey RSA公钥私钥产生（2048位）
 func GenRsaKey() ([]byte, []byte, error) {
 	// 私钥
-	privateKey, err := rsa.GenerateKey(rand.Reader, 1024)
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, nil, err
 	}

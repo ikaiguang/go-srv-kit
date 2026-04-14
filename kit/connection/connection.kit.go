@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 // IsWebSocketConn 是否websocket
@@ -42,7 +43,7 @@ func CheckEndpointValidity(endpoint string) (bool, error) {
 // IsValidConnection 检查链接有效性
 // @param address: hostname + ":" + port
 func IsValidConnection(address string) (bool, error) {
-	conn, err := net.Dial("tcp", address)
+	conn, err := net.DialTimeout("tcp", address, 30*time.Second)
 	if err != nil {
 		return false, err
 	}

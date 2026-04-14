@@ -44,7 +44,11 @@ func StreamDownload(ctx context.Context, param *DownloadParam) (*DownloadReply, 
 		return nil, err
 	}
 
-	resp, err := http.Get(param.URL)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, param.URL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create request failed: %w", err)
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("http get failed: %w", err)
 	}

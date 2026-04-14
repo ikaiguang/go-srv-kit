@@ -14,7 +14,16 @@ type Encryptor interface {
 	DecryptToString(ciphertext string) (string, error)
 }
 
+// errInvalidCiphertext 密文格式错误
+var errInvalidCiphertext = errors.New("invalid ciphertext: length is not a multiple of block size")
+
+// errInvalidPadding 填充格式错误
+var errInvalidPadding = errors.New("invalid pkcs7 padding")
+
 // aesCipher aes加解密
+// WARNING: 此实现使用固定 IV（密钥前缀），属于确定性加密。
+// 相同明文+相同密钥会产生相同密文，不适用于需要语义安全的场景。
+// 新代码建议使用 aes.kit.go 中的 EncryptCBC/DecryptCBC（随机 IV）。
 type aesCipher struct {
 	key       []byte
 	block     cipher.Block
@@ -57,7 +66,7 @@ func (a *aesCipher) DecryptToString(encrypted string) (string, error) {
 		return "", err
 	}
 	if len(encryptedByte)%a.blockSize != 0 {
-		return "", errors.New("encrypted wrong")
+		return "", errInvalidCiphertext
 	}
 	// 创建数组
 	decrypted := make([]byte, len(encryptedByte))
@@ -83,7 +92,7 @@ func pkcs7Padding(data []byte, blockSize int) []byte {
 func pkcs7UnPadding(data []byte) ([]byte, error) {
 	length := len(data)
 	if length == 0 {
-		return nil, errors.New("invalid UnPadding string")
+		return nil, errInvalidPadding
 	}
 	unPadding := int(data[length-1])
 	return data[:(length - unPadding)], nil
