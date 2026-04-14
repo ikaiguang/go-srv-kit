@@ -22,7 +22,6 @@ func NewPingGRPCClient(serviceAPIManager clientutil.ServiceAPIManager, rewriteSe
 		serviceName = rewriteServiceName[i]
 	}
 	conn, err := clientutil.NewSingletonServiceAPIConnection(serviceAPIManager, serviceName)
-	//conn, err := NewServiceAPIConnection(serviceAPIManager, serviceName)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +39,6 @@ func NewPingHTTPClient(serviceAPIManager clientutil.ServiceAPIManager, rewriteSe
 		serviceName = rewriteServiceName[i]
 	}
 	conn, err := clientutil.NewSingletonServiceAPIConnection(serviceAPIManager, serviceName)
-	//conn, err := NewServiceAPIConnection(serviceAPIManager, serviceName)
 	if err != nil {
 		return nil, err
 	}

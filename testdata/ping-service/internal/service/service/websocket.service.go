@@ -1,9 +1,10 @@
 package service
 
 import (
+	stdhttp "net/http"
+
 	"github.com/go-kratos/kratos/v2/log"
 	bizrepo "github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/biz/repo"
-	stdhttp "net/http"
 
 	"github.com/go-kratos/kratos/v2/transport/http"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
@@ -32,7 +33,7 @@ func NewWebsocketService(
 func (s *WebsocketService) TestWebsocket(w http.ResponseWriter, r *http.Request) {
 	if r.Method != stdhttp.MethodGet {
 		e := errorpkg.ErrorMethodNotAllowed("METHOD_NOT_ALLOWED")
-		w.WriteHeader(stdhttp.StatusBadRequest)
+		w.WriteHeader(stdhttp.StatusMethodNotAllowed)
 		_, _ = w.Write([]byte(e.Error()))
 		return
 	}

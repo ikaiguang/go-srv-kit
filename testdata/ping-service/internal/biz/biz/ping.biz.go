@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+
 	"github.com/go-kratos/kratos/v2/log"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
@@ -43,12 +44,18 @@ func (s *pingBiz) GetPingMessage(ctx context.Context, param *bo.GetPingMessagePa
 	return res, nil
 }
 
+// 测试用服务名称常量
+const (
+	pingServiceHTTP clientutil.ServiceName = "ping-service-http"
+	pingServiceGRPC clientutil.ServiceName = "ping-service-grpc"
+)
+
 func (s *pingBiz) TestingRequest(ctx context.Context) error {
-	pingHTTPClient, err := serviceapi.NewPingHTTPClient(s.serviceAPIManager, "ping-service-http")
+	pingHTTPClient, err := serviceapi.NewPingHTTPClient(s.serviceAPIManager, pingServiceHTTP)
 	if err != nil {
 		return err
 	}
-	pingGRPCClient, err := serviceapi.NewPingGRPCClient(s.serviceAPIManager, "ping-service-grpc")
+	pingGRPCClient, err := serviceapi.NewPingGRPCClient(s.serviceAPIManager, pingServiceGRPC)
 	if err != nil {
 		return err
 	}
@@ -57,12 +64,12 @@ func (s *pingBiz) TestingRequest(ctx context.Context) error {
 	if err != nil {
 		return errorpkg.FormatError(err)
 	}
-	s.log.Infow("==> TestingRequest: ", pingHTTPResp.GetData().GetMessage())
+	s.log.WithContext(ctx).Infow("msg", "TestingRequest HTTP", "response", pingHTTPResp.GetData().GetMessage())
 	pingGRPCReq := &resourcev1.PingReq{Message: "request_by_grpc"}
 	pingGRPCResp, err := pingGRPCClient.Ping(ctx, pingGRPCReq)
 	if err != nil {
 		return errorpkg.FormatError(err)
 	}
-	s.log.Infow("==> TestingRequest: ", pingGRPCResp.GetData().GetMessage())
+	s.log.WithContext(ctx).Infow("msg", "TestingRequest GRPC", "response", pingGRPCResp.GetData().GetMessage())
 	return nil
 }

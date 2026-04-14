@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/data/po"
 	datarepo "github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/data/repo"
@@ -19,6 +20,8 @@ func NewPingData(logger log.Logger) datarepo.PingDataRepo {
 	}
 }
 
+const mockMessagePrefix = "mock request message: "
+
 func (p *pingData) GetMockPingMessage(ctx context.Context, param *po.MockPingMessageParam) (*po.MockPingMessageReply, error) {
-	return &po.MockPingMessageReply{Message: "mock request message: " + param.Message}, nil
+	return &po.MockPingMessageReply{Message: mockMessagePrefix + param.Message}, nil
 }

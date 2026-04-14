@@ -1,3 +1,6 @@
+# WARNING: This config is for LOCAL TESTING ONLY.
+# All passwords below are test-only placeholders. Do NOT use in production.
+
 # app 程序
 app:
   project_name: go-micro-saas

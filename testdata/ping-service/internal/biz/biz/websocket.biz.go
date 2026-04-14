@@ -2,12 +2,13 @@ package biz
 
 import (
 	"context"
+	stdhttp "net/http"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/gorilla/websocket"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	websocketpkg "github.com/ikaiguang/go-srv-kit/kratos/websocket"
 	bizrepo "github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/biz/repo"
-	stdhttp "net/http"
 )
 
 // websocketBiz ...
@@ -37,7 +38,11 @@ func (s *websocketBiz) Wss(ctx context.Context, w stdhttp.ResponseWriter, r *std
 		s.log.WithContext(ctx).Error(e.Error())
 		return errorpkg.Wrap(e, err)
 	}
-	defer func() { _ = cc.Close() }()
+	defer func() {
+		if closeErr := cc.Close(); closeErr != nil {
+			s.log.WithContext(ctx).Warnw("msg", "websocket close failed", "error", closeErr.Error())
+		}
+	}()
 
 	// 处理消息
 	err = s.ProcessWssMsg(ctx, cc)
@@ -57,7 +62,7 @@ func (s *websocketBiz) ProcessWssMsg(ctx context.Context, cc *websocket.Conn) er
 				break
 			}
 			s.log.WithContext(ctx).Error(wsErr)
-			e := errorpkg.ErrorInternalError("ws读取信息失败")
+			e := errorpkg.ErrorInternalError("failed to read ws message")
 			return errorpkg.Wrap(e, wsErr)
 		}
 
@@ -72,7 +77,7 @@ func (s *websocketBiz) ProcessWssMsg(ctx context.Context, cc *websocket.Conn) er
 		needCloseConn, err := s.processWsMessage(ctx, wsMessage)
 		if err != nil {
 			s.log.WithContext(ctx).Error(err)
-			e := errorpkg.ErrorInternalError("ws处理信息失败")
+			e := errorpkg.ErrorInternalError("failed to process ws message")
 			return errorpkg.Wrap(e, err)
 		}
 
@@ -84,7 +89,7 @@ func (s *websocketBiz) ProcessWssMsg(ctx context.Context, cc *websocket.Conn) er
 				break
 			}
 			s.log.WithContext(ctx).Error(err)
-			e := errorpkg.ErrorInternalError("JSON编码错误")
+			e := errorpkg.ErrorInternalError("failed to write ws message")
 			return errorpkg.Wrap(e, err)
 		}
 
