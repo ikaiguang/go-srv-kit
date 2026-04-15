@@ -2,6 +2,8 @@ package clientutil
 
 import (
 	"context"
+	"strings"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
@@ -9,7 +11,6 @@ import (
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
 	apputil "github.com/ikaiguang/go-srv-kit/service/app"
-	"strings"
 )
 
 func (s *serviceAPIManager) NewHTTPClient(apiConfig *Config, otherOpts ...http.ClientOption) (*http.Client, error) {
@@ -42,8 +43,8 @@ func (s *serviceAPIManager) NewHTTPClient(apiConfig *Config, otherOpts ...http.C
 	// http 链接
 	conn, err := clientpkg.NewHTTPClient(context.Background(), opts...)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer(err.Error())
-		return nil, errorpkg.WithStack(e)
+		e := errorpkg.ErrorInternalServer("failed to create http client")
+		return nil, errorpkg.Wrap(e, err)
 	}
 	return conn, nil
 }

@@ -2,14 +2,15 @@ package clientutil
 
 import (
 	"context"
+	"strings"
+	"time"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
 	stdgrpc "google.golang.org/grpc"
-	"strings"
-	"time"
 )
 
 const (
@@ -49,8 +50,8 @@ func (s *serviceAPIManager) NewGRPCConnection(apiConfig *Config, otherOpts ...gr
 	// grpc 链接
 	conn, err := grpc.DialInsecure(context.Background(), opts...)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer(err.Error())
-		return nil, errorpkg.WithStack(e)
+		e := errorpkg.ErrorInternalServer("failed to create grpc connection")
+		return nil, errorpkg.Wrap(e, err)
 	}
 	return conn, nil
 }

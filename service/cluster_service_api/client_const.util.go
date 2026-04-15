@@ -97,8 +97,12 @@ func ToConfig(apiConfigs []*configpb.ClusterServiceApi) ([]*Config, map[configpb
 	)
 	for i := range apiConfigs {
 		if err := apiConfigs[i].Validate(); err != nil {
-			e := errorpkg.ErrorBadRequest("")
+			e := errorpkg.ErrorBadRequest("cluster service api config validation failed")
 			return results, diffRT, errorpkg.Wrap(e, err)
+		}
+		if apiConfigs[i].GetServiceTarget() == "" {
+			e := errorpkg.ErrorBadRequest("cluster service api service_target is empty: %s", apiConfigs[i].GetServiceName())
+			return results, diffRT, errorpkg.WithStack(e)
 		}
 		conf := &Config{}
 		conf.SetByPbClusterServiceApi(apiConfigs[i])

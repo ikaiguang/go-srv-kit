@@ -104,7 +104,10 @@ func (lm *launcherManager) newServiceAPIManager() (clientutil.ServiceAPIManager,
 	if err != nil {
 		return nil, err
 	}
-	var opts = []clientutil.Option{clientutil.WithLogger(loggerForMiddleware)}
+	var opts = []clientutil.Option{
+		clientutil.WithLogger(loggerForMiddleware),
+		clientutil.WithSkipRegistryCheck(),
+	}
 	for rt := range diffRT {
 		switch rt {
 		case configpb.RegistryTypeEnum_CONSUL:
