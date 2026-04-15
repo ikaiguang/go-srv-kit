@@ -7,9 +7,10 @@ import (
 )
 
 type option struct {
-	logger       log.Logger
-	consulClient *consulapi.Client
-	etcdClient   *clientv3.Client
+	logger            log.Logger
+	consulClient      *consulapi.Client
+	etcdClient        *clientv3.Client
+	skipRegistryCheck bool
 }
 
 type Option func(*option)
@@ -29,5 +30,13 @@ func WithConsulClient(consulClient *consulapi.Client) Option {
 func WithEtcdClient(etcdClient *clientv3.Client) Option {
 	return func(opt *option) {
 		opt.etcdClient = etcdClient
+	}
+}
+
+// WithSkipRegistryCheck 跳过注册中心健康检查
+// 适用于服务启动时注册中心中目标服务尚未注册的场景
+func WithSkipRegistryCheck() Option {
+	return func(opt *option) {
+		opt.skipRegistryCheck = true
 	}
 }

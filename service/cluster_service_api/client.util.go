@@ -136,14 +136,20 @@ func (s *serviceAPIManager) getAndCheckRegistryDiscovery(apiConfig *Config, serv
 	if err != nil {
 		return nil, err
 	}
+
+	// 跳过健康检查
+	if s.opt.skipRegistryCheck {
+		return r, nil
+	}
+
 	// target
 	u, err := url.Parse(serviceTarget)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer("")
+		e := errorpkg.ErrorInternalServer("failed to parse service target")
 		return nil, errorpkg.Wrap(e, err)
 	}
 	target := resolver.Target{URL: *u}
-	// test
+	// 健康检查
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer cancel()
 	_, err = r.GetService(ctx, target.Endpoint())
@@ -151,10 +157,6 @@ func (s *serviceAPIManager) getAndCheckRegistryDiscovery(apiConfig *Config, serv
 		e := errorpkg.ErrorServiceUnavailable("registry discovery failed")
 		return nil, errorpkg.Wrap(e, err)
 	}
-	//s.log.WithContext(ctx).Infow(
-	//	"msg", "registry.Discovery.GetService success",
-	//	"serviceTarget", serviceTarget,
-	//)
 	return r, nil
 }
 
