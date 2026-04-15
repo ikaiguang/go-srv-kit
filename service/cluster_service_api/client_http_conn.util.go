@@ -14,9 +14,7 @@ import (
 )
 
 func (s *serviceAPIManager) NewHTTPClient(apiConfig *Config, otherOpts ...http.ClientOption) (*http.Client, error) {
-	var opts = []http.ClientOption{
-		http.WithTimeout(DefaultTimeout),
-	}
+	var opts []http.ClientOption
 	opts = append(opts, apputil.ClientDecoderEncoder()...)
 
 	// 中间件
@@ -40,8 +38,10 @@ func (s *serviceAPIManager) NewHTTPClient(apiConfig *Config, otherOpts ...http.C
 	// 其他
 	opts = append(opts, otherOpts...)
 
-	// http 链接
-	conn, err := clientpkg.NewHTTPClient(context.Background(), opts...)
+	// http 链接（带拨号超时）
+	dialCtx, dialCancel := context.WithTimeout(context.Background(), DefaultDialTimeout)
+	defer dialCancel()
+	conn, err := clientpkg.NewHTTPClient(dialCtx, opts...)
 	if err != nil {
 		e := errorpkg.ErrorInternalServer("failed to create http client")
 		return nil, errorpkg.Wrap(e, err)

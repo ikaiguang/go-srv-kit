@@ -13,17 +13,20 @@ import (
 	stdgrpc "google.golang.org/grpc"
 )
 
+var (
+	DefaultTimeout     = time.Minute      // 请求超时（建议用 ctx 控制）
+	DefaultDialTimeout = 10 * time.Second // 拨号超时
+
+)
+
 const (
-	Sep            = "://"
-	DefaultTimeout = time.Minute
+	Sep = "://"
 )
 
 func (s *serviceAPIManager) NewGRPCConnection(apiConfig *Config, otherOpts ...grpc.ClientOption) (*stdgrpc.ClientConn, error) {
 	var opts = []grpc.ClientOption{
-		grpc.WithTimeout(DefaultTimeout),
 		grpc.WithHealthCheck(true),
 		grpc.WithPrintDiscoveryDebugLog(true),
-		//grpc.WithOptions(stdgrpc.WithTimeout(DefaultTimeout)), // dial option
 	}
 
 	// 中间件
@@ -47,8 +50,10 @@ func (s *serviceAPIManager) NewGRPCConnection(apiConfig *Config, otherOpts ...gr
 	// 其他
 	opts = append(opts, otherOpts...)
 
-	// grpc 链接
-	conn, err := grpc.DialInsecure(context.Background(), opts...)
+	// grpc 链接（带拨号超时）
+	dialCtx, dialCancel := context.WithTimeout(context.Background(), DefaultDialTimeout)
+	defer dialCancel()
+	conn, err := grpc.DialInsecure(dialCtx, opts...)
 	if err != nil {
 		e := errorpkg.ErrorInternalServer("failed to create grpc connection")
 		return nil, errorpkg.Wrap(e, err)

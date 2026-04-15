@@ -138,14 +138,18 @@ func (s *serviceAPIManager) getAndCheckRegistryDiscovery(apiConfig *Config, serv
 	}
 
 	// 跳过健康检查
-	if s.opt.skipRegistryCheck {
-		return r, nil
-	}
+	//if s.opt.skipRegistryCheck {
+	//	return r, nil
+	//}
 
 	// target
 	u, err := url.Parse(serviceTarget)
 	if err != nil {
 		e := errorpkg.ErrorInternalServer("failed to parse service target")
+		if s.opt.skipRegistryCheck {
+			logpkg.Warnw("skip registry check", "serviceTarget", serviceTarget, "err", e)
+			return r, nil
+		}
 		return nil, errorpkg.Wrap(e, err)
 	}
 	target := resolver.Target{URL: *u}
@@ -155,6 +159,10 @@ func (s *serviceAPIManager) getAndCheckRegistryDiscovery(apiConfig *Config, serv
 	_, err = r.GetService(ctx, target.Endpoint())
 	if err != nil {
 		e := errorpkg.ErrorServiceUnavailable("registry discovery failed")
+		if s.opt.skipRegistryCheck {
+			logpkg.Warnw("skip registry check", "serviceTarget", serviceTarget, "err", e)
+			return r, nil
+		}
 		return nil, errorpkg.Wrap(e, err)
 	}
 	return r, nil
