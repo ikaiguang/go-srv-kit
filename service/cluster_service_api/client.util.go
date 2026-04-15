@@ -121,11 +121,19 @@ func (s *serviceAPIManager) GetServiceAPIConfig(serviceName ServiceName) (*Confi
 func (s *serviceAPIManager) checkGeneralEndpointValidity(serviceTarget string) error {
 	ok, err := connectionpkg.CheckEndpointValidity(serviceTarget)
 	if err != nil {
-		e := errorpkg.ErrorServiceUnavailable("endpoint validity check failed")
+		e := errorpkg.ErrorServiceUnavailable("endpoint validity check failed; serviceTarget: %s", serviceTarget)
+		if s.opt.skipRegistryCheck {
+			logpkg.Warnw("skip endpoint check", "serviceTarget", serviceTarget, "err", e)
+			return nil
+		}
 		return errorpkg.Wrap(e, err)
 	}
 	if !ok {
-		e := errorpkg.ErrorServiceUnavailable("checkGeneralEndpointValidity is not ok")
+		e := errorpkg.ErrorServiceUnavailable("checkGeneralEndpointValidity is not ok; serviceTarget: %s", serviceTarget)
+		if s.opt.skipRegistryCheck {
+			logpkg.Warnw("skip endpoint check", "serviceTarget", serviceTarget, "err", e)
+			return nil
+		}
 		return errorpkg.WithStack(e)
 	}
 	return nil
@@ -145,7 +153,7 @@ func (s *serviceAPIManager) getAndCheckRegistryDiscovery(apiConfig *Config, serv
 	// target
 	u, err := url.Parse(serviceTarget)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer("failed to parse service target")
+		e := errorpkg.ErrorInternalServer("failed to parse service target; serviceTarget: %s", serviceTarget)
 		if s.opt.skipRegistryCheck {
 			logpkg.Warnw("skip registry check", "serviceTarget", serviceTarget, "err", e)
 			return r, nil
@@ -158,7 +166,7 @@ func (s *serviceAPIManager) getAndCheckRegistryDiscovery(apiConfig *Config, serv
 	defer cancel()
 	_, err = r.GetService(ctx, target.Endpoint())
 	if err != nil {
-		e := errorpkg.ErrorServiceUnavailable("registry discovery failed")
+		e := errorpkg.ErrorServiceUnavailable("registry discovery failed; serviceTarget: %s", serviceTarget)
 		if s.opt.skipRegistryCheck {
 			logpkg.Warnw("skip registry check", "serviceTarget", serviceTarget, "err", e)
 			return r, nil
