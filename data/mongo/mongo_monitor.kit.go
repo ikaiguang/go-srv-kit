@@ -2,9 +2,10 @@ package mongopkg
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/v2/log"
-	"go.mongodb.org/mongo-driver/event"
 	"time"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"go.mongodb.org/mongo-driver/v2/event"
 )
 
 type monitorOption struct {

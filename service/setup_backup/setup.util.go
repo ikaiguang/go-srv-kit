@@ -13,7 +13,7 @@ import (
 	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	"github.com/redis/go-redis/v9"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"gorm.io/gorm"
 	stdlog "log"

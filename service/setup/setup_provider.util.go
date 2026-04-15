@@ -6,7 +6,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/redis/go-redis/v9"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"

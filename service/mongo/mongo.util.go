@@ -6,7 +6,7 @@ import (
 	mongopkg "github.com/ikaiguang/go-srv-kit/data/mongo"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	stdlog "log"
 	"sync"
 )

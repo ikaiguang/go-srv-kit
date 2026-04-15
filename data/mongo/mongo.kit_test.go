@@ -3,7 +3,7 @@ package mongopkg
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"testing"
 	"time"

@@ -18,7 +18,7 @@ import (
 	rabbitmqutil "github.com/ikaiguang/go-srv-kit/service/rabbitmq"
 	redisutil "github.com/ikaiguang/go-srv-kit/service/redis"
 	"github.com/redis/go-redis/v9"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"gorm.io/gorm"
 )

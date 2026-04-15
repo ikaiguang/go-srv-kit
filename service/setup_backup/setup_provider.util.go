@@ -9,7 +9,7 @@ import (
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	"github.com/redis/go-redis/v9"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"gorm.io/gorm"
 	"sync"

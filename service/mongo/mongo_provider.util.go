@@ -3,7 +3,7 @@ package mongoutil
 import (
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"sync"
 )
 

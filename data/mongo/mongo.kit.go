@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -64,7 +64,7 @@ func NewMongoClient(config *Config, logger log.Logger) (*mongo.Client, error) {
 	// logger
 	clientOpt.SetMonitor(NewMonitor(logger, WithSlowThreshold(config.SlowThreshold.AsDuration())))
 
-	client, err := mongo.Connect(context.Background(), clientOpt)
+	client, err := mongo.Connect(clientOpt)
 	if err != nil {
 		err = fmt.Errorf("mongo connect failed: %w", err)
 		return nil, err
