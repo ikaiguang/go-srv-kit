@@ -13,7 +13,8 @@ const (
 	CharsetHex       = "1234567890abcdef"
 )
 
-// NewRandHandler ...
+// NewRandHandler 创建随机数生成器
+// Deprecated: Go 1.20+ 全局 rand 已自动随机种子且并发安全，建议直接使用 rand 包全局函数
 func NewRandHandler() *rand.Rand {
 	return rand.New(rand.NewSource(time.Now().UnixNano()))
 }
@@ -25,16 +26,15 @@ func Name() string {
 
 // Strings : A-Z a-z 0-9
 func Strings(size int) string {
-	randHandler := NewRandHandler()
 	res := make([]byte, size)
 	for i := range res {
-		switch randHandler.Intn(3) {
+		switch rand.Intn(3) {
 		case 0:
-			res[i] = byte(randHandler.Intn(26) + 65) // A-Z
+			res[i] = byte(rand.Intn(26) + 65) // A-Z
 		case 1:
-			res[i] = byte(randHandler.Intn(26) + 97) // a-z
+			res[i] = byte(rand.Intn(26) + 97) // a-z
 		default:
-			res[i] = byte(randHandler.Intn(10) + 48) // 0-9
+			res[i] = byte(rand.Intn(10) + 48) // 0-9
 		}
 	}
 	return string(res)
@@ -42,14 +42,13 @@ func Strings(size int) string {
 
 // Letter : A-Z a-z
 func Letter(size int) string {
-	randHandler := NewRandHandler()
 	res := make([]byte, size)
 	for i := range res {
-		switch randHandler.Intn(2) {
+		switch rand.Intn(2) {
 		case 0:
-			res[i] = byte(randHandler.Intn(26) + 65) // A-Z
+			res[i] = byte(rand.Intn(26) + 65) // A-Z
 		default:
-			res[i] = byte(randHandler.Intn(26) + 97) // a-z
+			res[i] = byte(rand.Intn(26) + 97) // a-z
 		}
 	}
 	return string(res)
@@ -57,10 +56,9 @@ func Letter(size int) string {
 
 // Numeric 0-9
 func Numeric(size int) string {
-	randHandler := NewRandHandler()
 	res := make([]byte, size)
 	for i := range res {
-		res[i] = byte(randHandler.Intn(10) + 48) // 0-9
+		res[i] = byte(rand.Intn(10) + 48) // 0-9
 	}
 	return string(res)
 }
@@ -70,17 +68,17 @@ func AlphabetLower(n int) string {
 	return String(n, CharsetLowercase)
 }
 
+// Hex 生成十六进制随机字符串
 func Hex(n int) string {
 	return String(n, CharsetHex)
 }
 
 // String returns a random string n characters long, composed of entities from charset.
 func String(n int, charset string) string {
-	randomHandler := NewRandHandler()
 	randStr := make([]byte, n)
 	charLen := len(charset)
 	for i := range randStr {
-		randStr[i] = charset[randomHandler.Intn(charLen)]
+		randStr[i] = charset[rand.Intn(charLen)]
 	}
 	return string(randStr)
 }
@@ -90,12 +88,10 @@ func Int32Between(min, max int32) int32 {
 	if min == max {
 		return min
 	}
-
 	if min >= max {
 		min, max = max, min
 	}
-
-	return NewRandHandler().Int31n(max-min) + min
+	return rand.Int31n(max-min) + min
 }
 
 // Int64Between random number between min-max
@@ -103,12 +99,10 @@ func Int64Between(min, max int64) int64 {
 	if min == max {
 		return min
 	}
-
 	if min >= max {
 		min, max = max, min
 	}
-
-	return NewRandHandler().Int63n(max-min) + min
+	return rand.Int63n(max-min) + min
 }
 
 // NumericBetween random number between min-max
@@ -121,12 +115,10 @@ func IntBetween(min, max int) int {
 	if min == max {
 		return min
 	}
-
 	if min >= max {
 		min, max = max, min
 	}
-
-	return NewRandHandler().Intn(max-min) + min
+	return rand.Intn(max-min) + min
 }
 
 // ==================== 常用应用场景 ====================
@@ -140,7 +132,6 @@ const (
 )
 
 // VerifyCode 生成纯数字验证码（短信/邮箱验证码）
-// 常用长度：4 位或 6 位
 func VerifyCode(length int) string {
 	return Numeric(length)
 }
@@ -150,31 +141,26 @@ func Password(length int) string {
 	if length < 8 {
 		length = 8
 	}
-	randHandler := NewRandHandler()
 	res := make([]byte, length)
-	// 确保至少包含一个大写、一个小写、一个数字、一个特殊字符
-	res[0] = CharsetUppercase[randHandler.Intn(len(CharsetUppercase))]
-	res[1] = CharsetLowercase[randHandler.Intn(len(CharsetLowercase))]
-	res[2] = CharsetNumeral[randHandler.Intn(len(CharsetNumeral))]
-	res[3] = CharsetSpecial[randHandler.Intn(len(CharsetSpecial))]
-	// 剩余位置随机填充
+	res[0] = CharsetUppercase[rand.Intn(len(CharsetUppercase))]
+	res[1] = CharsetLowercase[rand.Intn(len(CharsetLowercase))]
+	res[2] = CharsetNumeral[rand.Intn(len(CharsetNumeral))]
+	res[3] = CharsetSpecial[rand.Intn(len(CharsetSpecial))]
 	for i := 4; i < length; i++ {
-		res[i] = CharsetPassword[randHandler.Intn(len(CharsetPassword))]
+		res[i] = CharsetPassword[rand.Intn(len(CharsetPassword))]
 	}
-	// 打乱顺序
-	randHandler.Shuffle(length, func(i, j int) {
+	rand.Shuffle(length, func(i, j int) {
 		res[i], res[j] = res[j], res[i]
 	})
 	return string(res)
 }
 
-// Token 生成 URL 安全的随机 token（用于 API token、重置密码链接等）
+// Token 生成 URL 安全的随机 token
 func Token(length int) string {
 	return String(length, CharsetAlphanumeric)
 }
 
 // OrderNo 生成订单号：时间戳前缀 + 随机数字后缀
-// 格式：20060102150405 + N 位随机数字，默认 6 位
 func OrderNo(randomSuffixLen int) string {
 	if randomSuffixLen < 4 {
 		randomSuffixLen = 4
@@ -182,14 +168,14 @@ func OrderNo(randomSuffixLen int) string {
 	return time.Now().Format("20060102150405") + Numeric(randomSuffixLen)
 }
 
-// TraceID 生成 32 位十六进制 trace ID（兼容 OpenTelemetry 格式）
+// TraceID 生成 32 位十六进制 trace ID
 func TraceID() string {
 	return Hex(32)
 }
 
 // Bool 随机返回 true 或 false
 func Bool() bool {
-	return NewRandHandler().Intn(2) == 0
+	return rand.Intn(2) == 0
 }
 
 // Element 从切片中随机选取一个元素
@@ -198,12 +184,12 @@ func Element[T any](slice []T) T {
 	if len(slice) == 0 {
 		return zero
 	}
-	return slice[NewRandHandler().Intn(len(slice))]
+	return slice[rand.Intn(len(slice))]
 }
 
 // Shuffle 随机打乱切片（原地修改）
 func Shuffle[T any](slice []T) {
-	NewRandHandler().Shuffle(len(slice), func(i, j int) {
+	rand.Shuffle(len(slice), func(i, j int) {
 		slice[i], slice[j] = slice[j], slice[i]
 	})
 }
@@ -217,19 +203,16 @@ func Sample[T any](slice []T, n int) []T {
 		Shuffle(copied)
 		return copied
 	}
-	// Fisher-Yates 部分洗牌
 	copied := make([]T, length)
 	copy(copied, slice)
-	randHandler := NewRandHandler()
 	for i := 0; i < n; i++ {
-		j := i + randHandler.Intn(length-i)
+		j := i + rand.Intn(length-i)
 		copied[i], copied[j] = copied[j], copied[i]
 	}
 	return copied[:n]
 }
 
 // WeightedIndex 按权重随机选择索引
-// weights 为各选项的权重值，返回被选中的索引
 func WeightedIndex(weights []int) int {
 	if len(weights) == 0 {
 		return -1
@@ -239,9 +222,9 @@ func WeightedIndex(weights []int) int {
 		total += w
 	}
 	if total <= 0 {
-		return NewRandHandler().Intn(len(weights))
+		return rand.Intn(len(weights))
 	}
-	r := NewRandHandler().Intn(total)
+	r := rand.Intn(total)
 	for i, w := range weights {
 		r -= w
 		if r < 0 {
