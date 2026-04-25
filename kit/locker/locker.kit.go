@@ -7,7 +7,8 @@ import (
 
 // Locker 加锁
 type Locker interface {
-	// Mutex 互斥锁，一直等待直到解锁
+	// Mutex 互斥锁。具体阻塞行为取决于实现：
+	// 某些实现（如 cache）使用 TryLock 非阻塞方式，获取失败时返回错误。
 	Mutex(ctx context.Context, lockName string) (Unlocker, error)
 	// Once 简单锁，等待解锁或者锁定时间过期后自动解锁
 	Once(ctx context.Context, lockName string) (Unlocker, error)

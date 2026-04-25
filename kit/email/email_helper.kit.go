@@ -2,6 +2,7 @@ package emailpkg
 
 import (
 	"fmt"
+
 	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 	"gopkg.in/gomail.v2"
 )
@@ -13,7 +14,6 @@ type Client interface {
 }
 
 type client struct {
-	//conn gomail.SendCloser
 	dialer *gomail.Dialer
 	conf   *Sender
 }
@@ -23,12 +23,7 @@ func NewClient(sender Sender) (Client, error) {
 		return nil, err
 	}
 	d := gomail.NewDialer(sender.Host, sender.Port, sender.Username, sender.Password)
-	//cc, err := d.Dial()
-	//if err != nil {
-	//	return nil, err
-	//}
 	return &client{
-		//conn: cc,
 		dialer: d,
 		conf:   &sender,
 	}, nil
@@ -39,7 +34,6 @@ func (s *client) Send(message *Message) error {
 		return err
 	}
 	return s.dialer.DialAndSend(message.EmailMessage())
-	//return gomail.Send(s.conn, message.EmailMessage())
 }
 
 func (s *client) SendCode(message *CodeMessage) error {
@@ -64,9 +58,9 @@ func (s *client) SendCode(message *CodeMessage) error {
 	return s.Send(message.Message)
 }
 
+// Close 当前实现为 no-op。每次调用 Send 时使用 DialAndSend 建立独立连接，无需手动关闭。
 func (s *client) Close() error {
 	return nil
-	//return s.conn.Close()
 }
 
 type defaultClient struct {
@@ -85,6 +79,7 @@ func (s *defaultClient) SendCode(message *CodeMessage) error {
 	return SendCode(s.sender, message)
 }
 
+// Close 当前实现为 no-op。每次调用 Send 时使用 DialAndSend 建立独立连接，无需手动关闭。
 func (s *defaultClient) Close() error {
 	return nil
 }

@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "在写入 Go 文件前，请确认：1) 函数长度不超过 150 行 2) 嵌套层级不超过 3 层 3) Service 层没有直接调用 Data 层 4) 错误处理使用 kratos/error 包 5) 使用 WithContext(ctx) 传递 context 6) 异步 goroutine 使用 GoSafe 包装 7) 无硬编码配置值。如果是非 Go 文件则忽略此检查。"
+    "prompt": "检查代码规范：1) 函数长度不超过 150 行 2) 嵌套层级不超过 3 层 3) Service 层没有直接调用 Data 层 4) 错误处理使用 kratos/error 包 5) 使用 WithContext(ctx) 传递 context 6) 异步 goroutine 使用 GoSafe 包装 7) 无硬编码配置值。"
   }
 }

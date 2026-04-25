@@ -2,7 +2,9 @@ package lockerpkg
 
 import "context"
 
-// DistributedLocker 分布式锁
+// Deprecated: DistributedLocker 仅是 Locker 的方法重命名包装，
+// MutexLock 等价于 Mutex，EasyLock 等价于 Once。
+// 请直接使用 Locker 接口。
 type DistributedLocker interface {
 	// MutexLock 互斥锁，一直等待直到解锁
 	MutexLock(ctx context.Context, lockName string) (Unlocker, error)
@@ -10,7 +12,7 @@ type DistributedLocker interface {
 	EasyLock(ctx context.Context, lockName string) (Unlocker, error)
 }
 
-// NewDistributedLocker 请确保传递进来的锁支持分布式锁
+// Deprecated: 请直接使用 Locker 接口。
 func NewDistributedLocker(locker Locker) DistributedLocker {
 	return &distributedLock{locker: locker}
 }

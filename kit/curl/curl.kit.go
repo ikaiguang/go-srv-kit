@@ -3,7 +3,6 @@ package curlpkg
 import (
 	"crypto/tls"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -61,13 +60,17 @@ func NewHTTPClient(opts ...Option) *http.Client {
 	for _, o := range opts {
 		o(&options)
 	}
-	// client
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 
-	httpClient := &http.Client{Transport: tr}
-	httpClient.Timeout = options.timeout
+	// client
+	httpClient := &http.Client{Timeout: options.timeout}
+
+	// 仅在显式启用时跳过 TLS 证书验证
+	if options.insecureSkipVerify {
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		httpClient.Transport = tr
+	}
 
 	return httpClient
 }
@@ -117,7 +120,7 @@ func response(httpResp *http.Response) (httpCode int, bodyBytes []byte, err erro
 
 	// resp
 	httpCode = httpResp.StatusCode
-	bodyBytes, err = ioutil.ReadAll(httpResp.Body)
+	bodyBytes, err = io.ReadAll(httpResp.Body)
 	if err != nil {
 		if err == io.EOF {
 			err = nil

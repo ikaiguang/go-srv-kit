@@ -2,7 +2,8 @@ package reflectpkg
 
 import "reflect"
 
-// IsDefaultValue golang default value
+// IsDefaultValue 判断值是否为 Go 默认零值。
+// 性能警告：此函数使用 reflect 包，在性能敏感的热路径中应避免使用。
 func IsDefaultValue(i interface{}) bool {
 	value := reflect.ValueOf(i)
 
@@ -26,7 +27,8 @@ func IsDefaultValue(i interface{}) bool {
 	}
 }
 
-// IsEmpty gets whether the specified object is considered empty or not.
+// IsEmpty 判断对象是否为空。
+// 性能警告：此函数使用 reflect 包进行深度比较，在性能敏感的热路径中应避免使用。
 func IsEmpty(object interface{}) bool {
 	// get nil case out of the way
 	if object == nil {
@@ -54,6 +56,8 @@ func IsEmpty(object interface{}) bool {
 	}
 }
 
+// SwapObject 将 src 的值复制到 dst。
+// 性能警告：此函数使用 reflect 包，在可能的情况下建议使用直接赋值。
 func SwapObject(dst, src interface{}) bool {
 	dstType := reflect.TypeOf(dst)
 	if dstType.Kind() != reflect.Ptr {
@@ -84,6 +88,8 @@ func SwapObject(dst, src interface{}) bool {
 	return true
 }
 
+// NewObject 创建与 dst 相同类型的新实例。
+// 性能警告：此函数使用 reflect 包，在性能敏感的热路径中应避免使用。
 func NewObject(dst interface{}) interface{} {
 	typ := reflect.TypeOf(dst)
 	if typ.Kind() == reflect.Ptr {

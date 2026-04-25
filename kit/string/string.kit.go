@@ -1,7 +1,7 @@
 package stringpkg
 
 import (
-	stdjson "encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -49,7 +49,7 @@ func ToCamel(s string) string {
 }
 
 // ToString 任意类型转string
-func ToString(v interface{}) string {
+func ToString(v any) string {
 	var key string
 	if v == nil {
 		return key
@@ -84,8 +84,7 @@ func ToString(v interface{}) string {
 	case []byte:
 		key = string(v)
 	default:
-		newValue, _ := stdjson.Marshal(v)
-		key = string(newValue)
+		key = fmt.Sprintf("%v", v)
 	}
 	return key
 }

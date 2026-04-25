@@ -1,34 +1,48 @@
 package filepathpkg
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 
 	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
 )
 
-// WaldDir 遍历所有的目录与文件
+// WalkDir 遍历所有的目录与文件（使用 filepath.WalkDir + fs.DirEntry）
+func WalkDir(rootPath string) (filePaths []string, dirEntries []fs.DirEntry, err error) {
+	dirFn := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		filePaths = append(filePaths, path)
+		dirEntries = append(dirEntries, d)
+		return nil
+	}
+	err = filepath.WalkDir(rootPath, dirFn)
+	return filePaths, dirEntries, err
+}
+
+// Deprecated: 拼写错误，使用 WalkDir 替代。
+// 注意：返回类型从 []os.FileInfo 变为 []fs.DirEntry，此兼容函数保留原签名。
 func WaldDir(rootPath string) (filePaths []string, fileInfos []os.FileInfo, err error) {
-	//filepath.WalkDir()
-	//dirFn := func(filePath string, d fs.DirEntry, err error) (fnErr error) {
-	//}
 	dirFn := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		filePaths = append(filePaths, path)
 		fileInfos = append(fileInfos, info)
-		return err
+		return nil
 	}
-
 	err = filepath.Walk(rootPath, dirFn)
-	if err != nil {
-		return filePaths, fileInfos, err
-	}
 	return filePaths, fileInfos, err
 }
 
-// ReadDir 当前目录与文件
+// ReadDirEntries 读取目录内容（使用 os.ReadDir）
+func ReadDirEntries(rootPath string) ([]fs.DirEntry, error) {
+	return os.ReadDir(rootPath)
+}
+
+// Deprecated: 使用 ReadDirEntries 替代
 func ReadDir(rootPath string) (fileInfos []os.FileInfo, err error) {
 	d, err := os.Open(rootPath)
 	if err != nil {

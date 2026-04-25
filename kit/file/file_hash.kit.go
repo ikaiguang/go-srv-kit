@@ -9,6 +9,7 @@ import (
 	"strconv"
 )
 
+// Deprecated: 函数名未明确指示使用的哈希算法（实际使用 MD5）。请使用 Md5 替代。
 func Hash(filePath string) (string, int64, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -19,6 +20,7 @@ func Hash(filePath string) (string, int64, error) {
 	return HashFromFile(f)
 }
 
+// Deprecated: 函数名未明确指示使用的哈希算法（实际使用 MD5）。请使用 Md5FromFile 替代。
 func HashFromFile(f io.Reader) (string, int64, error) {
 	hash := md5.New()
 	buf := make([]byte, 1<<20)
@@ -86,8 +88,7 @@ func Identifier(hash string, size int64) string {
 	return hash + "-" + strconv.FormatInt(size, 10)
 }
 
-// HashIdentifier 文件标识符; return identifier, size, err
-// identifier = hash + "-" + size;
+// Deprecated: 请使用 Md5() + Identifier() 组合替代。
 func HashIdentifier(filePath string) (string, int64, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -98,8 +99,8 @@ func HashIdentifier(filePath string) (string, int64, error) {
 	return HashIdentifierFromFile(f)
 }
 
-// HashIdentifierFromFile 文件标识符; return identifier, size, err
-// identifier = hash + "-" + size
+// HashIdentifierFromFile ...
+// Deprecated: 请使用 Md5FromFile() + Identifier() 组合替代。
 func HashIdentifierFromFile(f io.Reader) (string, int64, error) {
 	hash, size, err := HashFromFile(f)
 	if err != nil {

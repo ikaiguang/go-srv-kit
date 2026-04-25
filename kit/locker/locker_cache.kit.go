@@ -29,6 +29,8 @@ func NewCacheLocker() Locker {
 	}
 }
 
+// Mutex 尝试获取互斥锁。注意：当锁已被持有时，此实现使用 TryLock 尝试获取锁，
+// 获取失败时返回错误而非阻塞等待。这与 Locker 接口中"一直等待直到解锁"的语义存在差异。
 func (s *cache) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
 	locker, err := s.getLocker(ctx, lockName)
 	if err != nil {

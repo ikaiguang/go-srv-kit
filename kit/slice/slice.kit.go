@@ -4,8 +4,8 @@ import (
 	"reflect"
 )
 
-// Reverse 反转slice顺序
-// panic if s is not a slice
+// Deprecated: 使用 ReverseSlice 替代。
+// 注意：Reverse 使用 reflect，性能较差且缺乏编译期类型检查。
 func Reverse(slice interface{}) {
 	reflectValue := reflect.ValueOf(slice)
 
@@ -16,12 +16,7 @@ func Reverse(slice interface{}) {
 	}
 }
 
-// InStringSlice 在数组内
+// Deprecated: 使用 Contains 替代
 func InStringSlice(s []string, dest string) bool {
-	for i := range s {
-		if s[i] == dest {
-			return true
-		}
-	}
-	return false
+	return Contains(s, dest)
 }

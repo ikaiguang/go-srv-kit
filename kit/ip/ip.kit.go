@@ -8,6 +8,9 @@ import (
 
 const (
 	_ip = "127.0.0.1"
+
+	// DefaultDNSAddress 用于探测本地出口 IP 的 DNS 服务器地址（Google Public DNS）
+	DefaultDNSAddress = "8.8.8.8:53"
 )
 
 var (
@@ -63,7 +66,7 @@ func PrivateIPv4() net.IP {
 }
 
 func NetLocalIP() (net.IP, error) {
-	conn, err := net.DialTimeout("udp", "8.8.8.8:53", time.Second)
+	conn, err := net.DialTimeout("udp", DefaultDNSAddress, time.Second)
 	if err != nil {
 		return nil, err
 	}

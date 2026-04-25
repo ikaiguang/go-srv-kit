@@ -14,14 +14,9 @@ func EncodeValues(values url.Values) string {
 	return Encode(values.Encode())
 }
 
-// GenRequestURL ...
+// GenRequestURL 拼接请求 URL
 func GenRequestURL(endpoint, apiPath string) string {
-	buf := bufferpkg.GetBuffer()
-	defer bufferpkg.PutBuffer(buf)
-
-	buf.WriteString(endpoint)
-	buf.WriteString(apiPath)
-	return buf.String()
+	return endpoint + apiPath
 }
 
 // QueryParamEncoder ...

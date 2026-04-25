@@ -105,9 +105,9 @@ func TestCache_LockMutex(t *testing.T) {
 			if err != nil {
 				t.Logf("加锁失败啦！错误：%v\n", err)
 				t.Logf("==> IsLockFailedError : %v\n", IsErrorLockFailed(err))
-			} else {
-				t.Logf("===> 加锁成功啦！\n")
+				return
 			}
+			t.Logf("===> 加锁成功啦！\n")
 			tests[i].unlock = unlock
 		})
 
@@ -124,7 +124,11 @@ func TestCache_LockMutex(t *testing.T) {
 
 	// 解锁
 	for i := range tests {
-		ok, err := tests[i].unlock.Unlock(context.Background())
+		unlocker := tests[i].unlock
+		//if unlocker == nil {
+		//	continue
+		//}
+		ok, err := unlocker.Unlock(context.Background())
 		if err != nil {
 			t.Logf("unlock[%d] error : %v\n", i+1, err)
 		}
