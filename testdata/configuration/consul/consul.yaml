@@ -12,7 +12,7 @@ consul:
   with_http_basic_auth: false
   auth_username:
   auth_password:
-  insecure_skip_verify: true
+  insecure_skip_verify: true # 仅用于测试环境，生产环境应设为 false
   tls_address:
   tls_ca_pem:
   tls_cert_pem:

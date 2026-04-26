@@ -5,7 +5,7 @@ redis:
     #- 127.0.0.1:6379
     - my-redis:6379
   username:
-  password: Redis.123456
+  password: Redis.123456 # 仅用于测试环境，生产环境请使用环境变量或密钥管理服务
   db: 0
   dial_timeout: 3s
   read_timeout: 3s
