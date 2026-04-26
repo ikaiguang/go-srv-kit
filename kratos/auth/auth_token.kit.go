@@ -475,7 +475,6 @@ func (s *authRepo) DecodeAccessToken(ctx context.Context, accessToken string) (*
 		return nil, err
 	}
 	// 验证有效性
-	//if err = claims.Valid(); err != nil {
 	if err = s.jwtValidator.Validate(claims); err != nil {
 		e := ErrorTokenExpired("access token expired")
 		err = errorpkg.Wrap(e, err)
@@ -491,7 +490,6 @@ func (s *authRepo) DecodeRefreshToken(ctx context.Context, refreshToken string) 
 		return nil, err
 	}
 	// 验证有效性
-	//if err = claims.Valid(); err != nil {
 	if err = s.jwtValidator.Validate(claims); err != nil {
 		e := ErrorTokenExpired("refresh token expired")
 		err = errorpkg.Wrap(e, err)
@@ -546,14 +544,6 @@ func (s *authRepo) checkTokenBlackAndWhite(ctx context.Context, authClaims *Clai
 	}
 
 	// 白名单
-	//isExist, err := s.tokenManger.IsExistToken(ctx, authClaims.Payload.UserIdentifier(), authClaims.ID)
-	//if err != nil {
-	//	return err
-	//}
-	//if !isExist {
-	//	e := ErrWhitelist()
-	//	return errorpkg.WithStack(e)
-	//}
 	tokenItem, isNotFound, err := s.tokenManger.GetToken(ctx, authClaims.Payload.UserIdentifier(), authClaims.ID)
 	if err != nil {
 		return err

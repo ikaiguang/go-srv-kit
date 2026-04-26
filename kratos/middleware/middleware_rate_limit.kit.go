@@ -2,7 +2,6 @@ package middlewarepkg
 
 import (
 	"context"
-	stderrors "errors"
 
 	ratelimitpkg "github.com/go-kratos/aegis/ratelimit"
 	"github.com/go-kratos/aegis/ratelimit/bbr"
@@ -44,10 +43,8 @@ func RateLimit(opts ...Option) middleware.Middleware {
 		return func(ctx context.Context, req any) (reply any, err error) {
 			done, e := options.limiter.Allow()
 			if e != nil {
-				e := errorpkg.ErrorTooManyRequests(err.Error())
-				// rejected
-				return reply, errorpkg.Wrap(e, stderrors.New("[RATELIMIT] service unavailable due to rate limit exceeded"))
-				//return nil, ErrLimitExceed
+				rateLimitErr := errorpkg.ErrorTooManyRequests("service unavailable due to rate limit exceeded")
+				return reply, errorpkg.Wrap(rateLimitErr, e)
 			}
 			// allowed
 			reply, err = handler(ctx, req)

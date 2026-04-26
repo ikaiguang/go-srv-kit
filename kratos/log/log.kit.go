@@ -118,7 +118,7 @@ type MultiLogger struct {
 }
 
 // Log ...
-func (s *MultiLogger) Log(level log.Level, keyvals ...interface{}) error {
+func (s *MultiLogger) Log(level log.Level, keyvals ...any) error {
 	for i := range s.logs {
 		if logErr := s.logs[i].Log(level, keyvals...); logErr != nil {
 			return logErr

@@ -1,13 +1,14 @@
 package serverutil
 
 import (
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	stdlog "log"
 )
 
 var _ metadata.Option
@@ -71,6 +72,5 @@ func NewGRPCServer(
 	InjectGRPCServerOptions(&opts)
 	opts = append(opts, serverOpts...)
 
-	//v1.RegisterGreeterServer(srv, greeter)
 	return grpc.NewServer(opts...), err
 }

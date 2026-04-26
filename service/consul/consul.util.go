@@ -1,9 +1,10 @@
 package consulutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	stdlog "log"
 	"sync"
+
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 
 	consulapi "github.com/hashicorp/consul/api"
 	consulpkg "github.com/ikaiguang/go-srv-kit/data/consul"
@@ -46,12 +47,6 @@ func (s *consulManager) GetClient() (*consulapi.Client, error) {
 
 func (s *consulManager) Close() error {
 	if s.consulClient != nil {
-		//stdlog.Println("|*** STOP: close: consulClient")
-		//err := s.consulClient.Agent().ServiceDeregister(s.conf.ServiceName)
-		//if err != nil {
-		//	stdlog.Println("|*** STOP: close: consulClient failed: ", err.Error())
-		//	return err
-		//}
 	}
 	return nil
 }

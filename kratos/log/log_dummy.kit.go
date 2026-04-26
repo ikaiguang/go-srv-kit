@@ -18,6 +18,6 @@ func NewNopLogger() log.Logger {
 }
 
 // Log .
-func (s *dummy) Log(level log.Level, keyvals ...interface{}) error {
+func (s *dummy) Log(level log.Level, keyvals ...any) error {
 	return nil
 }

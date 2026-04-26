@@ -1,9 +1,10 @@
 package rabbitmqpkg
 
 import (
+	"io"
+
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/go-kratos/kratos/v2/log"
-	"io"
 )
 
 var _ watermill.LoggerAdapter = (*logger)(nil)
@@ -27,8 +28,8 @@ func NewLoggerFromWriters(writers ...io.Writer) watermill.LoggerAdapter {
 	return NewLogger(stdLogger)
 }
 
-func kvs(msg string, fields watermill.LogFields) []interface{} {
-	var kv = make([]interface{}, 0, 2+len(fields)*2)
+func kvs(msg string, fields watermill.LogFields) []any {
+	var kv = make([]any, 0, 2+len(fields)*2)
 	kv = append(kv, "msg", msg)
 	for k := range fields {
 		kv = append(kv, k, fields[k])

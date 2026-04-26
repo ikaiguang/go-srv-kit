@@ -52,21 +52,25 @@ func QueryDeletedData(dbConn *gorm.DB) *gorm.DB {
 	return dbConn.Where(FieldIsDeleted, 1)
 }
 
-func SetUpdateTime(updates map[string]interface{}) {
+// SetUpdateTime 设置更新时间字段
+func SetUpdateTime(updates map[string]any) {
 	updates[FieldUpdatedTime] = time.Now()
 }
 
-func SetCreateTime(updates map[string]interface{}) {
+// SetCreateTime 设置创建时间字段
+func SetCreateTime(updates map[string]any) {
 	updates[FieldCreatedTime] = time.Now()
 }
 
+// SoftDelete 软删除，设置 is_deleted=1 和 deleted_time
 func SoftDelete(dbConn *gorm.DB) *gorm.DB {
-	return dbConn.UpdateColumns(map[string]interface{}{
+	return dbConn.UpdateColumns(map[string]any{
 		FieldIsDeleted:   1,
 		FieldDeletedTime: time.Now(),
 	})
 }
 
-func Deleted(dbConn *gorm.DB, value interface{}, conditions ...interface{}) *gorm.DB {
+// Deleted 物理删除记录
+func Deleted(dbConn *gorm.DB, value any, conditions ...any) *gorm.DB {
 	return dbConn.Delete(value, conditions)
 }

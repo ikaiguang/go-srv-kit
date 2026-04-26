@@ -7,7 +7,7 @@ import (
 )
 
 // MarshalWithoutEscapeHTML ...
-func MarshalWithoutEscapeHTML(data interface{}) ([]byte, error) {
+func MarshalWithoutEscapeHTML(data any) ([]byte, error) {
 	buffer := bufferpkg.GetBuffer()
 	defer bufferpkg.PutBuffer(buffer)
 
@@ -21,7 +21,7 @@ func MarshalWithoutEscapeHTML(data interface{}) ([]byte, error) {
 }
 
 // MarshalIndentWithoutEscapeHTML ...
-func MarshalIndentWithoutEscapeHTML(data interface{}, prefix, indent string) ([]byte, error) {
+func MarshalIndentWithoutEscapeHTML(data any, prefix, indent string) ([]byte, error) {
 	buffer := bufferpkg.GetBuffer()
 	defer bufferpkg.PutBuffer(buffer)
 

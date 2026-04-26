@@ -3,6 +3,7 @@ package logpkg
 import (
 	"io"
 	"os"
+	"runtime"
 
 	"github.com/valyala/bytebufferpool"
 	"go.uber.org/atomic"
@@ -59,6 +60,7 @@ func (w *AsyncWriter) Write(p []byte) (n int, err error) {
 }
 
 func (w *AsyncWriter) loop() {
+	defer Recover()
 	for buf := range w.c {
 		_, _ = w.w.Write(buf.Bytes())
 		w.bufferPool.Put(buf)
@@ -68,5 +70,16 @@ func (w *AsyncWriter) loop() {
 func (w *AsyncWriter) Close() {
 	if w.closed.CompareAndSwap(false, true) {
 		close(w.c)
+	}
+}
+
+// Recover is used with defer to do cleanup on panics.
+// Use it like: defer Recover(func() {})
+func Recover() {
+	if rerr := recover(); rerr != nil {
+		buf := make([]byte, 64<<10) //nolint:mnd
+		n := runtime.Stack(buf, false)
+		buf = buf[:n]
+		Error("threadpkg.Recover: %+v\n%s\n", rerr, buf)
 	}
 }

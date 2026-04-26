@@ -2,6 +2,7 @@ package gormpkg
 
 import (
 	stderrors "errors"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
@@ -28,9 +29,5 @@ func IsErrDuplicatedKey(err error) bool {
 	if stderrors.As(err, &mysqlErr) {
 		return mysqlErr.Number == 1062
 	}
-	//var sqliteErr *sqlite3.Error
-	//if stderrors.As(err, &sqliteErr) {
-	//	return sqliteErr.ExtendedCode == 2067
-	//}
 	return false
 }

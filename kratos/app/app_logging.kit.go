@@ -8,16 +8,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
 	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
-	"github.com/ikaiguang/go-srv-kit/kratos/error"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
@@ -50,8 +49,8 @@ func (s *RequestInfoForServer) String() string {
 	return res
 }
 
-func (s *RequestInfoForServer) Kvs() []interface{} {
-	return []interface{}{
+func (s *RequestInfoForServer) Kvs() []any {
+	return []any{
 		"kind", s.Kind,
 		"component", s.Component,
 		"latency", s.Latency.String(),
@@ -75,8 +74,8 @@ func (s *OperationInfo) String() string {
 	return res
 }
 
-func (s *OperationInfo) Kvs() []interface{} {
-	return []interface{}{
+func (s *OperationInfo) Kvs() []any {
+	return []any{
 		"method", s.Method,
 		"operation", s.Operation,
 		"args", s.Args,
@@ -100,8 +99,8 @@ func (s *ErrMessage) String() string {
 	return res
 }
 
-func (s *ErrMessage) Kvs() []interface{} {
-	return []interface{}{
+func (s *ErrMessage) Kvs() []any {
+	return []any{
 		"code", s.Code,
 		"reason", s.Reason,
 		"message", s.Message,
@@ -145,8 +144,8 @@ func WithCallerDepth(depth int) Option {
 	}
 }
 
-func ServerLoggingKvs(requestInfo *RequestInfoForServer, operationInfo *OperationInfo) []interface{} {
-	return []interface{}{
+func ServerLoggingKvs(requestInfo *RequestInfoForServer, operationInfo *OperationInfo) []any {
+	return []any{
 		"client_ip", requestInfo.ClientIP,
 		"latency", requestInfo.Latency,
 		"kind", requestInfo.Kind,
@@ -165,7 +164,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 		opts[i](opt)
 	}
 	return func(handler middleware.Handler) middleware.Handler {
-		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
+		return func(ctx context.Context, req any) (reply any, err error) {
 			var (
 				isWebsocket  = false
 				loggingLevel = log.LevelInfo
@@ -213,10 +212,6 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 
 			// websocket 不输出错误
 			if isWebsocket {
-				//var kv = []interface{}{
-				//	"operation", operationInfo.String(),
-				//	"request", requestInfo.String(),
-				//}
 				var kv = operationInfo.Kvs()
 				kv = append(kv, requestInfo.Kvs()...)
 				logHelper.WithContext(ctx).Log(loggingLevel, kv...)
@@ -231,10 +226,6 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			operationInfo.Args = args
 
 			// 打印日志
-			//var kv = []interface{}{
-			//	"operation", operationInfo.String(),
-			//	"request", requestInfo.String(),
-			//}
 			var kv = operationInfo.Kvs()
 			kv = append(kv, requestInfo.Kvs()...)
 
@@ -261,10 +252,6 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 				// 打印日志
 				kv = append(kv, errMessage.Kvs()...)
 				kv = append(kv, "stack", stackMessage)
-				//kv = append(kv,
-				//	"error", errMessage.String(),
-				//	"stack", stackMessage,
-				//)
 			}
 
 			// 输出日志
@@ -293,8 +280,8 @@ func (s *RequestInfoForClient) String() string {
 	return res
 }
 
-func (s *RequestInfoForClient) Kvs() []interface{} {
-	return []interface{}{
+func (s *RequestInfoForClient) Kvs() []any {
+	return []any{
 		"kind", s.Kind,
 		"component", s.Component,
 		"latency", s.Latency.String(),
@@ -302,8 +289,8 @@ func (s *RequestInfoForClient) Kvs() []interface{} {
 	}
 }
 
-func ClientLoggingKvs(requestInfo *RequestInfoForClient, operationInfo *OperationInfo) []interface{} {
-	return []interface{}{
+func ClientLoggingKvs(requestInfo *RequestInfoForClient, operationInfo *OperationInfo) []any {
+	return []any{
 		"client_ip", requestInfo.ClientIP,
 		"latency", requestInfo.Latency,
 		"kind", requestInfo.Kind,
@@ -318,7 +305,7 @@ func ClientLoggingKvs(requestInfo *RequestInfoForClient, operationInfo *Operatio
 // logging.Client(logger)
 func ClientLog(logHelper *log.Helper) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
-		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
+		return func(ctx context.Context, req any) (reply any, err error) {
 			var (
 				startTime = time.Now()
 				level     = log.LevelInfo
@@ -358,19 +345,11 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 				if headerpkg.GetIsWebsocket(httpTr.Request().Header) {
 					operationInfo.Method = "WS"
 				}
-				//requestInfo.ClientIP = contextpkg.ClientIPFromHTTP(ctx, httpTr.Request())
 			} else if _, isGRPC := tr.(*grpc.Transport); isGRPC {
 				operationInfo.Method = "GRPC"
-				//requestInfo.ClientIP = contextpkg.ClientIPFromGRPC(ctx)
 			}
 
 			// log
-			//var (
-			//	kv = []interface{}{
-			//		"operation", operationInfo.String(),
-			//		"request", requestInfo.String(),
-			//	}
-			//)
 			var kv = operationInfo.Kvs()
 			kv = append(kv, requestInfo.Kvs()...)
 
@@ -392,7 +371,6 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 				errMessage := &ErrMessage{
 					Code:   code,
 					Reason: reason,
-					//Message: err.Error(),
 				}
 				kv = append(kv,
 					"error", errMessage.String(),
@@ -406,7 +384,7 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 }
 
 // extractArgs returns the string of the req
-func extractArgs(req interface{}) string {
+func extractArgs(req any) string {
 	if redacter, ok := req.(logging.Redacter); ok {
 		return redacter.Redact()
 	}

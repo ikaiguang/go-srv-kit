@@ -22,7 +22,7 @@ func Err(e Enum, msg string) *Error {
 	)
 }
 
-func Errf(e Enum, format string, a ...interface{}) *Error {
+func Errf(e Enum, format string, a ...any) *Error {
 	return NewWithMetadata(
 		e.HTTPCode(),
 		e.String(),

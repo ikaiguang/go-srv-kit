@@ -26,7 +26,7 @@ type batchInsertOptions struct {
 	// MySQL : DO NOTHING
 	onConflictAction string
 	// onConflictPrepareData 冲突解决方案数据；DO UPDATE SET column_2 = ?
-	onConflictPrepareData []interface{}
+	onConflictPrepareData []any
 }
 
 // BatchInsertConflictActionReq 批量插入冲突解决请求
@@ -43,7 +43,7 @@ type BatchInsertConflictActionReq struct {
 	// MySQL : DO NOTHING
 	OnConflictAction string
 	// OnConflictPrepareData 冲突解决方案数据；DO UPDATE SET column_2 = ?
-	OnConflictPrepareData []interface{}
+	OnConflictPrepareData []any
 }
 
 const (

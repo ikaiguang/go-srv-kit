@@ -43,7 +43,7 @@ func NewSampleHTTPClient(ctx context.Context, endpoint string, opts ...http.Clie
 }
 
 // ResponseDecoder http.DefaultResponseDecoder
-func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) error {
+func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v any) error {
 	defer func() { _ = res.Body.Close() }()
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
@@ -70,6 +70,4 @@ func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) 
 		}
 		return stdjson.Unmarshal([]byte(unknownData.Data), v)
 	}
-
-	//return http.CodecForResponse(res).Unmarshal(data, v)
 }

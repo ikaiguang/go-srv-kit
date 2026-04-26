@@ -14,7 +14,7 @@ import (
 // RequestAndResponseHeader 请求头 and 响应头
 func RequestAndResponseHeader() middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
-		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
+		return func(ctx context.Context, req any) (reply any, err error) {
 			var traceID string
 			if span := trace.SpanContextFromContext(ctx); span.HasTraceID() {
 				traceID = span.TraceID().String()

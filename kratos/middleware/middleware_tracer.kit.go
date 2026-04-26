@@ -46,9 +46,6 @@ func SetTracer(serviceNameKey string, opts ...TracerOption) error {
 		// Record information about this application in an Resource.
 		tracesdk.WithResource(resource.NewSchemaless(
 			semconv.ServiceNameKey.String(serviceNameKey),
-			//attribute.String("env", appConfig.RuntimeEnv),
-			//attribute.String("version", appConfig.Version),
-			//attribute.String("branch", appConfig.EnvBranch),
 		)),
 	}
 	switch opt.exporterType {
@@ -74,9 +71,6 @@ func SetTracerProvider(serviceNameKey string, exporter *otlptrace.Exporter) erro
 		// Record information about this application in an Resource.
 		tracesdk.WithResource(resource.NewSchemaless(
 			semconv.ServiceNameKey.String(serviceNameKey),
-			//attribute.String("env", appConfig.RuntimeEnv),
-			//attribute.String("version", appConfig.Version),
-			//attribute.String("branch", appConfig.EnvBranch),
 		)),
 	)
 	otel.SetTracerProvider(tp)

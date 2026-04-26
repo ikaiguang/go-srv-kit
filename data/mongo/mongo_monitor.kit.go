@@ -38,7 +38,7 @@ func NewMonitor(logger log.Logger, opts ...MonitorOption) *event.CommandMonitor 
 			)
 		},
 		Succeeded: func(ctx context.Context, evt *event.CommandSucceededEvent) {
-			kvs := []interface{}{
+			kvs := []any{
 				"request_id", evt.RequestID,
 				"database", evt.DatabaseName,
 				"command_name", evt.CommandName,

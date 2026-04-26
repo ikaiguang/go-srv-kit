@@ -29,13 +29,7 @@ func RegisterCodec() {
 }
 
 // RequestDecoder ...
-func RequestDecoder(r *http.Request, v interface{}) error {
-	// 不解析 multipart/form-data
-	//contentType := r.Header.Get(headerpkg.ContentType)
-	//if strings.HasPrefix(contentType, headerpkg.ContentTypeMultipartForm) {
-	//	return nil
-	//}
-
+func RequestDecoder(r *http.Request, v any) error {
 	// 解码
 	codec, ok := http.CodecForRequest(r, headerpkg.ContentType)
 	if !ok {
@@ -98,10 +92,10 @@ func (f *multipartForm) Name() string {
 	return CodecNameMultipartForm
 }
 
-func (f *multipartForm) Marshal(v interface{}) ([]byte, error) {
+func (f *multipartForm) Marshal(v any) ([]byte, error) {
 	return nil, nil
 }
-func (f *multipartForm) Unmarshal(data []byte, v interface{}) error {
+func (f *multipartForm) Unmarshal(data []byte, v any) error {
 	return nil
 }
 
@@ -110,9 +104,9 @@ type octetStream struct{}
 func (s *octetStream) Name() string {
 	return CodecNameOctetStream
 }
-func (s *octetStream) Marshal(v interface{}) ([]byte, error) {
+func (s *octetStream) Marshal(v any) ([]byte, error) {
 	return nil, nil
 }
-func (s *octetStream) Unmarshal(data []byte, v interface{}) error {
+func (s *octetStream) Unmarshal(data []byte, v any) error {
 	return nil
 }

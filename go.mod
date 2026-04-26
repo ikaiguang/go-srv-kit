@@ -20,7 +20,7 @@ require (
 	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/consul/api v1.34.1
-	github.com/jackc/pgx/v5 v5.9.1
+	github.com/jackc/pgx/v5 v5.9.2
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/redis/go-redis/v9 v9.18.0

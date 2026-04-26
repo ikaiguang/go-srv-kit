@@ -1,6 +1,8 @@
 package serverutil
 
 import (
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/transport/http"
@@ -9,7 +11,6 @@ import (
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	stdlog "log"
 )
 
 var _ metadata.Option
@@ -34,9 +35,6 @@ func NewHTTPServer(
 
 	// options
 	var opts []http.ServerOption
-	//var opts = []http.ServerOption{
-	//	http.Filter(middlewareutil.NewCORS()),
-	//}
 	if httpConfig.Network != "" {
 		opts = append(opts, http.Network(httpConfig.GetNetwork()))
 	}
@@ -80,6 +78,5 @@ func NewHTTPServer(
 	InjectHTTPServerOptions(&opts)
 	opts = append(opts, serverOpts...)
 
-	//v1.RegisterGreeterHTTPServer(srv, greeter)
 	return http.NewServer(opts...), err
 }

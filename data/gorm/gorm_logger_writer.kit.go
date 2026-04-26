@@ -15,7 +15,6 @@ import (
 
 // NewStdWriter .
 func NewStdWriter() logger.Writer {
-	//return stdlog.New(os.Stderr, "", stdlog.LstdFlags)
 	return &std{
 		writer: stdlog.New(os.Stderr, "", stdlog.LstdFlags),
 	}
@@ -29,7 +28,6 @@ func NewJSONWriter(w io.Writer) logger.Writer {
 // NewWriter .
 func NewWriter(w io.Writer) logger.Writer {
 	return &writer{w: w}
-	//return stdlog.New(w, "\r\n", stdlog.LstdFlags)
 }
 
 // NewDummyWriter .
@@ -43,7 +41,7 @@ type writer struct {
 }
 
 // Printf 输出
-func (w *writer) Printf(format string, args ...interface{}) {
+func (w *writer) Printf(format string, args ...any) {
 	_, _ = w.w.Write([]byte(fmt.Sprintf(format, args...) + "\n"))
 }
 
@@ -53,7 +51,7 @@ type multiWriter struct {
 }
 
 // Printf 输出
-func (w *multiWriter) Printf(format string, args ...interface{}) {
+func (w *multiWriter) Printf(format string, args ...any) {
 	for _, ww := range w.writers {
 		ww.Printf(format, args...)
 	}
@@ -65,7 +63,7 @@ type std struct {
 }
 
 // Printf 输出
-func (w *std) Printf(format string, args ...interface{}) {
+func (w *std) Printf(format string, args ...any) {
 	w.writer.Printf(format+"\r\n\r\n", args...)
 }
 
@@ -83,7 +81,7 @@ type jsonStruct struct {
 }
 
 // Printf 输出
-func (w *jsonWriter) Printf(format string, args ...interface{}) {
+func (w *jsonWriter) Printf(format string, args ...any) {
 	bodyBytes, _ := json.Marshal(&jsonStruct{
 		Name:      "GORM",
 		Time:      time.Now().Format(timepkg.YmdHmsMLogger),
@@ -98,4 +96,4 @@ func (w *jsonWriter) Printf(format string, args ...interface{}) {
 type dummy struct{}
 
 // Printf 输出
-func (w *dummy) Printf(string, ...interface{}) {}
+func (w *dummy) Printf(string, ...any) {}

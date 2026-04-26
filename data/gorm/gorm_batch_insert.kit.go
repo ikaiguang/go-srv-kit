@@ -24,7 +24,7 @@ type BatchInsertValueArgs struct {
 	//insertSQL += "ON DUPLICATE KEY UPDATE " + strings.Join(s.UpdateColumnFromMtdReportData(), ",")
 	//insertSQL += "ON CONFLICT (id) DO UPDATE SET column_2= CONCAT(test_table.column_2, excluded.column_2)"
 	ConflictActionSQL   string
-	ConflictPrepareData []interface{}
+	ConflictPrepareData []any
 }
 
 // BatchInsertRepo 批量插入
@@ -40,12 +40,14 @@ type BatchInsertRepo interface {
 	// 在实现此方法时：需要自行拼接占位符；
 	InsertColumns() (columnList []string, placeholder string)
 	// InsertValues 插入的值
-	// @result prepareData 插入的值；例：[]interface{}{1, "张三", 18, 2, "李四", 20, 3, "小明", 30}
+	// @result prepareData 插入的值；例：[]any{1, "张三", 18, 2, "李四", 20, 3, "小明", 30}
 	// @result prepareDataLen 插入的占位符；例：[]string{"(?, ?, ?)", "(?, ?, ?)", "(?, ?, ?)"}
-	InsertValues(args *BatchInsertValueArgs) (prepareData []interface{}, placeholderSlice []string)
+	InsertValues(args *BatchInsertValueArgs) (prepareData []any, placeholderSlice []string)
 }
 
 // BatchInsert 批量插入
+// 安全说明：TableName() 和 InsertColumns() 由开发者实现的接口返回，
+// 不应包含用户输入。如果接口实现中使用了外部输入，需自行确保安全性。
 func BatchInsert(db *gorm.DB, repo BatchInsertRepo, opts ...BatchInsertOption) error {
 	return BatchInsertWithContext(context.Background(), db, repo, opts...)
 }

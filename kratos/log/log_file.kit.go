@@ -72,7 +72,7 @@ func (s *File) Close() error {
 }
 
 // Log .
-func (s *File) Log(level log.Level, keyvals ...interface{}) (err error) {
+func (s *File) Log(level log.Level, keyvals ...any) (err error) {
 	if len(keyvals) == 0 {
 		return err
 	}

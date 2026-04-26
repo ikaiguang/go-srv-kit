@@ -19,7 +19,7 @@ const (
 )
 
 // SuccessResponseEncoder http.DefaultResponseEncoder
-func SuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
+func SuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v any) error {
 	if v == nil {
 		return nil
 	}
@@ -58,9 +58,6 @@ func ErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err erro
 		_, _ = w.Write([]byte(err.Error()))
 		return
 	}
-	//if !IsDebugMode() {
-	//	se.Metadata = nil
-	//}
 	if se.Code < _minInfoLevelCode {
 		w.WriteHeader(int(se.Code))
 	} else {
@@ -70,7 +67,7 @@ func ErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err erro
 }
 
 // SuccessResponseDecoder http.DefaultResponseDecoder
-func SuccessResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) error {
+func SuccessResponseDecoder(ctx context.Context, res *stdhttp.Response, v any) error {
 	return http.DefaultResponseDecoder(ctx, res, v)
 }
 
@@ -80,7 +77,7 @@ func ErrorResponseDecode(ctx context.Context, res *stdhttp.Response) error {
 }
 
 // SuccessResponseDecoderBody http.DefaultResponseDecoder
-func SuccessResponseDecoderBody(contentType string, data []byte, v interface{}) error {
+func SuccessResponseDecoderBody(contentType string, data []byte, v any) error {
 	codec := encoding.GetCodec(ContentSubtype(contentType))
 	if codec == nil {
 		codec = encoding.GetCodec(json.Name)
@@ -89,7 +86,7 @@ func SuccessResponseDecoderBody(contentType string, data []byte, v interface{}) 
 }
 
 // SuccessResponseDecoderBody2 http.DefaultResponseDecoder
-func SuccessResponseDecoderBody2(header stdhttp.Header, data []byte, v interface{}) error {
+func SuccessResponseDecoderBody2(header stdhttp.Header, data []byte, v any) error {
 	return SuccessResponseDecoderBody(header.Get(headerpkg.ContentType), data, v)
 }
 

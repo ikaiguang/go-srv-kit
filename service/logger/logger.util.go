@@ -62,15 +62,10 @@ type LoggerManager interface {
 func NewLoggerManager(conf *configpb.Log, appConfig *configpb.App) (LoggerManager, error) {
 	if appConfig == nil {
 		stdlog.Println("[CONFIGURATION] Configuration not found, key = app; Use default configuration")
-		//e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = app")
-		//e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = app")
-		//return nil, errorpkg.WithStack(e)
 		appConfig = &_defaultAppConfig
 	}
 	if conf == nil {
 		stdlog.Println("[CONFIGURATION] Configuration not found, key = log; Use default configuration")
-		//e := errorpkg.ErrorBadRequest("[CONFIGURATION] config error, key = log")
-		//return nil, errorpkg.WithStack(e)
 		conf = _defaultLogConfig
 	}
 	manager := &loggerManager{

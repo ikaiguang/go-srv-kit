@@ -16,24 +16,12 @@ import (
 )
 
 // CustomSuccessResponseEncoder http.DefaultResponseEncoder
-func CustomSuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
+func CustomSuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v any) error {
 	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
 	// 在websocket时日志干扰：http: response.Write on hijacked connection from
-	// is websocket
-	//if headerpkg.GetIsWebsocket(r.Header) {
-	//	return nil
-	//}
 
 	// nil
 	if v == nil {
-		//respData := &Response{
-		//	Code:      OK,
-		//	RequestId: headerpkg.GetRequestID(r.Header),
-		//	//Data:      v,
-		//}
-		//respData.Code = stdhttp.StatusInternalServerError
-		//respData.Reason = errorv1.ERROR_NO_CONTENT.String()
-		//respData.Metadata = map[string]string{"data": "null"}
 		return nil
 	}
 
@@ -48,7 +36,6 @@ func CustomSuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, 
 	respData := &Response{
 		Code:      OK,
 		RequestId: headerpkg.GetRequestID(r.Header),
-		//Data:      v,、
 	}
 	var resultMessage proto.Message
 	if vMessage, ok := v.(proto.Message); ok {
@@ -87,19 +74,12 @@ func CustomSuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, 
 		return errorpkg.Wrap(e, err)
 	}
 	return nil
-
-	// 参考
-	//return http.DefaultResponseEncoder(w, r, respData)
 }
 
 // CustomErrorResponseEncoder http.DefaultErrorEncoder
 func CustomErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
 	// 在websocket时日志干扰：http: superfluous response.WriteHeader call from xxx(file:line)
 	// 在websocket时日志干扰：http: response.Write on hijacked connection from
-	// is websocket
-	//if headerpkg.GetIsWebsocket(r.Header) {
-	//	return
-	//}
 
 	// 响应错误
 	se := errorpkg.FromError(err)
@@ -110,34 +90,23 @@ func CustomErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, er
 		Metadata:  se.Metadata,
 		RequestId: headerpkg.GetRequestID(r.Header),
 	}
-	//if !IsDebugMode() {
-	//	data.Metadata = nil
-	//}
 
 	codec, _ := http.CodecForRequest(r, "Accept")
 	SetResponseContentType(w, codec)
 
-	// // return
-	//body, err := codec.Marshal(se)
 	body, err := codec.Marshal(data)
 	if err != nil {
 		w.WriteHeader(stdhttp.StatusInternalServerError)
 		_, _ = w.Write([]byte(err.Error()))
 		return
 	}
-	//w.WriteHeader(stdhttp.StatusOK)
 	w.WriteHeader(int(se.Code))
 	_, _ = w.Write(body)
-
-	// 参考
-	//_ = http.DefaultResponseEncoder(w, r, data)
-	//http.DefaultErrorEncoder(w, r, err)
 	return
 }
 
 // CustomResponseDecoder http.DefaultResponseDecoder
-func CustomResponseDecoder(ctx context.Context, res *stdhttp.Response, v interface{}) error {
-	//return http.CodecForResponse(res).Unmarshal(data, v)
+func CustomResponseDecoder(ctx context.Context, res *stdhttp.Response, v any) error {
 	defer func() { _ = res.Body.Close() }()
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
@@ -186,7 +155,7 @@ func CustomDecodeProtobufResponse(contentBody []byte, pbMessage proto.Message) (
 }
 
 // CustomDecodeHTTPResponse 解码结果
-func CustomDecodeHTTPResponse(contentBody []byte, data interface{}) (response *HTTPResponse, err error) {
+func CustomDecodeHTTPResponse(contentBody []byte, data any) (response *HTTPResponse, err error) {
 	response = &HTTPResponse{
 		Data: data,
 	}
@@ -215,12 +184,4 @@ func DeleteDataTypeURL(buf []byte) ([]byte, error) {
 		return nil, err
 	}
 	return res, nil
-	//if r := gjson.GetBytes(buf, p); r.Exists() {
-	//	res, err := sjson.DeleteBytes(buf, p)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	return res, nil
-	//}
-	//return buf, nil
 }

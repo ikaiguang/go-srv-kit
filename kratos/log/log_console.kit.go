@@ -48,7 +48,7 @@ func (s *Std) Close() error {
 }
 
 // Log .
-func (s *Std) Log(level log.Level, keyvals ...interface{}) (err error) {
+func (s *Std) Log(level log.Level, keyvals ...any) (err error) {
 	if len(keyvals) == 0 {
 		return err
 	}

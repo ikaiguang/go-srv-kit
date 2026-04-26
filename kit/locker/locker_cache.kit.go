@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	cachepkg "github.com/patrickmn/go-cache"
 )
 
@@ -36,7 +37,9 @@ func (s *cache) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
 	if err != nil {
 		return nil, err
 	}
-	go locker.extend(ctx)
+	threadpkg.GoSafe(func() {
+		locker.extend(ctx)
+	})
 
 	return locker, nil
 }

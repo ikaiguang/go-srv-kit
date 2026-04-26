@@ -1,96 +1,96 @@
 package debugpkg
 
 // Print .
-func Print(a ...interface{}) {
+func Print(a ...any) {
 	handler.Debug(a...)
 }
 
 // Println .
-func Println(a ...interface{}) {
+func Println(a ...any) {
 	handler.Debug(a...)
 }
 
 // Printf .
-func Printf(format string, a ...interface{}) {
+func Printf(format string, a ...any) {
 	handler.Debugf(format, a...)
 }
 
 // Printw .
-func Printw(keyvals ...interface{}) {
+func Printw(keyvals ...any) {
 	handler.Debugw(keyvals...)
 }
 
 // Debug .
-func Debug(a ...interface{}) {
+func Debug(a ...any) {
 	handler.Debug(a...)
 }
 
 // Debugf .
-func Debugf(format string, a ...interface{}) {
+func Debugf(format string, a ...any) {
 	handler.Debugf(format, a...)
 }
 
 // Debugw .
-func Debugw(keyvals ...interface{}) {
+func Debugw(keyvals ...any) {
 	handler.Debugw(keyvals...)
 }
 
 // Info .
-func Info(a ...interface{}) {
+func Info(a ...any) {
 	handler.Info(a...)
 }
 
 // Infof .
-func Infof(format string, a ...interface{}) {
+func Infof(format string, a ...any) {
 	handler.Infof(format, a...)
 }
 
 // Infow .
-func Infow(keyvals ...interface{}) {
+func Infow(keyvals ...any) {
 	handler.Infow(keyvals...)
 }
 
 // Warn .
-func Warn(a ...interface{}) {
+func Warn(a ...any) {
 	handler.Warn(a...)
 }
 
 // Warnf .
-func Warnf(format string, a ...interface{}) {
+func Warnf(format string, a ...any) {
 	handler.Warnf(format, a...)
 }
 
 // Warnw .
-func Warnw(keyvals ...interface{}) {
+func Warnw(keyvals ...any) {
 	handler.Warnw(keyvals...)
 }
 
 // Error .
-func Error(a ...interface{}) {
+func Error(a ...any) {
 	handler.Error(a...)
 }
 
 // Errorf .
-func Errorf(format string, a ...interface{}) {
+func Errorf(format string, a ...any) {
 	handler.Errorf(format, a...)
 }
 
 // Errorw .
-func Errorw(keyvals ...interface{}) {
+func Errorw(keyvals ...any) {
 	handler.Errorw(keyvals...)
 }
 
 // Fatal .
-func Fatal(a ...interface{}) {
+func Fatal(a ...any) {
 	handler.Fatal(a...)
 }
 
 // Fatalf .
-func Fatalf(format string, a ...interface{}) {
+func Fatalf(format string, a ...any) {
 	handler.Fatalf(format, a...)
 }
 
 // Fatalw .
-func Fatalw(keyvals ...interface{}) {
+func Fatalw(keyvals ...any) {
 	handler.Fatalw(keyvals...)
 }

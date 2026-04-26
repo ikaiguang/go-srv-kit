@@ -167,9 +167,8 @@ func (s *loggerManager) setupLogger() error {
 	return nil
 }
 
-func (s *loggerManager) withLoggerPrefix() []interface{} {
+func (s *loggerManager) withLoggerPrefix() []any {
 	var kvs = NewServiceInfo(s.appConfig).Kvs()
-	//for _, kv := range NewTracerInfo().Kvs() {
 	for _, kv := range NewTracerInfoKvs().Kvs() {
 		kvs = append(kvs, kv)
 	}
@@ -200,7 +199,6 @@ func (s *loggerManager) loadingLoggerWithCallerSkip(skip int, fileLoggerConf *co
 			e := errorpkg.ErrorInternalError(err.Error())
 			return logger, closeFnSlice, errorpkg.WithStack(e)
 		}
-		//closeFnSlice = append(closeFnSlice, stdLoggerImpl)
 		stdLogger = stdLoggerImpl
 	}
 	// 覆盖 stdLogger

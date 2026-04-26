@@ -35,3 +35,14 @@ func Recover(ctx context.Context) {
 		logpkg.ErrorfWithContext(ctx, "threadpkg.Recover: %+v\n%s\n", rerr, buf)
 	}
 }
+
+// RecoverNotContext is used with defer to do cleanup on panics.
+// Use it like: defer Recover(func() {})
+func RecoverNotContext() {
+	if rerr := recover(); rerr != nil {
+		buf := make([]byte, 64<<10) //nolint:mnd
+		n := runtime.Stack(buf, false)
+		buf = buf[:n]
+		logpkg.Error("threadpkg.Recover: %+v\n%s\n", rerr, buf)
+	}
+}

@@ -23,16 +23,8 @@ type ServiceInfo struct {
 	IP       string `json:"ip"`
 }
 
-func (s *ServiceInfo) Kvs() []interface{} {
-	//buf, _ := json.Marshal(s)
-	//return []interface{}{
-	//	"app", string(buf),
-	//}
-	//buf, _ := json.Marshal(s)
-	//var res = `{"hostname":"` + s.Hostname + `","ip":"` + s.IP + `"}`
-	return []interface{}{
-		//"app", string(buf),
-		//"app", res,
+func (s *ServiceInfo) Kvs() []any {
+	return []any{
 		"app", s.Name,
 		"ip", s.IP,
 	}
@@ -55,8 +47,8 @@ type TracerInfo struct {
 	Tracer log.Valuer
 }
 
-func (s *TracerInfo) Kvs() []interface{} {
-	return []interface{}{
+func (s *TracerInfo) Kvs() []any {
+	return []any{
 		"tracer", s.Tracer,
 	}
 }
@@ -69,7 +61,7 @@ func NewTracerInfo() *TracerInfo {
 }
 
 func withTracerInfo() log.Valuer {
-	return func(ctx context.Context) interface{} {
+	return func(ctx context.Context) any {
 		var (
 			res = `{"trace_id":"`
 		)
@@ -83,14 +75,6 @@ func withTracerInfo() log.Valuer {
 			tid = tr.RequestHeader().Get(headerpkg.RequestID)
 		}
 		res += tid + `"`
-
-		// span
-		//res += `,"span_id":"`
-		//spanId := ""
-		//if span.HasSpanID() {
-		//	spanId = span.SpanID().String()
-		//}
-		//res += spanId + `"`
 
 		// user
 		if claims, ok := authpkg.GetAuthClaimsFromContext(ctx); ok && claims.Payload != nil {
@@ -109,9 +93,8 @@ type TracerInfoKvs struct {
 	UserId  log.Valuer
 }
 
-func (s *TracerInfoKvs) Kvs() []interface{} {
-
-	return []interface{}{
+func (s *TracerInfoKvs) Kvs() []any {
+	return []any{
 		"trace_id", s.TraceId,
 		"x_uid", s.UserId,
 	}
@@ -126,7 +109,7 @@ func NewTracerInfoKvs() *TracerInfoKvs {
 }
 
 func withTraceId() log.Valuer {
-	return func(ctx context.Context) interface{} {
+	return func(ctx context.Context) any {
 		// trace
 		span := trace.SpanContextFromContext(ctx)
 		tid := ""
@@ -140,7 +123,7 @@ func withTraceId() log.Valuer {
 }
 
 func withUserId() log.Valuer {
-	return func(ctx context.Context) interface{} {
+	return func(ctx context.Context) any {
 		uid := ""
 		if claims, ok := authpkg.GetAuthClaimsFromContext(ctx); ok && claims.Payload != nil {
 			if claims.Payload.UserID > 0 {
