@@ -2,6 +2,7 @@ package authpkg
 
 import (
 	"context"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -15,7 +16,7 @@ type Option func(*options)
 type options struct {
 	signingMethod         jwt.SigningMethod
 	claims                func() jwt.Claims
-	accessTokenHeader     map[string]interface{}
+	accessTokenHeader     map[string]any
 	accessTokenValidators []AccessTokenValidate
 }
 
@@ -36,7 +37,7 @@ func WithClaims(f func() jwt.Claims) Option {
 }
 
 // WithAccessTokenHeader withe customer accessTokenHeader for client side
-func WithAccessTokenHeader(header map[string]interface{}) Option {
+func WithAccessTokenHeader(header map[string]any) Option {
 	return func(o *options) {
 		o.accessTokenHeader = header
 	}

@@ -3,7 +3,6 @@ package zippkg
 import (
 	"archive/zip"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -80,7 +79,7 @@ func ZipFile(filePath string, zipPath string) error {
 // @param zipFilePath 压缩到zip的路径；例: videos/test.mp4
 func AddFileToZip(zipWriter *zip.Writer, srcFilePath, zipFilePath string) error {
 	// XXX: Read with buffer.
-	content, err := ioutil.ReadFile(srcFilePath)
+	content, err := os.ReadFile(srcFilePath)
 	if err != nil {
 		return err
 	}
@@ -111,14 +110,6 @@ func Unzip(zipPath, unzipResourceDir string) (err error) {
 
 	// 解压文件
 	for _, rf := range reader.File {
-		//outputPath := filepath.Join(UnzipResourceDir, rf.Name)
-		// 跳过文件文件
-		//_ = os.MkdirAll(filepath.Dir(outputPath), SequenceFileModel)
-		//if rf.FileInfo().IsDir() {
-		//	continue
-		//}
-
-		// 解压文件
 		err = UnzipFn(rf, unzipResourceDir)
 		if err != nil {
 			return err
@@ -141,12 +132,6 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 		}
 		return err
 	}
-
-	// 创建文件目录
-	//err = os.MkdirAll(filepath.Dir(outputPath), filepkg.DefaultFileMode)
-	//if err != nil {
-	//	return err
-	//}
 
 	// 创建输出文件
 	outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, filepkg.DefaultFileMode)

@@ -7,8 +7,8 @@ inclusion: always
 ## 核心信息
 
 - 项目名称: go-srv-kit
-- 框架: go-kratos v2.9.1
-- 语言: Go 1.24.10
+- 框架: go-kratos v2.9.2
+- 语言: Go 1.25+
 - 架构: DDD 分层架构 + Wire 编译期依赖注入
 - 通信协议: HTTP + gRPC 双协议支持
 - 私有仓库: gitlab.uufff.com

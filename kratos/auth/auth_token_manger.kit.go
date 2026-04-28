@@ -9,7 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	redispkg "github.com/ikaiguang/go-srv-kit/data/redis"
 	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
-	"github.com/ikaiguang/go-srv-kit/kit/thread"
+	threadpkg "github.com/ikaiguang/go-srv-kit/kit/thread"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	"github.com/redis/go-redis/v9"
 )
@@ -117,7 +117,7 @@ func (s *tokenManger) SaveAccessTokens(ctx context.Context, userIdentifier strin
 	}
 
 	var (
-		kvs     = make([]interface{}, 0, 2*len(tokenItems))
+		kvs     = make([]any, 0, 2*len(tokenItems))
 		nowUnix = time.Now().Unix()
 		expire  = time.Duration(0)
 	)
@@ -168,7 +168,7 @@ func (s *tokenManger) ResetPreviousTokens(ctx context.Context, userIdentifier st
 	}
 
 	var (
-		kvs = make([]interface{}, 0, 2*len(tokenItems))
+		kvs = make([]any, 0, 2*len(tokenItems))
 	)
 	for i := range tokenItems {
 		kvs = append(kvs, tokenItems[i].ID())

@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
-	"github.com/ikaiguang/go-srv-kit/kit/header"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kit/header"
 	"google.golang.org/grpc/codes"
 )
 
@@ -42,7 +42,7 @@ type HTTPResponse struct {
 	Message  string            `json:"message"`
 	Metadata map[string]string `json:"metadata,omitempty"`
 
-	Data interface{} `json:"data"`
+	Data any `json:"data"`
 }
 
 func (x *HTTPResponse) GetCode() int32 {

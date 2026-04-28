@@ -33,7 +33,7 @@ func SetJSONUnmarshalOptions(opt *protojson.UnmarshalOptions) {
 }
 
 // MarshalJSON 编码json
-func MarshalJSON(v interface{}) ([]byte, error) {
+func MarshalJSON(v any) ([]byte, error) {
 	switch m := v.(type) {
 	case stdjson.Marshaler:
 		return m.MarshalJSON()
@@ -45,7 +45,7 @@ func MarshalJSON(v interface{}) ([]byte, error) {
 }
 
 // UnmarshalJSON 解码json
-func UnmarshalJSON(data []byte, v interface{}) error {
+func UnmarshalJSON(data []byte, v any) error {
 	switch m := v.(type) {
 	case stdjson.Unmarshaler:
 		return m.UnmarshalJSON(data)

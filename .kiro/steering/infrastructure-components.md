@@ -1,5 +1,6 @@
 ---
 inclusion: auto
+description: 基础设施组件（Consul、Jaeger、Redis、MySQL 等）的职责分类和 Provider 接口规范
 ---
 
 # 基础设施组件分类
