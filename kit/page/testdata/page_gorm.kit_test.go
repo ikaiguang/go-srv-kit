@@ -52,6 +52,6 @@ func TestPaging_Page(t *testing.T) {
 }
 
 // go test -v -count 1 ./kit/page/testdata -run TestPaging_Cursor
-func TestPaging_Cursor(t *testing.T) {
-
-}
+// TODO: 实现游标分页测试用例
+//func TestPaging_Cursor(t *testing.T) {
+//}

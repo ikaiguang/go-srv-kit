@@ -157,11 +157,12 @@ func MonthEnd(t time.Time) time.Time {
 }
 
 // DaysBetween 计算两个时间之间的天数差（绝对值）
+// 使用 UTC 日期差计算，避免夏令时导致的小时偏差
 func DaysBetween(a, b time.Time) int {
-	a = ToDay(a)
-	b = ToDay(b)
-	diff := a.Sub(b)
-	days := int(diff.Hours() / 24)
+	// 转为 UTC 消除时区/夏令时影响，再截断到天
+	aUTC := time.Date(a.Year(), a.Month(), a.Day(), 0, 0, 0, 0, time.UTC)
+	bUTC := time.Date(b.Year(), b.Month(), b.Day(), 0, 0, 0, 0, time.UTC)
+	days := int(aUTC.Sub(bUTC).Hours() / 24)
 	if days < 0 {
 		return -days
 	}

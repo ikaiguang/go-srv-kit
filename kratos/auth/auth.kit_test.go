@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func ExampleServerMiddleware() {
+func ExampleServer() {
 	var (
 		redisCC   = &redis.Client{}
 		signKey   = ""
@@ -18,7 +18,7 @@ func ExampleServerMiddleware() {
 	authConfig := Config{
 		RefreshCrypto: NewCBCCipher(signKey),
 	}
-	tokenM := NewTokenManger(logger, redisCC, nil)
+	tokenM := NewTokenManager(logger, redisCC, nil)
 	repo, err := NewAuthRepo(authConfig, logger, tokenM)
 	if err != nil {
 		return

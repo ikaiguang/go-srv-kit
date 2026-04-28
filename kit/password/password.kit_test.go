@@ -49,7 +49,6 @@ func TestEncrypt(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []byte
 		wantErr bool
 	}{
 		{
@@ -57,7 +56,6 @@ func TestEncrypt(t *testing.T) {
 			args: args{
 				password: "123456",
 			},
-			want:    []byte("$2a$10$Z0/4jarnYqNPGJLAVVLiaOX2KuxmzFpYqNEh37THbEKVvAjtlyPsm"),
 			wantErr: false,
 		},
 	}
@@ -68,10 +66,10 @@ func TestEncrypt(t *testing.T) {
 				t.Errorf("Encrypt() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			//if !reflect.DeepEqual(got, tt.want) {
-			//	t.Errorf("Encrypt() got = %s, want %s", got, tt.want)
-			//}
-			t.Log("==> got :", string(got))
+			// bcrypt 每次生成不同的 hash（含随机 salt），验证加密结果能通过 Compare
+			if err := Compare(string(got), tt.args.password); err != nil {
+				t.Errorf("Encrypt() 生成的 hash 无法通过 Compare 验证: %v", err)
+			}
 		})
 	}
 }

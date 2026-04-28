@@ -2,9 +2,14 @@ package downloadpkg
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
+	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -13,41 +18,66 @@ const (
 
 // go test -v -count 1 ./kit/download -run TestStreamDownload
 func TestStreamDownload(t *testing.T) {
-	type args struct {
-		ctx   context.Context
-		param *DownloadParam
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *DownloadReply
-		wantErr bool
-	}{
-		{
-			name: "test stream download",
-			args: args{
-				ctx: context.Background(),
-				param: &DownloadParam{
-					URL:        "http://a.com/test.mp4",
-					OutputPath: filepath.Join(TestdataPath, "test.mp4"),
-				},
-			},
-			want: &DownloadReply{
-				FilePath: filepath.Join(TestdataPath, "test.mp4"),
-			},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := StreamDownload(tt.args.ctx, tt.args.param)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("StreamDownload() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("StreamDownload() got = %v, want %v", got, tt.want)
-			}
+	// 创建本地测试 HTTP 服务器
+	testContent := []byte("hello world test content for download")
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(testContent)
+	}))
+	defer server.Close()
+
+	outputPath := filepath.Join(TestdataPath, "test_download.bin")
+	// 清理
+	defer func() { _ = os.RemoveAll(TestdataPath) }()
+
+	t.Run("正常下载", func(t *testing.T) {
+		got, err := StreamDownload(context.Background(), &DownloadParam{
+			URL:        server.URL + "/test.bin",
+			OutputPath: outputPath,
 		})
-	}
+		require.Nil(t, err)
+		assert.Equal(t, outputPath, got.FilePath)
+
+		// 验证文件内容
+		data, err := os.ReadFile(outputPath)
+		require.Nil(t, err)
+		assert.Equal(t, testContent, data)
+	})
+
+	t.Run("空输出路径", func(t *testing.T) {
+		_, err := StreamDownload(context.Background(), &DownloadParam{
+			URL:        server.URL + "/test.bin",
+			OutputPath: "",
+		})
+		assert.NotNil(t, err)
+		assert.Contains(t, err.Error(), "output path is empty")
+	})
+
+	t.Run("服务器返回404", func(t *testing.T) {
+		server404 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+		defer server404.Close()
+
+		_, err := StreamDownload(context.Background(), &DownloadParam{
+			URL:        server404.URL + "/notfound",
+			OutputPath: filepath.Join(TestdataPath, "notfound.bin"),
+		})
+		assert.NotNil(t, err)
+		assert.Contains(t, err.Error(), "status code: 404")
+	})
+}
+
+// go test -v -count 1 ./kit/download -run TestCheckOrCreateDir
+func TestCheckOrCreateDir(t *testing.T) {
+	testDir := filepath.Join(TestdataPath, "subdir", "nested")
+	defer func() { _ = os.RemoveAll(TestdataPath) }()
+
+	err := CheckOrCreateDir(filepath.Join(testDir, "file.txt"))
+	require.Nil(t, err)
+
+	info, err := os.Stat(testDir)
+	require.Nil(t, err)
+	assert.True(t, info.IsDir())
 }

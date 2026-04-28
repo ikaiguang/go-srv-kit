@@ -7,7 +7,7 @@ import (
 	stdhttp "net/http"
 
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/ikaiguang/go-srv-kit/kit/header"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kit/header"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	"github.com/tidwall/sjson"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -65,12 +65,12 @@ func CustomSuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, 
 	// return
 	dataBytes, err := codec.Marshal(respData)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer(errorpkg.ERROR_INTERNAL_SERVER.String())
+		e := errorpkg.ErrorInternalServer("%s", errorpkg.ERROR_INTERNAL_SERVER.String())
 		return errorpkg.Wrap(e, err)
 	}
 	_, err = w.Write(dataBytes)
 	if err != nil {
-		e := errorpkg.ErrorInternalServer(errorpkg.ERROR_INTERNAL_SERVER.String())
+		e := errorpkg.ErrorInternalServer("%s", errorpkg.ERROR_INTERNAL_SERVER.String())
 		return errorpkg.Wrap(e, err)
 	}
 	return nil

@@ -182,7 +182,7 @@ func (s *loggerManager) loadingLoggerWithCallerSkip(skip int, fileLoggerConf *co
 	// DummyLogger
 	stdLogger, err := logpkg.NewDummyLogger()
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return logger, closeFnSlice, errorpkg.WithStack(e)
 	}
 
@@ -196,7 +196,7 @@ func (s *loggerManager) loadingLoggerWithCallerSkip(skip int, fileLoggerConf *co
 		}
 		stdLoggerImpl, err := logpkg.NewStdLogger(stdLoggerConfig)
 		if err != nil {
-			e := errorpkg.ErrorInternalError(err.Error())
+			e := errorpkg.ErrorInternalError("%s", err.Error())
 			return logger, closeFnSlice, errorpkg.WithStack(e)
 		}
 		stdLogger = stdLoggerImpl
@@ -223,7 +223,7 @@ func (s *loggerManager) loadingLoggerWithCallerSkip(skip int, fileLoggerConf *co
 		fileLogger, err := logpkg.NewFileLogger(loggerConfig, logpkg.WithWriter(writer))
 		closeFnSlice = append(closeFnSlice, fileLogger)
 		if err != nil {
-			e := errorpkg.ErrorInternalError(err.Error())
+			e := errorpkg.ErrorInternalError("%s", err.Error())
 			return logger, closeFnSlice, errorpkg.WithStack(e)
 		}
 		loggers = append(loggers, fileLogger)

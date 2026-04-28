@@ -34,18 +34,15 @@ func TestNewAuthRepo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tokenM := NewTokenManger(tt.args.logger, tt.args.redisCC, nil)
+			tokenM := NewTokenManager(tt.args.logger, tt.args.redisCC, nil)
 			got, err := NewAuthRepo(tt.args.config, tt.args.logger, tokenM)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewAuthRepo() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			t.Log("got: ", got)
-			//if !reflect.DeepEqual(got, tt.want) {
-			//	t.Errorf("NewAuthRepo() got = %v, want %v", got, tt.want)
-			//}
+			if !tt.wantErr && got == nil {
+				t.Error("NewAuthRepo() 返回 nil，期望非 nil")
+			}
 		})
 	}
-	t.Log("testdata: ", ERROR_UNAUTHORIZED.String())
-	t.Log("testdata: ", ErrBlacklist())
 }

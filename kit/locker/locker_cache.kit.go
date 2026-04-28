@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ikaiguang/go-srv-kit/kit/thread"
+	threadpkg "github.com/ikaiguang/go-srv-kit/kit/thread"
 	cachepkg "github.com/patrickmn/go-cache"
 )
 
@@ -36,6 +36,10 @@ func (s *cache) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
 	locker, err := s.getLocker(ctx, lockName)
 	if err != nil {
 		return nil, err
+	}
+	// 初始化续期通道，确保 Unlock 时能通知 extend goroutine 停止
+	if locker.stopExtend == nil {
+		locker.stopExtend = make(chan bool, 1)
 	}
 	threadpkg.GoSafe(func() {
 		locker.extend(ctx)
@@ -80,7 +84,6 @@ func (s *cache) Unlock(ctx context.Context, lockName string) {
 	locker.mu.TryLock()
 	_, _ = locker.Unlock(ctx)
 	s.cache.Delete(lockName)
-	return
 }
 
 // cacheLock ...

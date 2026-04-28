@@ -1,6 +1,8 @@
 package snowflake
 
 import (
+	"fmt"
+	"log/slog"
 	"sync"
 	"time"
 
@@ -62,7 +64,10 @@ func SetNode(node *sonyflake.Sonyflake) {
 }
 
 func ID() uint64 {
-	u, _ := _idNode.NextID()
+	u, err := _idNode.NextID()
+	if err != nil {
+		slog.Error(fmt.Sprintf("snowflake.ID: failed to generate ID: %v", err))
+	}
 	return u
 }
 

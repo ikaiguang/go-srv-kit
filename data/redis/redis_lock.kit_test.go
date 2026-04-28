@@ -44,14 +44,13 @@ func TestLockOnce(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			unlock, err := locker.Once(ctx, keyName)
-			t.Logf("想要：加锁(%v)\n", tt.lockerStatus)
-			if err != nil {
-				t.Logf("加锁失败！错误：%v\n", err)
-				t.Logf("==> IsLockFailedError : %v\n", lockerpkg.IsErrorLockFailed(err))
-			} else {
-				t.Logf("===> 加锁成功！\n")
-			}
 			tests[i].unlock = unlock
+			if tt.lockerStatus {
+				require.Nil(t, err, "期望加锁成功")
+				require.NotNil(t, unlock)
+			} else {
+				require.NotNil(t, err, "期望加锁失败")
+			}
 		})
 
 		// 睡眠
@@ -65,6 +64,9 @@ func TestLockOnce(t *testing.T) {
 
 	// 解锁
 	for i := range tests {
+		if tests[i].unlock == nil {
+			continue
+		}
 		ok, err := tests[i].unlock.Unlock(context.Background())
 		if err != nil {
 			t.Logf("unlock[%d] error : %v\n", i+1, err)
@@ -110,14 +112,13 @@ func TestLockMutex(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			unlock, err := locker.Mutex(ctx, keyName)
-			t.Logf("想要：加锁(%v)\n", tt.lockerStatus)
-			if err != nil {
-				t.Logf("加锁失败啦！错误：%v\n", err)
-				t.Logf("==> IsLockFailedError : %v\n", lockerpkg.IsErrorLockFailed(err))
-			} else {
-				t.Logf("===> 加锁成功啦！\n")
-			}
 			tests[i].unlock = unlock
+			if tt.lockerStatus {
+				require.Nil(t, err, "期望加锁成功")
+			} else {
+				require.NotNil(t, err, "期望加锁失败")
+				require.True(t, lockerpkg.IsErrorLockFailed(err), "应返回 LockFailed 错误")
+			}
 		})
 
 		// 睡眠
@@ -132,6 +133,9 @@ func TestLockMutex(t *testing.T) {
 
 	// 解锁
 	for i := range tests {
+		if tests[i].unlock == nil {
+			continue
+		}
 		ok, err := tests[i].unlock.Unlock(context.Background())
 		if err != nil {
 			t.Logf("unlock[%d] error : %v\n", i+1, err)

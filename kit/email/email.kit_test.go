@@ -42,7 +42,7 @@ func TestSendCode(t *testing.T) {
 				sender: fakeSender(),
 				msg:    fakeCodeMessage(),
 			},
-			wantErr: false,
+			wantErr: true, // 无真实 SMTP 凭证，预期发送失败
 		},
 	}
 	for _, tt := range tests {

@@ -72,5 +72,5 @@ func SoftDelete(dbConn *gorm.DB) *gorm.DB {
 
 // Deleted 物理删除记录
 func Deleted(dbConn *gorm.DB, value any, conditions ...any) *gorm.DB {
-	return dbConn.Delete(value, conditions)
+	return dbConn.Delete(value, conditions...)
 }

@@ -1,9 +1,10 @@
 package apppkg
 
 import (
+	stdhttp "net/http"
+
 	"github.com/go-kratos/kratos/v2/transport/http"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	stdhttp "net/http"
 )
 
 var (
@@ -14,7 +15,7 @@ func NotFound404() http.ServerOption {
 	mux := stdhttp.NewServeMux()
 	mux.HandleFunc("/", func(w stdhttp.ResponseWriter, r *stdhttp.Request) {
 		msg := "404 page not found"
-		e := errorpkg.ErrorNotFound(msg)
+		e := errorpkg.ErrorNotFound("%s", msg)
 		codec, _ := http.CodecForRequest(r, "Accept")
 		// w.Header().Set(headerpkg.ContentType, ContentType(codec.Name()))
 		SetResponseContentType(w, codec)

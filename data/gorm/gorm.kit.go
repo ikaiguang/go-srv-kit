@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	stderrors "errors"
-	"gorm.io/gorm"
 	"regexp"
+
+	"gorm.io/gorm"
 )
 
 var (
-	isValidColumnNameRegex = regexp.MustCompile("^[A-Za-z_]+$") // 正则表达式:列
+	// isValidColumnNameRegex 支持字母、数字、下划线、点号（表名限定如 table.column）
+	isValidColumnNameRegex = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_.]*$`)
 )
 
 // IsValidColumnName 判断是否为有效的字段名

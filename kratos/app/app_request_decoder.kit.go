@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/ikaiguang/go-srv-kit/kit/header"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kit/header"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )
 
@@ -34,7 +34,7 @@ func RequestDecoder(r *http.Request, v any) error {
 	codec, ok := http.CodecForRequest(r, headerpkg.ContentType)
 	if !ok {
 		msg := fmt.Sprintf("[CODEC] unregister Content-Type: %s", r.Header.Get(headerpkg.ContentType))
-		e := errorpkg.ErrorBadRequest(msg)
+		e := errorpkg.ErrorBadRequest("%s", msg)
 		return errorpkg.WithStack(e)
 	}
 	// 不解析 multipart/form-data : encoding.RegisterCodec(&multipartForm{})

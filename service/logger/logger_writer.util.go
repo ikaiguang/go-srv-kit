@@ -26,7 +26,7 @@ func (s *loggerManager) getWriter() (io.Writer, error) {
 		stdlog.Println("|*** LOADING: file FakeLogger: ...")
 		writer, err := writerpkg.NewDummyWriter()
 		if err != nil {
-			e := errorpkg.ErrorInternalError(err.Error())
+			e := errorpkg.ErrorInternalError("%s", err.Error())
 			return nil, errorpkg.WithStack(e)
 		}
 		return writer, nil
@@ -43,7 +43,7 @@ func (s *loggerManager) getWriter() (io.Writer, error) {
 	}
 	writer, err := writerpkg.NewRotateFile(rotateConfig)
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return writer, nil
@@ -77,7 +77,7 @@ func (s *loggerManager) getWriterForGORM() (io.Writer, error) {
 	}
 	writer, err := writerpkg.NewRotateFile(rotateConfig)
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return writer, nil
@@ -111,7 +111,7 @@ func (s *loggerManager) getWriterForRabbitmq() (io.Writer, error) {
 	}
 	writer, err := writerpkg.NewRotateFile(rotateConfig)
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return writer, nil
