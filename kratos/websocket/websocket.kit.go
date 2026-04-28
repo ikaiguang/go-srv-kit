@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
+	"github.com/ikaiguang/go-srv-kit/kit/header"
 )
 
 // upgrade 升级http

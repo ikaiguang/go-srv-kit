@@ -5,10 +5,10 @@ import (
 
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/ikaiguang/go-srv-kit/kit/header"
 	"go.opentelemetry.io/otel/trace"
 
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
-	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 // RequestAndResponseHeader 请求头 and 响应头

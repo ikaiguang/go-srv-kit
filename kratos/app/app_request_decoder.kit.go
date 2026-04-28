@@ -8,8 +8,8 @@ import (
 
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/ikaiguang/go-srv-kit/kit/header"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 var (

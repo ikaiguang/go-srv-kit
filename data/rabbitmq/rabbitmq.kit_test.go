@@ -9,10 +9,10 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-amqp/v3/pkg/amqp"
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/ikaiguang/go-srv-kit/kit/thread"
 	timepkg "github.com/ikaiguang/go-srv-kit/kit/time"
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
-	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	"github.com/stretchr/testify/require"
 )
 

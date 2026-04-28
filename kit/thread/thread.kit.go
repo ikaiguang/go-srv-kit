@@ -2,11 +2,18 @@ package threadpkg
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 	"runtime"
-
-	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
-	"github.com/ikaiguang/go-srv-kit/kratos/log"
 )
+
+// Go runs the given fn using another goroutine, recovers if fn panics.
+func Go(fn func()) {
+	go func() {
+		defer Recover(context.Background())
+		fn()
+	}()
+}
 
 // GoSafe runs the given fn using another goroutine, recovers if fn panics.
 func GoSafe(fn func()) {
@@ -18,10 +25,9 @@ func GoSafe(fn func()) {
 
 // GoSafeWithContext ...
 func GoSafeWithContext(ctx context.Context, fn func(ctx context.Context)) {
-	newCtx := contextpkg.NewContext(ctx)
 	go func() {
 		defer Recover(ctx)
-		fn(newCtx)
+		fn(ctx)
 	}()
 }
 
@@ -32,7 +38,7 @@ func Recover(ctx context.Context) {
 		buf := make([]byte, 64<<10) //nolint:mnd
 		n := runtime.Stack(buf, false)
 		buf = buf[:n]
-		logpkg.ErrorfWithContext(ctx, "threadpkg.Recover: %+v\n%s\n", rerr, buf)
+		slog.ErrorContext(ctx, fmt.Sprintf("threadpkg.Recover: %+v\n%s\n", rerr, buf))
 	}
 }
 
@@ -43,6 +49,6 @@ func RecoverNotContext() {
 		buf := make([]byte, 64<<10) //nolint:mnd
 		n := runtime.Stack(buf, false)
 		buf = buf[:n]
-		logpkg.Error("threadpkg.Recover: %+v\n%s\n", rerr, buf)
+		slog.Error(fmt.Sprintf("threadpkg.Recover: %+v\n%s\n", rerr, buf))
 	}
 }

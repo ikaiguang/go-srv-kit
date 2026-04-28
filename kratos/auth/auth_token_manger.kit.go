@@ -9,8 +9,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	redispkg "github.com/ikaiguang/go-srv-kit/data/redis"
 	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
+	"github.com/ikaiguang/go-srv-kit/kit/thread"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 	"github.com/redis/go-redis/v9"
 )
 

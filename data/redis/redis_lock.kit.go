@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
-	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
+	"github.com/ikaiguang/go-srv-kit/kit/thread"
 	"github.com/redis/go-redis/v9"
 
 	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"

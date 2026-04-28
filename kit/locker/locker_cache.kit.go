@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
+	"github.com/ikaiguang/go-srv-kit/kit/thread"
 	cachepkg "github.com/patrickmn/go-cache"
 )
 

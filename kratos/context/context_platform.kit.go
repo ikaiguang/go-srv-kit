@@ -1,7 +1,7 @@
 package contextpkg
 
 import (
-	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
+	"github.com/ikaiguang/go-srv-kit/kit/header"
 )
 
 // TrustedPlatform 信任的平台

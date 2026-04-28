@@ -13,6 +13,7 @@ import (
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 	registrypkg "github.com/ikaiguang/go-srv-kit/kratos/registry"
+	etcdregistry "github.com/ikaiguang/go-srv-kit/kratos/registry_etcd"
 	"google.golang.org/grpc/resolver"
 )
 
@@ -195,7 +196,7 @@ func (s *serviceAPIManager) getRegistryDiscovery(apiConfig *Config) (registry.Di
 		if s.opt.etcdClient == nil {
 			return nil, errorpkg.WithStack(uninitializedEtcdClientError)
 		}
-		r, err := registrypkg.NewEtcdRegistry(s.opt.etcdClient)
+		r, err := etcdregistry.NewEtcdRegistry(s.opt.etcdClient)
 		if err != nil {
 			e := errorpkg.ErrorInternalServer("")
 			return nil, errorpkg.Wrap(e, err)

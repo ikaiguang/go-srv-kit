@@ -14,10 +14,10 @@ import (
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/ikaiguang/go-srv-kit/kit/header"
 	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
 	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	headerpkg "github.com/ikaiguang/go-srv-kit/kratos/header"
 )
 
 var (

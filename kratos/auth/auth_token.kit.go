@@ -7,8 +7,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
 	aespkg "github.com/ikaiguang/go-srv-kit/kit/aes"
+	"github.com/ikaiguang/go-srv-kit/kit/thread"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	threadpkg "github.com/ikaiguang/go-srv-kit/kratos/thread"
 )
 
 // Config ...
