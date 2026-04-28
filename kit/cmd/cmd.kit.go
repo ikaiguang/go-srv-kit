@@ -3,9 +3,9 @@ package cmdpkg
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os/exec"
 
-	debugpkg "github.com/ikaiguang/go-srv-kit/debug"
 	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 )
 
@@ -13,7 +13,7 @@ import (
 func RunCommandContext(ctx context.Context, command string, args []string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 
-	debugpkg.Debugw("cmd", command, "args", args)
+	slog.DebugContext(ctx, "cmd", command, "args", args)
 
 	return run(cmd)
 }
@@ -23,7 +23,7 @@ func RunCommandWithWorkDirContext(ctx context.Context, workDir, command string, 
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workDir
 
-	debugpkg.Debugw("workdir", workDir, "cmd", command, "args", args)
+	slog.DebugContext(ctx, "workdir", workDir, "cmd", command, "args", args)
 
 	return run(cmd)
 }

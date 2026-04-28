@@ -3,14 +3,10 @@ package threadpkg
 import (
 	"testing"
 	"time"
-
-	"github.com/go-kratos/kratos/v2/log"
-	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 )
 
 // go test -v -count 1 ./kratos/thread -run TestGoSafe
 func TestGoSafe(t *testing.T) {
-	logpkg.Setup(log.DefaultLogger)
 	type args struct {
 		fn func()
 	}
