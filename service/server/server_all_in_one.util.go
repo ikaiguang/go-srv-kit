@@ -29,6 +29,7 @@ func AllInOneServer(
 	configOpts []configutil.Option,
 	services []ServiceExporter,
 	authWhitelist []map[string]middlewareutil.TransportServiceKind,
+	runOptions ...Option,
 ) (*kratos.App, func(), error) {
 	if len(services) == 0 {
 		e := errorpkg.ErrorBadRequest("services cannot be empty")
@@ -38,7 +39,11 @@ func AllInOneServer(
 	var (
 		err            error
 		cleanupManager = cleanuputil.NewCleanupManager()
+		runOpts        = &options{}
 	)
+	for i := range runOptions {
+		runOptions[i](runOpts)
+	}
 	defer func() {
 		if err != nil {
 			cleanupManager.Cleanup()
@@ -46,7 +51,7 @@ func AllInOneServer(
 	}()
 
 	// launcher
-	launcherManager, cleanup, err := setuputil.NewLauncherManagerWithCleanup(configFilePath, configOpts...)
+	launcherManager, cleanup, err := setuputil.NewWithCleanupOptions(configFilePath, configOpts, runOpts.setupOptions...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -54,7 +59,7 @@ func AllInOneServer(
 
 	// whitelist
 	whitelist := middlewareutil.MergeWhitelist(authWhitelist...)
-	srvManager, err := NewServerManager(launcherManager, whitelist)
+	srvManager, err := NewServerManager(launcherManager, whitelist, runOptions...)
 	if err != nil {
 		return nil, nil, err
 	}

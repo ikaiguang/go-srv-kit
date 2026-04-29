@@ -8,6 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/google/wire"
 	cleanuputil "github.com/ikaiguang/go-srv-kit/service/cleanup"
+	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/biz/biz"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/data/data"
@@ -17,7 +18,7 @@ import (
 func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (cleanuputil.CleanupManager, error) {
 	panic(wire.Build(
 		setuputil.GetLogger,
-		setuputil.GetServiceAPIManager,
+		clientutil.GetManager,
 		// data
 		data.NewPingData,
 		// biz

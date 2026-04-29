@@ -18,6 +18,7 @@ type ServerManager interface {
 type serverManager struct {
 	launcherManager setuputil.LauncherManager
 	authWhiteList   map[string]middlewareutil.TransportServiceKind
+	opts            *options
 
 	appOnce        sync.Once
 	appInstance    *kratos.App
@@ -30,10 +31,16 @@ type serverManager struct {
 func NewServerManager(
 	launcherManager setuputil.LauncherManager,
 	authWhiteList map[string]middlewareutil.TransportServiceKind,
+	serverOpts ...Option,
 ) (ServerManager, error) {
+	opts := &options{}
+	for i := range serverOpts {
+		serverOpts[i](opts)
+	}
 	return &serverManager{
 		launcherManager: launcherManager,
 		authWhiteList:   authWhiteList,
+		opts:            opts,
 	}, nil
 }
 
@@ -53,7 +60,7 @@ func (s *serverManager) getApp() (*kratos.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	app, err := NewApp(s.launcherManager, hs, gs)
+	app, err := newAppWithOptions(s.launcherManager, hs, gs, s.opts)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +86,7 @@ func (s *serverManager) GetHTTPServer() (*http.Server, error) {
 	return hs, nil
 }
 func (s *serverManager) getHTTPServer() (*http.Server, error) {
-	hs, err := NewHTTPServer(s.launcherManager, s.authWhiteList)
+	hs, err := newHTTPServerWithOptions(s.launcherManager, s.authWhiteList, s.opts)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +112,7 @@ func (s *serverManager) GetGRPCServer() (*grpc.Server, error) {
 	return gs, nil
 }
 func (s *serverManager) getGRPCServer() (*grpc.Server, error) {
-	gs, err := NewGRPCServer(s.launcherManager, s.authWhiteList)
+	gs, err := newGRPCServerWithOptions(s.launcherManager, s.authWhiteList, s.opts)
 	if err != nil {
 		return nil, err
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/ikaiguang/go-srv-kit/service/cleanup"
+	"github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	"github.com/ikaiguang/go-srv-kit/service/setup"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/biz/biz"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/data/data"
@@ -26,7 +27,7 @@ func exportServices(launcherManager setuputil.LauncherManager, hs *http.Server, 
 	homeService := service.NewHomeService(logger)
 	websocketBizRepo := biz.NewWebsocketBiz(logger)
 	websocketService := service.NewWebsocketService(logger, websocketBizRepo)
-	serviceAPIManager, err := setuputil.GetServiceAPIManager(launcherManager)
+	serviceAPIManager, err := clientutil.GetManager(launcherManager)
 	if err != nil {
 		return nil, err
 	}

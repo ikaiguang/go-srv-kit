@@ -2,7 +2,7 @@ package configutil
 
 import (
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	"os"
+	"strings"
 	"testing"
 )
 
@@ -44,20 +44,19 @@ func TestLoading_Config(t *testing.T) {
 
 // go test -v -count 1 ./config/ -run TestCurrentPath
 func TestCurrentPath(t *testing.T) {
-	// get $GOPATH
-	gopath := os.Getenv("GOPATH")
 	tests := []struct {
 		name string
 		want string
 	}{
 		{
 			name: "#TestCurrentPath",
-			want: gopath + "/src/github.com/ikaiguang/go-srv-kit/service/config",
+			want: "/service/config",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CurrentPath(); got != tt.want {
+			got := strings.ReplaceAll(CurrentPath(), "\\", "/")
+			if !strings.HasSuffix(got, tt.want) {
 				t.Errorf("CurrentPath() = %v, want %v", got, tt.want)
 			}
 		})

@@ -3,6 +3,7 @@ package clientutil
 import (
 	"strings"
 
+	kratoserrors "github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
@@ -10,11 +11,15 @@ import (
 )
 
 var (
-	uninitializedConsulClientError = errorpkg.ErrorBadRequest("uninitialized: consulClient == nil")
-	uninitializedEtcdClientError   = errorpkg.ErrorBadRequest("uninitialized: etcdClient == nil")
-	uninitializedGRPCConnError     = errorpkg.ErrorBadRequest("uninitialized: grpcConn == nil")
-	uninitializedHTTPClientError   = errorpkg.ErrorBadRequest("uninitialized: httpClient == nil")
+	uninitializedConsulDiscoveryError = errorpkg.ErrorBadRequest("uninitialized: consul discovery factory == nil")
+	uninitializedEtcdDiscoveryError   = errorpkg.ErrorBadRequest("uninitialized: etcd discovery factory == nil")
+	uninitializedGRPCConnError        = errorpkg.ErrorBadRequest("uninitialized: grpcConn == nil")
+	uninitializedHTTPClientError      = errorpkg.ErrorBadRequest("uninitialized: httpClient == nil")
 )
+
+func uninitializedDiscoveryFactoryError(registryType string) *kratoserrors.Error {
+	return errorpkg.ErrorBadRequest("uninitialized: %s discovery factory == nil", registryType)
+}
 
 // 传输协议和注册类型的字符串常量
 const (

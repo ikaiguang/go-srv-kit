@@ -1,6 +1,8 @@
 # setup - LauncherManager 核心入口
 
-`setup/` 是 go-srv-kit 服务层的核心，提供 `LauncherManager` 接口，统一管理所有基础设施组件的生命周期。
+`setup/` 是 go-srv-kit 服务启动的核心包，负责配置、日志、组件注册表、生命周期和资源关闭。
+
+核心包不再直接 import Redis、MySQL、PostgreSQL、MongoDB、Consul、Jaeger、RabbitMQ、Auth 或 cluster service API 等基础设施实现。业务服务需要什么组件，就在入口文件显式 import 对应 `service/<component>` 包，并传入该包提供的 `WithSetup()`。
 
 ## 包名
 
@@ -10,54 +12,115 @@ import setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 
 ## 核心接口
 
-`LauncherManager` 组合了所有 Provider 接口：
+`LauncherManager` 只包含核心能力：
 
 | Provider | 方法 | 说明 |
-|----------|------|------|
-| `ConfigProvider` | `GetConfig()` | 获取配置 |
-| `LoggerProvider` | `GetLogger()` | 获取日志 |
-| `DatabaseProvider` | `GetMysqlDBConn()` / `GetPostgresDBConn()` | 获取数据库连接 |
-| `RedisProvider` | `GetRedisClient()` | 获取 Redis 客户端 |
-| `MongoProvider` | `GetMongoClient()` | 获取 MongoDB 客户端 |
-| `ConsulProvider` | `GetConsulClient()` | 获取 Consul 客户端 |
-| `TracerProvider` | `GetJaegerExporter()` | 获取 Jaeger Exporter |
-| `MessageQueueProvider` | `GetRabbitmqConn()` | 获取 RabbitMQ 连接 |
-| `AuthProvider` | `GetTokenManager()` / `GetAuthManager()` | 获取认证管理器 |
-| `ServiceAPIProvider` | `GetServiceApiManager()` | 获取集群服务 API 管理器 |
+|---|---|---|
+| `ConfigProvider` | `GetConfig()` | 获取启动配置 |
+| `LoggerProvider` | `GetLogger()` / `GetLoggerForMiddleware()` / `GetLoggerForHelper()` | 获取日志 |
+| `RegistryProvider` | `GetRegistry()` | 获取组件注册表 |
+| `LifecycleProvider` | `GetLifecycle()` | 获取生命周期管理器 |
+| `Closer` | `Close()` | 按注册顺序关闭资源 |
 
-所有 `GetNamed*` 方法支持多实例（通过名称区分）。
+具体基础设施由各组件包注册和读取，例如：
+
+- `redisutil.WithSetup()` + `redisutil.GetClient(launcher)`
+- `postgresutil.WithSetup()` + `postgresutil.GetDB(launcher)`
+- `clientutil.WithSetup()` + `clientutil.GetManager(launcher)`
 
 ## 使用方式
 
-```go
-// 方式一：完整创建（推荐）
-lm, cleanup, err := setuputil.NewWithCleanup(configFilePath)
-defer cleanup()
+### 核心启动
 
-// 方式二：按需注册组件
-lm, err := setuputil.New(conf,
-    setuputil.WithRedis(),
-    setuputil.WithMysql(),
+只加载配置和日志，不注册额外基础设施：
+
+```go
+lm, cleanup, err := setuputil.NewWithCleanup(configFilePath)
+if err != nil {
+    return err
+}
+defer cleanup()
+```
+
+### 按需注册组件
+
+```go
+import (
+    configutil "github.com/ikaiguang/go-srv-kit/service/config"
+    postgresutil "github.com/ikaiguang/go-srv-kit/service/postgres"
+    redisutil "github.com/ikaiguang/go-srv-kit/service/redis"
+    setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 )
+
+conf, err := configutil.Loading(configFilePath)
+if err != nil {
+    return err
+}
+
+lm, err := setuputil.New(conf,
+    postgresutil.WithSetup(),
+    redisutil.WithSetup(),
+)
+if err != nil {
+    return err
+}
 defer lm.Close()
+
+db, err := postgresutil.GetDB(lm)
+redisClient, err := redisutil.GetClient(lm)
+```
+
+### 加载配置并按需注册组件
+
+```go
+lm, cleanup, err := setuputil.NewWithCleanupOptions(
+    configFilePath,
+    nil,
+    postgresutil.WithSetup(),
+    redisutil.WithSetup(),
+)
+if err != nil {
+    return err
+}
+defer cleanup()
 ```
 
 ## 组件注册
 
-通过 `WithXxx()` Option 按需注册组件，未注册的组件调用时会返回错误：
+组件注册由对应子包提供：
 
-- `WithAllComponents()` - 注册所有组件（向后兼容）
-- `WithRedis()` - 注册 Redis
-- `WithMysql()` - 注册 MySQL
-- `WithPostgres()` - 注册 PostgreSQL
-- `WithMongo()` - 注册 MongoDB
-- `WithConsul()` - 注册 Consul
-- `WithJaeger()` - 注册 Jaeger
-- `WithRabbitmq()` - 注册 RabbitMQ
-- `WithAuth()` - 注册认证
+| 组件 | 注册方式 | 获取方式 |
+|---|---|---|
+| Redis | `redisutil.WithSetup()` | `redisutil.GetClient(lm)` / `redisutil.GetNamedClient(lm, name)` |
+| MySQL | `mysqlutil.WithSetup()` | `mysqlutil.GetDB(lm)` / `mysqlutil.GetNamedDB(lm, name)` |
+| PostgreSQL | `postgresutil.WithSetup()` | `postgresutil.GetDB(lm)` / `postgresutil.GetNamedDB(lm, name)` |
+| MongoDB | `mongoutil.WithSetup()` | `mongoutil.GetClient(lm)` / `mongoutil.GetNamedClient(lm, name)` |
+| Consul | `consulutil.WithSetup()` | `consulutil.GetClient(lm)` / `consulutil.GetNamedClient(lm, name)` |
+| Jaeger | `jaegerutil.WithSetup()` | `jaegerutil.GetExporter(lm)` / `jaegerutil.GetNamedExporter(lm, name)` |
+| RabbitMQ | `rabbitmqutil.WithSetup()` | `rabbitmqutil.GetConn(lm)` / `rabbitmqutil.GetNamedConn(lm, name)` |
+| Auth | `authutil.WithSetup()` | `authutil.GetTokenManager(lm)` / `authutil.GetAuthManager(lm)` |
+| Cluster service API | `clientutil.WithSetup()` | `clientutil.GetManager(lm)` |
+
+`setuputil.WithComponentRegistrar` 是组件包内部使用的注册扩展点，业务入口优先使用对应组件包的 `WithSetup()`。
+
+## 急切初始化
+
+默认情况下组件懒加载，在首次 `GetXxx()` 时初始化。需要启动时立即验证连接时，可以配合 `WithEagerInit`：
+
+```go
+lm, err := setuputil.New(conf,
+    postgresutil.WithSetup(),
+    redisutil.WithSetup(),
+    setuputil.WithEagerInit(
+        setuputil.ComponentPostgres,
+        setuputil.ComponentRedis,
+    ),
+)
+```
 
 ## 设计原则
 
-- **懒加载**：组件在首次调用 `Get*` 时才初始化
-- **单例**：同一组件只初始化一次（`sync.Once`）
-- **有序关闭**：`Close()` 按注册的逆序关闭所有组件
+- **按需依赖**：核心 setup 包不隐式拉入所有基础设施组件。
+- **显式注册**：业务入口通过 `service/<component>.WithSetup()` 声明所需组件。
+- **懒加载**：组件在首次使用时才初始化。
+- **有序关闭**：`Close()` 按注册的逆序关闭资源。

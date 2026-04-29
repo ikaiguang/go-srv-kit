@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
 	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
@@ -43,7 +44,12 @@ func main() {
 	//whitelist = append(whitelist, xxxserviceexporter.ExportAuthWhitelist()...)
 	//services = append(services, xxxserviceexporter.ExportServices)
 
-	app, cleanup, err := serverutil.AllInOneServer(flagconf, configOpts, services, whitelist)
+	runOpts := []serverutil.Option{
+		serverutil.WithSetupOptions(
+			clientutil.WithSetup(),
+		),
+	}
+	app, cleanup, err := serverutil.AllInOneServer(flagconf, configOpts, services, whitelist, runOpts...)
 	if err != nil {
 		stdlog.Fatalf("==> serverutil.AllInOneServer failed: %+v\n", err)
 	}

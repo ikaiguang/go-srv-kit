@@ -19,6 +19,15 @@ func NewGRPCServer(
 	authWhiteList map[string]middlewareutil.TransportServiceKind,
 	serverOpts ...grpc.ServerOption,
 ) (*grpc.Server, error) {
+	return newGRPCServerWithOptions(launcherManager, authWhiteList, nil, serverOpts...)
+}
+
+func newGRPCServerWithOptions(
+	launcherManager setuputil.LauncherManager,
+	authWhiteList map[string]middlewareutil.TransportServiceKind,
+	runOpts *options,
+	serverOpts ...grpc.ServerOption,
+) (*grpc.Server, error) {
 	grpcConfig := configutil.GRPCConfig(launcherManager.GetConfig())
 	if !grpcConfig.GetEnable() {
 		return nil, nil
@@ -53,8 +62,10 @@ func NewGRPCServer(
 	settingConfig := configutil.SettingConfig(launcherManager.GetConfig())
 	if settingConfig.GetEnableAuthMiddleware() {
 		stdlog.Println("|*** LOADING：AuthMiddleware：GRPC")
-		// authManager
-		authManager, err := launcherManager.GetAuthManager()
+		if runOpts == nil || runOpts.authManagerProvider == nil {
+			return nil, errorpkgMissingProvider("auth manager")
+		}
+		authManager, err := runOpts.authManagerProvider(launcherManager)
 		if err != nil {
 			return nil, err
 		}

@@ -63,7 +63,7 @@ func (s *redisManager) loadingRedisClient() (redis.UniversalClient, error) {
 	stdlog.Println("|*** LOADING: Redis client: ...")
 	uc, err := redispkg.NewDB(ToRedisConfig(s.conf))
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return uc, nil

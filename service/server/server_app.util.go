@@ -6,23 +6,28 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	registrypkg "github.com/ikaiguang/go-srv-kit/kratos/registry"
 	apputil "github.com/ikaiguang/go-srv-kit/service/app"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 	tracerutil "github.com/ikaiguang/go-srv-kit/service/tracer"
-	stdlog "log"
 	"net/url"
 )
 
 // NewApp .
 func NewApp(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server) (*kratos.App, error) {
+	return newAppWithOptions(launcherManager, hs, gs, nil)
+}
+
+func newAppWithOptions(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc.Server, runOpts *options) (*kratos.App, error) {
 	var (
 		conf               = launcherManager.GetConfig()
 		appConfig          = conf.GetApp()
 		enableJaegerTracer = conf.GetSetting().GetEnableJaegerTracer()
 	)
 	if enableJaegerTracer {
-		exp, err := launcherManager.GetJaegerExporter()
+		if runOpts == nil || runOpts.jaegerExporterProvider == nil {
+			return nil, errorpkgMissingProvider("jaeger exporter")
+		}
+		exp, err := runOpts.jaegerExporterProvider(launcherManager)
 		if err != nil {
 			return nil, err
 		}
@@ -89,7 +94,7 @@ func NewApp(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc
 	for _, item := range appConfig.GetRegistryEndpoints() {
 		u, err := url.Parse(item)
 		if err != nil {
-			e := errorpkg.ErrorInvalidParameter(err.Error())
+			e := errorpkg.ErrorInvalidParameter("%s", err.Error())
 			return nil, errorpkg.WithStack(e)
 		}
 		endpoints = append(endpoints, u)
@@ -98,18 +103,14 @@ func NewApp(launcherManager setuputil.LauncherManager, hs *http.Server, gs *grpc
 		appOptions = append(appOptions, kratos.Endpoint(endpoints...))
 	}
 
-	// 启用服务注册中心
-	if conf.GetSetting().GetEnableConsulRegistry() {
-		stdlog.Println("|*** LOADING: ServiceRegistry: ...")
-		consulClient, err := launcherManager.GetConsulClient()
-		if err != nil {
-			return nil, err
+	if runOpts != nil {
+		for i := range runOpts.appOptionProviders {
+			moreOptions, err := runOpts.appOptionProviders[i](launcherManager)
+			if err != nil {
+				return nil, err
+			}
+			appOptions = append(appOptions, moreOptions...)
 		}
-		r, err := registrypkg.NewConsulRegistry(consulClient)
-		if err != nil {
-			return nil, err
-		}
-		appOptions = append(appOptions, kratos.Registrar(r))
 	}
 
 	return kratos.New(appOptions...), err

@@ -10,11 +10,6 @@ import (
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	mysqlutil "github.com/ikaiguang/go-srv-kit/service/mysql"
-	postgresutil "github.com/ikaiguang/go-srv-kit/service/postgres"
-	redisutil "github.com/ikaiguang/go-srv-kit/service/redis"
-	"github.com/redis/go-redis/v9"
-	"gorm.io/gorm"
 )
 
 // mockCloser 用于测试的 mock Closer 实现
@@ -596,24 +591,6 @@ func TestProperty_NamedInstanceConfigMissing(t *testing.T) {
 // 以及错误传播和 Close 委托。
 // _Requirements: 7.1-7.14, 8.2_
 
-// mockRedisManager 模拟 Redis 管理器
-type mockRedisManager struct {
-	client redis.UniversalClient
-}
-
-func (m *mockRedisManager) Enable() bool                              { return true }
-func (m *mockRedisManager) GetClient() (redis.UniversalClient, error) { return m.client, nil }
-func (m *mockRedisManager) Close() error                              { return nil }
-
-// mockMysqlManager 模拟 MySQL 管理器
-type mockMysqlManager struct {
-	db *gorm.DB
-}
-
-func (m *mockMysqlManager) Enable() bool             { return true }
-func (m *mockMysqlManager) GetDB() (*gorm.DB, error) { return m.db, nil }
-func (m *mockMysqlManager) Close() error             { return nil }
-
 // TestGetConfig 验证 GetConfig 返回正确的配置
 func TestGetConfig(t *testing.T) {
 	conf := &configpb.Bootstrap{}
@@ -669,39 +646,7 @@ func TestCloseDelegate_ErrorPropagation(t *testing.T) {
 func newTestLauncherManager(lc *Lifecycle) *launcherManager {
 	return &launcherManager{
 		lc:       lc,
-		registry: newComponentRegistry(),
-	}
-}
-
-// TestComponentErrorPropagation_Redis 验证 GetRedisClient 传播 Component 错误
-func TestComponentErrorPropagation_Redis(t *testing.T) {
-	lc := newLifecycle()
-	lm := newTestLauncherManager(lc)
-	RegisterComponent[redisutil.RedisManager](lm.registry, ComponentRedis, func() (redisutil.RedisManager, error) {
-		return nil, fmt.Errorf("redis factory failed")
-	}, lc)
-	_, err := lm.GetRedisClient()
-	if err == nil {
-		t.Error("GetRedisClient 应传播 factory 错误")
-	}
-	if !containsSubstring(err.Error(), "redis factory failed") {
-		t.Errorf("错误信息应包含 'redis factory failed'，实际: %v", err)
-	}
-}
-
-// TestComponentErrorPropagation_Mysql 验证 GetMysqlDBConn 传播 Component 错误
-func TestComponentErrorPropagation_Mysql(t *testing.T) {
-	lc := newLifecycle()
-	lm := newTestLauncherManager(lc)
-	RegisterComponent[mysqlutil.MysqlManager](lm.registry, ComponentMysql, func() (mysqlutil.MysqlManager, error) {
-		return nil, fmt.Errorf("mysql factory failed")
-	}, lc)
-	_, err := lm.GetMysqlDBConn()
-	if err == nil {
-		t.Error("GetMysqlDBConn 应传播 factory 错误")
-	}
-	if !containsSubstring(err.Error(), "mysql factory failed") {
-		t.Errorf("错误信息应包含 'mysql factory failed'，实际: %v", err)
+		registry: NewComponentRegistry(),
 	}
 }
 
@@ -720,100 +665,6 @@ func TestComponentErrorPropagation_Logger(t *testing.T) {
 	}
 	if !containsSubstring(err.Error(), "logger factory failed") {
 		t.Errorf("错误信息应包含 'logger factory failed'，实际: %v", err)
-	}
-}
-
-// TestComponentErrorPropagation_Postgres 验证 GetPostgresDBConn 传播 Component 错误
-func TestComponentErrorPropagation_Postgres(t *testing.T) {
-	lc := newLifecycle()
-	lm := newTestLauncherManager(lc)
-	RegisterComponent[postgresutil.PostgresManager](lm.registry, ComponentPostgres, func() (postgresutil.PostgresManager, error) {
-		return nil, fmt.Errorf("postgres factory failed")
-	}, lc)
-	_, err := lm.GetPostgresDBConn()
-	if err == nil {
-		t.Error("GetPostgresDBConn 应传播 factory 错误")
-	}
-	if !containsSubstring(err.Error(), "postgres factory failed") {
-		t.Errorf("错误信息应包含 'postgres factory failed'，实际: %v", err)
-	}
-}
-
-// TestSuccessDelegation_Redis 验证 GetRedisClient 成功时正确委托到 RedisManager.GetClient()
-func TestSuccessDelegation_Redis(t *testing.T) {
-	lc := newLifecycle()
-	mockMgr := &mockRedisManager{client: nil}
-	lm := newTestLauncherManager(lc)
-	RegisterComponent[redisutil.RedisManager](lm.registry, ComponentRedis, func() (redisutil.RedisManager, error) {
-		return mockMgr, nil
-	}, lc)
-	client, err := lm.GetRedisClient()
-	if err != nil {
-		t.Errorf("GetRedisClient 不应返回错误: %v", err)
-	}
-	if client != mockMgr.client {
-		t.Error("GetRedisClient 应返回 RedisManager.GetClient() 的结果")
-	}
-}
-
-// TestSuccessDelegation_Mysql 验证 GetMysqlDBConn 成功时正确委托到 MysqlManager.GetDB()
-func TestSuccessDelegation_Mysql(t *testing.T) {
-	lc := newLifecycle()
-	expectedDB := &gorm.DB{}
-	mockMgr := &mockMysqlManager{db: expectedDB}
-	lm := newTestLauncherManager(lc)
-	RegisterComponent[mysqlutil.MysqlManager](lm.registry, ComponentMysql, func() (mysqlutil.MysqlManager, error) {
-		return mockMgr, nil
-	}, lc)
-	db, err := lm.GetMysqlDBConn()
-	if err != nil {
-		t.Errorf("GetMysqlDBConn 不应返回错误: %v", err)
-	}
-	if db != expectedDB {
-		t.Error("GetMysqlDBConn 应返回 MysqlManager.GetDB() 的结果")
-	}
-}
-
-// TestNamedInstanceErrorPropagation_Mysql 验证 GetNamedMysqlDBConn 传播 ComponentGroup 错误
-func TestNamedInstanceErrorPropagation_Mysql(t *testing.T) {
-	lc := newLifecycle()
-	conf := &configpb.Bootstrap{}
-	lm := &launcherManager{
-		conf:     conf,
-		lc:       lc,
-		registry: newComponentRegistry(),
-		loggerComp: NewComponent[loggerutil.LoggerManager](ComponentLogger, func() (loggerutil.LoggerManager, error) {
-			return nil, fmt.Errorf("logger not available")
-		}, lc),
-	}
-	RegisterComponentGroup[mysqlutil.MysqlManager](lm.registry, ComponentMysql, lm.newNamedMysqlManager, lc)
-
-	_, err := lm.GetNamedMysqlDBConn("nonexistent")
-	if err == nil {
-		t.Error("GetNamedMysqlDBConn 应返回错误（实例不存在）")
-	}
-	if !errorpkg.IsNotFound(err) {
-		t.Errorf("应返回 NotFound 错误，实际: %v", err)
-	}
-}
-
-// TestNamedInstanceErrorPropagation_Redis 验证 GetNamedRedisClient 传播 ComponentGroup 错误
-func TestNamedInstanceErrorPropagation_Redis(t *testing.T) {
-	lc := newLifecycle()
-	conf := &configpb.Bootstrap{}
-	lm := &launcherManager{
-		conf:     conf,
-		lc:       lc,
-		registry: newComponentRegistry(),
-	}
-	RegisterComponentGroup[redisutil.RedisManager](lm.registry, ComponentRedis, lm.newNamedRedisManager, lc)
-
-	_, err := lm.GetNamedRedisClient("nonexistent")
-	if err == nil {
-		t.Error("GetNamedRedisClient 应返回错误（实例不存在）")
-	}
-	if !errorpkg.IsNotFound(err) {
-		t.Errorf("应返回 NotFound 错误，实际: %v", err)
 	}
 }
 
@@ -849,32 +700,6 @@ func TestProviderClose(t *testing.T) {
 	}
 }
 
-// TestProviderGetRedisClient_Error 验证 Provider 错误传播
-func TestProviderGetRedisClient_Error(t *testing.T) {
-	lc := newLifecycle()
-	lm := newTestLauncherManager(lc)
-	RegisterComponent[redisutil.RedisManager](lm.registry, ComponentRedis, func() (redisutil.RedisManager, error) {
-		return nil, fmt.Errorf("redis unavailable")
-	}, lc)
-	_, err := GetRedisClient(lm)
-	if err == nil {
-		t.Error("GetRedisClient Provider 应传播错误")
-	}
-}
-
-// TestProviderGetRecommendDBConn 验证 GetRecommendDBConn 委托到 GetDBConn（默认 Postgres）
-func TestProviderGetRecommendDBConn(t *testing.T) {
-	lc := newLifecycle()
-	lm := newTestLauncherManager(lc)
-	RegisterComponent[postgresutil.PostgresManager](lm.registry, ComponentPostgres, func() (postgresutil.PostgresManager, error) {
-		return nil, fmt.Errorf("postgres unavailable")
-	}, lc)
-	_, err := GetRecommendDBConn(lm)
-	if err == nil {
-		t.Error("GetRecommendDBConn 应委托到 GetDBConn（默认 Postgres）")
-	}
-}
-
 // TestProviderGetLogger_Error 验证 GetLogger Provider 错误传播
 func TestProviderGetLogger_Error(t *testing.T) {
 	lc := newLifecycle()
@@ -887,33 +712,5 @@ func TestProviderGetLogger_Error(t *testing.T) {
 	_, err := GetLogger(lm)
 	if err == nil {
 		t.Error("GetLogger Provider 应传播错误")
-	}
-}
-
-// TestProviderGetDBConn_Reassignable 验证 GetDBConn 可被重新赋值
-func TestProviderGetDBConn_Reassignable(t *testing.T) {
-	// 保存原始值并在测试结束后恢复
-	original := GetDBConn
-	defer func() { GetDBConn = original }()
-
-	lc := newLifecycle()
-	expectedDB := &gorm.DB{}
-	mockMgr := &mockMysqlManager{db: expectedDB}
-	lm := newTestLauncherManager(lc)
-	RegisterComponent[mysqlutil.MysqlManager](lm.registry, ComponentMysql, func() (mysqlutil.MysqlManager, error) {
-		return mockMgr, nil
-	}, lc)
-
-	// 重新赋值 GetDBConn 为使用 MySQL
-	GetDBConn = func(launcherManager LauncherManager) (*gorm.DB, error) {
-		return launcherManager.GetMysqlDBConn()
-	}
-
-	db, err := GetRecommendDBConn(lm)
-	if err != nil {
-		t.Errorf("GetRecommendDBConn 不应返回错误: %v", err)
-	}
-	if db != expectedDB {
-		t.Error("GetRecommendDBConn 应通过重新赋值的 GetDBConn 返回 MySQL 连接")
 	}
 }

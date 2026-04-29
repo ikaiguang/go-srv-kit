@@ -7,6 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	apppkg "github.com/ikaiguang/go-srv-kit/kratos/app"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	apputil "github.com/ikaiguang/go-srv-kit/service/app"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
@@ -15,10 +16,24 @@ import (
 
 var _ metadata.Option
 
+func errorpkgMissingProvider(name string) error {
+	e := errorpkg.ErrorBadRequest("%s provider is required; import the corresponding service module and pass its all-in-one option", name)
+	return errorpkg.WithStack(e)
+}
+
 // NewHTTPServer new HTTP server.
 func NewHTTPServer(
 	launcherManager setuputil.LauncherManager,
 	authWhiteList map[string]middlewareutil.TransportServiceKind,
+	serverOpts ...http.ServerOption,
+) (*http.Server, error) {
+	return newHTTPServerWithOptions(launcherManager, authWhiteList, nil, serverOpts...)
+}
+
+func newHTTPServerWithOptions(
+	launcherManager setuputil.LauncherManager,
+	authWhiteList map[string]middlewareutil.TransportServiceKind,
+	runOpts *options,
 	serverOpts ...http.ServerOption,
 ) (*http.Server, error) {
 	httpConfig := configutil.HTTPConfig(launcherManager.GetConfig())
@@ -59,8 +74,10 @@ func NewHTTPServer(
 	settingConfig := configutil.SettingConfig(launcherManager.GetConfig())
 	if settingConfig.GetEnableAuthMiddleware() {
 		stdlog.Println("|*** LOADING：AuthMiddleware：HTTP")
-		// authManager
-		authManager, err := launcherManager.GetAuthManager()
+		if runOpts == nil || runOpts.authManagerProvider == nil {
+			return nil, errorpkgMissingProvider("auth manager")
+		}
+		authManager, err := runOpts.authManagerProvider(launcherManager)
 		if err != nil {
 			return nil, err
 		}

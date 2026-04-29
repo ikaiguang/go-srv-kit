@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
 	serviceexporter "github.com/ikaiguang/go-srv-kit/testdata/ping-service/cmd/ping-service/export"
 	stdlog "log"
@@ -27,8 +28,13 @@ func main() {
 	configOpts := serviceexporter.ExportServiceConfig()
 	whitelist := serviceexporter.ExportAuthWhitelist()
 	services := []serverutil.ServiceExporter{serviceexporter.ExportServices}
+	setupOpts := []serverutil.Option{
+		serverutil.WithSetupOptions(
+			clientutil.WithSetup(),
+		),
+	}
 
-	app, cleanup, err := serverutil.AllInOneServer(flagconf, configOpts, services, whitelist)
+	app, cleanup, err := serverutil.AllInOneServer(flagconf, configOpts, services, whitelist, setupOpts...)
 	if err != nil {
 		stdlog.Fatalf("==> runservices.GetServerApp failed: %+v\n", err)
 	}

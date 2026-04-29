@@ -93,6 +93,12 @@ func (c *Component[T]) Get() (T, error) {
 	return c.value, nil
 }
 
+// Init 初始化组件但不暴露具体类型，用于按名称急切初始化。
+func (c *Component[T]) Init() error {
+	_, err := c.Get()
+	return err
+}
+
 // ComponentGroup 管理同类型组件的多个命名实例
 type ComponentGroup[T any] struct {
 	mu        sync.Mutex

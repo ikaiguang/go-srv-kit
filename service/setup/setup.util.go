@@ -21,11 +21,11 @@ type launcherManager struct {
 	loggerComp *Component[loggerutil.LoggerManager]
 
 	// 类型擦除的组件注册表
-	registry *componentRegistry
+	registry *ComponentRegistry
 }
 
-// New 创建 LauncherManager，纯懒加载模式
-// 通过 WithXxx() Option 按需注册组件
+// New 创建 LauncherManager，纯懒加载模式。
+// 通过各 service 子模块的 WithSetup() Option 按需注册组件。
 func New(conf *configpb.Bootstrap, opts ...Option) (LauncherManager, error) {
 	if conf == nil {
 		return nil, errorpkg.ErrorBadRequest("bootstrap config is required")
@@ -40,13 +40,13 @@ func New(conf *configpb.Bootstrap, opts ...Option) (LauncherManager, error) {
 	lm := &launcherManager{
 		conf:     conf,
 		lc:       lc,
-		registry: newComponentRegistry(),
+		registry: NewComponentRegistry(),
 	}
 
 	// 日志始终注册（其他组件依赖日志）
 	lm.loggerComp = NewComponent(ComponentLogger, lm.newLoggerManager, lc)
 
-	// 通过 WithXxx() Option 注册的组件
+	// 通过各 service 子模块的 WithSetup() Option 注册组件。
 	for _, registrar := range o.componentRegistrars {
 		registrar(lm)
 	}
@@ -73,35 +73,28 @@ func New(conf *configpb.Bootstrap, opts ...Option) (LauncherManager, error) {
 
 // eagerInit 急切初始化指定的组件
 func (lm *launcherManager) eagerInit(components []string) error {
-	initMap := map[string]func() error{
-		ComponentRedis:    func() error { _, err := lm.GetRedisClient(); return err },
-		ComponentMysql:    func() error { _, err := lm.GetMysqlDBConn(); return err },
-		ComponentPostgres: func() error { _, err := lm.GetPostgresDBConn(); return err },
-		ComponentMongo:    func() error { _, err := lm.GetMongoClient(); return err },
-		ComponentConsul:   func() error { _, err := lm.GetConsulClient(); return err },
-		ComponentJaeger:   func() error { _, err := lm.GetJaegerExporter(); return err },
-		ComponentRabbitmq: func() error { _, err := lm.GetRabbitmqConn(); return err },
-		ComponentAuth:     func() error { _, err := lm.GetTokenManager(); return err },
-	}
-
 	for _, name := range components {
-		initFn, ok := initMap[name]
+		comp, ok := lm.registry.Get(RegistryKeyComp(name))
 		if !ok {
-			return errorpkg.ErrorBadRequest("unknown component: %s", name)
+			return componentNotRegisteredError(name)
 		}
-		if err := initFn(); err != nil {
+		initializer, ok := comp.(interface{ Init() error })
+		if !ok {
+			return errorpkg.ErrorBadRequest("component cannot be eagerly initialized: %s", name)
+		}
+		if err := initializer.Init(); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-// GetRegistry 获取组件注册表（供 WithXxx Option 使用）
-func (lm *launcherManager) GetRegistry() *componentRegistry {
+// GetRegistry 获取组件注册表（供组件 WithSetup Option 使用）
+func (lm *launcherManager) GetRegistry() *ComponentRegistry {
 	return lm.registry
 }
 
-// GetLifecycle 获取生命周期管理器（供 WithXxx Option 使用）
+// GetLifecycle 获取生命周期管理器（供组件 WithSetup Option 使用）
 func (lm *launcherManager) GetLifecycle() *Lifecycle {
 	return lm.lc
 }
@@ -116,20 +109,20 @@ func (lm *launcherManager) newLoggerManager() (loggerutil.LoggerManager, error) 
 	return loggerutil.NewLoggerManager(lm.conf.GetLog(), lm.conf.GetApp())
 }
 
-// NewWithCleanup 便捷函数，加载配置并创建 LauncherManager
-// 向后兼容：自动注入 Consul 配置加载器和所有组件
+// NewWithCleanup 便捷函数，加载配置并创建 LauncherManager。
 func NewWithCleanup(configFilePath string, configOpts ...configutil.Option) (LauncherManager, func(), error) {
-	// 向后兼容：自动注入 Consul 配置加载器
-	configOpts = append([]configutil.Option{configutil.WithConsulConfigLoader(configutil.NewConsulConfigLoader())}, configOpts...)
+	return NewWithCleanupOptions(configFilePath, configOpts)
+}
 
+// NewWithCleanupOptions 加载配置并创建 LauncherManager，同时允许调用方显式注册组件。
+func NewWithCleanupOptions(configFilePath string, configOpts []configutil.Option, setupOpts ...Option) (LauncherManager, func(), error) {
 	conf, err := configutil.Loading(configFilePath, configOpts...)
 	if err != nil {
 		return nil, nil, err
 	}
 	apputil.SetConfig(conf)
 
-	// 向后兼容：注册所有组件
-	lm, err := New(conf, WithAllComponents())
+	lm, err := New(conf, setupOpts...)
 	if err != nil {
 		return nil, nil, err
 	}

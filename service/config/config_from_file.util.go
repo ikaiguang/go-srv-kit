@@ -36,14 +36,14 @@ func LoadingFile(filePath string, loadingOpts ...Option) (*configpb.Bootstrap, e
 
 	// 加载配置
 	if err = handler.Load(); err != nil {
-		err = errorpkg.WithStack(errorpkg.ErrorInternalError(err.Error()))
+		err = errorpkg.WithStack(errorpkg.ErrorInternalError("%s", err.Error()))
 		return nil, err
 	}
 
 	// 读取配置文件
 	conf := &configpb.Bootstrap{}
 	if err = handler.Scan(conf); err != nil {
-		err = errorpkg.WithStack(errorpkg.ErrorInternalError(err.Error()))
+		err = errorpkg.WithStack(errorpkg.ErrorInternalError("%s", err.Error()))
 		return nil, err
 	}
 	for i := range loadOpts.configs {
@@ -51,7 +51,7 @@ func LoadingFile(filePath string, loadingOpts ...Option) (*configpb.Bootstrap, e
 			continue
 		}
 		if err = handler.Scan(loadOpts.configs[i]); err != nil {
-			err = errorpkg.WithStack(errorpkg.ErrorInternalError(err.Error()))
+			err = errorpkg.WithStack(errorpkg.ErrorInternalError("%s", err.Error()))
 			return nil, err
 		}
 	}

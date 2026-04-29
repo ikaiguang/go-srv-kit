@@ -2,14 +2,15 @@ package clientutil
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
-	consulapi "github.com/hashicorp/consul/api"
-	clientv3 "go.etcd.io/etcd/client/v3"
+	"github.com/go-kratos/kratos/v2/registry"
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 )
+
+type DiscoveryFactory func() (registry.Discovery, error)
 
 type option struct {
 	logger            log.Logger
-	consulClient      *consulapi.Client
-	etcdClient        *clientv3.Client
+	discoveryFactory  map[configpb.RegistryTypeEnum_RegistryType]DiscoveryFactory
 	skipRegistryCheck bool
 }
 
@@ -21,15 +22,12 @@ func WithLogger(logger log.Logger) Option {
 	}
 }
 
-func WithConsulClient(consulClient *consulapi.Client) Option {
+func WithDiscoveryFactory(registryType configpb.RegistryTypeEnum_RegistryType, factory DiscoveryFactory) Option {
 	return func(opt *option) {
-		opt.consulClient = consulClient
-	}
-}
-
-func WithEtcdClient(etcdClient *clientv3.Client) Option {
-	return func(opt *option) {
-		opt.etcdClient = etcdClient
+		if opt.discoveryFactory == nil {
+			opt.discoveryFactory = make(map[configpb.RegistryTypeEnum_RegistryType]DiscoveryFactory)
+		}
+		opt.discoveryFactory[registryType] = factory
 	}
 }
 

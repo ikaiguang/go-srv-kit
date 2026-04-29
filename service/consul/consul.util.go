@@ -59,7 +59,7 @@ func (s *consulManager) loadingConsulClient() (*consulapi.Client, error) {
 	stdlog.Println("|*** LOADING: Consul client: ...")
 	cc, err := consulpkg.NewConsulClient(ToConsulConfig(s.conf))
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return cc, nil

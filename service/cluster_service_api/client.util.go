@@ -12,8 +12,6 @@ import (
 	connectionpkg "github.com/ikaiguang/go-srv-kit/kit/connection"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
-	registrypkg "github.com/ikaiguang/go-srv-kit/kratos/registry"
-	etcdregistry "github.com/ikaiguang/go-srv-kit/kratos/registry_etcd"
 	"google.golang.org/grpc/resolver"
 )
 
@@ -64,11 +62,11 @@ func (s *serviceAPIManager) RegisterServiceAPIConfigs(apiConfigs []*Config, opts
 			hasEtcdRegistry = true
 		}
 	}
-	if hasConsulRegistry && s.opt.consulClient == nil {
-		return errorpkg.WithStack(uninitializedConsulClientError)
+	if hasConsulRegistry && s.opt.discoveryFactory[configpb.RegistryTypeEnum_CONSUL] == nil {
+		return errorpkg.WithStack(uninitializedConsulDiscoveryError)
 	}
-	if hasEtcdRegistry && s.opt.etcdClient == nil {
-		return errorpkg.WithStack(uninitializedEtcdClientError)
+	if hasEtcdRegistry && s.opt.discoveryFactory[configpb.RegistryTypeEnum_ETCD] == nil {
+		return errorpkg.WithStack(uninitializedEtcdDiscoveryError)
 	}
 	return nil
 }
@@ -183,24 +181,21 @@ func (s *serviceAPIManager) getRegistryDiscovery(apiConfig *Config) (registry.Di
 		e := errorpkg.ErrorUnimplemented("unsupported registry type")
 		return nil, errorpkg.WithStack(e)
 	case configpb.RegistryTypeEnum_CONSUL:
-		if s.opt.consulClient == nil {
-			return nil, errorpkg.WithStack(uninitializedConsulClientError)
-		}
-		r, err := registrypkg.NewConsulRegistry(s.opt.consulClient)
-		if err != nil {
-			e := errorpkg.ErrorInternalServer("")
-			return nil, errorpkg.Wrap(e, err)
-		}
-		return r, nil
+		return s.getRegistryDiscoveryByFactory(configpb.RegistryTypeEnum_CONSUL)
 	case configpb.RegistryTypeEnum_ETCD:
-		if s.opt.etcdClient == nil {
-			return nil, errorpkg.WithStack(uninitializedEtcdClientError)
-		}
-		r, err := etcdregistry.NewEtcdRegistry(s.opt.etcdClient)
-		if err != nil {
-			e := errorpkg.ErrorInternalServer("")
-			return nil, errorpkg.Wrap(e, err)
-		}
-		return r, nil
+		return s.getRegistryDiscoveryByFactory(configpb.RegistryTypeEnum_ETCD)
 	}
+}
+
+func (s *serviceAPIManager) getRegistryDiscoveryByFactory(registryType configpb.RegistryTypeEnum_RegistryType) (registry.Discovery, error) {
+	factory := s.opt.discoveryFactory[registryType]
+	if factory == nil {
+		return nil, errorpkg.WithStack(uninitializedDiscoveryFactoryError(registryType.String()))
+	}
+	r, err := factory()
+	if err != nil {
+		e := errorpkg.ErrorInternalServer("")
+		return nil, errorpkg.Wrap(e, err)
+	}
+	return r, nil
 }
