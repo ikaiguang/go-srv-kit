@@ -4,8 +4,8 @@
 | 变量名 | 值 | 说明 |
 |--------|-----|------|
 | `PROJECT_NAME` | go-srv-kit | 项目名称 |
-| `FRAMEWORK` | go-kratos v2.9.1 | 框架版本 |
-| `GO_VERSION` | 1.24.10 | Go 版本 |
+| `FRAMEWORK` | go-kratos v2.9.2 | 框架版本 |
+| `GO_VERSION` | 1.25.9 | Go 版本 |
 | `ARCHITECTURE` | DDD | 架构模式 |
 
 ## 路径变量
@@ -21,8 +21,8 @@
 | 变量名 | 值 | 说明 |
 |--------|-----|------|
 | `PROTOC_CMD` | make protoc-api-protobuf | 生成 API 命令 |
-| `WIRE_CMD` | wire ./cmd/*/export | Wire 生成命令 |
-| `RUN_CMD` | go run ./cmd/*/... -conf=./configs | 运行命令 |
+| `WIRE_CMD` | wire ./testdata/ping-service/cmd/ping-service/export | 示例服务 Wire 生成命令 |
+| `RUN_CMD` | go run ./testdata/ping-service/cmd/ping-service/... -conf=./testdata/ping-service/configs | 示例服务运行命令 |
 | `TEST_CMD` | go test ./... | 测试命令 |
 
 ## 端口变量

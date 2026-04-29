@@ -20,12 +20,14 @@ cmd/{service}/export/
 ### 生成命令
 
 ```bash
-# 生成指定服务的 Wire 代码
-wire ./cmd/{service}/export
+# 示例服务
+wire ./testdata/ping-service/cmd/ping-service/export
 
 # 或使用 Makefile
 make generate
 ```
+
+如果你维护的是业务服务仓库中的 `cmd/{service}/export`，则按该服务自己的导出目录执行 `wire`。
 
 ### 接口绑定
 

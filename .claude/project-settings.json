@@ -2,8 +2,8 @@
   "projectName": "go-srv-kit",
   "description": "基于 go-kratos v2 框架的微服务开发工具包",
   "version": "1.0.0",
-  "framework": "go-kratos v2.9.1",
-  "goVersion": "1.24.10",
+  "framework": "go-kratos v2.9.2",
+  "goVersion": "1.25.9",
 
   "architecture": {
     "pattern": "DDD (Domain-Driven Design)",
@@ -43,13 +43,15 @@
   },
 
   "middleware": [
-    "CORS",
     "Recovery",
     "Tracer",
-    "Validator",
+    "Rate Limiting",
+    "Metadata",
     "Header",
-    "Auth (JWT)",
-    "Rate Limiting"
+    "ServerLog",
+    "Validator",
+    "Auth (JWT, optional)",
+    "CORS (HTTP filter)"
   ],
 
   "importantFiles": {

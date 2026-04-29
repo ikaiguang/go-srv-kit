@@ -1,39 +1,43 @@
-# 配置文件存储到 consul
+# 配置文件存储到 Consul
 
-把`testdata/configuration/xxx`目录下的文件，按文件名存储到consul
+`testdata/configuration/` 提供把本地 YAML 配置批量写入 Consul KV 的示例工具。
 
-如果路径不是绝对路径，则：路径统一为`./testdata/configuration/xxx`
+## 存储规则
 
-路径前缀：${app.project_name}/${app.server_name}/${app.server_env}/${app.server_version}；例如：
+- 输入目录下的文件会按原文件名写入 Consul
+- 如果 `source_dir` 不是绝对路径，则相对当前命令工作目录解析
+- 默认路径前缀为：
 
-> 使用`-path go-micro-saas/base-config`覆写路径前缀
+```text
+${app.project_name}/${app.server_name}/${app.server_env}/${app.server_version}
+```
 
-* go-micro-saas/ping-service/production/v1.0.0/app.yaml
-* go-micro-saas/ping-service/production/v1.0.0/mysql.yaml
-* go-micro-saas/ping-service/production/v1.0.0/filename.yaml
+例如：
 
-```shell
+- `go-micro-saas/ping-service/production/v1.0.0/app.yaml`
+- `go-micro-saas/ping-service/production/v1.0.0/mysql.yaml`
 
-# base config
-go run testdata/configuration/main.go \
+## 常用示例
+
+### 上传通用配置
+
+```bash
+go run ./testdata/configuration/main.go \
   -consul_config consul \
   -source_dir general-configs \
   -store_dir go-micro-saas/general-configs/develop
-# powershell
-go run testdata/configuration/main.go `
-  -consul_config consul `
-  -source_dir general-configs  `
-  -store_dir go-micro-saas/general-configs/develop
+```
 
-# service config
-go run testdata/configuration/main.go \
+### 上传服务配置
+
+```bash
+go run ./testdata/configuration/main.go \
   -consul_config consul \
   -source_dir service-configs \
   -store_dir ""
-# powershell
-go run testdata/configuration/main.go `
-  -consul_config consul `
-  -source_dir service-configs `
-  -store_dir=""
-
 ```
+
+## 相关文档
+
+- `testdata/ping-service/cmd/store-configuration/README.md`
+- `testdata/README.md`

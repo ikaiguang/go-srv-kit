@@ -74,15 +74,20 @@ logpkg.WithContext(ctx).Errorw("operation failed", "error", err.Error())
 
 ### 中间件 (middleware/)
 
-默认中间件链（按顺序）：
+默认服务端中间件链（按顺序）：
 
 1. **Recovery** - panic 恢复
 2. **Tracing** - OpenTelemetry 链路追踪
 3. **RateLimit** - 限流
 4. **Metadata** - 元数据传递
 5. **Header** - 请求/响应头处理
-6. **Log** - 请求日志
+6. **ServerLog** - 请求日志
 7. **Validator** - 参数验证
+
+补充说明：
+
+- `JWT Auth` 通常由 `service/` 层在启用认证时追加
+- `CORS` 是 HTTP Filter 工具，不属于默认服务端中间件链
 
 ## 参考
 

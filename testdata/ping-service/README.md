@@ -47,11 +47,22 @@ Database → PO → BO → DTO → Proto Response
 
 ```bash
 # 启动服务
+make run-service
+
+# 或直接运行
 go run ./testdata/ping-service/cmd/ping-service/... -conf=./testdata/ping-service/configs
 
 # 测试接口
+make testing-service
+
+# 或直接调用
 curl http://127.0.0.1:10101/api/v1/ping/say_hello
 ```
+
+接口文档：
+
+- Swagger UI：`http://127.0.0.1:10101/q/`
+- OpenAPI v3：`http://127.0.0.1:10101/api/swagger/`
 
 ## 分层规则
 

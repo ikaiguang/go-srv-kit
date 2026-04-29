@@ -1,43 +1,53 @@
-# 子模块
+# Git 子模块使用指南
 
-```shell
-git submodule help
+本文档说明如何在其他项目中以 Git 子模块方式引入仓库，或维护已有子模块。
+
+## 查看状态
+
+```bash
+git submodule status
+git submodule foreach git status --short
 ```
 
 ## 添加子模块
 
-```shell
+```bash
+git submodule add -b <branch-or-tag> git@gitlab.uufff.cn:ikaiguang/go-srv-kit.git <path>
+```
+
+示例：
+
+```bash
 git submodule add -b tag_v0.1.2 git@gitlab.uufff.cn:ikaiguang/go-srv-kit.git pkg/go-srv-kit
+```
+
+## 初始化与更新
+
+```bash
+git submodule update --init --recursive
+git submodule update --remote --init --recursive
+```
+
+如果需要切换子模块跟踪的分支：
+
+```bash
+git submodule set-branch -b <branch> <path>
+git submodule update --remote --init --recursive
 ```
 
 ## 删除子模块
 
-```shell
-# 逆初始化模块，其中{MOD_NAME}为模块目录，执行后可发现模块目录被清空
-# rm -rf .git/modules/$path_to_submodule
-git submodule deinit $path_to_submodule
-# 删除项目目录下.gitmodules文件中子模块相关条目
-vi .gitmodules
-# 删除配置项中子模块相关条目
-# git config --unset --local submodule.$path_to_submodule.active
-# git config --unset --local submodule.$path_to_submodule.url
-vi .git/config
-# 删除.gitmodules中记录的模块信息（--cached选项清除.git/modules中的缓存）
-git rm --cached $path_to_submodule
+推荐顺序：
+
+```bash
+git submodule deinit -f <path>
+git rm -f <path>
 ```
 
-# 切换分支 & 更新submodule
+如果 `.git/modules/<path>` 仍残留，再手动清理该目录。
 
-```shell
-# 更新分支
-git submodule set-branch -b dev pkg/go-srv-kit
-# 更新代码
-git submodule update --remote --init
-git submodule update --remote --init -f
-```
+## Go 模块注意事项
 
-## 修改gomod
-
-```shell
-go mod tidy
-```
+- 如果你在**子模块项目**里维护依赖，请在对应模块目录中执行 `go mod tidy`
+- 不要把“在当前仓库根目录执行 `go mod tidy`”当成默认操作
+  - 本仓库根模块有 `testdata/` 依赖保留问题，详见 `README.md` 和 `docs/migration-guide.md`

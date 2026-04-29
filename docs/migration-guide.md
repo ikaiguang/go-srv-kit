@@ -328,8 +328,7 @@ lm, err := setuputil.New(conf,
 **解决方案**：
 
 ```bash
-# 删除旧的生成文件
-rm ./cmd/*/export/wire_gen.go
+# 如有必要，先删除旧的 wire_gen.go
 
 # 重新生成
 wire ./cmd/*/export

@@ -238,8 +238,7 @@ make testing-service
 ### Wire 生成失败
 
 ```bash
-# 清理后重新生成
-rm ./cmd/*/export/wire_gen.go
+# 如有必要，先删除旧的 wire_gen.go
 wire ./cmd/*/export
 ```
 
@@ -277,8 +276,8 @@ go clean -modcache
 # 重新下载依赖
 go mod download
 
-# 整理依赖
-go mod tidy
+# 整理依赖前，先确认不是在当前仓库根模块执行
+# 根模块包含 testdata 依赖保留约束，默认不要在根目录执行 go mod tidy
 ```
 
 ## 发布流程

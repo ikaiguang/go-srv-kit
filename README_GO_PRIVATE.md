@@ -1,56 +1,61 @@
-# service pkg
+# Go 私有仓库配置
 
-私有包
+本文档说明如何让本机或 CI 正常拉取 `gitlab.uufff.com` 上的 Go 私有依赖。
 
-## 添加私有包
+## 推荐做法
 
-添加环境变量
+优先使用 `go env -w` 写入 Go 配置：
 
-```shell
-
-# golang 环境变量
-# windows系统，请在系统环境变量中添加
-# 也可使用 go env -w 写入；例如 go env -w GO111MODULE=on
-# 如果在环境变量中添加过了了。go env -w 会包系统变量冲突错误
-export GO111MODULE=on
-export GOPROXY=https://goproxy.cn,direct
-export GOPRIVATE=gitlab.uufff.com
-export GOPATH="/Users/$USER/golang" # windows请在环境变量Path中添加目录$GOPATH/bin
-export GOPATH_BIN_PATH="$GOPATH/bin" # windows请在环境变量Path中添加目录$GOPATH/bin
-export PATH="$PATH:$GOPATH_BIN_PATH" # windows请在环境变量Path中添加目录$GOPATH/bin
-
+```bash
+go env -w GOPROXY=https://goproxy.cn,direct
+go env -w GOPRIVATE=gitlab.uufff.com
 ```
 
-## 将下载代码方式由https改为ssh
+如果你依赖 `$GOPATH/bin` 中安装的工具，请确认它已经在系统 `PATH` 中。
 
-为了避免每次拉取代码需要输入gitlab的账户密码，执行修改为git-ssh方式链接gitlab
+## 使用 SSH 拉取 Git 仓库
 
-```shell
-# 配置git-ssh
+如果不想每次输入用户名和密码，可将 GitLab HTTPS 地址改写为 SSH：
+
+```bash
 git config --global url."ssh://git@gitlab.uufff.com/".insteadOf "https://gitlab.uufff.com/"
-# 使用git的netrc保存登录信息
-touch $HOME/.netrc
-echo 'machine gitlab.uufff.com login 你的用户名 password 你的TOKEN或口令' >> $HOME/.netrc
 ```
 
-## dockerfile ssh
+然后准备好：
 
-必须条件
+- 可用的 SSH 私钥
+- `~/.ssh/known_hosts`
+- 必要时的 `~/.netrc` 或 GitLab Token
 
-* [x] ~/.netrc : 密码 or oauth认证
-* [x] ssh rsa证书
-* [x] ~/.ssh/known_hosts : 主机信任
+## `.netrc` 示例
 
-```dockerfile
-RUN git config --global url."ssh://git@gitlab.uufff.com/".insteadOf "https://gitlab.uufff.com/" && \
-    mkdir -p ~/.ssh && \
-    cp ./devops/ssh/uufff_id_rsa* ~/.ssh/ && \
-    chmod 600 ~/.ssh/uufff_id_rsa* && \
-    mv ~/.ssh/uufff_id_rsa ~/.ssh/id_rsa && \
-    mv ~/.ssh/uufff_id_rsa.pub ~/.ssh/id_rsa.pub && \
-    touch ~/.netrc && \
-    echo "machine gitlab.uufff.com login chenkaiguang@uufff.com password sRqVRR54wXzgLTPXxVvb" > ~/.netrc && \
-    touch ~/.ssh/known_hosts && \
-    chmod 600  ~/.ssh/known_hosts && \
-    ssh-keyscan gitlab.uufff.com >> ~/.ssh/known_hosts
+请只使用占位符，不要把真实账号或口令写入仓库文档：
+
+```text
+machine gitlab.uufff.com
+login <your-username>
+password <your-token-or-password>
 ```
+
+## Docker / CI 注意事项
+
+- 不要把真实 SSH 私钥、用户名、密码、Token 直接写进 Dockerfile 或脚本
+- 优先使用：
+  - CI Secret / Variable
+  - 挂载的只读密钥文件
+  - 构建机预置的 `.netrc` / SSH 配置
+- 如果需要在镜像构建时拉私有依赖，请确保构建环境提前注入认证信息，而不是把认证信息硬编码到仓库中
+
+## 常见问题
+
+### `unrecognized import path` 或 `repository not found`
+
+先确认：
+
+1. `GOPRIVATE` 是否包含 `gitlab.uufff.com`
+2. Git 对该域名是否已配置 SSH 改写
+3. SSH 密钥、Token 或 `.netrc` 是否可用
+
+### 工具命令找不到
+
+确认 `$GOPATH/bin` 已加入系统 `PATH`。
