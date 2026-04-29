@@ -1,0 +1,4 @@
+interface:
+  display_name: "Go Srv Kit"
+  short_description: "go-srv-kit 仓库架构与流程指引"
+  default_prompt: "使用 $go-srv-kit 处理本仓库中的实现、重构、Proto/Wire 生成或问题排查。"
