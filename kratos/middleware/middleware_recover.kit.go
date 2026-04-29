@@ -12,7 +12,7 @@ var _ = recovery.ErrUnknownRequest
 // RecoveryHandler ...
 func RecoveryHandler() recovery.HandlerFunc {
 	return func(ctx context.Context, req, err any) error {
-		e := errorpkg.ErrorPanic(errorpkg.ERROR_INTERNAL_SERVER.String())
+		e := errorpkg.ErrorPanic("%s", errorpkg.ERROR_INTERNAL_SERVER.String())
 		return errorpkg.Wrap(e)
 	}
 }

@@ -15,9 +15,16 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+func getTestMySQLDSN() string {
+	if dsn := os.Getenv("DB_MYSQL_DSN"); dsn != "" {
+		return dsn
+	}
+	return "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True"
+}
+
 var (
 	dbConfig = &Config{
-		Dsn:             "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True",
+		Dsn:             getTestMySQLDSN(),
 		SlowThreshold:   durationpb.New(time.Millisecond * 100),
 		LoggerEnable:    true,
 		LoggerLevel:     "INFO",

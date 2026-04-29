@@ -1,26 +1,44 @@
+//go:build ignore
+
 package rabbitmqpkg
 
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-amqp/v3/pkg/amqp"
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/ikaiguang/go-srv-kit/kit/thread"
+	"github.com/go-kratos/kratos/v2/log"
+	threadpkg "github.com/ikaiguang/go-srv-kit/kit/thread"
 	timepkg "github.com/ikaiguang/go-srv-kit/kit/time"
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/uuid"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 	"github.com/stretchr/testify/require"
 )
 
+func getTestRabbitMQURL() string {
+	if url := os.Getenv("DB_RABBITMQ_URL"); url != "" {
+		return url
+	}
+	return "amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq:5672/"
+}
+
+// kratosToLogger 将 kratos log.Logger 适配为本包的 Logger 接口
+func kratosToLogger(l log.Logger) Logger {
+	return LogAdapter(func(level Level, keyvals ...any) error {
+		return l.Log(log.Level(level), keyvals...)
+	})
+}
+
 // go test -v ./data/rabbitmq/ -count=1 -run TestNewSubscriber
 func TestNewSubscriber(t *testing.T) {
 	var (
 		//amqpURI = "amqp://guest:guest@127.0.0.1:5672/"
-		amqpURI = "amqp://rabbitmq:Rabbitmq.123456@my-rabbitmq:5672/"
+		amqpURI = getTestRabbitMQURL()
 		topic   = "example.topic"
 	)
 	logger := newMultiLogger()
@@ -120,5 +138,5 @@ func newMultiLogger() watermill.LoggerAdapter {
 		panic(err)
 	}
 	logImpl := logpkg.NewMultiLogger(stdLoggerImpl, fileLogger)
-	return NewLogger(logImpl)
+	return NewLogger(kratosToLogger(logImpl))
 }

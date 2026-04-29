@@ -1,6 +1,7 @@
 package configutil
 
 import (
+	"os"
 	"testing"
 
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
@@ -37,9 +38,13 @@ func TestLoadingConfigFromConsul(t *testing.T) {
 		},
 	}
 
+	consulAddr := "127.0.0.1:8500"
+	if addr := os.Getenv("CONSUL_ADDR"); addr != "" {
+		consulAddr = addr
+	}
 	cfg := &configpb.Consul{
 		Enable:             true,
-		Address:            "127.0.0.1:8500",
+		Address:            consulAddr,
 		InsecureSkipVerify: true,
 	}
 	cc, err := newConsulClient(cfg)

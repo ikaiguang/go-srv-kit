@@ -1,0 +1,18 @@
+go 1.25.9
+
+use (
+	.
+	./data/consul
+	./data/etcd
+	./data/gorm
+	./data/jaeger
+	./data/migration
+	./data/mongo
+	./data/mysql
+	./data/postgres
+	./data/rabbitmq
+	./data/redis
+	./kit
+	./kratos
+	./service
+)

@@ -1,12 +1,15 @@
 package rabbitmqutil
 
 import (
+	stdlog "log"
+	"sync"
+
+	"github.com/go-kratos/kratos/v2/log"
+
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	stdlog "log"
-	"sync"
 )
 
 type rabbitmqManager struct {
@@ -68,13 +71,20 @@ func (s *rabbitmqManager) loadingRabbitmqClient() (*rabbitmqpkg.ConnectionWrappe
 		return nil, err
 	}
 	opts := make([]rabbitmqpkg.Option, 0)
-	opts = append(opts, rabbitmqpkg.WithLogger(rabbitmqpkg.NewLogger(logger)))
+	opts = append(opts, rabbitmqpkg.WithLogger(rabbitmqpkg.NewLogger(toRabbitmqLogger(logger))))
 	uc, err := rabbitmqpkg.NewConnection(ToRabbitmqConfig(s.conf), opts...)
 	if err != nil {
 		e := errorpkg.ErrorInternalError(err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return uc, nil
+}
+
+// toRabbitmqLogger 将 kratos log.Logger 适配为 rabbitmqpkg.Logger
+func toRabbitmqLogger(l log.Logger) rabbitmqpkg.Logger {
+	return rabbitmqpkg.LogAdapter(func(level rabbitmqpkg.Level, keyvals ...any) error {
+		return l.Log(log.Level(level), keyvals...)
+	})
 }
 
 // ToRabbitmqConfig ...

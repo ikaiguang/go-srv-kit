@@ -4,9 +4,14 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"go.mongodb.org/mongo-driver/v2/event"
 )
+
+// moduleKey 模块标识常量
+const moduleKey = "module"
+
+// moduleMonitor 监控模块名称常量
+const moduleMonitor = "mongo-driver-monitor"
 
 type monitorOption struct {
 	slowThreshold time.Duration
@@ -22,15 +27,15 @@ func WithSlowThreshold(slowThreshold time.Duration) MonitorOption {
 }
 
 // NewMonitor ...
-func NewMonitor(logger log.Logger, opts ...MonitorOption) *event.CommandMonitor {
+func NewMonitor(logger Logger, opts ...MonitorOption) *event.CommandMonitor {
 	options := &monitorOption{}
 	for i := range opts {
 		opts[i](options)
 	}
-	loggerHandler := log.NewHelper(log.With(logger, "module", "mongo-driver-monitor"))
 	return &event.CommandMonitor{
 		Started: func(ctx context.Context, evt *event.CommandStartedEvent) {
-			loggerHandler.WithContext(ctx).Infow(
+			_ = logger.Log(LevelInfo,
+				moduleKey, moduleMonitor,
 				"request_id", evt.RequestID,
 				"database", evt.DatabaseName,
 				"command_name", evt.CommandName,
@@ -39,21 +44,22 @@ func NewMonitor(logger log.Logger, opts ...MonitorOption) *event.CommandMonitor 
 		},
 		Succeeded: func(ctx context.Context, evt *event.CommandSucceededEvent) {
 			kvs := []any{
+				moduleKey, moduleMonitor,
 				"request_id", evt.RequestID,
 				"database", evt.DatabaseName,
 				"command_name", evt.CommandName,
 				"duration", evt.Duration.String(),
-				//"result", evt.Reply.String(),
 			}
 
 			if options.slowThreshold > 0 && evt.Duration >= options.slowThreshold {
-				loggerHandler.WithContext(ctx).Warnw(kvs...)
+				_ = logger.Log(LevelWarn, kvs...)
 			} else {
-				loggerHandler.WithContext(ctx).Debugw(kvs...)
+				_ = logger.Log(LevelDebug, kvs...)
 			}
 		},
 		Failed: func(ctx context.Context, evt *event.CommandFailedEvent) {
-			loggerHandler.WithContext(ctx).Warnw(
+			_ = logger.Log(LevelWarn,
+				moduleKey, moduleMonitor,
 				"request_id", evt.RequestID,
 				"database", evt.DatabaseName,
 				"command_name", evt.CommandName,

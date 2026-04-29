@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
@@ -30,7 +29,7 @@ type Config struct {
 }
 
 // NewMongoClient ...
-func NewMongoClient(config *Config, logger log.Logger) (*mongo.Client, error) {
+func NewMongoClient(config *Config, logger Logger) (*mongo.Client, error) {
 	clientOpt := options.Client()
 	clientOpt.SetHosts(config.Hosts)
 	if config.Addr != "" {

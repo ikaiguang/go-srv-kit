@@ -2,6 +2,7 @@ package redispkg
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -9,11 +10,18 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
+func getTestRedisAddrs() []string {
+	if addrs := os.Getenv("DB_REDIS_ADDRS"); addrs != "" {
+		return []string{addrs}
+	}
+	return []string{"127.0.0.1:6379"}
+}
+
 var (
 	redisConfig = &Config{
-		Addresses:       []string{"127.0.0.1:6379"},
-		Username:        "",
-		Password:        "",
+		Addresses:       getTestRedisAddrs(),
+		Username:        os.Getenv("DB_REDIS_USERNAME"),
+		Password:        os.Getenv("DB_REDIS_PASSWORD"),
 		Db:              0,
 		DialTimeout:     durationpb.New(time.Second * 3),
 		ReadTimeout:     durationpb.New(time.Second * 3),

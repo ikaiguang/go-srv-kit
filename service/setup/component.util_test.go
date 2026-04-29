@@ -665,15 +665,21 @@ func TestCloseDelegate_ErrorPropagation(t *testing.T) {
 	}
 }
 
+// newTestLauncherManager 创建测试用的 launcherManager
+func newTestLauncherManager(lc *Lifecycle) *launcherManager {
+	return &launcherManager{
+		lc:       lc,
+		registry: newComponentRegistry(),
+	}
+}
+
 // TestComponentErrorPropagation_Redis 验证 GetRedisClient 传播 Component 错误
 func TestComponentErrorPropagation_Redis(t *testing.T) {
 	lc := newLifecycle()
-	lm := &launcherManager{
-		lc: lc,
-		redisComp: NewComponent[redisutil.RedisManager](ComponentRedis, func() (redisutil.RedisManager, error) {
-			return nil, fmt.Errorf("redis factory failed")
-		}, lc),
-	}
+	lm := newTestLauncherManager(lc)
+	RegisterComponent[redisutil.RedisManager](lm.registry, ComponentRedis, func() (redisutil.RedisManager, error) {
+		return nil, fmt.Errorf("redis factory failed")
+	}, lc)
 	_, err := lm.GetRedisClient()
 	if err == nil {
 		t.Error("GetRedisClient 应传播 factory 错误")
@@ -686,12 +692,10 @@ func TestComponentErrorPropagation_Redis(t *testing.T) {
 // TestComponentErrorPropagation_Mysql 验证 GetMysqlDBConn 传播 Component 错误
 func TestComponentErrorPropagation_Mysql(t *testing.T) {
 	lc := newLifecycle()
-	lm := &launcherManager{
-		lc: lc,
-		mysqlComp: NewComponent[mysqlutil.MysqlManager](ComponentMysql, func() (mysqlutil.MysqlManager, error) {
-			return nil, fmt.Errorf("mysql factory failed")
-		}, lc),
-	}
+	lm := newTestLauncherManager(lc)
+	RegisterComponent[mysqlutil.MysqlManager](lm.registry, ComponentMysql, func() (mysqlutil.MysqlManager, error) {
+		return nil, fmt.Errorf("mysql factory failed")
+	}, lc)
 	_, err := lm.GetMysqlDBConn()
 	if err == nil {
 		t.Error("GetMysqlDBConn 应传播 factory 错误")
@@ -722,12 +726,10 @@ func TestComponentErrorPropagation_Logger(t *testing.T) {
 // TestComponentErrorPropagation_Postgres 验证 GetPostgresDBConn 传播 Component 错误
 func TestComponentErrorPropagation_Postgres(t *testing.T) {
 	lc := newLifecycle()
-	lm := &launcherManager{
-		lc: lc,
-		postgresComp: NewComponent[postgresutil.PostgresManager](ComponentPostgres, func() (postgresutil.PostgresManager, error) {
-			return nil, fmt.Errorf("postgres factory failed")
-		}, lc),
-	}
+	lm := newTestLauncherManager(lc)
+	RegisterComponent[postgresutil.PostgresManager](lm.registry, ComponentPostgres, func() (postgresutil.PostgresManager, error) {
+		return nil, fmt.Errorf("postgres factory failed")
+	}, lc)
 	_, err := lm.GetPostgresDBConn()
 	if err == nil {
 		t.Error("GetPostgresDBConn 应传播 factory 错误")
@@ -741,12 +743,10 @@ func TestComponentErrorPropagation_Postgres(t *testing.T) {
 func TestSuccessDelegation_Redis(t *testing.T) {
 	lc := newLifecycle()
 	mockMgr := &mockRedisManager{client: nil}
-	lm := &launcherManager{
-		lc: lc,
-		redisComp: NewComponent[redisutil.RedisManager](ComponentRedis, func() (redisutil.RedisManager, error) {
-			return mockMgr, nil
-		}, lc),
-	}
+	lm := newTestLauncherManager(lc)
+	RegisterComponent[redisutil.RedisManager](lm.registry, ComponentRedis, func() (redisutil.RedisManager, error) {
+		return mockMgr, nil
+	}, lc)
 	client, err := lm.GetRedisClient()
 	if err != nil {
 		t.Errorf("GetRedisClient 不应返回错误: %v", err)
@@ -761,12 +761,10 @@ func TestSuccessDelegation_Mysql(t *testing.T) {
 	lc := newLifecycle()
 	expectedDB := &gorm.DB{}
 	mockMgr := &mockMysqlManager{db: expectedDB}
-	lm := &launcherManager{
-		lc: lc,
-		mysqlComp: NewComponent[mysqlutil.MysqlManager](ComponentMysql, func() (mysqlutil.MysqlManager, error) {
-			return mockMgr, nil
-		}, lc),
-	}
+	lm := newTestLauncherManager(lc)
+	RegisterComponent[mysqlutil.MysqlManager](lm.registry, ComponentMysql, func() (mysqlutil.MysqlManager, error) {
+		return mockMgr, nil
+	}, lc)
 	db, err := lm.GetMysqlDBConn()
 	if err != nil {
 		t.Errorf("GetMysqlDBConn 不应返回错误: %v", err)
@@ -781,13 +779,14 @@ func TestNamedInstanceErrorPropagation_Mysql(t *testing.T) {
 	lc := newLifecycle()
 	conf := &configpb.Bootstrap{}
 	lm := &launcherManager{
-		conf: conf,
-		lc:   lc,
+		conf:     conf,
+		lc:       lc,
+		registry: newComponentRegistry(),
 		loggerComp: NewComponent[loggerutil.LoggerManager](ComponentLogger, func() (loggerutil.LoggerManager, error) {
 			return nil, fmt.Errorf("logger not available")
 		}, lc),
 	}
-	lm.mysqlGroup = NewComponentGroup(ComponentMysql, lm.newNamedMysqlManager, lc)
+	RegisterComponentGroup[mysqlutil.MysqlManager](lm.registry, ComponentMysql, lm.newNamedMysqlManager, lc)
 
 	_, err := lm.GetNamedMysqlDBConn("nonexistent")
 	if err == nil {
@@ -803,10 +802,11 @@ func TestNamedInstanceErrorPropagation_Redis(t *testing.T) {
 	lc := newLifecycle()
 	conf := &configpb.Bootstrap{}
 	lm := &launcherManager{
-		conf: conf,
-		lc:   lc,
+		conf:     conf,
+		lc:       lc,
+		registry: newComponentRegistry(),
 	}
-	lm.redisGroup = NewComponentGroup(ComponentRedis, lm.newNamedRedisManager, lc)
+	RegisterComponentGroup[redisutil.RedisManager](lm.registry, ComponentRedis, lm.newNamedRedisManager, lc)
 
 	_, err := lm.GetNamedRedisClient("nonexistent")
 	if err == nil {
@@ -852,12 +852,10 @@ func TestProviderClose(t *testing.T) {
 // TestProviderGetRedisClient_Error 验证 Provider 错误传播
 func TestProviderGetRedisClient_Error(t *testing.T) {
 	lc := newLifecycle()
-	lm := &launcherManager{
-		lc: lc,
-		redisComp: NewComponent[redisutil.RedisManager](ComponentRedis, func() (redisutil.RedisManager, error) {
-			return nil, fmt.Errorf("redis unavailable")
-		}, lc),
-	}
+	lm := newTestLauncherManager(lc)
+	RegisterComponent[redisutil.RedisManager](lm.registry, ComponentRedis, func() (redisutil.RedisManager, error) {
+		return nil, fmt.Errorf("redis unavailable")
+	}, lc)
 	_, err := GetRedisClient(lm)
 	if err == nil {
 		t.Error("GetRedisClient Provider 应传播错误")
@@ -867,12 +865,10 @@ func TestProviderGetRedisClient_Error(t *testing.T) {
 // TestProviderGetRecommendDBConn 验证 GetRecommendDBConn 委托到 GetDBConn（默认 Postgres）
 func TestProviderGetRecommendDBConn(t *testing.T) {
 	lc := newLifecycle()
-	lm := &launcherManager{
-		lc: lc,
-		postgresComp: NewComponent[postgresutil.PostgresManager](ComponentPostgres, func() (postgresutil.PostgresManager, error) {
-			return nil, fmt.Errorf("postgres unavailable")
-		}, lc),
-	}
+	lm := newTestLauncherManager(lc)
+	RegisterComponent[postgresutil.PostgresManager](lm.registry, ComponentPostgres, func() (postgresutil.PostgresManager, error) {
+		return nil, fmt.Errorf("postgres unavailable")
+	}, lc)
 	_, err := GetRecommendDBConn(lm)
 	if err == nil {
 		t.Error("GetRecommendDBConn 应委托到 GetDBConn（默认 Postgres）")
@@ -903,12 +899,10 @@ func TestProviderGetDBConn_Reassignable(t *testing.T) {
 	lc := newLifecycle()
 	expectedDB := &gorm.DB{}
 	mockMgr := &mockMysqlManager{db: expectedDB}
-	lm := &launcherManager{
-		lc: lc,
-		mysqlComp: NewComponent[mysqlutil.MysqlManager](ComponentMysql, func() (mysqlutil.MysqlManager, error) {
-			return mockMgr, nil
-		}, lc),
-	}
+	lm := newTestLauncherManager(lc)
+	RegisterComponent[mysqlutil.MysqlManager](lm.registry, ComponentMysql, func() (mysqlutil.MysqlManager, error) {
+		return mockMgr, nil
+	}, lc)
 
 	// 重新赋值 GetDBConn 为使用 MySQL
 	GetDBConn = func(launcherManager LauncherManager) (*gorm.DB, error) {

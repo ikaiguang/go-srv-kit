@@ -5,8 +5,28 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
+	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
 	"github.com/redis/go-redis/v9"
 )
+
+// testLocker 测试用的 Locker mock 实现
+type testLocker struct{}
+
+func (t *testLocker) Mutex(_ context.Context, lockName string) (lockerpkg.Unlocker, error) {
+	return &testUnlocker{name: lockName}, nil
+}
+
+func (t *testLocker) Once(_ context.Context, lockName string) (lockerpkg.Unlocker, error) {
+	return &testUnlocker{name: lockName}, nil
+}
+
+// testUnlocker 测试用的 Unlocker mock 实现
+type testUnlocker struct {
+	name string
+}
+
+func (t *testUnlocker) Unlock(_ context.Context) (bool, error) { return true, nil }
+func (t *testUnlocker) Name() string                           { return t.name }
 
 func ExampleServer() {
 	var (
@@ -18,7 +38,7 @@ func ExampleServer() {
 	authConfig := Config{
 		RefreshCrypto: NewCBCCipher(signKey),
 	}
-	tokenM := NewTokenManager(logger, redisCC, nil)
+	tokenM := NewTokenManager(logger, redisCC, nil, &testLocker{})
 	repo, err := NewAuthRepo(authConfig, logger, tokenM)
 	if err != nil {
 		return

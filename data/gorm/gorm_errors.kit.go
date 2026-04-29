@@ -3,8 +3,6 @@ package gormpkg
 import (
 	stderrors "errors"
 
-	"github.com/go-sql-driver/mysql"
-	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
 )
 
@@ -13,21 +11,13 @@ func IsErrRecordNotFound(err error) bool {
 	return stderrors.Is(err, gorm.ErrRecordNotFound)
 }
 
-// IsErrDuplicatedKey ...
+// IsErrDuplicatedKey 检查是否为唯一键冲突错误（仅检查 GORM 层面）
+// 如需检查特定数据库驱动的错误码，请使用：
+//   - mysqlpkg.IsErrDuplicatedKey（MySQL 1062）
+//   - psqlpkg.IsErrDuplicatedKey（PostgreSQL 23505）
 func IsErrDuplicatedKey(err error) bool {
 	if err == nil {
 		return false
 	}
-	if stderrors.Is(err, gorm.ErrDuplicatedKey) {
-		return true
-	}
-	var pgErr *pgconn.PgError
-	if stderrors.As(err, &pgErr) {
-		return pgErr.Code == "23505"
-	}
-	var mysqlErr *mysql.MySQLError
-	if stderrors.As(err, &mysqlErr) {
-		return mysqlErr.Number == 1062
-	}
-	return false
+	return stderrors.Is(err, gorm.ErrDuplicatedKey)
 }

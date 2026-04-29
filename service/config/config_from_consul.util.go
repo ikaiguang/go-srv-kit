@@ -1,6 +1,8 @@
 package configutil
 
 import (
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/contrib/config/consul/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	consulapi "github.com/hashicorp/consul/api"
@@ -8,8 +10,19 @@ import (
 	consulpkg "github.com/ikaiguang/go-srv-kit/data/consul"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	"google.golang.org/protobuf/proto"
-	stdlog "log"
 )
+
+// NewConsulConfigLoader 创建 Consul 配置加载器
+// 返回一个 ConsulConfigLoader 函数，可通过 WithConsulConfigLoader 注入到 Loading 中
+func NewConsulConfigLoader() ConsulConfigLoader {
+	return func(consulConfig *configpb.Consul, appConfig *configpb.App, loadingOpts ...Option) (*configpb.Bootstrap, error) {
+		consulClient, err := newConsulClient(consulConfig)
+		if err != nil {
+			return nil, err
+		}
+		return LoadingConfigFromConsul(consulClient, appConfig, loadingOpts...)
+	}
+}
 
 // LoadingConfigFromConsul 从consul中加载配置
 // 首先：读取服务base配置

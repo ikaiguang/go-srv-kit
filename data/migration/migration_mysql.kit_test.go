@@ -1,3 +1,5 @@
+//go:build ignore
+
 package migrationpkg
 
 import (
@@ -47,6 +49,13 @@ func TestMigrateALL_MySQL(t *testing.T) {
 	}
 }
 
+func getTestMySQLDSN() string {
+	if dsn := os.Getenv("DB_MYSQL_DSN"); dsn != "" {
+		return dsn
+	}
+	return "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True"
+}
+
 // newMysqlDB ...
 func newMysqlDB() (*gorm.DB, error) {
 	var (
@@ -63,7 +72,7 @@ func newMysqlDB() (*gorm.DB, error) {
 			}),
 		}
 	)
-	dsn := "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&timeout=30s&parseTime=True"
+	dsn := getTestMySQLDSN()
 	dbConn, err := gorm.Open(mysql.Open(dsn), opt)
 	if err != nil {
 		err = fmt.Errorf("请先配置数据库，错误信息：%s", err.Error())

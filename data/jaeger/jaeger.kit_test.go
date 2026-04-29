@@ -1,12 +1,27 @@
 package jaegerpkg
 
 import (
+	"os"
 	"testing"
 	"time"
 
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
+
+func getTestJaegerGRPCAddr() string {
+	if addr := os.Getenv("JAEGER_GRPC_ADDR"); addr != "" {
+		return addr
+	}
+	return "my-jaeger:4317"
+}
+
+func getTestJaegerHTTPAddr() string {
+	if addr := os.Getenv("JAEGER_HTTP_ADDR"); addr != "" {
+		return addr
+	}
+	return "my-jaeger:4318"
+}
 
 // go test -v ./data/jaeger/ -count=1 -run TestNewJaegerExporter_Xxx
 func TestNewJaegerExporter_Xxx(t *testing.T) {
@@ -25,7 +40,7 @@ func TestNewJaegerExporter_Xxx(t *testing.T) {
 			args: args{
 				conf: &Config{
 					Kind:              KindGRPC,
-					Addr:              "my-jaeger:4317",
+					Addr:              getTestJaegerGRPCAddr(),
 					IsInsecure:        true,
 					Timeout:           durationpb.New(time.Second * 30),
 					WithHttpBasicAuth: false,
@@ -42,7 +57,7 @@ func TestNewJaegerExporter_Xxx(t *testing.T) {
 			args: args{
 				conf: &Config{
 					Kind:              KindGRPC,
-					Addr:              "my-jaeger:4318",
+					Addr:              getTestJaegerHTTPAddr(),
 					IsInsecure:        true,
 					Timeout:           durationpb.New(time.Second * 30),
 					WithHttpBasicAuth: false,

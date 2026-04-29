@@ -13,7 +13,7 @@ import (
 func RunCommandContext(ctx context.Context, command string, args []string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 
-	slog.DebugContext(ctx, "cmd", command, "args", args)
+	slog.DebugContext(ctx, "cmd", slog.String("command", command), slog.Any("args", args))
 
 	return run(cmd)
 }
@@ -23,7 +23,7 @@ func RunCommandWithWorkDirContext(ctx context.Context, workDir, command string, 
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workDir
 
-	slog.DebugContext(ctx, "workdir", workDir, "cmd", command, "args", args)
+	slog.DebugContext(ctx, "workdir", slog.String("dir", workDir), slog.String("command", command), slog.Any("args", args))
 
 	return run(cmd)
 }

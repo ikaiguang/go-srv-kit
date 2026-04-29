@@ -1,6 +1,7 @@
 package psqlpkg
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -9,9 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
+func getTestPostgresDSN() string {
+	if dsn := os.Getenv("DB_POSTGRES_DSN"); dsn != "" {
+		return dsn
+	}
+	return "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+}
+
 var (
 	dbConfig = &Config{
-		Dsn:             "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai",
+		Dsn:             getTestPostgresDSN(),
 		SlowThreshold:   durationpb.New(time.Millisecond * 100),
 		LoggerEnable:    true,
 		LoggerLevel:     "INFO",

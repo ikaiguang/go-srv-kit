@@ -23,12 +23,73 @@ import (
 	"gorm.io/gorm"
 )
 
-// ==================== 单实例 factory 方法 ====================
-
-// newLoggerManager 创建日志管理器
-func (lm *launcherManager) newLoggerManager() (loggerutil.LoggerManager, error) {
-	return loggerutil.NewLoggerManager(lm.conf.GetLog(), lm.conf.GetApp())
+// componentNotRegisteredError 组件未注册错误
+func componentNotRegisteredError(name string) error {
+	e := errorpkg.ErrorBadRequest("component not registered: %s; use corresponding WithXxx() option", name)
+	return errorpkg.WithStack(e)
 }
+
+// WithAllComponents 注册所有组件（向后兼容）
+func WithAllComponents() Option {
+	return WithComponentRegistrar(func(lm *launcherManager) {
+		registerRedis(lm)
+		registerMysql(lm)
+		registerPostgres(lm)
+		registerMongo(lm)
+		registerConsul(lm)
+		registerJaeger(lm)
+		registerRabbitmq(lm)
+		registerAuth(lm)
+		registerServiceAPI(lm)
+	})
+}
+
+// ==================== 组件注册函数（供 WithAllComponents 和各 WithXxx 使用） ====================
+
+func registerRedis(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentRedis, lm.newRedisManager, lm.lc)
+	RegisterComponentGroup(lm.registry, ComponentRedis, lm.newNamedRedisManager, lm.lc)
+}
+
+func registerMysql(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentMysql, lm.newMysqlManager, lm.lc)
+	RegisterComponentGroup(lm.registry, ComponentMysql, lm.newNamedMysqlManager, lm.lc)
+}
+
+func registerPostgres(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentPostgres, lm.newPostgresManager, lm.lc)
+	RegisterComponentGroup(lm.registry, ComponentPostgres, lm.newNamedPostgresManager, lm.lc)
+}
+
+func registerMongo(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentMongo, lm.newMongoManager, lm.lc)
+	RegisterComponentGroup(lm.registry, ComponentMongo, lm.newNamedMongoManager, lm.lc)
+}
+
+func registerConsul(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentConsul, lm.newConsulManager, lm.lc)
+	RegisterComponentGroup(lm.registry, ComponentConsul, lm.newNamedConsulManager, lm.lc)
+}
+
+func registerJaeger(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentJaeger, lm.newJaegerManager, lm.lc)
+	RegisterComponentGroup(lm.registry, ComponentJaeger, lm.newNamedJaegerManager, lm.lc)
+}
+
+func registerRabbitmq(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentRabbitmq, lm.newRabbitmqManager, lm.lc)
+	RegisterComponentGroup(lm.registry, ComponentRabbitmq, lm.newNamedRabbitmqManager, lm.lc)
+}
+
+func registerAuth(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentAuth, lm.newAuthInstance, lm.lc)
+}
+
+func registerServiceAPI(lm *launcherManager) {
+	RegisterComponent(lm.registry, ComponentServiceAPI, lm.newServiceAPIManager, lm.lc)
+}
+
+// ==================== 单实例 factory 方法 ====================
 
 // newRedisManager 创建 Redis 管理器
 func (lm *launcherManager) newRedisManager() (redisutil.RedisManager, error) {
@@ -126,7 +187,6 @@ func (lm *launcherManager) newServiceAPIManager() (clientutil.ServiceAPIManager,
 
 // ==================== 命名实例 factory 方法 ====================
 
-// newNamedMysqlManager 根据实例名称生成 MySQL factory 函数
 func (lm *launcherManager) newNamedMysqlManager(name string) func() (mysqlutil.MysqlManager, error) {
 	return func() (mysqlutil.MysqlManager, error) {
 		instances := lm.conf.GetMysqlInstances()
@@ -142,7 +202,6 @@ func (lm *launcherManager) newNamedMysqlManager(name string) func() (mysqlutil.M
 	}
 }
 
-// newNamedPostgresManager 根据实例名称生成 PostgreSQL factory 函数
 func (lm *launcherManager) newNamedPostgresManager(name string) func() (postgresutil.PostgresManager, error) {
 	return func() (postgresutil.PostgresManager, error) {
 		instances := lm.conf.GetPsqlInstances()
@@ -158,7 +217,6 @@ func (lm *launcherManager) newNamedPostgresManager(name string) func() (postgres
 	}
 }
 
-// newNamedRedisManager 根据实例名称生成 Redis factory 函数
 func (lm *launcherManager) newNamedRedisManager(name string) func() (redisutil.RedisManager, error) {
 	return func() (redisutil.RedisManager, error) {
 		instances := lm.conf.GetRedisInstances()
@@ -170,7 +228,6 @@ func (lm *launcherManager) newNamedRedisManager(name string) func() (redisutil.R
 	}
 }
 
-// newNamedMongoManager 根据实例名称生成 MongoDB factory 函数
 func (lm *launcherManager) newNamedMongoManager(name string) func() (mongoutil.MongoManager, error) {
 	return func() (mongoutil.MongoManager, error) {
 		instances := lm.conf.GetMongoInstances()
@@ -186,7 +243,6 @@ func (lm *launcherManager) newNamedMongoManager(name string) func() (mongoutil.M
 	}
 }
 
-// newNamedConsulManager 根据实例名称生成 Consul factory 函数
 func (lm *launcherManager) newNamedConsulManager(name string) func() (consulutil.ConsulManager, error) {
 	return func() (consulutil.ConsulManager, error) {
 		instances := lm.conf.GetConsulInstances()
@@ -198,7 +254,6 @@ func (lm *launcherManager) newNamedConsulManager(name string) func() (consulutil
 	}
 }
 
-// newNamedJaegerManager 根据实例名称生成 Jaeger factory 函数
 func (lm *launcherManager) newNamedJaegerManager(name string) func() (jaegerutil.JaegerManager, error) {
 	return func() (jaegerutil.JaegerManager, error) {
 		instances := lm.conf.GetJaegerInstances()
@@ -210,7 +265,6 @@ func (lm *launcherManager) newNamedJaegerManager(name string) func() (jaegerutil
 	}
 }
 
-// newNamedRabbitmqManager 根据实例名称生成 RabbitMQ factory 函数
 func (lm *launcherManager) newNamedRabbitmqManager(name string) func() (rabbitmqutil.RabbitmqManager, error) {
 	return func() (rabbitmqutil.RabbitmqManager, error) {
 		instances := lm.conf.GetRabbitmqInstances()
@@ -228,14 +282,12 @@ func (lm *launcherManager) newNamedRabbitmqManager(name string) func() (rabbitmq
 
 // ==================== Provider 方法：ConfigProvider ====================
 
-// GetConfig 获取 Bootstrap 配置
 func (lm *launcherManager) GetConfig() *configpb.Bootstrap {
 	return lm.conf
 }
 
 // ==================== Provider 方法：LoggerProvider ====================
 
-// GetLogger 获取日志实例
 func (lm *launcherManager) GetLogger() (log.Logger, error) {
 	mgr, err := lm.loggerComp.Get()
 	if err != nil {
@@ -244,7 +296,6 @@ func (lm *launcherManager) GetLogger() (log.Logger, error) {
 	return mgr.GetLogger()
 }
 
-// GetLoggerForMiddleware 获取中间件日志实例
 func (lm *launcherManager) GetLoggerForMiddleware() (log.Logger, error) {
 	mgr, err := lm.loggerComp.Get()
 	if err != nil {
@@ -253,7 +304,6 @@ func (lm *launcherManager) GetLoggerForMiddleware() (log.Logger, error) {
 	return mgr.GetLoggerForMiddleware()
 }
 
-// GetLoggerForHelper 获取辅助工具日志实例
 func (lm *launcherManager) GetLoggerForHelper() (log.Logger, error) {
 	mgr, err := lm.loggerComp.Get()
 	if err != nil {
@@ -264,36 +314,48 @@ func (lm *launcherManager) GetLoggerForHelper() (log.Logger, error) {
 
 // ==================== Provider 方法：DatabaseProvider ====================
 
-// GetMysqlDBConn 获取 MySQL 数据库连接
 func (lm *launcherManager) GetMysqlDBConn() (*gorm.DB, error) {
-	mgr, err := lm.mysqlComp.Get()
+	comp, ok := GetComponent[mysqlutil.MysqlManager](lm.registry, ComponentMysql)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentMysql)
+	}
+	mgr, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return mgr.GetDB()
 }
 
-// GetPostgresDBConn 获取 PostgreSQL 数据库连接
 func (lm *launcherManager) GetPostgresDBConn() (*gorm.DB, error) {
-	mgr, err := lm.postgresComp.Get()
+	comp, ok := GetComponent[postgresutil.PostgresManager](lm.registry, ComponentPostgres)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentPostgres)
+	}
+	mgr, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return mgr.GetDB()
 }
 
-// GetNamedMysqlDBConn 获取命名 MySQL 实例的数据库连接
 func (lm *launcherManager) GetNamedMysqlDBConn(name string) (*gorm.DB, error) {
-	mgr, err := lm.mysqlGroup.Get(name)
+	group, ok := GetComponentGroup[mysqlutil.MysqlManager](lm.registry, ComponentMysql)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentMysql)
+	}
+	mgr, err := group.Get(name)
 	if err != nil {
 		return nil, err
 	}
 	return mgr.GetDB()
 }
 
-// GetNamedPostgresDBConn 获取命名 PostgreSQL 实例的数据库连接
 func (lm *launcherManager) GetNamedPostgresDBConn(name string) (*gorm.DB, error) {
-	mgr, err := lm.postgresGroup.Get(name)
+	group, ok := GetComponentGroup[postgresutil.PostgresManager](lm.registry, ComponentPostgres)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentPostgres)
+	}
+	mgr, err := group.Get(name)
 	if err != nil {
 		return nil, err
 	}
@@ -302,18 +364,24 @@ func (lm *launcherManager) GetNamedPostgresDBConn(name string) (*gorm.DB, error)
 
 // ==================== Provider 方法：RedisProvider ====================
 
-// GetRedisClient 获取 Redis 客户端
 func (lm *launcherManager) GetRedisClient() (redis.UniversalClient, error) {
-	mgr, err := lm.redisComp.Get()
+	comp, ok := GetComponent[redisutil.RedisManager](lm.registry, ComponentRedis)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentRedis)
+	}
+	mgr, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return mgr.GetClient()
 }
 
-// GetNamedRedisClient 获取命名 Redis 实例的客户端
 func (lm *launcherManager) GetNamedRedisClient(name string) (redis.UniversalClient, error) {
-	mgr, err := lm.redisGroup.Get(name)
+	group, ok := GetComponentGroup[redisutil.RedisManager](lm.registry, ComponentRedis)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentRedis)
+	}
+	mgr, err := group.Get(name)
 	if err != nil {
 		return nil, err
 	}
@@ -322,18 +390,24 @@ func (lm *launcherManager) GetNamedRedisClient(name string) (redis.UniversalClie
 
 // ==================== Provider 方法：MongoProvider ====================
 
-// GetMongoClient 获取 MongoDB 客户端
 func (lm *launcherManager) GetMongoClient() (*mongo.Client, error) {
-	mgr, err := lm.mongoComp.Get()
+	comp, ok := GetComponent[mongoutil.MongoManager](lm.registry, ComponentMongo)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentMongo)
+	}
+	mgr, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return mgr.GetMongoClient()
 }
 
-// GetNamedMongoClient 获取命名 MongoDB 实例的客户端
 func (lm *launcherManager) GetNamedMongoClient(name string) (*mongo.Client, error) {
-	mgr, err := lm.mongoGroup.Get(name)
+	group, ok := GetComponentGroup[mongoutil.MongoManager](lm.registry, ComponentMongo)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentMongo)
+	}
+	mgr, err := group.Get(name)
 	if err != nil {
 		return nil, err
 	}
@@ -342,18 +416,24 @@ func (lm *launcherManager) GetNamedMongoClient(name string) (*mongo.Client, erro
 
 // ==================== Provider 方法：ConsulProvider ====================
 
-// GetConsulClient 获取 Consul 客户端
 func (lm *launcherManager) GetConsulClient() (*consulapi.Client, error) {
-	mgr, err := lm.consulComp.Get()
+	comp, ok := GetComponent[consulutil.ConsulManager](lm.registry, ComponentConsul)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentConsul)
+	}
+	mgr, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return mgr.GetClient()
 }
 
-// GetNamedConsulClient 获取命名 Consul 实例的客户端
 func (lm *launcherManager) GetNamedConsulClient(name string) (*consulapi.Client, error) {
-	mgr, err := lm.consulGroup.Get(name)
+	group, ok := GetComponentGroup[consulutil.ConsulManager](lm.registry, ComponentConsul)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentConsul)
+	}
+	mgr, err := group.Get(name)
 	if err != nil {
 		return nil, err
 	}
@@ -362,18 +442,24 @@ func (lm *launcherManager) GetNamedConsulClient(name string) (*consulapi.Client,
 
 // ==================== Provider 方法：TracerProvider ====================
 
-// GetJaegerExporter 获取 Jaeger 导出器
 func (lm *launcherManager) GetJaegerExporter() (*otlptrace.Exporter, error) {
-	mgr, err := lm.jaegerComp.Get()
+	comp, ok := GetComponent[jaegerutil.JaegerManager](lm.registry, ComponentJaeger)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentJaeger)
+	}
+	mgr, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return mgr.GetExporter()
 }
 
-// GetNamedJaegerExporter 获取命名 Jaeger 实例的导出器
 func (lm *launcherManager) GetNamedJaegerExporter(name string) (*otlptrace.Exporter, error) {
-	mgr, err := lm.jaegerGroup.Get(name)
+	group, ok := GetComponentGroup[jaegerutil.JaegerManager](lm.registry, ComponentJaeger)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentJaeger)
+	}
+	mgr, err := group.Get(name)
 	if err != nil {
 		return nil, err
 	}
@@ -382,18 +468,24 @@ func (lm *launcherManager) GetNamedJaegerExporter(name string) (*otlptrace.Expor
 
 // ==================== Provider 方法：MessageQueueProvider ====================
 
-// GetRabbitmqConn 获取 RabbitMQ 连接
 func (lm *launcherManager) GetRabbitmqConn() (*rabbitmqpkg.ConnectionWrapper, error) {
-	mgr, err := lm.rabbitmqComp.Get()
+	comp, ok := GetComponent[rabbitmqutil.RabbitmqManager](lm.registry, ComponentRabbitmq)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentRabbitmq)
+	}
+	mgr, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return mgr.GetClient()
 }
 
-// GetNamedRabbitmqConn 获取命名 RabbitMQ 实例的连接
 func (lm *launcherManager) GetNamedRabbitmqConn(name string) (*rabbitmqpkg.ConnectionWrapper, error) {
-	mgr, err := lm.rabbitmqGroup.Get(name)
+	group, ok := GetComponentGroup[rabbitmqutil.RabbitmqManager](lm.registry, ComponentRabbitmq)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentRabbitmq)
+	}
+	mgr, err := group.Get(name)
 	if err != nil {
 		return nil, err
 	}
@@ -402,18 +494,24 @@ func (lm *launcherManager) GetNamedRabbitmqConn(name string) (*rabbitmqpkg.Conne
 
 // ==================== Provider 方法：AuthProvider ====================
 
-// GetTokenManager 获取 Token 管理器
 func (lm *launcherManager) GetTokenManager() (authpkg.TokenManager, error) {
-	authInstance, err := lm.authComp.Get()
+	comp, ok := GetComponent[authutil.AuthInstance](lm.registry, ComponentAuth)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentAuth)
+	}
+	authInstance, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
 	return authInstance.GetTokenManger()
 }
 
-// GetAuthManager 获取认证管理器
 func (lm *launcherManager) GetAuthManager() (authpkg.AuthRepo, error) {
-	authInstance, err := lm.authComp.Get()
+	comp, ok := GetComponent[authutil.AuthInstance](lm.registry, ComponentAuth)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentAuth)
+	}
+	authInstance, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
@@ -422,9 +520,12 @@ func (lm *launcherManager) GetAuthManager() (authpkg.AuthRepo, error) {
 
 // ==================== Provider 方法：ServiceAPIProvider ====================
 
-// GetServiceApiManager 获取集群服务 API 管理器
 func (lm *launcherManager) GetServiceApiManager() (clientutil.ServiceAPIManager, error) {
-	mgr, err := lm.serviceAPIComp.Get()
+	comp, ok := GetComponent[clientutil.ServiceAPIManager](lm.registry, ComponentServiceAPI)
+	if !ok {
+		return nil, componentNotRegisteredError(ComponentServiceAPI)
+	}
+	mgr, err := comp.Get()
 	if err != nil {
 		return nil, err
 	}
@@ -433,7 +534,12 @@ func (lm *launcherManager) GetServiceApiManager() (clientutil.ServiceAPIManager,
 
 // ==================== Closer ====================
 
-// Close 关闭所有已初始化的组件，委托给 Lifecycle
 func (lm *launcherManager) Close() error {
 	return lm.lc.Close()
+}
+
+// ==================== 辅助方法（供 loggerutil 使用） ====================
+
+func (lm *launcherManager) getLoggerManager() (loggerutil.LoggerManager, error) {
+	return lm.loggerComp.Get()
 }

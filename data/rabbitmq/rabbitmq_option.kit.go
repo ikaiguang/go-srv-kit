@@ -2,8 +2,8 @@ package rabbitmqpkg
 
 import (
 	"crypto/tls"
+
 	"github.com/ThreeDotsLabs/watermill"
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 // options ...
@@ -24,7 +24,9 @@ func WithLogger(logger watermill.LoggerAdapter) Option {
 	}
 }
 
-func WithKratosLogger(logger log.Logger) Option {
+// WithKratosLogger 接受与 kratos log.Logger 签名相同的 Logger 接口。
+// kratos 的 log.Logger 自动满足此接口（Go 隐式接口实现）。
+func WithKratosLogger(logger Logger) Option {
 	return func(o *options) {
 		o.logger = NewLogger(logger)
 	}

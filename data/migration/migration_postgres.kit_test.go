@@ -1,3 +1,5 @@
+//go:build ignore
+
 package migrationpkg
 
 import (
@@ -47,6 +49,14 @@ func TestMigrateALL_Postgres(t *testing.T) {
 }
 
 // newPostgresDB ...
+func getTestPostgresDSN() string {
+	if dsn := os.Getenv("DB_POSTGRES_DSN"); dsn != "" {
+		return dsn
+	}
+	return "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+}
+
+// newPostgresDB ...
 func newPostgresDB() (*gorm.DB, error) {
 	var (
 		err error
@@ -62,7 +72,7 @@ func newPostgresDB() (*gorm.DB, error) {
 			}),
 		}
 	)
-	dsn := "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := getTestPostgresDSN()
 	dbConn, err := gorm.Open(postgres.Open(dsn), opt)
 	if err != nil {
 		err = fmt.Errorf("请先配置数据库，错误信息：%s", err.Error())

@@ -4,21 +4,12 @@ import (
 	stdlog "log"
 
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	debugpkg "github.com/ikaiguang/go-srv-kit/debug"
+	debugpkg "github.com/ikaiguang/go-srv-kit/kratos/debug"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 	apputil "github.com/ikaiguang/go-srv-kit/service/app"
-	authutil "github.com/ikaiguang/go-srv-kit/service/auth"
-	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
-	consulutil "github.com/ikaiguang/go-srv-kit/service/consul"
-	jaegerutil "github.com/ikaiguang/go-srv-kit/service/jaeger"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	mongoutil "github.com/ikaiguang/go-srv-kit/service/mongo"
-	mysqlutil "github.com/ikaiguang/go-srv-kit/service/mysql"
-	postgresutil "github.com/ikaiguang/go-srv-kit/service/postgres"
-	rabbitmqutil "github.com/ikaiguang/go-srv-kit/service/rabbitmq"
-	redisutil "github.com/ikaiguang/go-srv-kit/service/redis"
 )
 
 // launcherManager 实现 LauncherManager 接口
@@ -26,29 +17,15 @@ type launcherManager struct {
 	conf *configpb.Bootstrap
 	lc   *Lifecycle
 
-	// 单实例组件
-	loggerComp     *Component[loggerutil.LoggerManager]
-	redisComp      *Component[redisutil.RedisManager]
-	mysqlComp      *Component[mysqlutil.MysqlManager]
-	postgresComp   *Component[postgresutil.PostgresManager]
-	mongoComp      *Component[mongoutil.MongoManager]
-	consulComp     *Component[consulutil.ConsulManager]
-	jaegerComp     *Component[jaegerutil.JaegerManager]
-	rabbitmqComp   *Component[rabbitmqutil.RabbitmqManager]
-	authComp       *Component[authutil.AuthInstance]
-	serviceAPIComp *Component[clientutil.ServiceAPIManager]
+	// 日志组件（始终注册）
+	loggerComp *Component[loggerutil.LoggerManager]
 
-	// 命名实例组
-	mysqlGroup    *ComponentGroup[mysqlutil.MysqlManager]
-	postgresGroup *ComponentGroup[postgresutil.PostgresManager]
-	redisGroup    *ComponentGroup[redisutil.RedisManager]
-	mongoGroup    *ComponentGroup[mongoutil.MongoManager]
-	consulGroup   *ComponentGroup[consulutil.ConsulManager]
-	jaegerGroup   *ComponentGroup[jaegerutil.JaegerManager]
-	rabbitmqGroup *ComponentGroup[rabbitmqutil.RabbitmqManager]
+	// 类型擦除的组件注册表
+	registry *componentRegistry
 }
 
 // New 创建 LauncherManager，纯懒加载模式
+// 通过 WithXxx() Option 按需注册组件
 func New(conf *configpb.Bootstrap, opts ...Option) (LauncherManager, error) {
 	if conf == nil {
 		return nil, errorpkg.ErrorBadRequest("bootstrap config is required")
@@ -61,30 +38,18 @@ func New(conf *configpb.Bootstrap, opts ...Option) (LauncherManager, error) {
 
 	lc := newLifecycle()
 	lm := &launcherManager{
-		conf: conf,
-		lc:   lc,
+		conf:     conf,
+		lc:       lc,
+		registry: newComponentRegistry(),
 	}
 
-	// 注册单实例组件 factory
+	// 日志始终注册（其他组件依赖日志）
 	lm.loggerComp = NewComponent(ComponentLogger, lm.newLoggerManager, lc)
-	lm.redisComp = NewComponent(ComponentRedis, lm.newRedisManager, lc)
-	lm.mysqlComp = NewComponent(ComponentMysql, lm.newMysqlManager, lc)
-	lm.postgresComp = NewComponent(ComponentPostgres, lm.newPostgresManager, lc)
-	lm.mongoComp = NewComponent(ComponentMongo, lm.newMongoManager, lc)
-	lm.consulComp = NewComponent(ComponentConsul, lm.newConsulManager, lc)
-	lm.jaegerComp = NewComponent(ComponentJaeger, lm.newJaegerManager, lc)
-	lm.rabbitmqComp = NewComponent(ComponentRabbitmq, lm.newRabbitmqManager, lc)
-	lm.authComp = NewComponent(ComponentAuth, lm.newAuthInstance, lc)
-	lm.serviceAPIComp = NewComponent(ComponentServiceAPI, lm.newServiceAPIManager, lc)
 
-	// 注册命名实例组 factory
-	lm.mysqlGroup = NewComponentGroup(ComponentMysql, lm.newNamedMysqlManager, lc)
-	lm.postgresGroup = NewComponentGroup(ComponentPostgres, lm.newNamedPostgresManager, lc)
-	lm.redisGroup = NewComponentGroup(ComponentRedis, lm.newNamedRedisManager, lc)
-	lm.mongoGroup = NewComponentGroup(ComponentMongo, lm.newNamedMongoManager, lc)
-	lm.consulGroup = NewComponentGroup(ComponentConsul, lm.newNamedConsulManager, lc)
-	lm.jaegerGroup = NewComponentGroup(ComponentJaeger, lm.newNamedJaegerManager, lc)
-	lm.rabbitmqGroup = NewComponentGroup(ComponentRabbitmq, lm.newNamedRabbitmqManager, lc)
+	// 通过 WithXxx() Option 注册的组件
+	for _, registrar := range o.componentRegistrars {
+		registrar(lm)
+	}
 
 	// 日志始终初始化（其他组件依赖日志）
 	loggerManager, err := lm.loggerComp.Get()
@@ -109,14 +74,14 @@ func New(conf *configpb.Bootstrap, opts ...Option) (LauncherManager, error) {
 // eagerInit 急切初始化指定的组件
 func (lm *launcherManager) eagerInit(components []string) error {
 	initMap := map[string]func() error{
-		ComponentRedis:    func() error { _, err := lm.redisComp.Get(); return err },
-		ComponentMysql:    func() error { _, err := lm.mysqlComp.Get(); return err },
-		ComponentPostgres: func() error { _, err := lm.postgresComp.Get(); return err },
-		ComponentMongo:    func() error { _, err := lm.mongoComp.Get(); return err },
-		ComponentConsul:   func() error { _, err := lm.consulComp.Get(); return err },
-		ComponentJaeger:   func() error { _, err := lm.jaegerComp.Get(); return err },
-		ComponentRabbitmq: func() error { _, err := lm.rabbitmqComp.Get(); return err },
-		ComponentAuth:     func() error { _, err := lm.authComp.Get(); return err },
+		ComponentRedis:    func() error { _, err := lm.GetRedisClient(); return err },
+		ComponentMysql:    func() error { _, err := lm.GetMysqlDBConn(); return err },
+		ComponentPostgres: func() error { _, err := lm.GetPostgresDBConn(); return err },
+		ComponentMongo:    func() error { _, err := lm.GetMongoClient(); return err },
+		ComponentConsul:   func() error { _, err := lm.GetConsulClient(); return err },
+		ComponentJaeger:   func() error { _, err := lm.GetJaegerExporter(); return err },
+		ComponentRabbitmq: func() error { _, err := lm.GetRabbitmqConn(); return err },
+		ComponentAuth:     func() error { _, err := lm.GetTokenManager(); return err },
 	}
 
 	for _, name := range components {
@@ -131,15 +96,40 @@ func (lm *launcherManager) eagerInit(components []string) error {
 	return nil
 }
 
+// GetRegistry 获取组件注册表（供 WithXxx Option 使用）
+func (lm *launcherManager) GetRegistry() *componentRegistry {
+	return lm.registry
+}
+
+// GetLifecycle 获取生命周期管理器（供 WithXxx Option 使用）
+func (lm *launcherManager) GetLifecycle() *Lifecycle {
+	return lm.lc
+}
+
+// GetLoggerComp 获取日志组件（供其他组件 factory 使用）
+func (lm *launcherManager) GetLoggerComp() *Component[loggerutil.LoggerManager] {
+	return lm.loggerComp
+}
+
+// newLoggerManager 创建日志管理器
+func (lm *launcherManager) newLoggerManager() (loggerutil.LoggerManager, error) {
+	return loggerutil.NewLoggerManager(lm.conf.GetLog(), lm.conf.GetApp())
+}
+
 // NewWithCleanup 便捷函数，加载配置并创建 LauncherManager
+// 向后兼容：自动注入 Consul 配置加载器和所有组件
 func NewWithCleanup(configFilePath string, configOpts ...configutil.Option) (LauncherManager, func(), error) {
+	// 向后兼容：自动注入 Consul 配置加载器
+	configOpts = append([]configutil.Option{configutil.WithConsulConfigLoader(configutil.NewConsulConfigLoader())}, configOpts...)
+
 	conf, err := configutil.Loading(configFilePath, configOpts...)
 	if err != nil {
 		return nil, nil, err
 	}
 	apputil.SetConfig(conf)
 
-	lm, err := New(conf)
+	// 向后兼容：注册所有组件
+	lm, err := New(conf, WithAllComponents())
 	if err != nil {
 		return nil, nil, err
 	}

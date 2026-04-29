@@ -112,4 +112,10 @@ openapi.yaml
 _output
 _output_testdata
 mytest
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
 /.kiro/specs/

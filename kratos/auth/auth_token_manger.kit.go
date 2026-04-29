@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	redispkg "github.com/ikaiguang/go-srv-kit/data/redis"
 	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kit/thread"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
@@ -100,13 +99,14 @@ func NewTokenManager(
 	logger log.Logger,
 	redisCC redis.UniversalClient,
 	authCacheKeyPrefix *AuthCacheKeyPrefix,
+	locker lockerpkg.Locker,
 ) TokenManager {
 	authCacheKeyPrefix = CheckAuthCacheKeyPrefix(authCacheKeyPrefix)
 	return &tokenManger{
 		log:                log.NewHelper(log.With(logger, "module", "kit.auth.token.manger")),
 		redisCC:            redisCC,
 		authCacheKeyPrefix: authCacheKeyPrefix,
-		locker:             redispkg.NewLocker(redisCC),
+		locker:             locker,
 	}
 }
 

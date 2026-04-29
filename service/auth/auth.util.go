@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	redispkg "github.com/ikaiguang/go-srv-kit/data/redis"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
@@ -96,7 +97,8 @@ func (s *authInstance) loadingTokenManager() (authpkg.TokenManager, authpkg.Auth
 	if err != nil {
 		return nil, nil, err
 	}
-	tokenManger := authpkg.NewTokenManager(logger, s.redisCC, authpkg.CheckAuthCacheKeyPrefix(nil))
+	tokenLocker := redispkg.NewLocker(s.redisCC)
+	tokenManger := authpkg.NewTokenManager(logger, s.redisCC, authpkg.CheckAuthCacheKeyPrefix(nil), tokenLocker)
 	config := &authpkg.Config{
 		SignCrypto:          authpkg.NewSignEncryptor(s.conf.GetSignKey()),
 		RefreshCrypto:       authpkg.NewCBCCipher(s.conf.GetRefreshKey()),

@@ -2,30 +2,42 @@ package rabbitmqpkg
 
 import (
 	"io"
+	"log"
 
 	"github.com/ThreeDotsLabs/watermill"
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 var _ watermill.LoggerAdapter = (*logger)(nil)
 
 // logger ...
 type logger struct {
-	handler log.Logger
+	handler Logger
 	fields  watermill.LogFields
 }
 
 // NewLogger ...
-func NewLogger(handler log.Logger) watermill.LoggerAdapter {
+func NewLogger(handler Logger) watermill.LoggerAdapter {
 	return &logger{
 		handler: handler,
 		fields:  watermill.LogFields{},
 	}
 }
 
+// NewLoggerFromWriters 基于 io.Writer 创建 watermill.LoggerAdapter。
+// 内部使用标准库 log 实现，不依赖 kratos。
 func NewLoggerFromWriters(writers ...io.Writer) watermill.LoggerAdapter {
-	stdLogger := log.NewStdLogger(io.MultiWriter(writers...))
-	return NewLogger(stdLogger)
+	stdLogger := log.New(io.MultiWriter(writers...), "", log.LstdFlags)
+	return NewLogger(&stdWriterLogger{logger: stdLogger})
+}
+
+// stdWriterLogger 基于标准库 log 的 Logger 实现
+type stdWriterLogger struct {
+	logger *log.Logger
+}
+
+func (s *stdWriterLogger) Log(level Level, keyvals ...any) error {
+	s.logger.Println(keyvals...)
+	return nil
 }
 
 func kvs(msg string, fields watermill.LogFields) []any {
@@ -39,20 +51,20 @@ func kvs(msg string, fields watermill.LogFields) []any {
 
 func (s *logger) Error(msg string, err error, fields watermill.LogFields) {
 	fields = fields.Add(watermill.LogFields{"error": err})
-	_ = s.handler.Log(log.LevelError, kvs(msg, fields)...)
+	_ = s.handler.Log(LevelError, kvs(msg, fields)...)
 }
 
 func (s *logger) Info(msg string, fields watermill.LogFields) {
-	_ = s.handler.Log(log.LevelInfo, kvs(msg, fields)...)
+	_ = s.handler.Log(LevelInfo, kvs(msg, fields)...)
 }
 
 func (s *logger) Debug(msg string, fields watermill.LogFields) {
-	_ = s.handler.Log(log.LevelDebug, kvs(msg, fields)...)
+	_ = s.handler.Log(LevelDebug, kvs(msg, fields)...)
 }
 
 func (s *logger) Trace(msg string, fields watermill.LogFields) {
 	fields = fields.Add(watermill.LogFields{"isTrace": true})
-	_ = s.handler.Log(log.LevelDebug, kvs(msg, fields)...)
+	_ = s.handler.Log(LevelDebug, kvs(msg, fields)...)
 }
 
 func (s *logger) With(fields watermill.LogFields) watermill.LoggerAdapter {

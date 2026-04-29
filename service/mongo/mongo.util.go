@@ -2,13 +2,16 @@ package mongoutil
 
 import (
 	"context"
+	stdlog "log"
+	"sync"
+
+	"github.com/go-kratos/kratos/v2/log"
+
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	mongopkg "github.com/ikaiguang/go-srv-kit/data/mongo"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	stdlog "log"
-	"sync"
 )
 
 type mongoManager struct {
@@ -71,12 +74,19 @@ func (s *mongoManager) loadingMongoDB() (*mongo.Client, error) {
 		return nil, err
 	}
 
-	db, err := mongopkg.NewMongoClient(ToMongoConfig(s.conf), logger)
+	db, err := mongopkg.NewMongoClient(ToMongoConfig(s.conf), toMongoLogger(logger))
 	if err != nil {
 		e := errorpkg.ErrorInternalError(err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return db, nil
+}
+
+// toMongoLogger 将 kratos log.Logger 适配为 mongopkg.Logger
+func toMongoLogger(l log.Logger) mongopkg.Logger {
+	return mongopkg.LogAdapter(func(level mongopkg.Level, keyvals ...any) error {
+		return l.Log(log.Level(level), keyvals...)
+	})
 }
 
 // ToMongoConfig ...

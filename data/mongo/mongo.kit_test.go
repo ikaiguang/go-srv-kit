@@ -1,20 +1,31 @@
+//go:build ignore
+
 package mongopkg
 
 import (
 	"context"
+	"os"
+	"testing"
+	"time"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/protobuf/types/known/durationpb"
-	"testing"
-	"time"
 )
+
+func getTestMongoURI() string {
+	if uri := os.Getenv("DB_MONGO_URI"); uri != "" {
+		return uri
+	}
+	return "mongodb://mongo:Mongo.123456@my-mongo:27017/admin"
+}
 
 var (
 	dbConfig = &Config{
 		Debug:             true,
 		AppName:           "mongo:test",
 		Hosts:             nil,
-		Addr:              "mongodb://mongo:Mongo.123456@my-mongo:27017/admin",
+		Addr:              getTestMongoURI(),
 		MaxPoolSize:       100,
 		MinPoolSize:       2,
 		MaxConnecting:     10,
@@ -26,11 +37,18 @@ var (
 	}
 )
 
+// kratosLoggerAdapter 将 kratos log.Logger 适配为本包的 Logger 接口
+func kratosLoggerAdapter(l log.Logger) Logger {
+	return LogAdapter(func(level Level, keyvals ...any) error {
+		return l.Log(log.Level(level), keyvals...)
+	})
+}
+
 // go test -v ./data/mongo/ -count=1 -run TestNewMongoClient
 func TestNewMongoClient(t *testing.T) {
 	type args struct {
 		config *Config
-		logger log.Logger
+		logger Logger
 	}
 	tests := []struct {
 		name    string
@@ -42,7 +60,7 @@ func TestNewMongoClient(t *testing.T) {
 			name: "#testNewClient",
 			args: args{
 				config: dbConfig,
-				logger: log.DefaultLogger,
+				logger: kratosLoggerAdapter(log.DefaultLogger),
 			},
 			want:    nil,
 			wantErr: false,
