@@ -1,6 +1,9 @@
 package mysqlutil
 
 import (
+	stdlog "log"
+	"sync"
+
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm"
 	mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql"
@@ -8,8 +11,6 @@ import (
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	stdlog "log"
-	"sync"
 )
 
 type mysqlManager struct {
@@ -92,7 +93,7 @@ func (s *mysqlManager) loadingMysqlDB() (*gorm.DB, error) {
 	}
 	db, err := mysqlpkg.NewMysqlDB(ToMysqlConfig(s.conf), opts...)
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return db, nil

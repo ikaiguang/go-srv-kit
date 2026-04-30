@@ -1,8 +1,9 @@
 package configutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"testing"
+
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 )
 
 // go test -v -count 1 ./config/ -run TestLoadingFile

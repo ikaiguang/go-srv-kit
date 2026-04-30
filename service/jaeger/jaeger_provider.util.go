@@ -1,9 +1,10 @@
 package jaegerutil
 
 import (
+	"sync"
+
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
-	"sync"
 )
 
 var (

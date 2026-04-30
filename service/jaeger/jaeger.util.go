@@ -2,10 +2,11 @@ package jaegerutil
 
 import (
 	"context"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	stdlog "log"
 	"sync"
+
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 
 	jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
@@ -66,7 +67,7 @@ func (s *jaegerManager) loadingJaegerTraceExporter() (*otlptrace.Exporter, error
 	stdlog.Println("|*** LOADING: JaegerExporter: ...")
 	je, err := jaegerpkg.NewJaegerExporter(ToJaegerConfig(s.conf))
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return je, nil

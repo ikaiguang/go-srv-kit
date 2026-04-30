@@ -1,6 +1,8 @@
 package consulutil
 
 import (
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/registry"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
@@ -8,7 +10,6 @@ import (
 	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
 	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	stdlog "log"
 )
 
 // RegistryAppOptions 为 Kratos App 注入 Consul 服务注册。

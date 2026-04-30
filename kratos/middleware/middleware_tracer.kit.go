@@ -2,7 +2,6 @@ package middlewarepkg
 
 import (
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
@@ -17,18 +16,18 @@ const (
 
 // tracerOptions ...
 type tracerOptions struct {
-	exporterType   TracerExporterType
-	jaegerExporter *otlptrace.Exporter
+	exporterType TracerExporterType
+	exporter     tracesdk.SpanExporter
 }
 
 // TracerOption is config option.
 type TracerOption func(*tracerOptions)
 
 // WithTracerJaegerExporter with config writer.
-func WithTracerJaegerExporter(exporter *otlptrace.Exporter) TracerOption {
+func WithTracerJaegerExporter(exporter tracesdk.SpanExporter) TracerOption {
 	return func(o *tracerOptions) {
 		o.exporterType = TracerExporterTypeJaeger
-		o.jaegerExporter = exporter
+		o.exporter = exporter
 	}
 }
 
@@ -50,9 +49,9 @@ func SetTracer(serviceNameKey string, opts ...TracerOption) error {
 	}
 	switch opt.exporterType {
 	case TracerExporterTypeJaeger:
-		if opt.jaegerExporter != nil {
+		if opt.exporter != nil {
 			// Always be sure to batch in production.
-			providerOptions = append(providerOptions, tracesdk.WithBatcher(opt.jaegerExporter))
+			providerOptions = append(providerOptions, tracesdk.WithBatcher(opt.exporter))
 		}
 	}
 	tp := tracesdk.NewTracerProvider(providerOptions...)
@@ -62,7 +61,7 @@ func SetTracer(serviceNameKey string, opts ...TracerOption) error {
 
 // SetTracerProvider set trace provider
 // serviceNameKey == apputil.ID(appConfig)
-func SetTracerProvider(serviceNameKey string, exporter *otlptrace.Exporter) error {
+func SetTracerProvider(serviceNameKey string, exporter tracesdk.SpanExporter) error {
 	tp := tracesdk.NewTracerProvider(
 		// Set the sampling rate based on the parent span to 100%
 		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),

@@ -14,5 +14,21 @@ use (
 	./data/redis
 	./kit
 	./kratos
+	./kratos/auth/redis
+	./kratos/registry
+	./kratos/registry_etcd
 	./service
+	./service/auth
+	./service/consul
+	./service/database
+	./service/jaeger
+	./service/mongo
+	./service/mysql
+	./service/postgres
+	./service/rabbitmq
+	./service/redis
+	./service/store
+	./testdata/ping-service
+	./testdata/ping-service/cmd/database-migration
+	./testdata/ping-service/cmd/store-configuration
 )

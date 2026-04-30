@@ -74,7 +74,7 @@ func (s *rabbitmqManager) loadingRabbitmqClient() (*rabbitmqpkg.ConnectionWrappe
 	opts = append(opts, rabbitmqpkg.WithLogger(rabbitmqpkg.NewLogger(toRabbitmqLogger(logger))))
 	uc, err := rabbitmqpkg.NewConnection(ToRabbitmqConfig(s.conf), opts...)
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return uc, nil

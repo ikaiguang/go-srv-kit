@@ -9,6 +9,7 @@ import (
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
+	authredis "github.com/ikaiguang/go-srv-kit/kratos/auth/redis"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	"github.com/redis/go-redis/v9"
 )
@@ -98,7 +99,7 @@ func (s *authInstance) loadingTokenManager() (authpkg.TokenManager, authpkg.Auth
 		return nil, nil, err
 	}
 	tokenLocker := redispkg.NewLocker(s.redisCC)
-	tokenManger := authpkg.NewTokenManager(logger, s.redisCC, authpkg.CheckAuthCacheKeyPrefix(nil), tokenLocker)
+	tokenManger := authredis.NewTokenManager(logger, s.redisCC, nil, tokenLocker)
 	config := &authpkg.Config{
 		SignCrypto:          authpkg.NewSignEncryptor(s.conf.GetSignKey()),
 		RefreshCrypto:       authpkg.NewCBCCipher(s.conf.GetRefreshKey()),

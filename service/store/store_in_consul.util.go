@@ -67,7 +67,7 @@ func (s *storeInConsulHandler) Save(sourceDir, storeDir string) error {
 		}
 		_, err := s.consulClient.KV().Put(kv, opt)
 		if err != nil {
-			e := errorpkg.ErrorInternalError(err.Error())
+			e := errorpkg.ErrorInternalError("%s", err.Error())
 			return errorpkg.WithStack(e)
 		}
 	}

@@ -4,9 +4,8 @@ import (
 	stdlog "log"
 	"sync"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-
 	consulapi "github.com/hashicorp/consul/api"
+	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	consulpkg "github.com/ikaiguang/go-srv-kit/data/consul"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 )

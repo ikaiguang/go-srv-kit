@@ -5,8 +5,8 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
+	middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 )
 
 var (
@@ -20,17 +20,17 @@ type AppOptionProvider func(launcherManager setuputil.LauncherManager) ([]kratos
 // AuthManagerProvider 按需获取认证管理器。
 type AuthManagerProvider func(launcherManager setuputil.LauncherManager) (authpkg.AuthRepo, error)
 
-// JaegerExporterProvider 按需获取 Jaeger exporter。
-type JaegerExporterProvider func(launcherManager setuputil.LauncherManager) (*otlptrace.Exporter, error)
+// TracerOptionProvider 按需获取链路追踪选项。
+type TracerOptionProvider func(launcherManager setuputil.LauncherManager) ([]middlewarepkg.TracerOption, error)
 
 // Option 配置 all-in-one 启动流程。
 type Option func(*options)
 
 type options struct {
-	setupOptions           []setuputil.Option
-	appOptionProviders     []AppOptionProvider
-	authManagerProvider    AuthManagerProvider
-	jaegerExporterProvider JaegerExporterProvider
+	setupOptions         []setuputil.Option
+	appOptionProviders   []AppOptionProvider
+	authManagerProvider  AuthManagerProvider
+	tracerOptionProvider TracerOptionProvider
 }
 
 // WithSetupOptions 注入 LauncherManager 组件注册选项。
@@ -54,10 +54,10 @@ func WithAuthManagerProvider(provider AuthManagerProvider) Option {
 	}
 }
 
-// WithJaegerExporterProvider 注入 Jaeger exporter 提供者。
-func WithJaegerExporterProvider(provider JaegerExporterProvider) Option {
+// WithTracerOptionProvider 注入链路追踪选项提供者。
+func WithTracerOptionProvider(provider TracerOptionProvider) Option {
 	return func(o *options) {
-		o.jaegerExporterProvider = provider
+		o.tracerOptionProvider = provider
 	}
 }
 

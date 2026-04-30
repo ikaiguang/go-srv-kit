@@ -76,7 +76,7 @@ func (s *mongoManager) loadingMongoDB() (*mongo.Client, error) {
 
 	db, err := mongopkg.NewMongoClient(ToMongoConfig(s.conf), toMongoLogger(logger))
 	if err != nil {
-		e := errorpkg.ErrorInternalError(err.Error())
+		e := errorpkg.ErrorInternalError("%s", err.Error())
 		return nil, errorpkg.WithStack(e)
 	}
 	return db, nil

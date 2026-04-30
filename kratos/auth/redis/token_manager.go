@@ -1,4 +1,4 @@
-package authpkg
+package redis
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/locker"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kit/thread"
+	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	"github.com/redis/go-redis/v9"
 )
@@ -61,30 +62,7 @@ func CheckAuthCacheKeyPrefix(inputKeyPrefix *AuthCacheKeyPrefix) *AuthCacheKeyPr
 	return keyPrefix
 }
 
-var _ TokenManager = (*tokenManger)(nil)
-
-// TokenManager 令牌管理器接口
-type TokenManager interface {
-	SaveAccessTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
-	ResetPreviousTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
-	AddBlacklist(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
-	AddLoginLimit(ctx context.Context, tokenItems []*TokenItem) error
-
-	GetToken(ctx context.Context, userIdentifier string, tokenID string) (item *TokenItem, isNotFound bool, err error)
-	GetAllTokens(ctx context.Context, userIdentifier string) (map[string]*TokenItem, error)
-
-	DeleteTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error
-	DeleteExpireTokens(ctx context.Context, userIdentifier string) error
-
-	IsLoginLimit(ctx context.Context, tokenID string) (bool, LoginLimitEnum_LoginLimit, error)
-	IsExistToken(ctx context.Context, userIdentifier string, tokenID string) (bool, error)
-	IsBlacklist(ctx context.Context, tokenID string) (bool, error)
-
-	// EasyLock 简单锁，等待解锁或者锁定时间过期后自动解锁
-	EasyLock(ctx context.Context, lockName string) (lockerpkg.Unlocker, error)
-	// MutexLock 互斥锁，一直等待直到解锁
-	// MutexLock(ctx context.Context, lockName string) (lockerpkg.Unlocker, error)
-}
+var _ authpkg.TokenManager = (*tokenManger)(nil)
 
 // tokenManger ...
 type tokenManger struct {
@@ -100,7 +78,7 @@ func NewTokenManager(
 	redisCC redis.UniversalClient,
 	authCacheKeyPrefix *AuthCacheKeyPrefix,
 	locker lockerpkg.Locker,
-) TokenManager {
+) authpkg.TokenManager {
 	authCacheKeyPrefix = CheckAuthCacheKeyPrefix(authCacheKeyPrefix)
 	return &tokenManger{
 		log:                log.NewHelper(log.With(logger, "module", "kit.auth.token.manger")),
@@ -111,7 +89,7 @@ func NewTokenManager(
 }
 
 // SaveAccessTokens ...
-func (s *tokenManger) SaveAccessTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error {
+func (s *tokenManger) SaveAccessTokens(ctx context.Context, userIdentifier string, tokenItems []*authpkg.TokenItem) error {
 	if len(tokenItems) == 0 {
 		return nil
 	}
@@ -162,7 +140,7 @@ func (s *tokenManger) calcExpireTime(expireAt, nowUnix int64) time.Duration {
 }
 
 // ResetPreviousTokens ...
-func (s *tokenManger) ResetPreviousTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error {
+func (s *tokenManger) ResetPreviousTokens(ctx context.Context, userIdentifier string, tokenItems []*authpkg.TokenItem) error {
 	if len(tokenItems) == 0 {
 		return nil
 	}
@@ -190,7 +168,7 @@ func (s *tokenManger) ResetPreviousTokens(ctx context.Context, userIdentifier st
 }
 
 // AddBlacklist ...
-func (s *tokenManger) AddBlacklist(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error {
+func (s *tokenManger) AddBlacklist(ctx context.Context, userIdentifier string, tokenItems []*authpkg.TokenItem) error {
 	if len(tokenItems) == 0 {
 		return nil
 	}
@@ -229,7 +207,7 @@ func (s *tokenManger) AddBlacklist(ctx context.Context, userIdentifier string, t
 func (s *tokenManger) DeleteExpireTokens(ctx context.Context, userIdentifier string) error {
 	var (
 		nowUnix    = time.Now().Unix()
-		expireList []*TokenItem
+		expireList []*authpkg.TokenItem
 	)
 
 	// 防止重复删除
@@ -260,7 +238,7 @@ func (s *tokenManger) DeleteExpireTokens(ctx context.Context, userIdentifier str
 }
 
 // DeleteTokens ...
-func (s *tokenManger) DeleteTokens(ctx context.Context, userIdentifier string, tokenItems []*TokenItem) error {
+func (s *tokenManger) DeleteTokens(ctx context.Context, userIdentifier string, tokenItems []*authpkg.TokenItem) error {
 	if len(tokenItems) == 0 {
 		return nil
 	}
@@ -281,7 +259,7 @@ func (s *tokenManger) DeleteTokens(ctx context.Context, userIdentifier string, t
 }
 
 // AddLoginLimit ...
-func (s *tokenManger) AddLoginLimit(ctx context.Context, tokenItems []*TokenItem) error {
+func (s *tokenManger) AddLoginLimit(ctx context.Context, tokenItems []*authpkg.TokenItem) error {
 	if len(tokenItems) == 0 {
 		return nil
 	}
@@ -329,7 +307,7 @@ func (s *tokenManger) MutexLock(ctx context.Context, lockName string) (lockerpkg
 }
 
 // IsLoginLimit ...
-func (s *tokenManger) IsLoginLimit(ctx context.Context, tokenID string) (bool, LoginLimitEnum_LoginLimit, error) {
+func (s *tokenManger) IsLoginLimit(ctx context.Context, tokenID string) (bool, authpkg.LoginLimitEnum_LoginLimit, error) {
 	limitKey := s.genLimitTokenKey(tokenID)
 	loginLimitStr, err := s.redisCC.Get(ctx, limitKey).Result()
 	if err != nil {
@@ -339,14 +317,14 @@ func (s *tokenManger) IsLoginLimit(ctx context.Context, tokenID string) (bool, L
 			e := errorpkg.ErrorInternalServer("")
 			err = errorpkg.Wrap(e, err)
 		}
-		return false, LoginLimitEnum_UNLIMITED, err
+		return false, authpkg.LoginLimitEnum_UNLIMITED, err
 	}
 	ll, _ := strconv.Atoi(loginLimitStr)
-	return true, LoginLimitEnum_LoginLimit(int32(ll)), nil
+	return true, authpkg.LoginLimitEnum_LoginLimit(int32(ll)), nil
 }
 
 // GetToken ...
-func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, tokenID string) (item *TokenItem, isNotFound bool, err error) {
+func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, tokenID string) (item *authpkg.TokenItem, isNotFound bool, err error) {
 	key := s.genTokensKey(userIdentifier)
 	res, err := s.redisCC.HGet(ctx, key, tokenID).Result()
 	if err != nil {
@@ -359,7 +337,7 @@ func (s *tokenManger) GetToken(ctx context.Context, userIdentifier string, token
 		}
 		return item, isNotFound, err
 	}
-	item = &TokenItem{}
+	item = &authpkg.TokenItem{}
 	err = item.DecodeString(res)
 	if err != nil {
 		return item, isNotFound, err
@@ -382,7 +360,7 @@ func (s *tokenManger) IsExistToken(ctx context.Context, userIdentifier string, t
 	if time.Unix(tokenItem.ExpiredAt, 0).Before(time.Now()) {
 		threadpkg.GoSafe(func() {
 			// ctx many be cancel
-			deleteErr := s.DeleteTokens(context.Background(), userIdentifier, []*TokenItem{tokenItem})
+			deleteErr := s.DeleteTokens(context.Background(), userIdentifier, []*authpkg.TokenItem{tokenItem})
 			if deleteErr != nil {
 				s.log.WithContext(ctx).Warnw("msg", "DeleteTokens failed", "tokenItem", tokenItem)
 			}
@@ -393,7 +371,7 @@ func (s *tokenManger) IsExistToken(ctx context.Context, userIdentifier string, t
 }
 
 // GetAllTokens ...
-func (s *tokenManger) GetAllTokens(ctx context.Context, userIdentifier string) (map[string]*TokenItem, error) {
+func (s *tokenManger) GetAllTokens(ctx context.Context, userIdentifier string) (map[string]*authpkg.TokenItem, error) {
 	key := s.genTokensKey(userIdentifier)
 	tokens, err := s.redisCC.HGetAll(ctx, key).Result()
 	if err != nil {
@@ -402,9 +380,9 @@ func (s *tokenManger) GetAllTokens(ctx context.Context, userIdentifier string) (
 		return nil, err
 	}
 
-	var items = make(map[string]*TokenItem)
+	var items = make(map[string]*authpkg.TokenItem)
 	for iKey := range tokens {
-		item := &TokenItem{}
+		item := &authpkg.TokenItem{}
 		err = item.DecodeString(tokens[iKey])
 		if err != nil {
 			return nil, err

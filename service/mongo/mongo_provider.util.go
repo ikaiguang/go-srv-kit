@@ -1,10 +1,11 @@
 package mongoutil
 
 import (
+	"sync"
+
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"sync"
 )
 
 var (

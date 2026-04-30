@@ -45,8 +45,8 @@
 | `service/cleanup` | 无 | ✅ |
 | `service/tracer` | 无（otel） | ✅ |
 | `service/cluster_service_api` | 无（gRPC/HTTP client） | ✅ |
-| `service/auth` | 无（JWT） | ✅ |
-| `service/database` | 无（migration 接口） | ✅（ExportDatabaseMigration） |
+| `service/database` | gorm（MigrationFunc 签名含 *gorm.DB） | ❌（通过 export 间接引入） |
+| `service/auth` | go-redis、data/redis、service/redis | ❌ |
 | `service/store` | consul API | ❌ |
 | `service/consul` | consul API、consul registry | ❌ |
 | `service/redis` | go-redis、data/redis | ❌ |
@@ -69,7 +69,7 @@
 将 `service/` 拆分为：
 
 1. **`service/` 核心模块**（保留现有 `service/go.mod`）
-   - 包含：setup、server、config、logger、app、middleware、cleanup、tracer、cluster_service_api、auth、database
+   - 包含：setup、server、config、logger、app、middleware、cleanup、tracer、cluster_service_api、database
    - 这些是任何业务服务都需要的基础能力
    - `go.mod` 只依赖 kratos、kit、kratos 扩展，不依赖任何 data/* 子模块
 
@@ -81,7 +81,9 @@
    - `service/mongo/go.mod` → 依赖 data/mongo
    - `service/rabbitmq/go.mod` → 依赖 data/rabbitmq
    - `service/jaeger/go.mod` → 依赖 data/jaeger
+   - `service/auth/go.mod` → 依赖 service/redis、data/redis、go-redis
    - `service/store/go.mod` → 依赖 consul（或合并到 service/consul）
+   - `service/database/go.mod` → 依赖 gorm（MigrationFunc 签名含 *gorm.DB）
 
 ### ping-service 的 go.mod
 

@@ -29,10 +29,10 @@ func NewSingletonAuthInstance(
 	return singletonAuthInstance, err
 }
 
-func GetAuthManager(authInstance AuthInstance) (authpkg.AuthRepo, error) {
+func GetAuthManagerFromInstance(authInstance AuthInstance) (authpkg.AuthRepo, error) {
 	return authInstance.GetAuthManger()
 }
 
-func GetTokenManger(authInstance AuthInstance) (authpkg.TokenManager, error) {
+func GetTokenMangerFromInstance(authInstance AuthInstance) (authpkg.TokenManager, error) {
 	return authInstance.GetTokenManger()
 }

@@ -1,6 +1,8 @@
 package jaegerutil
 
 import (
+	middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
+	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 )
@@ -39,4 +41,20 @@ func GetNamedExporter(launcherManager setuputil.LauncherManager, name string) (*
 		return nil, err
 	}
 	return mgr.GetExporter()
+}
+
+// TracerOptions 为 all-in-one 启动注入 Jaeger tracer。
+func TracerOptions(launcherManager setuputil.LauncherManager) ([]middlewarepkg.TracerOption, error) {
+	exp, err := GetExporter(launcherManager)
+	if err != nil {
+		return nil, err
+	}
+	return []middlewarepkg.TracerOption{
+		middlewarepkg.WithTracerJaegerExporter(exp),
+	}, nil
+}
+
+// WithTracerOptions 将 Jaeger tracer 接入 all-in-one 启动。
+func WithTracerOptions() serverutil.Option {
+	return serverutil.WithTracerOptionProvider(TracerOptions)
 }

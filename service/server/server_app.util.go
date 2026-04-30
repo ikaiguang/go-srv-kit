@@ -1,6 +1,8 @@
 package serverutil
 
 import (
+	"net/url"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
@@ -9,7 +11,6 @@ import (
 	apputil "github.com/ikaiguang/go-srv-kit/service/app"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 	tracerutil "github.com/ikaiguang/go-srv-kit/service/tracer"
-	"net/url"
 )
 
 // NewApp .
@@ -24,14 +25,14 @@ func newAppWithOptions(launcherManager setuputil.LauncherManager, hs *http.Serve
 		enableJaegerTracer = conf.GetSetting().GetEnableJaegerTracer()
 	)
 	if enableJaegerTracer {
-		if runOpts == nil || runOpts.jaegerExporterProvider == nil {
-			return nil, errorpkgMissingProvider("jaeger exporter")
+		if runOpts == nil || runOpts.tracerOptionProvider == nil {
+			return nil, errorpkgMissingProvider("tracer options")
 		}
-		exp, err := runOpts.jaegerExporterProvider(launcherManager)
+		opts, err := runOpts.tracerOptionProvider(launcherManager)
 		if err != nil {
 			return nil, err
 		}
-		err = tracerutil.InitTracerWithJaegerExporter(appConfig, exp)
+		err = tracerutil.InitTracerWithOptions(appConfig, opts...)
 		if err != nil {
 			return nil, err
 		}

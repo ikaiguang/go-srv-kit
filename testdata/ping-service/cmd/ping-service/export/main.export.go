@@ -3,12 +3,10 @@ package serviceexporter
 import (
 	cleanuputil "github.com/ikaiguang/go-srv-kit/service/cleanup"
 	configutil "github.com/ikaiguang/go-srv-kit/service/config"
-	dbutil "github.com/ikaiguang/go-srv-kit/service/database"
 	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
 	serverutil "github.com/ikaiguang/go-srv-kit/service/server"
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 	pingapi "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service"
-	dbmigrate "github.com/ikaiguang/go-srv-kit/testdata/ping-service/cmd/database-migration/migrate"
 	"github.com/ikaiguang/go-srv-kit/testdata/ping-service/internal/conf"
 )
 
@@ -33,10 +31,4 @@ func ExportServices(launcherManager setuputil.LauncherManager, serverManager ser
 	}
 	return exportServices(launcherManager, hs, gs)
 	//return serverutil.MergeCleanup(exportServices(launcherManager, hs, gs))
-}
-
-func ExportDatabaseMigration() []dbutil.MigrationFunc {
-	return []dbutil.MigrationFunc{
-		dbmigrate.Run,
-	}
 }

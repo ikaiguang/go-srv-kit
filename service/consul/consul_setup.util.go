@@ -2,7 +2,6 @@ package consulutil
 
 import (
 	consulapi "github.com/hashicorp/consul/api"
-
 	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 )
 

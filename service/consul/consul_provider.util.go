@@ -1,9 +1,10 @@
 package consulutil
 
 import (
+	"sync"
+
 	consulapi "github.com/hashicorp/consul/api"
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	"sync"
 )
 
 var (
