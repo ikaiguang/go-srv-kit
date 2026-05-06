@@ -9,10 +9,7 @@ import (
 
 // Go runs the given fn using another goroutine, recovers if fn panics.
 func Go(fn func()) {
-	go func() {
-		defer Recover(context.Background())
-		fn()
-	}()
+	GoSafe(fn)
 }
 
 // GoSafe runs the given fn using another goroutine, recovers if fn panics.
@@ -25,10 +22,18 @@ func GoSafe(fn func()) {
 
 // GoSafeWithContext ...
 func GoSafeWithContext(ctx context.Context, fn func(ctx context.Context)) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	go func() {
 		defer Recover(ctx)
 		fn(ctx)
 	}()
+}
+
+// GoWithContext runs the given fn using another goroutine with context, recovers if fn panics.
+func GoWithContext(ctx context.Context, fn func(ctx context.Context)) {
+	GoSafeWithContext(ctx, fn)
 }
 
 // Recover is used with defer to do cleanup on panics.

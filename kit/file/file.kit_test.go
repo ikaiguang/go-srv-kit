@@ -58,6 +58,35 @@ func TestCopyFile(t *testing.T) {
 	assert.Equal(t, content, data)
 }
 
+func TestCopyFile_CreateDestDir(t *testing.T) {
+	require.Nil(t, os.MkdirAll(testdataDir, 0755))
+	defer func() { _ = os.RemoveAll(testdataDir) }()
+
+	srcFile := filepath.Join(testdataDir, "src.txt")
+	dstFile := filepath.Join(testdataDir, "nested", "dst.txt")
+	content := []byte("copy test content")
+
+	require.Nil(t, os.WriteFile(srcFile, content, 0644))
+	require.Nil(t, CopyFile(srcFile, dstFile))
+
+	data, err := os.ReadFile(dstFile)
+	require.Nil(t, err)
+	assert.Equal(t, content, data)
+}
+
+func TestMoveFileToDir_CreateDestDir(t *testing.T) {
+	require.Nil(t, os.MkdirAll(testdataDir, 0755))
+	defer func() { _ = os.RemoveAll(testdataDir) }()
+
+	srcFile := filepath.Join(testdataDir, "src.txt")
+	dstDir := filepath.Join(testdataDir, "nested", "dst")
+	require.Nil(t, os.WriteFile(srcFile, []byte("move"), 0644))
+
+	targetPath, err := MoveFileToDir(srcFile, dstDir)
+	require.Nil(t, err)
+	assert.Equal(t, filepath.Join(dstDir, "src.txt"), targetPath)
+}
+
 // go test -v -count 1 ./kit/file -run TestCopyFile_SrcNotExist
 func TestCopyFile_SrcNotExist(t *testing.T) {
 	err := CopyFile("/nonexistent/file.txt", "/tmp/dst.txt")

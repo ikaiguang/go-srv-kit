@@ -50,6 +50,7 @@ func TestIsDefaultValue(t *testing.T) {
 		{"map_nil", (map[string]int)(nil), true},
 		{"map_nonnil", map[string]int{}, false},
 		// 指针
+		{"nil", nil, true},
 		{"ptr_nil", (*int)(nil), true},
 		{"ptr_nonnil", new(int), false},
 	}
@@ -116,6 +117,10 @@ func TestSwapObject(t *testing.T) {
 		assert.False(t, ok)
 	})
 
+	t.Run("nil返回false", func(t *testing.T) {
+		assert.False(t, SwapObject(nil, nil))
+	})
+
 	t.Run("结构体交换", func(t *testing.T) {
 		type Foo struct {
 			Name string
@@ -141,5 +146,9 @@ func TestNewObject(t *testing.T) {
 		src := struct{ Name string }{Name: "test"}
 		obj := NewObject(src)
 		assert.NotNil(t, obj)
+	})
+
+	t.Run("nil返回nil", func(t *testing.T) {
+		assert.Nil(t, NewObject(nil))
 	})
 }

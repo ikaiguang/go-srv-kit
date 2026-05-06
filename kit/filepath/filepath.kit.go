@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
+	filepkg "github.com/ikaiguang/go-kit/file"
 )
 
 // WalkDir 遍历所有的目录与文件（使用 filepath.WalkDir + fs.DirEntry）

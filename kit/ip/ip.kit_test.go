@@ -1,6 +1,7 @@
 package ippkg
 
 import (
+	"net"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,4 +48,20 @@ func TestPrivateIPv4(t *testing.T) {
 	ip := PrivateIPv4()
 	assert.NotNil(t, ip, "PrivateIPv4 不应返回 nil")
 	assert.True(t, IsValidIP(ip.String()), "PrivateIPv4 返回的应是有效 IP: %s", ip.String())
+}
+
+func TestIsPrivateIPv4(t *testing.T) {
+	assert.True(t, isPrivateIPv4(netParseIP(t, "10.0.0.1")))
+	assert.True(t, isPrivateIPv4(netParseIP(t, "172.16.0.1")))
+	assert.True(t, isPrivateIPv4(netParseIP(t, "192.168.1.1")))
+	assert.False(t, isPrivateIPv4(netParseIP(t, "8.8.8.8")))
+	assert.False(t, isPrivateIPv4(netParseIP(t, "::1")))
+	assert.False(t, isPrivateIPv4(nil))
+}
+
+func netParseIP(t *testing.T, raw string) net.IP {
+	t.Helper()
+	ip := net.ParseIP(raw)
+	assert.NotNil(t, ip)
+	return ip
 }

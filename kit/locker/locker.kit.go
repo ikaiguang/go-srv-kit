@@ -3,6 +3,13 @@ package lockerpkg
 import (
 	"context"
 	"fmt"
+	"time"
+)
+
+const (
+	_cacheLockerExpire    = 8 * time.Second // 锁过期时间
+	_cacheLockExtendDelay = 3 * time.Second // 重置锁时间，防止锁自动过期
+	_cacheLockerClean     = 5 * time.Minute // 清除缓存
 )
 
 // Locker 加锁

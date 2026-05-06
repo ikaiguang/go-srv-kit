@@ -65,7 +65,7 @@ func (a *aesCipher) DecryptToString(encrypted string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(encryptedByte)%a.blockSize != 0 {
+	if len(encryptedByte) == 0 || len(encryptedByte)%a.blockSize != 0 {
 		return "", errInvalidCiphertext
 	}
 	// 创建数组
@@ -95,5 +95,13 @@ func pkcs7UnPadding(data []byte) ([]byte, error) {
 		return nil, errInvalidPadding
 	}
 	unPadding := int(data[length-1])
+	if unPadding == 0 || unPadding > length {
+		return nil, errInvalidPadding
+	}
+	for _, b := range data[length-unPadding:] {
+		if int(b) != unPadding {
+			return nil, errInvalidPadding
+		}
+	}
 	return data[:(length - unPadding)], nil
 }

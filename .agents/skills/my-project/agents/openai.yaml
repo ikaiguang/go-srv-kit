@@ -1,0 +1,3 @@
+display_name: My Project
+short_description: 本仓库架构、流程、生成命令和编码约定入口。
+default_prompt: 使用 $my-project 处理本仓库中的实现、重构、Proto/Wire 生成、配置、测试或问题排查。

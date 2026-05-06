@@ -27,6 +27,12 @@ func TestPutBuffer_Reset(t *testing.T) {
 	PutBuffer(buf2)
 }
 
+func TestPutBufferNil(t *testing.T) {
+	assert.NotPanics(t, func() {
+		PutBuffer(nil)
+	})
+}
+
 func TestGetBuffer_WriteAndRead(t *testing.T) {
 	buf := GetBuffer()
 	defer PutBuffer(buf)

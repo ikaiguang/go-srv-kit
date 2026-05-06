@@ -6,7 +6,7 @@ import (
 	"net"
 	"sync"
 
-	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
+	ippkg "github.com/ikaiguang/go-kit/ip"
 )
 
 var (
@@ -22,20 +22,10 @@ var (
 	nodeErr error
 )
 
-// ===== Benchmark =====
-// BenchmarkNew_SonySonyflake-8			31080             38894 ns/op               0 B/op          0 allocs/op
-// BenchmarkNew_BwmarrinSnowflake-8		76981             15611 ns/op               0 B/op          0 allocs/op
-// ===== Benchmark =====
-// SonySonyflake :
-// The lifetime (174 years) is longer than that of Snowflake (69 years)
-// It can work in more distributed machines (2^16) than Snowflake (2^10)
-// It can generate 2^8 IDs per 10 msec at most in a single machine/thread (slower than Snowflake)
-// =====
-// BwmarrinSnowflake :
-// You can alter the number of bits used for the node id and step number (sequence) by
-// setting the snowflake.NodeBits and snowflake.StepBits values.
-// Remember that There is a maximum of 22 bits available that
-// can be shared between these two values. You do not have to use all 22 bits.
+// 默认 Snowflake 配置为 12 位节点号和 8 位序列号：
+// - 最多 4096 个节点
+// - 单节点每毫秒最多 256 个 ID
+// - 基于 2026-01-01 的 epoch，理论寿命约 279 年
 func init() {
 	// 不再 panic，仅尝试初始化
 	nodeID, err := GenNodeID()
@@ -95,10 +85,14 @@ func IPV4ToNodeID(ip string) (uint16, error) {
 	if ipAddr == nil {
 		return 0, fmt.Errorf("invalid IP address: %s", ip)
 	}
+	ipv4 := ipAddr.To4()
+	if ipv4 == nil {
+		return 0, fmt.Errorf("invalid IPv4 address: %s", ip)
+	}
 
 	var lastTwoBytes [2]byte
-	copy(lastTwoBytes[:], ipAddr.To4()[2:])
+	copy(lastTwoBytes[:], ipv4[2:])
 
-	nodeId := uint16(lastTwoBytes[0])<<8 | uint16(lastTwoBytes[1])
-	return nodeId, nil
+	nodeID := uint16(lastTwoBytes[0])<<8 | uint16(lastTwoBytes[1])
+	return nodeID & uint16(snowflakeMaxNode), nil
 }

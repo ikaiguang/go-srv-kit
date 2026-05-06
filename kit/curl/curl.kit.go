@@ -1,6 +1,7 @@
 package curlpkg
 
 import (
+	"context"
 	"crypto/tls"
 	"io"
 	"net/http"
@@ -23,32 +24,65 @@ const (
 
 // NewPostRequest Post请求
 func NewPostRequest(httpURL string, body io.Reader) (httpReq *http.Request, err error) {
-	// http
-	httpReq, err = http.NewRequest(http.MethodPost, httpURL, body)
-	if err != nil {
-		return
-	}
-	return httpReq, err
+	return NewPostRequestContext(context.Background(), httpURL, body)
 }
 
 // NewGetRequest Get请求
 func NewGetRequest(httpURL string, body io.Reader) (httpReq *http.Request, err error) {
-	// http
-	httpReq, err = http.NewRequest(http.MethodGet, httpURL, body)
-	if err != nil {
-		return
-	}
-	return httpReq, err
+	return NewGetRequestContext(context.Background(), httpURL, body)
+}
+
+// NewPutRequest Put请求
+func NewPutRequest(httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	return NewPutRequestContext(context.Background(), httpURL, body)
+}
+
+// NewPatchRequest Patch请求
+func NewPatchRequest(httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	return NewPatchRequestContext(context.Background(), httpURL, body)
+}
+
+// NewDeleteRequest Delete请求
+func NewDeleteRequest(httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	return NewDeleteRequestContext(context.Background(), httpURL, body)
 }
 
 // NewRequest .
 func NewRequest(httpMethod, httpURL string, body io.Reader) (httpReq *http.Request, err error) {
-	// http
-	httpReq, err = http.NewRequest(httpMethod, httpURL, body)
-	if err != nil {
-		return httpReq, err
+	return NewRequestContext(context.Background(), httpMethod, httpURL, body)
+}
+
+// NewPostRequestContext Post请求（支持 Context）
+func NewPostRequestContext(ctx context.Context, httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	return NewRequestContext(ctx, http.MethodPost, httpURL, body)
+}
+
+// NewGetRequestContext Get请求（支持 Context）
+func NewGetRequestContext(ctx context.Context, httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	return NewRequestContext(ctx, http.MethodGet, httpURL, body)
+}
+
+// NewPutRequestContext Put请求（支持 Context）
+func NewPutRequestContext(ctx context.Context, httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	return NewRequestContext(ctx, http.MethodPut, httpURL, body)
+}
+
+// NewPatchRequestContext Patch请求（支持 Context）
+func NewPatchRequestContext(ctx context.Context, httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	return NewRequestContext(ctx, http.MethodPatch, httpURL, body)
+}
+
+// NewDeleteRequestContext Delete请求（支持 Context）
+func NewDeleteRequestContext(ctx context.Context, httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	return NewRequestContext(ctx, http.MethodDelete, httpURL, body)
+}
+
+// NewRequestContext 创建 HTTP 请求（支持 Context）
+func NewRequestContext(ctx context.Context, httpMethod, httpURL string, body io.Reader) (httpReq *http.Request, err error) {
+	if ctx == nil {
+		ctx = context.Background()
 	}
-	return httpReq, err
+	return http.NewRequestWithContext(ctx, httpMethod, httpURL, body)
 }
 
 // NewHTTPClient http客户端

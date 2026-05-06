@@ -3,7 +3,7 @@ package pagetestdata
 import (
 	"testing"
 
-	pagepkg "github.com/ikaiguang/go-srv-kit/kit/page"
+	pagepkg "github.com/ikaiguang/go-kit/page"
 )
 
 // go test -v -count 1 ./kit/page/testdata -run TestPage_Page

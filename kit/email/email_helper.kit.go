@@ -3,7 +3,7 @@ package emailpkg
 import (
 	"fmt"
 
-	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
+	bufferpkg "github.com/ikaiguang/go-kit/buffer"
 	"gopkg.in/gomail.v2"
 )
 

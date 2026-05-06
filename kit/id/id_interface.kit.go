@@ -2,44 +2,24 @@ package idpkg
 
 import (
 	stderrors "errors"
-	"github.com/bwmarrin/snowflake"
-	"github.com/sony/sonyflake"
-	"math"
 	"strconv"
 	"time"
+
+	"github.com/bwmarrin/snowflake"
+)
+
+const (
+	snowflakeNodeBits uint8 = 12
+	snowflakeStepBits uint8 = 8
+	snowflakeMaxNode        = int64(1<<snowflakeNodeBits - 1)
 )
 
 var (
-	DefaultEpoch = time.Date(2020, 10, 1, 0, 0, 0, 0, time.Local)
+	DefaultEpoch = time.Date(2026, 1, 1, 0, 0, 0, 0, time.Local)
 )
 
 type Snowflake interface {
 	NextID() (uint64, error)
-}
-
-type sonySonyflake struct {
-	node *sonyflake.Sonyflake
-}
-
-func NewSonySonyflake(nodeid int64) (Snowflake, error) {
-	if nodeid > math.MaxUint16 {
-		return nil, stderrors.New("Node number must be between 0 and " + strconv.FormatInt(math.MaxUint16, 10))
-	}
-	st := sonyflake.Settings{
-		StartTime: DefaultEpoch,
-		MachineID: func() (uint16, error) {
-			return uint16(nodeid), nil
-		},
-	}
-	node, err := sonyflake.New(st)
-	if err != nil {
-		return nil, err
-	}
-	return &sonySonyflake{node: node}, nil
-}
-
-func (s *sonySonyflake) NextID() (uint64, error) {
-	return s.node.NextID()
 }
 
 type bwmarrinSnowflake struct {
@@ -48,10 +28,10 @@ type bwmarrinSnowflake struct {
 
 func NewBwmarrinSnowflake(nodeid int64) (Snowflake, error) {
 	snowflake.Epoch = DefaultEpoch.UnixMilli()
-	snowflake.NodeBits = 16
-	snowflake.StepBits = 6
-	if nodeid > math.MaxUint16 {
-		return nil, stderrors.New("Node number must be between 0 and " + strconv.FormatInt(math.MaxUint16, 10))
+	snowflake.NodeBits = snowflakeNodeBits
+	snowflake.StepBits = snowflakeStepBits
+	if nodeid < 0 || nodeid > snowflakeMaxNode {
+		return nil, stderrors.New("Node number must be between 0 and " + strconv.FormatInt(snowflakeMaxNode, 10))
 	}
 	node, err := snowflake.NewNode(nodeid)
 	if err != nil {

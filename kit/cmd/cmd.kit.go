@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"log/slog"
 	"os/exec"
+	"strings"
 
-	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
+	bufferpkg "github.com/ikaiguang/go-kit/buffer"
 )
 
 // RunCommandContext 运行命令（支持 Context）
 func RunCommandContext(ctx context.Context, command string, args []string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 
-	slog.DebugContext(ctx, "cmd", command, "args", args)
+	slog.DebugContext(ctx, "cmd", slog.String("command", command), slog.Any("args", args))
 
 	return run(cmd)
 }
@@ -23,7 +24,7 @@ func RunCommandWithWorkDirContext(ctx context.Context, workDir, command string, 
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workDir
 
-	slog.DebugContext(ctx, "workdir", workDir, "cmd", command, "args", args)
+	slog.DebugContext(ctx, "workdir", slog.String("dir", workDir), slog.String("command", command), slog.Any("args", args))
 
 	return run(cmd)
 }
@@ -52,8 +53,11 @@ func run(cmdHandler *exec.Cmd) (output []byte, err error) {
 
 	// run
 	if err = cmdHandler.Run(); err != nil {
-		err = fmt.Errorf("%s", stderr.Bytes())
-		return output, err
+		errText := strings.TrimSpace(stderr.String())
+		if errText == "" {
+			return output, err
+		}
+		return output, fmt.Errorf("%w: %s", err, errText)
 	}
 
 	// 在归还 buffer 前复制数据，避免数据竞争

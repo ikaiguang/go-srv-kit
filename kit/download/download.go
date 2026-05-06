@@ -14,6 +14,8 @@ type DownloadParam struct {
 	URL             string
 	OutputPath      string
 	FileSizeChannel chan<- int64
+	HTTPClient      *http.Client
+	BufferSize      int
 }
 
 type DownloadReply struct {
@@ -48,7 +50,11 @@ func StreamDownload(ctx context.Context, param *DownloadParam) (*DownloadReply, 
 	if err != nil {
 		return nil, fmt.Errorf("create request failed: %w", err)
 	}
-	resp, err := http.DefaultClient.Do(req)
+	httpClient := param.HTTPClient
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("http get failed: %w", err)
 	}
@@ -61,17 +67,24 @@ func StreamDownload(ctx context.Context, param *DownloadParam) (*DownloadReply, 
 		return nil, fmt.Errorf("request failed, status code: %d", resp.StatusCode)
 	}
 
-	// 创建本地文件
-	outFile, err := os.Create(param.OutputPath)
+	tmpPath := param.OutputPath + ".tmp"
+	_ = os.Remove(tmpPath)
+	// 创建本地临时文件，下载完成后再替换目标文件
+	outFile, err := os.Create(tmpPath)
 	if err != nil {
 		return nil, fmt.Errorf("create file failed: %w", err)
 	}
 	defer func() {
 		_ = outFile.Close()
+		_ = os.Remove(tmpPath)
 	}()
 
 	// 流式下载并写入文件
-	buffer := make([]byte, 8*1024*1024) // 缓冲区(M)
+	bufferSize := param.BufferSize
+	if bufferSize <= 0 {
+		bufferSize = 32 * 1024
+	}
+	buffer := make([]byte, bufferSize)
 	var totalBytes int64
 	for {
 		// 从响应体读取数据
@@ -104,6 +117,13 @@ func StreamDownload(ctx context.Context, param *DownloadParam) (*DownloadReply, 
 			}
 			return nil, fmt.Errorf("download failed: %w", err)
 		}
+	}
+
+	if err := outFile.Close(); err != nil {
+		return nil, fmt.Errorf("close file failed: %w", err)
+	}
+	if err := os.Rename(tmpPath, param.OutputPath); err != nil {
+		return nil, fmt.Errorf("rename file failed: %w", err)
 	}
 
 	//fmt.Printf("下载完成! 文件保存至: %s, 大小: %.2f MB\n", param.OutputPath, float64(totalBytes)/1024/1024)

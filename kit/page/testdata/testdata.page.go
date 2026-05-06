@@ -1,7 +1,7 @@
 package pagetestdata
 
 import (
-	pagepkg "github.com/ikaiguang/go-srv-kit/kit/page"
+	pagepkg "github.com/ikaiguang/go-kit/page"
 )
 
 // UserListReq 用户列表请求

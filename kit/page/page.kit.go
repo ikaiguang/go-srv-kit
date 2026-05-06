@@ -25,6 +25,9 @@ type PageOption struct {
 
 // ConvertToPageOption 转换为分页选项
 func ConvertToPageOption(pageRequest *PageRequest) *PageOption {
+	if pageRequest == nil {
+		pageRequest = DefaultPageRequest()
+	}
 	opts := &PageOption{
 		Limit:  int(pageRequest.PageSize),
 		Offset: int(pageRequest.PageSize * (pageRequest.Page - 1)),

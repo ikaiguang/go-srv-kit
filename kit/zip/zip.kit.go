@@ -2,12 +2,14 @@ package zippkg
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
-	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
-	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
+	filepkg "github.com/ikaiguang/go-kit/file"
+	filepathpkg "github.com/ikaiguang/go-kit/filepath"
 )
 
 // Zip 压缩目录
@@ -23,6 +25,9 @@ func Zip(resourcePath string, zipPath string) error {
 		return ZipFile(resourcePath, zipPath)
 	}
 
+	if err := os.MkdirAll(filepath.Dir(zipPath), filepkg.DefaultFileMode); err != nil {
+		return err
+	}
 	targetFile, err := os.Create(zipPath)
 	if err != nil {
 		return err
@@ -57,6 +62,9 @@ func Zip(resourcePath string, zipPath string) error {
 // @param filePath 被压缩资源；例: runtime/videos/a.mp4
 // @param zipPath 压缩到zip的路径；例: runtime/zip/videos.zip
 func ZipFile(filePath string, zipPath string) error {
+	if err := os.MkdirAll(filepath.Dir(zipPath), filepkg.DefaultFileMode); err != nil {
+		return err
+	}
 	targetFile, err := os.Create(zipPath)
 	if err != nil {
 		return err
@@ -78,11 +86,11 @@ func ZipFile(filePath string, zipPath string) error {
 // @param srcFilePath 被压缩资源；例: runtime/videos/xxx.mp4
 // @param zipFilePath 压缩到zip的路径；例: videos/test.mp4
 func AddFileToZip(zipWriter *zip.Writer, srcFilePath, zipFilePath string) error {
-	// XXX: Read with buffer.
-	content, err := os.ReadFile(srcFilePath)
+	srcFile, err := os.Open(srcFilePath)
 	if err != nil {
 		return err
 	}
+	defer func() { _ = srcFile.Close() }()
 
 	// 写入文件
 	zipFile, err := zipWriter.Create(zipFilePath)
@@ -91,7 +99,7 @@ func AddFileToZip(zipWriter *zip.Writer, srcFilePath, zipFilePath string) error 
 	}
 
 	// // 写入文件
-	_, err = zipFile.Write(content)
+	_, err = io.Copy(zipFile, srcFile)
 	if err != nil {
 		return err
 	}
@@ -122,7 +130,10 @@ func Unzip(zipPath, unzipResourceDir string) (err error) {
 // @param unzipResourceDir 解缩到zip的路径；例: runtime/videos
 func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 	// 输出文件
-	outputPath := filepath.Join(unzipResourceDir, zipFile.Name)
+	outputPath, err := safeUnzipPath(unzipResourceDir, zipFile.Name)
+	if err != nil {
+		return err
+	}
 
 	// 创建文件夹
 	if zipFile.FileInfo().IsDir() {
@@ -153,4 +164,19 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 		return err
 	}
 	return err
+}
+
+func safeUnzipPath(destDir, zipFileName string) (string, error) {
+	cleanDest, err := filepath.Abs(destDir)
+	if err != nil {
+		return "", err
+	}
+	outputPath, err := filepath.Abs(filepath.Join(cleanDest, zipFileName))
+	if err != nil {
+		return "", err
+	}
+	if outputPath != cleanDest && !strings.HasPrefix(outputPath, cleanDest+string(os.PathSeparator)) {
+		return "", fmt.Errorf("illegal file path in zip: %s", zipFileName)
+	}
+	return outputPath, nil
 }

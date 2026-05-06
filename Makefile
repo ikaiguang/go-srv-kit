@@ -1,7 +1,17 @@
+ifeq ($(OS),Windows_NT)
+SHELL := cmd.exe
+.SHELLFLAGS := /C
+endif
+
 # 定义环境变量
 GOHOSTOS := $(shell go env GOHOSTOS)
 GOPATH := $(shell go env GOPATH)
-VERSION := $(shell git describe --tags --always)
+ifeq ($(GOHOSTOS), windows)
+VERSION := $(shell git describe --tags --always 2>NUL)
+else
+VERSION := $(shell git describe --tags --always 2>/dev/null)
+endif
+VERSION := $(or $(VERSION),unknown)
 
 # 定义项目变量
 PROJECT_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -14,12 +24,37 @@ ifeq ($(GOHOSTOS), windows)
 	#the `find.exe` is different from `find` in bash/shell.
 	#to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
 	#changed to use git-bash.exe to run find cli or other cli friendly, caused of every developer has a Git.
-	GIT_BASH= $(subst cmd\,bin\bash.exe,$(dir $(shell where git)))
-#	GIT_PATH := $(firstword $(shell where git))
-#	GIT_BASH := $(strip $(subst \cmd\,\\bin\\,$(dir $(GIT_PATH)))bash.exe)
-	COMMON_PROTO_FILES=$(shell $(GIT_BASH) -c "find $(PROJECT_PATH)api/common -name *.proto")
+	#GIT_BASH= $(subst cmd\,bin\bash.exe,$(dir $(shell where git)))
+	GIT_PATH := $(firstword $(shell where git 2>NUL))
+	GIT_BASH := $(if $(GIT_PATH),$(strip $(subst \cmd\,\\bin\\,$(dir $(GIT_PATH)))bash.exe))
+	ifneq ($(GIT_BASH),)
+		SHELL := $(GIT_BASH)
+		.SHELLFLAGS := -c
+	endif
+	COMMON_PROTO_FILES=$(shell find $(PROJECT_PATH)api/common -name *.proto)
 else
 endif
+
+AWK_HELP_CMD = awk '/^[a-zA-Z\-_0-9]+:/ { \
+	helpMessage = match(lastLine, /^\# (.*)/); \
+		if (helpMessage) { \
+			helpCommand = substr($$1, 0, index($$1, ":")-1); \
+			helpMessage = substr(lastLine, RSTART + 2, RLENGTH); \
+			printf "\033[36m%-22s\033[0m %s\n", helpCommand,helpMessage; \
+		} \
+	} \
+	{ lastLine = $$0 }' $(MAKEFILE_LIST)
+
+ifeq ($(GOHOSTOS), windows)
+ifeq ($(GIT_BASH),)
+HELP_CMD = powershell -NoProfile -ExecutionPolicy Bypass -Command "$$last = ''; Get-Content '$(MAKEFILE_LIST)' | ForEach-Object { if ($$_ -match '^[a-zA-Z\-_0-9]+:') { if ($$last -match '^\# (.*)') { $$target = ($$_ -split ':', 2)[0]; Write-Host ('{0,-22} {1}' -f $$target, $$Matches[1]) } }; $$last = $$_ }"
+else
+HELP_CMD = $(AWK_HELP_CMD)
+endif
+else
+HELP_CMD = $(AWK_HELP_CMD)
+endif
+
 
 # 定义编译 protobuf
 define protoc_protobuf
@@ -46,57 +81,42 @@ endef
 .DEFAULT_GOAL := help
 # show help
 help:
-	@echo ''
-	@echo 'Usage:'
-	@echo ' make [target]'
-	@echo ''
-	@echo 'Targets:'
-	@awk '/^[a-zA-Z\-_0-9]+:/ { \
-	helpMessage = match(lastLine, /^# (.*)/); \
-		if (helpMessage) { \
-			helpCommand = substr($$1, 0, index($$1, ":")-1); \
-			helpMessage = substr(lastLine, RSTART + 2, RLENGTH); \
-			printf "\033[36m%-22s\033[0m %s\n", helpCommand,helpMessage; \
-		} \
-	} \
-	{ lastLine = $$0 }' $(MAKEFILE_LIST)
+	@echo
+	@echo Usage:
+	@echo  make [target]
+	@echo
+	@echo Targets:
+	@$(HELP_CMD)
 
 # `protoc`使用版本`v31.1`;下载链接： https://github.com/protocolbuffers/protobuf/releases/tag/v31.1
 .PHONY: init
 # init and install necessary software
 init:
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.34.2
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
 	go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
 	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
 	go install github.com/ikaiguang/protoc-gen-go-errors@v0.0.2
-	go install github.com/google/gnostic/cmd/protoc-gen-openapi@v0.7.0
-	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.22.0
-	go install github.com/envoyproxy/protoc-gen-validate@v1.1.0
-	go install github.com/google/wire/cmd/wire@v0.6.0
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.34.2
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
+	go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+	go install github.com/envoyproxy/protoc-gen-validate@latest
+	go install golang.org/x/tools/cmd/goimports@latest
+	go install github.com/google/wire/cmd/wire@v0.7.0
 	go install github.com/golang/mock/mockgen@v1.6.0
-	go install golang.org/x/tools/cmd/goimports@v0.24.0
 
 # ===== include =====
 # ===== include =====
 # ===== include =====
 
 # api
-include api/makefile_protoc.mk
-include api/config/makefile_protoc.mk
-#include testdata/ping-service/api/makefile_protoc.mk
-include testdata/ping-service/api/ping-service/makefile_protoc.mk
-include testdata/ping-service/api/ping-service/v1/makefile_protoc.mk
-include testdata/ping-service/api/testdata-service/makefile_protoc.mk
-include testdata/ping-service/api/testdata-service/v1/makefile_protoc.mk
-include testdata/ping-service/internal/conf/makefile_protoc.mk
+#include api/makefile_protoc.mk
 
 # run
-include testdata/ping-service/cmd/makefile_run.mk
+#include testdata/ping-service/cmd/makefile_run.mk
 
 # build
-include testdata/ping-service/devops/makefile_cicd.mk
+#include testdata/ping-service/devops/makefile_cicd.mk
 
 # ===== include =====
 # ===== include =====
@@ -108,6 +128,7 @@ echo:
 	@echo "==> GOHOSTOS: $(GOHOSTOS)"
 	@echo "==> GOPATH: $(GOPATH)"
 	@echo "==> VERSION: $(VERSION)"
+	@echo "==> GIT_BASH: $(GIT_BASH)"
 	@echo "==> PROJECT_MAKEFILE: $(PROJECT_MAKEFILE)"
 	@echo "==> PROJECT_ABS_PATH: $(PROJECT_ABS_PATH)"
 	@echo "==> PROJECT_PATH_NAME: $(PROJECT_PATH_NAME)"
@@ -118,5 +139,4 @@ echo:
 generate:
 	#go mod tidy
 	#go generate ./...
-	wire ./testdata/ping-service/cmd/ping-service/export
-
+	#wire ./testdata/ping-service/cmd/ping-service/export

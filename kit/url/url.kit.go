@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
+	bufferpkg "github.com/ikaiguang/go-kit/buffer"
 )
 
 func Encode(raw string) string {
