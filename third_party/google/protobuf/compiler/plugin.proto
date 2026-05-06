@@ -47,7 +47,7 @@
 syntax = "proto2";
 
 package google.protobuf.compiler;
-option java_package = "com.google.protobuf.compiler";
+option java_package         = "com.google.protobuf.compiler";
 option java_outer_classname = "PluginProtos";
 
 option go_package = "google.golang.org/protobuf/types/pluginpb";
@@ -92,7 +92,6 @@ message CodeGeneratorRequest {
 
   // The version number of protocol compiler.
   optional Version compiler_version = 3;
-
 }
 
 // The plugin writes an encoded CodeGeneratorResponse to stdout.
@@ -113,7 +112,7 @@ message CodeGeneratorResponse {
 
   // Sync with code_generator.h.
   enum Feature {
-    FEATURE_NONE = 0;
+    FEATURE_NONE            = 0;
     FEATURE_PROTO3_OPTIONAL = 1;
   }
 

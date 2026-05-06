@@ -36,17 +36,16 @@
 // A valid .proto file can be translated directly to a FileDescriptorProto
 // without any other information (e.g. without reading its imports).
 
-
 syntax = "proto2";
 
 package google.protobuf;
 
-option go_package = "google.golang.org/protobuf/types/descriptorpb";
-option java_package = "com.google.protobuf";
+option go_package           = "google.golang.org/protobuf/types/descriptorpb";
+option java_package         = "com.google.protobuf";
 option java_outer_classname = "DescriptorProtos";
-option csharp_namespace = "Google.Protobuf.Reflection";
-option objc_class_prefix = "GPB";
-option cc_enable_arenas = true;
+option csharp_namespace     = "Google.Protobuf.Reflection";
+option objc_class_prefix    = "GPB";
+option cc_enable_arenas     = true;
 
 // descriptor.proto must be optimized for speed because reflection-based
 // algorithms don't work during bootstrapping.
@@ -60,7 +59,7 @@ message FileDescriptorSet {
 
 // Describes a complete .proto file.
 message FileDescriptorProto {
-  optional string name = 1;     // file name, relative to root of source tree
+  optional string name    = 1;  // file name, relative to root of source tree
   optional string package = 2;  // e.g. "foo", "foo.bar", etc.
 
   // Names of files imported by this file.
@@ -72,8 +71,8 @@ message FileDescriptorProto {
   repeated int32 weak_dependency = 11;
 
   // All top-level definitions in this file.
-  repeated DescriptorProto message_type = 4;
-  repeated EnumDescriptorProto enum_type = 5;
+  repeated DescriptorProto message_type   = 4;
+  repeated EnumDescriptorProto enum_type  = 5;
   repeated ServiceDescriptorProto service = 6;
   repeated FieldDescriptorProto extension = 7;
 
@@ -94,15 +93,15 @@ message FileDescriptorProto {
 message DescriptorProto {
   optional string name = 1;
 
-  repeated FieldDescriptorProto field = 2;
+  repeated FieldDescriptorProto field     = 2;
   repeated FieldDescriptorProto extension = 6;
 
-  repeated DescriptorProto nested_type = 3;
+  repeated DescriptorProto nested_type   = 3;
   repeated EnumDescriptorProto enum_type = 4;
 
   message ExtensionRange {
     optional int32 start = 1;  // Inclusive.
-    optional int32 end = 2;    // Exclusive.
+    optional int32 end   = 2;  // Exclusive.
 
     optional ExtensionRangeOptions options = 3;
   }
@@ -117,7 +116,7 @@ message DescriptorProto {
   // not overlap.
   message ReservedRange {
     optional int32 start = 1;  // Inclusive.
-    optional int32 end = 2;    // Exclusive.
+    optional int32 end   = 2;  // Exclusive.
   }
   repeated ReservedRange reserved_range = 9;
   // Reserved field names, which may not be used by fields in the same message.
@@ -129,7 +128,6 @@ message ExtensionRangeOptions {
   // The parser stores options it doesn't recognize here. See above.
   repeated UninterpretedOption uninterpreted_option = 999;
 
-
   // Clients can define custom options in extensions of this message. See above.
   extensions 1000 to max;
 }
@@ -140,33 +138,33 @@ message FieldDescriptorProto {
     // 0 is reserved for errors.
     // Order is weird for historical reasons.
     TYPE_DOUBLE = 1;
-    TYPE_FLOAT = 2;
+    TYPE_FLOAT  = 2;
     // Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT64 if
     // negative values are likely.
-    TYPE_INT64 = 3;
+    TYPE_INT64  = 3;
     TYPE_UINT64 = 4;
     // Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT32 if
     // negative values are likely.
-    TYPE_INT32 = 5;
+    TYPE_INT32   = 5;
     TYPE_FIXED64 = 6;
     TYPE_FIXED32 = 7;
-    TYPE_BOOL = 8;
-    TYPE_STRING = 9;
+    TYPE_BOOL    = 8;
+    TYPE_STRING  = 9;
     // Tag-delimited aggregate.
     // Group type is deprecated and not supported in proto3. However, Proto3
     // implementations should still be able to parse the group wire format and
     // treat group fields as unknown fields.
-    TYPE_GROUP = 10;
+    TYPE_GROUP   = 10;
     TYPE_MESSAGE = 11;  // Length-delimited aggregate.
 
     // New in version 2.
-    TYPE_BYTES = 12;
-    TYPE_UINT32 = 13;
-    TYPE_ENUM = 14;
+    TYPE_BYTES    = 12;
+    TYPE_UINT32   = 13;
+    TYPE_ENUM     = 14;
     TYPE_SFIXED32 = 15;
     TYPE_SFIXED64 = 16;
-    TYPE_SINT32 = 17;  // Uses ZigZag encoding.
-    TYPE_SINT64 = 18;  // Uses ZigZag encoding.
+    TYPE_SINT32   = 17;  // Uses ZigZag encoding.
+    TYPE_SINT64   = 18;  // Uses ZigZag encoding.
   }
 
   enum Label {
@@ -176,9 +174,9 @@ message FieldDescriptorProto {
     LABEL_REPEATED = 3;
   }
 
-  optional string name = 1;
+  optional string name  = 1;
   optional int32 number = 3;
-  optional Label label = 4;
+  optional Label label  = 4;
 
   // If type_name is set, this need not be set.  If both this and type_name
   // are set, this must be one of TYPE_ENUM, TYPE_MESSAGE or TYPE_GROUP.
@@ -240,7 +238,7 @@ message FieldDescriptorProto {
 
 // Describes a oneof.
 message OneofDescriptorProto {
-  optional string name = 1;
+  optional string name          = 1;
   optional OneofOptions options = 2;
 }
 
@@ -260,7 +258,7 @@ message EnumDescriptorProto {
   // domain.
   message EnumReservedRange {
     optional int32 start = 1;  // Inclusive.
-    optional int32 end = 2;    // Inclusive.
+    optional int32 end   = 2;  // Inclusive.
   }
 
   // Range of reserved numeric values. Reserved numeric values may not be used
@@ -275,7 +273,7 @@ message EnumDescriptorProto {
 
 // Describes a value within an enum.
 message EnumValueDescriptorProto {
-  optional string name = 1;
+  optional string name  = 1;
   optional int32 number = 2;
 
   optional EnumValueOptions options = 3;
@@ -283,7 +281,7 @@ message EnumValueDescriptorProto {
 
 // Describes a service.
 message ServiceDescriptorProto {
-  optional string name = 1;
+  optional string name                  = 1;
   repeated MethodDescriptorProto method = 2;
 
   optional ServiceOptions options = 3;
@@ -295,7 +293,7 @@ message MethodDescriptorProto {
 
   // Input and output type names.  These are resolved in the same way as
   // FieldDescriptorProto.type_name, but must refer to a message type.
-  optional string input_type = 2;
+  optional string input_type  = 2;
   optional string output_type = 3;
 
   optional MethodOptions options = 4;
@@ -305,7 +303,6 @@ message MethodDescriptorProto {
   // Identifies if server streams multiple server messages
   optional bool server_streaming = 6 [default = false];
 }
-
 
 // ===================================================================
 // Options
@@ -340,13 +337,11 @@ message MethodDescriptorProto {
 //   to automatically assign option numbers.
 
 message FileOptions {
-
   // Sets the Java package where classes generated from this .proto will be
   // placed.  By default, the proto package is used, but this is often
   // inappropriate because proto packages do not normally start with backwards
   // domain names.
   optional string java_package = 1;
-
 
   // Controls the name of the wrapper Java class generated for the .proto file.
   // That class will always contain the .proto file's getDescriptor() method as
@@ -364,7 +359,7 @@ message FileOptions {
   optional bool java_multiple_files = 10 [default = false];
 
   // This option does nothing.
-  optional bool java_generate_equals_and_hash = 20 [deprecated=true];
+  optional bool java_generate_equals_and_hash = 20 [deprecated = true];
 
   // If set true, then the Java2 code generator will generate code that
   // throws an exception whenever an attempt is made to assign a non-UTF-8
@@ -374,12 +369,11 @@ message FileOptions {
   // This option has no effect on when used with the lite runtime.
   optional bool java_string_check_utf8 = 27 [default = false];
 
-
   // Generated classes can be optimized for speed or code size.
   enum OptimizeMode {
-    SPEED = 1;         // Generate complete code for parsing, serialization,
+    SPEED = 1;  // Generate complete code for parsing, serialization,
     // etc.
-    CODE_SIZE = 2;     // Use ReflectionOps to implement these methods.
+    CODE_SIZE    = 2;  // Use ReflectionOps to implement these methods.
     LITE_RUNTIME = 3;  // Generate code using MessageLite and the lite runtime.
   }
   optional OptimizeMode optimize_for = 9 [default = SPEED];
@@ -391,9 +385,6 @@ message FileOptions {
   //   - Otherwise, the basename of the .proto file, without extension.
   optional string go_package = 11;
 
-
-
-
   // Should generic services be generated in each language?  "Generic" services
   // are not specific to any particular RPC system.  They are generated by the
   // main code generators in each language (without additional plugins).
@@ -404,10 +395,10 @@ message FileOptions {
   // that generate code specific to your particular RPC system.  Therefore,
   // these default to false.  Old code which depends on generic services should
   // explicitly set them to true.
-  optional bool cc_generic_services = 16 [default = false];
+  optional bool cc_generic_services   = 16 [default = false];
   optional bool java_generic_services = 17 [default = false];
-  optional bool py_generic_services = 18 [default = false];
-  optional bool php_generic_services = 42 [default = false];
+  optional bool py_generic_services   = 18 [default = false];
+  optional bool php_generic_services  = 42 [default = false];
 
   // Is this file deprecated?
   // Depending on the target platform, this can emit Deprecated annotations
@@ -418,7 +409,6 @@ message FileOptions {
   // Enables the use of arenas for the proto messages in this file. This applies
   // only to generated classes for C++.
   optional bool cc_enable_arenas = 31 [default = true];
-
 
   // Sets the objective c class prefix which is prepended to all objective c
   // generated classes from this .proto. There is no default.
@@ -451,7 +441,6 @@ message FileOptions {
   // is empty. When this option is not set, the package name will be used for
   // determining the ruby package.
   optional string ruby_package = 45;
-
 
   // The parser stores options it doesn't recognize here.
   // See the documentation for the "Options" section above.
@@ -523,7 +512,6 @@ message MessageOptions {
 
   reserved 8;  // javalite_serializable
   reserved 9;  // javanano_as_lite
-
 
   // The parser stores options it doesn't recognize here. See above.
   repeated UninterpretedOption uninterpreted_option = 999;
@@ -615,7 +603,6 @@ message FieldOptions {
   // For Google-internal migration only. Do not use.
   optional bool weak = 10 [default = false];
 
-
   // The parser stores options it doesn't recognize here. See above.
   repeated UninterpretedOption uninterpreted_option = 999;
 
@@ -634,7 +621,6 @@ message OneofOptions {
 }
 
 message EnumOptions {
-
   // Set this option to true to allow mapping different tag names to the same
   // value.
   optional bool allow_alias = 2;
@@ -669,7 +655,6 @@ message EnumValueOptions {
 }
 
 message ServiceOptions {
-
   // Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
   //   framework.  We apologize for hoarding these numbers to ourselves, but
   //   we were already using them long before we decided to release Protocol
@@ -689,7 +674,6 @@ message ServiceOptions {
 }
 
 message MethodOptions {
-
   // Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
   //   framework.  We apologize for hoarding these numbers to ourselves, but
   //   we were already using them long before we decided to release Protocol
@@ -706,11 +690,11 @@ message MethodOptions {
   // methods, and PUT verb for idempotent methods instead of the default POST.
   enum IdempotencyLevel {
     IDEMPOTENCY_UNKNOWN = 0;
-    NO_SIDE_EFFECTS = 1;  // implies idempotent
-    IDEMPOTENT = 2;       // idempotent, but may have side effects
+    NO_SIDE_EFFECTS     = 1;  // implies idempotent
+    IDEMPOTENT          = 2;  // idempotent, but may have side effects
   }
   optional IdempotencyLevel idempotency_level = 34
-  [default = IDEMPOTENCY_UNKNOWN];
+      [default = IDEMPOTENCY_UNKNOWN];
 
   // The parser stores options it doesn't recognize here. See above.
   repeated UninterpretedOption uninterpreted_option = 999;
@@ -718,7 +702,6 @@ message MethodOptions {
   // Clients can define custom options in extensions of this message. See above.
   extensions 1000 to max;
 }
-
 
 // A message representing a option the parser does not recognize. This only
 // appears in options protos created by the compiler::Parser class.
@@ -733,19 +716,19 @@ message UninterpretedOption {
   // E.g.,{ ["foo", false], ["bar.baz", true], ["qux", false] } represents
   // "foo.(bar.baz).qux".
   message NamePart {
-    required string name_part = 1;
+    required string name_part  = 1;
     required bool is_extension = 2;
   }
   repeated NamePart name = 2;
 
   // The value of the uninterpreted option, in whatever type the tokenizer
   // identified it as during parsing. Exactly one of these should be set.
-  optional string identifier_value = 3;
+  optional string identifier_value   = 3;
   optional uint64 positive_int_value = 4;
-  optional int64 negative_int_value = 5;
-  optional double double_value = 6;
-  optional bytes string_value = 7;
-  optional string aggregate_value = 8;
+  optional int64 negative_int_value  = 5;
+  optional double double_value       = 6;
+  optional bytes string_value        = 7;
+  optional string aggregate_value    = 8;
 }
 
 // ===================================================================
@@ -878,8 +861,8 @@ message SourceCodeInfo {
     //   optional int32 grault = 6;
     //
     //   // ignored detached comments.
-    optional string leading_comments = 3;
-    optional string trailing_comments = 4;
+    optional string leading_comments          = 3;
+    optional string trailing_comments         = 4;
     repeated string leading_detached_comments = 6;
   }
 }
