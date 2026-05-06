@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// go test -v -count 1 ./sort -run TestInt32s
 func TestInt32s(t *testing.T) {
 	// int32
 	var i32Slice = []int32{1, 3, 2}
@@ -17,6 +18,7 @@ func TestInt32s(t *testing.T) {
 	t.Log("int64 sort : ", i64Slice)
 }
 
+// go test -v -count 1 ./sort -run TestSort
 func TestSort(t *testing.T) {
 	t.Run("int32", func(t *testing.T) {
 		s := []int32{3, 1, 2}
@@ -64,6 +66,7 @@ func TestSort(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./sort -run TestSortFunc
 func TestSortFunc(t *testing.T) {
 	t.Run("自定义比较-降序", func(t *testing.T) {
 		s := []int{1, 3, 2}
@@ -86,6 +89,7 @@ func TestSortFunc(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./sort -run TestDeprecatedConsistency
 func TestDeprecatedConsistency(t *testing.T) {
 	t.Run("Int32s与Sort[int32]结果一致", func(t *testing.T) {
 		s1 := []int32{5, 3, 1, 4, 2}

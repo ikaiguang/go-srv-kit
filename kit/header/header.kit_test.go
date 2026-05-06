@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./header -run TestContainsValue
 func TestContainsValue(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -67,6 +68,7 @@ func TestContainsValue(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./header -run TestConstants
 func TestConstants(t *testing.T) {
 	// 验证常量值不为空
 	assert.NotEmpty(t, RequestID)
@@ -82,6 +84,7 @@ func TestConstants(t *testing.T) {
 	assert.NotEmpty(t, ContentTypeMultipartForm)
 }
 
+// go test -v -count 1 ./header -run TestCommonHeaderHelpers
 func TestCommonHeaderHelpers(t *testing.T) {
 	header := http.Header{}
 

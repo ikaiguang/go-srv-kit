@@ -21,7 +21,7 @@ func teardown() {
 	_ = os.RemoveAll(testdataDir)
 }
 
-// go test -v -count 1 ./kit/zip -run TestZipFile
+// go test -v -count 1 ./zip -run TestZipFile
 func TestZipFile(t *testing.T) {
 	setup(t)
 	defer teardown()
@@ -40,6 +40,7 @@ func TestZipFile(t *testing.T) {
 	assert.Greater(t, info.Size(), int64(0))
 }
 
+// go test -v -count 1 ./zip -run TestZipFile_CreateDestDir
 func TestZipFile_CreateDestDir(t *testing.T) {
 	setup(t)
 	defer teardown()
@@ -56,7 +57,7 @@ func TestZipFile_CreateDestDir(t *testing.T) {
 	assert.Greater(t, info.Size(), int64(0))
 }
 
-// go test -v -count 1 ./kit/zip -run TestZip_Directory
+// go test -v -count 1 ./zip -run TestZip_Directory
 func TestZip_Directory(t *testing.T) {
 	setup(t)
 	defer teardown()
@@ -76,7 +77,7 @@ func TestZip_Directory(t *testing.T) {
 	assert.Greater(t, info.Size(), int64(0))
 }
 
-// go test -v -count 1 ./kit/zip -run TestZip_SingleFile
+// go test -v -count 1 ./zip -run TestZip_SingleFile
 func TestZip_SingleFile(t *testing.T) {
 	setup(t)
 	defer teardown()
@@ -93,7 +94,7 @@ func TestZip_SingleFile(t *testing.T) {
 	assert.Greater(t, info.Size(), int64(0))
 }
 
-// go test -v -count 1 ./kit/zip -run TestUnzip
+// go test -v -count 1 ./zip -run TestUnzip
 func TestUnzip(t *testing.T) {
 	setup(t)
 	defer teardown()
@@ -118,7 +119,7 @@ func TestUnzip(t *testing.T) {
 	assert.Equal(t, content, data)
 }
 
-// go test -v -count 1 ./kit/zip -run TestZipFile_SrcNotExist
+// go test -v -count 1 ./zip -run TestZipFile_SrcNotExist
 func TestZipFile_SrcNotExist(t *testing.T) {
 	setup(t)
 	defer teardown()
@@ -128,12 +129,13 @@ func TestZipFile_SrcNotExist(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-// go test -v -count 1 ./kit/zip -run TestUnzip_ZipNotExist
+// go test -v -count 1 ./zip -run TestUnzip_ZipNotExist
 func TestUnzip_ZipNotExist(t *testing.T) {
 	err := Unzip("/nonexistent/file.zip", testdataDir)
 	assert.NotNil(t, err)
 }
 
+// go test -v -count 1 ./zip -run TestUnzip_RejectsZipSlip
 func TestUnzip_RejectsZipSlip(t *testing.T) {
 	setup(t)
 	defer teardown()

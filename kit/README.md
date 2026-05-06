@@ -15,7 +15,7 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-kit
+go get github.com/ikaiguang/go-srv-kit/kit
 ```
 
 要求 Go 版本：
@@ -36,7 +36,7 @@ import (
 	"fmt"
 	"time"
 
-	curlpkg "github.com/ikaiguang/go-kit/curl"
+	curlpkg "github.com/ikaiguang/go-srv-kit/kit/curl"
 )
 
 func main() {
@@ -63,7 +63,7 @@ func main() {
 ### 安全随机 Token
 
 ```go
-import randompkg "github.com/ikaiguang/go-kit/random"
+import randompkg "github.com/ikaiguang/go-srv-kit/kit/random"
 
 token, err := randompkg.SecureToken(32)
 if err != nil {
@@ -74,7 +74,7 @@ if err != nil {
 ### 文件下载
 
 ```go
-import downloadpkg "github.com/ikaiguang/go-kit/download"
+import downloadpkg "github.com/ikaiguang/go-srv-kit/kit/download"
 
 reply, err := downloadpkg.StreamDownload(ctx, &downloadpkg.DownloadParam{
 	URL:        "https://example.com/file.zip",

@@ -6,7 +6,7 @@ import (
 	"net"
 	"sync"
 
-	ippkg "github.com/ikaiguang/go-kit/ip"
+	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
 )
 
 var (

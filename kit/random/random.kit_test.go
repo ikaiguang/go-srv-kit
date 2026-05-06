@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// go test -v -count 1 ./random -run TestStrings
 func TestStrings(t *testing.T) {
 	t.Run("长度正确", func(t *testing.T) {
 		for _, size := range []int{0, 1, 3, 10, 100} {
@@ -31,6 +32,7 @@ func TestStrings(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestRandomStringBoundary
 func TestRandomStringBoundary(t *testing.T) {
 	assert.Empty(t, Strings(-1))
 	assert.Empty(t, Letter(-1))
@@ -39,6 +41,7 @@ func TestRandomStringBoundary(t *testing.T) {
 	assert.Empty(t, String(-1, CharsetAlphabet))
 }
 
+// go test -v -count 1 ./random -run TestLetter
 func TestLetter(t *testing.T) {
 	t.Run("长度正确", func(t *testing.T) {
 		result := Letter(10)
@@ -53,6 +56,7 @@ func TestLetter(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestNumeric
 func TestNumeric(t *testing.T) {
 	t.Run("长度正确", func(t *testing.T) {
 		result := Numeric(6)
@@ -67,6 +71,7 @@ func TestNumeric(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestNumericBetween
 func TestNumericBetween(t *testing.T) {
 	t.Run("正常范围", func(t *testing.T) {
 		for i := 0; i < 100; i++ {
@@ -88,6 +93,7 @@ func TestNumericBetween(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestInt32Between
 func TestInt32Between(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		result := Int32Between(1, 100)
@@ -96,6 +102,7 @@ func TestInt32Between(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./random -run TestIntBetween
 func TestIntBetween(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		result := IntBetween(10, 20)
@@ -104,12 +111,14 @@ func TestIntBetween(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./random -run TestName
 func TestName(t *testing.T) {
 	name := Name()
 	assert.NotEmpty(t, name)
 	assert.Contains(t, name, "_", "Name 应包含下划线分隔符")
 }
 
+// go test -v -count 1 ./random -run TestAlphabetLower
 func TestAlphabetLower(t *testing.T) {
 	result := AlphabetLower(20)
 	assert.Equal(t, 20, len(result))
@@ -118,6 +127,7 @@ func TestAlphabetLower(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./random -run TestHex
 func TestHex(t *testing.T) {
 	result := Hex(32)
 	assert.Equal(t, 32, len(result))
@@ -127,6 +137,7 @@ func TestHex(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./random -run TestString
 func TestString(t *testing.T) {
 	charset := "ABC"
 	result := String(100, charset)
@@ -136,6 +147,7 @@ func TestString(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./random -run TestVerifyCode
 func TestVerifyCode(t *testing.T) {
 	code := VerifyCode(6)
 	assert.Equal(t, 6, len(code))
@@ -144,6 +156,7 @@ func TestVerifyCode(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./random -run TestPassword
 func TestPassword(t *testing.T) {
 	t.Run("最小长度为8", func(t *testing.T) {
 		pwd := Password(4)
@@ -173,6 +186,7 @@ func TestPassword(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestToken
 func TestToken(t *testing.T) {
 	token := Token(32)
 	assert.Equal(t, 32, len(token))
@@ -182,6 +196,7 @@ func TestToken(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./random -run TestSecureRandom
 func TestSecureRandom(t *testing.T) {
 	t.Run("SecureBytes", func(t *testing.T) {
 		got, err := SecureBytes(16)
@@ -239,6 +254,7 @@ func TestSecureRandom(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestOrderNo
 func TestOrderNo(t *testing.T) {
 	t.Run("最小后缀长度为4", func(t *testing.T) {
 		no := OrderNo(2)
@@ -251,11 +267,13 @@ func TestOrderNo(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestTraceID
 func TestTraceID(t *testing.T) {
 	id := TraceID()
 	assert.Equal(t, 32, len(id))
 }
 
+// go test -v -count 1 ./random -run TestBool
 func TestBool(t *testing.T) {
 	trueCount := 0
 	total := 1000
@@ -269,6 +287,7 @@ func TestBool(t *testing.T) {
 	assert.Less(t, trueCount, total*4/5)
 }
 
+// go test -v -count 1 ./random -run TestElement
 func TestElement(t *testing.T) {
 	t.Run("正常切片", func(t *testing.T) {
 		slice := []string{"a", "b", "c"}
@@ -288,6 +307,7 @@ func TestElement(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestShuffle
 func TestShuffle(t *testing.T) {
 	original := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	shuffled := make([]int, len(original))
@@ -298,6 +318,7 @@ func TestShuffle(t *testing.T) {
 	assert.ElementsMatch(t, original, shuffled)
 }
 
+// go test -v -count 1 ./random -run TestSample
 func TestSample(t *testing.T) {
 	t.Run("取子集", func(t *testing.T) {
 		slice := []int{1, 2, 3, 4, 5}
@@ -330,6 +351,7 @@ func TestSample(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./random -run TestWeightedIndex
 func TestWeightedIndex(t *testing.T) {
 	t.Run("空权重返回-1", func(t *testing.T) {
 		assert.Equal(t, -1, WeightedIndex(nil))

@@ -6,6 +6,7 @@ import (
 
 // === 泛型函数测试 ===
 
+// go test -v -count 1 ./ptr -run TestPtr
 func TestPtr(t *testing.T) {
 	// 测试 string
 	s := "hello"
@@ -36,6 +37,7 @@ func TestPtr(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestValue
 func TestValue(t *testing.T) {
 	// 测试正常值
 	s := "hello"
@@ -60,6 +62,7 @@ func TestValue(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestSlice
 func TestSlice(t *testing.T) {
 	// 测试正常切片
 	a := []int{1, 2, 3}
@@ -90,6 +93,7 @@ func TestSlice(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestValueSlice
 func TestValueSlice(t *testing.T) {
 	// 测试正常切片
 	v1, v2, v3 := 1, 2, 3
@@ -121,6 +125,7 @@ func TestValueSlice(t *testing.T) {
 
 // === Deprecated 函数向后兼容性测试 ===
 
+// go test -v -count 1 ./ptr -run TestDeprecatedStringFunctions
 func TestDeprecatedStringFunctions(t *testing.T) {
 	s := "test"
 	p := String(s)
@@ -135,6 +140,7 @@ func TestDeprecatedStringFunctions(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestDeprecatedIntFunctions
 func TestDeprecatedIntFunctions(t *testing.T) {
 	i := 42
 	p := Int(i)
@@ -149,6 +155,7 @@ func TestDeprecatedIntFunctions(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestDeprecatedInt32Functions
 func TestDeprecatedInt32Functions(t *testing.T) {
 	var i int32 = 32
 	p := Int32(i)
@@ -163,6 +170,7 @@ func TestDeprecatedInt32Functions(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestDeprecatedInt64Functions
 func TestDeprecatedInt64Functions(t *testing.T) {
 	var i int64 = 64
 	p := Int64(i)
@@ -177,6 +185,7 @@ func TestDeprecatedInt64Functions(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestDeprecatedBoolFunctions
 func TestDeprecatedBoolFunctions(t *testing.T) {
 	b := true
 	p := Bool(b)
@@ -191,6 +200,7 @@ func TestDeprecatedBoolFunctions(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestDeprecatedFloat64Functions
 func TestDeprecatedFloat64Functions(t *testing.T) {
 	f := 3.14
 	p := Float64(f)
@@ -205,6 +215,7 @@ func TestDeprecatedFloat64Functions(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./ptr -run TestDeprecatedSliceFunctions
 func TestDeprecatedSliceFunctions(t *testing.T) {
 	// IntSlice / IntValueSlice
 	ints := []int{1, 2, 3}

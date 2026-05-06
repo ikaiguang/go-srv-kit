@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./operator -run TestTernary
 func TestTernary(t *testing.T) {
 	intSamples := []struct {
 		Cond     bool

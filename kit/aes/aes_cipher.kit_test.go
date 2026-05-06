@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./aes -run TestAesCipher
 func TestAesCipher(t *testing.T) {
 	key := []byte("1234567890ABCDEF")
 	cipher, err := NewAesCipher(key)
@@ -30,6 +31,7 @@ func TestAesCipher(t *testing.T) {
 	assert.Equal(t, msg, decrypted)
 }
 
+// go test -v -count 1 ./aes -run TestAesCipherDecryptInvalidCiphertext
 func TestAesCipherDecryptInvalidCiphertext(t *testing.T) {
 	cipher, err := NewAesCipher([]byte("1234567890ABCDEF"))
 	if err != nil {

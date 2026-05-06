@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./regex -run TestIsPhone
 func TestIsPhone(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -31,6 +32,7 @@ func TestIsPhone(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./regex -run TestIsEmail
 func TestIsEmail(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -55,6 +57,7 @@ func TestIsEmail(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./regex -run TestIsIDCard
 func TestIsIDCard(t *testing.T) {
 	tests := []struct {
 		name string
@@ -77,6 +80,7 @@ func TestIsIDCard(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./regex -run TestIsPostCode
 func TestIsPostCode(t *testing.T) {
 	tests := []struct {
 		name string

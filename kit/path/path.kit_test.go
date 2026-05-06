@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -v -count 1 ./kit/path -run TestPath
+// go test -v -count 1 ./path -run TestPath
 func TestPath(t *testing.T) {
 	path := Path()
 	t.Log("==> path :", path)

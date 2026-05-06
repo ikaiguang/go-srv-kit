@@ -8,18 +8,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// go test -v -count 1 ./uuid -run TestNew
 func TestNew(t *testing.T) {
 	id := New()
 	assert.NotEmpty(t, id)
 	assert.Equal(t, 20, len(id), "xid 长度应为 20")
 }
 
+// go test -v -count 1 ./uuid -run TestNewUUID
 func TestNewUUID(t *testing.T) {
 	id := NewUUID()
 	assert.NotEmpty(t, id)
 	assert.Equal(t, 20, len(id))
 }
 
+// go test -v -count 1 ./uuid -run TestNewUUID_Uniqueness
 func TestNewUUID_Uniqueness(t *testing.T) {
 	ids := make(map[string]struct{}, 10000)
 	for i := 0; i < 10000; i++ {
@@ -30,6 +33,7 @@ func TestNewUUID_Uniqueness(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./uuid -run TestNewWithTime
 func TestNewWithTime(t *testing.T) {
 	ts := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	id := NewWithTime(ts)
@@ -37,18 +41,21 @@ func TestNewWithTime(t *testing.T) {
 	assert.Equal(t, 20, len(id))
 }
 
+// go test -v -count 1 ./uuid -run TestID
 func TestID(t *testing.T) {
 	id := ID()
 	assert.NotEmpty(t, id.String())
 	assert.Equal(t, 20, len(id.String()))
 }
 
+// go test -v -count 1 ./uuid -run TestIDWithTime
 func TestIDWithTime(t *testing.T) {
 	ts := time.Date(2024, 6, 15, 12, 0, 0, 0, time.UTC)
 	id := IDWithTime(ts)
 	assert.NotEmpty(t, id.String())
 }
 
+// go test -v -count 1 ./uuid -run TestFromString
 func TestFromString(t *testing.T) {
 	t.Run("有效ID", func(t *testing.T) {
 		original := ID()
@@ -63,6 +70,7 @@ func TestFromString(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./uuid -run TestFromBytes
 func TestFromBytes(t *testing.T) {
 	t.Run("有效字节", func(t *testing.T) {
 		original := ID()
@@ -77,6 +85,7 @@ func TestFromBytes(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./uuid -run TestSort
 func TestSort(t *testing.T) {
 	ids := make([]interface{ String() string }, 5)
 	_ = ids // 仅验证 Sort 不 panic
@@ -93,6 +102,7 @@ func TestSort(t *testing.T) {
 	_ = xidSlice // Sort 需要 []xid.ID 类型，这里仅验证编译通过
 }
 
+// go test -v -count 1 ./uuid -run TestUUID
 func TestUUID(t *testing.T) {
 	id := UUID()
 	assert.NotEmpty(t, id)
@@ -104,6 +114,7 @@ func TestUUID(t *testing.T) {
 	assert.Equal(t, byte('-'), id[23])
 }
 
+// go test -v -count 1 ./uuid -run TestUUID_Uniqueness
 func TestUUID_Uniqueness(t *testing.T) {
 	ids := make(map[string]struct{}, 1000)
 	for i := 0; i < 1000; i++ {

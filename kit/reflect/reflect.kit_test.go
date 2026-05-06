@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./reflect -run TestIsDefaultValue
 func TestIsDefaultValue(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -63,6 +64,7 @@ func TestIsDefaultValue(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./reflect -run TestIsEmpty
 func TestIsEmpty(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -94,6 +96,7 @@ func TestIsEmpty(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./reflect -run TestSwapObject
 func TestSwapObject(t *testing.T) {
 	t.Run("正常交换", func(t *testing.T) {
 		dst := 10
@@ -135,6 +138,7 @@ func TestSwapObject(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./reflect -run TestNewObject
 func TestNewObject(t *testing.T) {
 	t.Run("从指针创建", func(t *testing.T) {
 		src := &struct{ Name string }{Name: "test"}

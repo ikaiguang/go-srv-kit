@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// go test -v -count 1 ./chinese -run TestGbkToUtf8AndUtf8ToGbk
 func TestGbkToUtf8AndUtf8ToGbk(t *testing.T) {
 	src := []byte("中文测试")
 
@@ -21,6 +22,7 @@ func TestGbkToUtf8AndUtf8ToGbk(t *testing.T) {
 	assert.True(t, IsUtf8(string(got)))
 }
 
+// go test -v -count 1 ./chinese -run TestIsGBK
 func TestIsGBK(t *testing.T) {
 	tests := []struct {
 		name string

@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
-	bufferpkg "github.com/ikaiguang/go-kit/buffer"
+	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 )
 
 // RunCommandContext 运行命令（支持 Context）

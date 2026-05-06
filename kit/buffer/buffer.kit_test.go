@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./buffer -run TestGetBuffer
 func TestGetBuffer(t *testing.T) {
 	buf := GetBuffer()
 	assert.NotNil(t, buf)
@@ -14,6 +15,7 @@ func TestGetBuffer(t *testing.T) {
 	PutBuffer(buf)
 }
 
+// go test -v -count 1 ./buffer -run TestPutBuffer_Reset
 func TestPutBuffer_Reset(t *testing.T) {
 	buf := GetBuffer()
 	buf.WriteString("hello world")
@@ -27,12 +29,14 @@ func TestPutBuffer_Reset(t *testing.T) {
 	PutBuffer(buf2)
 }
 
+// go test -v -count 1 ./buffer -run TestPutBufferNil
 func TestPutBufferNil(t *testing.T) {
 	assert.NotPanics(t, func() {
 		PutBuffer(nil)
 	})
 }
 
+// go test -v -count 1 ./buffer -run TestGetBuffer_WriteAndRead
 func TestGetBuffer_WriteAndRead(t *testing.T) {
 	buf := GetBuffer()
 	defer PutBuffer(buf)
@@ -44,6 +48,7 @@ func TestGetBuffer_WriteAndRead(t *testing.T) {
 	assert.Equal(t, "hello world", buf.String())
 }
 
+// go test -v -count 1 ./buffer -run TestGetBuffer_ConcurrentSafety
 func TestGetBuffer_ConcurrentSafety(t *testing.T) {
 	const goroutines = 100
 	var wg sync.WaitGroup

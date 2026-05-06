@@ -3,7 +3,7 @@ package jsonpkg
 import (
 	"encoding/json"
 
-	bufferpkg "github.com/ikaiguang/go-kit/buffer"
+	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 )
 
 // MarshalWithoutEscapeHTML ...

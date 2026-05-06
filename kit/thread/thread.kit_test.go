@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v -count 1 ./kratos/thread -run TestGoSafe
+// go test -v -count 1 ./thread -run TestGoSafe
 func TestGoSafe(t *testing.T) {
 	type args struct {
 		fn func()
@@ -31,6 +31,7 @@ func TestGoSafe(t *testing.T) {
 	time.Sleep(time.Second)
 }
 
+// go test -v -count 1 ./thread -run TestGoSafeWithContext
 func TestGoSafeWithContext(t *testing.T) {
 	ctx := context.WithValue(context.Background(), "key", "value")
 	done := make(chan string, 1)
@@ -47,6 +48,7 @@ func TestGoSafeWithContext(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./thread -run TestGoWithContextNilContext
 func TestGoWithContextNilContext(t *testing.T) {
 	done := make(chan struct{}, 1)
 

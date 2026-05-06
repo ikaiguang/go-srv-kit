@@ -119,3 +119,4 @@ _output_testdata
 !.env.example
 
 /.kiro/specs/
+/.agents/specs/

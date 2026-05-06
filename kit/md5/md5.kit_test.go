@@ -7,6 +7,7 @@ import (
 )
 
 // go test -v ./pkg/crypto -count=1 -run TestMd5
+// go test -v -count 1 ./md5 -run TestMd5
 func TestMd5(t *testing.T) {
 	tests := []struct {
 		name      string

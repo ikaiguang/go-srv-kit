@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// go test -v -count 1 ./kit/filepath -run TestWalkDir
+// go test -v -count 1 ./filepath -run TestWalkDir
 func TestWalkDir(t *testing.T) {
 	rootPath := "./../"
 	fp, de, err := WalkDir(rootPath)
@@ -21,14 +21,14 @@ func TestWalkDir(t *testing.T) {
 	}
 }
 
-// go test -v -count 1 ./kit/filepath -run TestWalkDir_NonExistentPath
+// go test -v -count 1 ./filepath -run TestWalkDir_NonExistentPath
 func TestWalkDir_NonExistentPath(t *testing.T) {
 	rootPath := "./non_existent_path"
 	_, _, err := WalkDir(rootPath)
 	require.NotNil(t, err)
 }
 
-// go test -v -count 1 ./kit/filepath -run TestWaldDir
+// go test -v -count 1 ./filepath -run TestWaldDir
 func TestWaldDir(t *testing.T) {
 	rootPath := "./../"
 	fp, fi, err := WaldDir(rootPath)
@@ -42,7 +42,7 @@ func TestWaldDir(t *testing.T) {
 	}
 }
 
-// go test -v -count 1 ./kit/filepath -run TestReadDirEntries
+// go test -v -count 1 ./filepath -run TestReadDirEntries
 func TestReadDirEntries(t *testing.T) {
 	rootPath := "./../"
 	de, err := ReadDirEntries(rootPath)
@@ -53,14 +53,14 @@ func TestReadDirEntries(t *testing.T) {
 	}
 }
 
-// go test -v -count 1 ./kit/filepath -run TestReadDirEntries_NonExistentPath
+// go test -v -count 1 ./filepath -run TestReadDirEntries_NonExistentPath
 func TestReadDirEntries_NonExistentPath(t *testing.T) {
 	rootPath := "./non_existent_path"
 	_, err := ReadDirEntries(rootPath)
 	require.NotNil(t, err)
 }
 
-// go test -v -count 1 ./kit/filepath -run TestReadDir
+// go test -v -count 1 ./filepath -run TestReadDir
 func TestReadDir(t *testing.T) {
 	rootPath := "./../"
 	fi, err := ReadDir(rootPath)

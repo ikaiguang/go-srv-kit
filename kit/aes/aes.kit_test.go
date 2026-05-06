@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// go test -v -count 1 ./aes -run TestEncryptCBCAndDecryptCBC
 func TestEncryptCBCAndDecryptCBC(t *testing.T) {
 	key := []byte("1234567890ABCDEF")
 	plaintext := []byte("hello cbc")
@@ -21,6 +22,7 @@ func TestEncryptCBCAndDecryptCBC(t *testing.T) {
 	assert.Equal(t, string(plaintext), got)
 }
 
+// go test -v -count 1 ./aes -run TestDecryptCBCInvalidPadding
 func TestDecryptCBCInvalidPadding(t *testing.T) {
 	key := []byte("1234567890ABCDEF")
 	raw := make([]byte, 32)

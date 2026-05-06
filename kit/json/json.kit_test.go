@@ -6,6 +6,7 @@ import (
 )
 
 // TestMarshalWithoutEscapeHTML_ConcurrentSafety 验证并发调用不会导致数据竞争
+// go test -v -count 1 ./json -run TestMarshalWithoutEscapeHTML_ConcurrentSafety
 func TestMarshalWithoutEscapeHTML_ConcurrentSafety(t *testing.T) {
 	const goroutines = 100
 	var wg sync.WaitGroup
@@ -35,6 +36,7 @@ func TestMarshalWithoutEscapeHTML_ConcurrentSafety(t *testing.T) {
 }
 
 // TestMarshalIndentWithoutEscapeHTML_ConcurrentSafety 验证并发调用不会导致数据竞争
+// go test -v -count 1 ./json -run TestMarshalIndentWithoutEscapeHTML_ConcurrentSafety
 func TestMarshalIndentWithoutEscapeHTML_ConcurrentSafety(t *testing.T) {
 	const goroutines = 100
 	var wg sync.WaitGroup
@@ -64,6 +66,7 @@ func TestMarshalIndentWithoutEscapeHTML_ConcurrentSafety(t *testing.T) {
 }
 
 // TestMarshalWithoutEscapeHTML_NoHTMLEscape 验证 HTML 字符不被转义
+// go test -v -count 1 ./json -run TestMarshalWithoutEscapeHTML_NoHTMLEscape
 func TestMarshalWithoutEscapeHTML_NoHTMLEscape(t *testing.T) {
 	data := map[string]string{"url": "https://example.com?a=1&b=2"}
 	result, err := MarshalWithoutEscapeHTML(data)

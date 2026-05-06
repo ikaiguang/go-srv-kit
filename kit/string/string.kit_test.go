@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./string -run TestToSnake
 func TestToSnake(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -30,6 +31,7 @@ func TestToSnake(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./string -run TestToCamel
 func TestToCamel(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -52,6 +54,7 @@ func TestToCamel(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./string -run TestToString
 func TestToString(t *testing.T) {
 	tests := []struct {
 		name  string

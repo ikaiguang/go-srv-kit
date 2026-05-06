@@ -7,13 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -v -count 1 ./kit/time -run TestFormat
+// go test -v -count 1 ./time -run TestFormat
 func TestFormat(t *testing.T) {
 	tNow := now()
 	assert.NotEmpty(t, FormatRFC3339(tNow))
 	assert.Contains(t, FormatRFC3339(tNow), "T")
 }
 
+// go test -v -count 1 ./time -run TestToday
 func TestToday(t *testing.T) {
 	today := Today()
 	n := time.Now()
@@ -25,6 +26,7 @@ func TestToday(t *testing.T) {
 	assert.Equal(t, 0, today.Second())
 }
 
+// go test -v -count 1 ./time -run TestToDay
 func TestToDay(t *testing.T) {
 	input := time.Date(2024, 8, 15, 14, 30, 45, 0, time.Local)
 	result := ToDay(input)
@@ -36,6 +38,7 @@ func TestToDay(t *testing.T) {
 	assert.Equal(t, 0, result.Second())
 }
 
+// go test -v -count 1 ./time -run TestToHour
 func TestToHour(t *testing.T) {
 	input := time.Date(2024, 8, 15, 14, 30, 45, 0, time.Local)
 	result := ToHour(input)
@@ -44,6 +47,7 @@ func TestToHour(t *testing.T) {
 	assert.Equal(t, 0, result.Second())
 }
 
+// go test -v -count 1 ./time -run TestToMinute
 func TestToMinute(t *testing.T) {
 	input := time.Date(2024, 8, 15, 14, 30, 45, 0, time.Local)
 	result := ToMinute(input)
@@ -52,6 +56,7 @@ func TestToMinute(t *testing.T) {
 	assert.Equal(t, 0, result.Second())
 }
 
+// go test -v -count 1 ./time -run TestThisMonth
 func TestThisMonth(t *testing.T) {
 	input := time.Date(2024, 8, 15, 14, 30, 45, 0, time.Local)
 	result := ThisMonth(input)
@@ -61,6 +66,7 @@ func TestThisMonth(t *testing.T) {
 	assert.Equal(t, 0, result.Hour())
 }
 
+// go test -v -count 1 ./time -run TestThisYear
 func TestThisYear(t *testing.T) {
 	input := time.Date(2024, 8, 15, 14, 30, 45, 0, time.Local)
 	result := ThisYear(input)
@@ -69,12 +75,14 @@ func TestThisYear(t *testing.T) {
 	assert.Equal(t, 1, result.Day())
 }
 
+// go test -v -count 1 ./time -run TestTimestampToTime
 func TestTimestampToTime(t *testing.T) {
 	ts := int64(1692100000)
 	result := TimestampToTime(ts)
 	assert.Equal(t, ts, result.Unix())
 }
 
+// go test -v -count 1 ./time -run TestTimestampToDate
 func TestTimestampToDate(t *testing.T) {
 	ts := int64(1692100000)
 	result := TimestampToDate(ts, Ymd)
@@ -82,6 +90,7 @@ func TestTimestampToDate(t *testing.T) {
 	assert.Regexp(t, `^\d{4}-\d{2}-\d{2}$`, result)
 }
 
+// go test -v -count 1 ./time -run TestDateToTime
 func TestDateToTime(t *testing.T) {
 	t.Run("正常解析", func(t *testing.T) {
 		result, err := DateToTime(YmdHms, "2024-08-15 14:30:45")
@@ -97,6 +106,7 @@ func TestDateToTime(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./time -run TestTime9999
 func TestTime9999(t *testing.T) {
 	result := Time9999()
 	assert.Equal(t, 9999, result.Year())
@@ -104,27 +114,32 @@ func TestTime9999(t *testing.T) {
 	assert.Equal(t, 31, result.Day())
 }
 
+// go test -v -count 1 ./time -run TestIsToday
 func TestIsToday(t *testing.T) {
 	assert.True(t, IsToday(time.Now()))
 	assert.False(t, IsToday(time.Now().AddDate(0, 0, -1)))
 	assert.False(t, IsToday(time.Now().AddDate(0, 0, 1)))
 }
 
+// go test -v -count 1 ./time -run TestIsYesterday
 func TestIsYesterday(t *testing.T) {
 	assert.True(t, IsYesterday(time.Now().AddDate(0, 0, -1)))
 	assert.False(t, IsYesterday(time.Now()))
 }
 
+// go test -v -count 1 ./time -run TestIsThisMonth
 func TestIsThisMonth(t *testing.T) {
 	assert.True(t, IsThisMonth(time.Now()))
 	assert.False(t, IsThisMonth(time.Now().AddDate(0, -2, 0)))
 }
 
+// go test -v -count 1 ./time -run TestIsThisYear
 func TestIsThisYear(t *testing.T) {
 	assert.True(t, IsThisYear(time.Now()))
 	assert.False(t, IsThisYear(time.Now().AddDate(-1, 0, 0)))
 }
 
+// go test -v -count 1 ./time -run TestWeekStart
 func TestWeekStart(t *testing.T) {
 	// 2024-08-14 是周三
 	wed := time.Date(2024, 8, 14, 10, 30, 0, 0, time.Local)
@@ -134,6 +149,7 @@ func TestWeekStart(t *testing.T) {
 	assert.Equal(t, 0, start.Hour())
 }
 
+// go test -v -count 1 ./time -run TestWeekEnd
 func TestWeekEnd(t *testing.T) {
 	wed := time.Date(2024, 8, 14, 10, 30, 0, 0, time.Local)
 	end := WeekEnd(wed)
@@ -143,6 +159,7 @@ func TestWeekEnd(t *testing.T) {
 	assert.Equal(t, 59, end.Second())
 }
 
+// go test -v -count 1 ./time -run TestMonthEnd
 func TestMonthEnd(t *testing.T) {
 	t.Run("31天的月份", func(t *testing.T) {
 		input := time.Date(2024, 8, 15, 0, 0, 0, 0, time.Local)
@@ -164,6 +181,7 @@ func TestMonthEnd(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./time -run TestDaysBetween
 func TestDaysBetween(t *testing.T) {
 	a := time.Date(2024, 8, 15, 0, 0, 0, 0, time.Local)
 	b := time.Date(2024, 8, 10, 0, 0, 0, 0, time.Local)
@@ -172,6 +190,7 @@ func TestDaysBetween(t *testing.T) {
 	assert.Equal(t, 0, DaysBetween(a, a))
 }
 
+// go test -v -count 1 ./time -run TestStartOfDay_EndOfDay
 func TestStartOfDay_EndOfDay(t *testing.T) {
 	input := time.Date(2024, 8, 15, 14, 30, 45, 0, time.Local)
 
@@ -185,18 +204,21 @@ func TestStartOfDay_EndOfDay(t *testing.T) {
 	assert.Equal(t, 59, end.Second())
 }
 
+// go test -v -count 1 ./time -run TestAddDays
 func TestAddDays(t *testing.T) {
 	base := time.Date(2024, 8, 15, 0, 0, 0, 0, time.Local)
 	assert.Equal(t, 20, AddDays(base, 5).Day())
 	assert.Equal(t, 10, AddDays(base, -5).Day())
 }
 
+// go test -v -count 1 ./time -run TestAddMonths
 func TestAddMonths(t *testing.T) {
 	base := time.Date(2024, 8, 15, 0, 0, 0, 0, time.Local)
 	assert.Equal(t, time.November, AddMonths(base, 3).Month())
 	assert.Equal(t, time.May, AddMonths(base, -3).Month())
 }
 
+// go test -v -count 1 ./time -run TestIsBefore_IsAfter
 func TestIsBefore_IsAfter(t *testing.T) {
 	a := time.Date(2024, 1, 1, 0, 0, 0, 0, time.Local)
 	b := time.Date(2024, 12, 31, 0, 0, 0, 0, time.Local)
@@ -206,6 +228,7 @@ func TestIsBefore_IsAfter(t *testing.T) {
 	assert.False(t, IsAfter(a, b))
 }
 
+// go test -v -count 1 ./time -run TestIsBetween
 func TestIsBetween(t *testing.T) {
 	start := time.Date(2024, 1, 1, 0, 0, 0, 0, time.Local)
 	end := time.Date(2024, 12, 31, 0, 0, 0, 0, time.Local)
@@ -218,16 +241,19 @@ func TestIsBetween(t *testing.T) {
 	assert.False(t, IsBetween(before, start, end))
 }
 
+// go test -v -count 1 ./time -run TestIsExpired
 func TestIsExpired(t *testing.T) {
 	assert.True(t, IsExpired(time.Now().Add(-time.Hour)))
 	assert.False(t, IsExpired(time.Now().Add(time.Hour)))
 }
 
+// go test -v -count 1 ./time -run TestIsZero
 func TestIsZero(t *testing.T) {
 	assert.True(t, IsZero(time.Time{}))
 	assert.False(t, IsZero(time.Now()))
 }
 
+// go test -v -count 1 ./time -run TestFriendlyDuration
 func TestFriendlyDuration(t *testing.T) {
 	tests := []struct {
 		name string
@@ -250,17 +276,20 @@ func TestFriendlyDuration(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./time -run TestTimestampMillis
 func TestTimestampMillis(t *testing.T) {
 	ms := TimestampMillis()
 	assert.Greater(t, ms, int64(0))
 }
 
+// go test -v -count 1 ./time -run TestMillisToTime
 func TestMillisToTime(t *testing.T) {
 	ms := time.Now().UnixMilli()
 	result := MillisToTime(ms)
 	assert.Equal(t, ms, result.UnixMilli())
 }
 
+// go test -v -count 1 ./time -run TestDaysInMonth
 func TestDaysInMonth(t *testing.T) {
 	assert.Equal(t, 31, DaysInMonth(2024, time.January))
 	assert.Equal(t, 29, DaysInMonth(2024, time.February)) // 闰年
@@ -268,6 +297,7 @@ func TestDaysInMonth(t *testing.T) {
 	assert.Equal(t, 30, DaysInMonth(2024, time.April))
 }
 
+// go test -v -count 1 ./time -run TestIsLeapYear
 func TestIsLeapYear(t *testing.T) {
 	assert.True(t, IsLeapYear(2024))
 	assert.True(t, IsLeapYear(2000))
@@ -275,6 +305,7 @@ func TestIsLeapYear(t *testing.T) {
 	assert.False(t, IsLeapYear(1900))
 }
 
+// go test -v -count 1 ./time -run TestIsWeekend_IsWorkday
 func TestIsWeekend_IsWorkday(t *testing.T) {
 	// 2024-08-17 是周六
 	sat := time.Date(2024, 8, 17, 0, 0, 0, 0, time.Local)

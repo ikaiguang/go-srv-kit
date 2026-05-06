@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./base64 -run TestBase64
 func TestBase64(t *testing.T) {
 	src := []byte("hello world")
 

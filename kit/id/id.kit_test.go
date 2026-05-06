@@ -11,7 +11,7 @@ import (
 // BenchmarkNew_BwmarrinSnowflake-8		76981             15611 ns/op               0 B/op          0 allocs/op
 // ===== Benchmark =====
 
-// go test -v -count 1 ./kit/id -test.bench BenchmarkNew_BwmarrinSnowflake -test.run BenchmarkNew_BwmarrinSnowflake
+// go test -v -count 1 ./id -test.bench BenchmarkNew_BwmarrinSnowflake -test.run BenchmarkNew_BwmarrinSnowflake
 // BenchmarkNew_BwmarrinSnowflake-8           76981             15611 ns/op               0 B/op          0 allocs/op
 func BenchmarkNew_BwmarrinSnowflake(b *testing.B) {
 	//node, err := NewBwmarrinSnowflake(1)
@@ -26,7 +26,7 @@ func BenchmarkNew_BwmarrinSnowflake(b *testing.B) {
 	}
 }
 
-// go test -v -count 1 ./kit/id -run TestMy_NextID
+// go test -v -count 1 ./id -run TestMy_NextID
 func TestMy_NextID(t *testing.T) {
 	tests := []struct {
 		name string
@@ -62,6 +62,7 @@ func TestMy_NextID(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./id -run TestIPV4ToNodeID
 func TestIPV4ToNodeID(t *testing.T) {
 	got, err := IPV4ToNodeID("192.168.1.2")
 	require.NoError(t, err)
@@ -78,6 +79,7 @@ func TestIPV4ToNodeID(t *testing.T) {
 	require.Error(t, err)
 }
 
+// go test -v -count 1 ./id -run TestNewBwmarrinSnowflakeNodeRange
 func TestNewBwmarrinSnowflakeNodeRange(t *testing.T) {
 	_, err := NewBwmarrinSnowflake(snowflakeMaxNode)
 	require.NoError(t, err)

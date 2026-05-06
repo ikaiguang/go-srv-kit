@@ -3,10 +3,11 @@ package pagetestdata
 import (
 	"testing"
 
-	pagepkg "github.com/ikaiguang/go-kit/page"
+	pagepkg "github.com/ikaiguang/go-srv-kit/kit/page"
 )
 
-// go test -v -count 1 ./kit/page/testdata -run TestPage_Page
+// go test -v -count 1 ./page/testdata -run TestPage_Page
+// go test -v -count 1 ./page/testdata -run TestPaging_Page
 func TestPaging_Page(t *testing.T) {
 	data := []struct {
 		name        string
@@ -51,7 +52,7 @@ func TestPaging_Page(t *testing.T) {
 	}
 }
 
-// go test -v -count 1 ./kit/page/testdata -run TestPaging_Cursor
+// go test -v -count 1 ./page/testdata -run TestPaging_Cursor
 // TODO: 实现游标分页测试用例
 //func TestPaging_Cursor(t *testing.T) {
 //}

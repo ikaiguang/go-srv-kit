@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// go test -v -count 1 ./url -run TestEncode
 func TestEncode(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -26,6 +27,7 @@ func TestEncode(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./url -run TestEncodeValues
 func TestEncodeValues(t *testing.T) {
 	values := url.Values{}
 	values.Set("name", "hello world")
@@ -37,6 +39,7 @@ func TestEncodeValues(t *testing.T) {
 	assert.Contains(t, result, "name=hello%20world")
 }
 
+// go test -v -count 1 ./url -run TestGenRequestURL
 func TestGenRequestURL(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -65,6 +68,7 @@ func (m *mockQueryParam) Encoder() url.Values {
 	return m.values
 }
 
+// go test -v -count 1 ./url -run TestSplicingQueryParam
 func TestSplicingQueryParam(t *testing.T) {
 	t.Run("有参数", func(t *testing.T) {
 		values := url.Values{}

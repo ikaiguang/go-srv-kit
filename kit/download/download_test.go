@@ -16,7 +16,7 @@ const (
 	TestdataPath = "./_output_testdata"
 )
 
-// go test -v -count 1 ./kit/download -run TestStreamDownload
+// go test -v -count 1 ./download -run TestStreamDownload
 func TestStreamDownload(t *testing.T) {
 	// 创建本地测试 HTTP 服务器
 	testContent := []byte("hello world test content for download")
@@ -74,7 +74,7 @@ func TestStreamDownload(t *testing.T) {
 	})
 }
 
-// go test -v -count 1 ./kit/download -run TestCheckOrCreateDir
+// go test -v -count 1 ./download -run TestCheckOrCreateDir
 func TestCheckOrCreateDir(t *testing.T) {
 	testDir := filepath.Join(TestdataPath, "subdir", "nested")
 	defer func() { _ = os.RemoveAll(TestdataPath) }()

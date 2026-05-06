@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// go test -v -count 1 ./curl -run TestNewRequest
 func TestNewRequest(t *testing.T) {
 	req, err := NewRequest(http.MethodPut, "http://example.com", bytes.NewBufferString("body"))
 	require.NoError(t, err)
@@ -43,6 +44,7 @@ func TestNewRequest(t *testing.T) {
 	assert.Equal(t, http.MethodDelete, deleteReq.Method)
 }
 
+// go test -v -count 1 ./curl -run TestNewRequestContext
 func TestNewRequestContext(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -58,6 +60,7 @@ func TestNewRequestContext(t *testing.T) {
 	assert.NotNil(t, req.Context())
 }
 
+// go test -v -count 1 ./curl -run TestNewHTTPClient
 func TestNewHTTPClient(t *testing.T) {
 	client := NewHTTPClient(WithTimeout(2 * time.Second))
 	assert.Equal(t, 2*time.Second, client.Timeout)
@@ -70,6 +73,7 @@ func TestNewHTTPClient(t *testing.T) {
 	assert.True(t, tr.TLSClientConfig.InsecureSkipVerify)
 }
 
+// go test -v -count 1 ./curl -run TestDoAndDoWithClient
 func TestDoAndDoWithClient(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
@@ -94,6 +98,7 @@ func TestDoAndDoWithClient(t *testing.T) {
 	assert.Equal(t, []byte("ok"), body)
 }
 
+// go test -v -count 1 ./curl -run TestDefault
 func TestDefault(t *testing.T) {
 	originalTransport := http.DefaultTransport
 	defer func() { http.DefaultTransport = originalTransport }()
@@ -115,6 +120,7 @@ func TestDefault(t *testing.T) {
 	assert.Equal(t, []byte("default"), body)
 }
 
+// go test -v -count 1 ./curl -run TestResponse
 func TestResponse(t *testing.T) {
 	resp := &http.Response{
 		StatusCode: http.StatusNoContent,
@@ -127,6 +133,7 @@ func TestResponse(t *testing.T) {
 	assert.Empty(t, body)
 }
 
+// go test -v -count 1 ./curl -run TestIsSuccessCodeAndErrRequestFailure
 func TestIsSuccessCodeAndErrRequestFailure(t *testing.T) {
 	assert.True(t, IsSuccessCode(http.StatusOK))
 	assert.True(t, IsSuccessCode(http.StatusNoContent))

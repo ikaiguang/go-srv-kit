@@ -13,7 +13,7 @@ const (
 	localKeyName = "test-redsync"
 )
 
-// go test -v -count 1 ./kit/locker -run TestLocal_LockOnce
+// go test -v -count 1 ./locker -run TestLocal_LockOnce
 func TestLocal_LockOnce(t *testing.T) {
 	locker := NewLocalLocker()
 	ctx := context.Background()
@@ -46,7 +46,7 @@ func TestLocal_LockOnce(t *testing.T) {
 	})
 }
 
-// go test -v -count 1 ./kit/locker -run TestLocal_LockMutex
+// go test -v -count 1 ./locker -run TestLocal_LockMutex
 func TestLocal_LockMutex(t *testing.T) {
 	locker := NewLocalLocker()
 	ctx := context.Background()

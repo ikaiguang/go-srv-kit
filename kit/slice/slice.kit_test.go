@@ -2,6 +2,7 @@ package slicepkg
 
 import "testing"
 
+// go test -v -count 1 ./slice -run TestReverse
 func TestReverse(t *testing.T) {
 	s := []int{1, 2, 3, 4, 5, 6}
 
@@ -16,6 +17,7 @@ func TestReverse(t *testing.T) {
 	t.Log(s)
 }
 
+// go test -v -count 1 ./slice -run TestReverseSlice
 func TestReverseSlice(t *testing.T) {
 	t.Run("int切片反转", func(t *testing.T) {
 		s := []int{1, 2, 3, 4, 5}
@@ -58,6 +60,7 @@ func TestReverseSlice(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./slice -run TestContains
 func TestContains(t *testing.T) {
 	t.Run("存在的元素", func(t *testing.T) {
 		s := []string{"a", "b", "c"}
@@ -98,6 +101,7 @@ func TestContains(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./slice -run TestInStringSlice_Deprecated
 func TestInStringSlice_Deprecated(t *testing.T) {
 	s := []string{"hello", "world"}
 	if !InStringSlice(s, "hello") {

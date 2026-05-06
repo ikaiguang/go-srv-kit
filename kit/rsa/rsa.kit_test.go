@@ -33,6 +33,7 @@ yPZF98/ZJHwqUZ/nDct1nQV/YYmfe4jtVKJkORj+wBjg/QEfgxpa1YxMlDqBWOt9
 A5JwkWJ4ZfSs6F2tfwIDAQAB
 -----END PUBLIC KEY-----`)
 
+// go test -v -count 1 ./rsa -run TestRsa_Encrypt
 func TestRsa_Encrypt(t *testing.T) {
 	r, err := NewRsaCipher(publicKey, privateKey)
 	if err != nil {
@@ -52,6 +53,7 @@ func TestRsa_Encrypt(t *testing.T) {
 	assert.Equal(t, msg, decrypt)
 }
 
+// go test -v -count 1 ./rsa -run TestRsaCipher_Sign
 func TestRsaCipher_Sign(t *testing.T) {
 	r, err := NewRsaCipher(publicKey, privateKey)
 	if err != nil {
@@ -71,6 +73,7 @@ func TestRsaCipher_Sign(t *testing.T) {
 	assert.True(t, valid)
 }
 
+// go test -v -count 1 ./rsa -run TestRsa
 func TestRsa(t *testing.T) {
 	// rsa 密钥文件产生
 	priKey, pubKey, err := GenRsaKey()

@@ -1,7 +1,7 @@
 # go-srv-kit
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/ikaiguang/go-srv-kit)](https://goreportcard.com/report/github.com/ikaiguang/go-srv-kit)
-[![GoDoc](https://godoc.org/github.com/ikaiguang/go-srv-kit?status.svg)](https://godoc.org/github.com/ikaiguang/go-srv-kit)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ikaiguang/go-srv-kit/kit)](https://goreportcard.com/report/github.com/ikaiguang/go-srv-kit/kit)
+[![GoDoc](https://godoc.org/github.com/ikaiguang/go-srv-kit/kit?status.svg)](https://godoc.org/github.com/ikaiguang/go-srv-kit/kit)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 `go-srv-kit` 为微服务、业务系统开发提供开箱即用的工具。
@@ -258,7 +258,7 @@ make generate
 make api-{service}
 
 # 运行测试
-go test ./...
+cd kit && go test ./...
 
 # 代码检查
 go vet ./...

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"html/template"
 
-	bufferpkg "github.com/ikaiguang/go-kit/buffer"
+	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 	"gopkg.in/gomail.v2"
 )
 

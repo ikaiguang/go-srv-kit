@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// go test -v -count 1 ./cmd -run TestExecShell
 func TestExecShell(t *testing.T) {
 	got := ExecShell()
 	require.NotEmpty(t, got)
@@ -21,6 +22,7 @@ func TestExecShell(t *testing.T) {
 	assert.Equal(t, []string{"/bin/sh", "-c"}, got)
 }
 
+// go test -v -count 1 ./cmd -run TestRunCommandContext
 func TestRunCommandContext(t *testing.T) {
 	ctx := context.Background()
 	var (
@@ -40,6 +42,7 @@ func TestRunCommandContext(t *testing.T) {
 	assert.Equal(t, "hello", strings.TrimSpace(string(got)))
 }
 
+// go test -v -count 1 ./cmd -run TestRunCommandWithWorkDirContext
 func TestRunCommandWithWorkDirContext(t *testing.T) {
 	ctx := context.Background()
 	workDir := t.TempDir()
@@ -59,6 +62,7 @@ func TestRunCommandWithWorkDirContext(t *testing.T) {
 	assert.Equal(t, workDir, strings.TrimSpace(string(got)))
 }
 
+// go test -v -count 1 ./cmd -run TestRunCommandContextErrorKeepsUnderlyingError
 func TestRunCommandContextErrorKeepsUnderlyingError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Nanosecond)
 	defer cancel()

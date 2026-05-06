@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -v -count 1 ./kit/page -run TestPaginate_ConvertToPageOption
+// go test -v -count 1 ./page -run TestPaginate_ConvertToPageOption
 func TestPaginate_ConvertToPageOption(t *testing.T) {
 	defaultRequest := DefaultPageRequest()
 	pageRequestFor10 := &PageRequest{
@@ -45,6 +45,7 @@ func TestPaginate_ConvertToPageOption(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./page -run TestPaginate_NilSafety
 func TestPaginate_NilSafety(t *testing.T) {
 	opt := ConvertToPageOption(nil)
 	assert.Equal(t, DefaultPageSize, opt.Limit)
@@ -60,7 +61,7 @@ func TestPaginate_NilSafety(t *testing.T) {
 	assert.Equal(t, uint32(1), CalcShowFrom(0, 0))
 }
 
-// go test -v -count 1 ./kit/page -run TestPaginate_ParsePageRequest
+// go test -v -count 1 ./page -run TestPaginate_ParsePageRequest
 func TestPaginate_ParsePageRequest(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -118,7 +119,7 @@ func TestPaginate_ParsePageRequest(t *testing.T) {
 	}
 }
 
-// go test -v -count 1 ./kit/page -run TestPaginate_DefaultPageRequest
+// go test -v -count 1 ./page -run TestPaginate_DefaultPageRequest
 func TestPaginate_DefaultPageRequest(t *testing.T) {
 	tests := []struct {
 		name string

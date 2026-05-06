@@ -11,7 +11,7 @@ import (
 
 const testdataDir = "./_testdata_temp"
 
-// go test -v -count 1 ./kit/file -run TestMoveFileToDir
+// go test -v -count 1 ./file -run TestMoveFileToDir
 func TestMoveFileToDir(t *testing.T) {
 	// 准备临时目录和文件
 	srcDir := filepath.Join(testdataDir, "src")
@@ -39,7 +39,7 @@ func TestMoveFileToDir(t *testing.T) {
 	assert.True(t, os.IsNotExist(err))
 }
 
-// go test -v -count 1 ./kit/file -run TestCopyFile
+// go test -v -count 1 ./file -run TestCopyFile
 func TestCopyFile(t *testing.T) {
 	require.Nil(t, os.MkdirAll(testdataDir, 0755))
 	defer func() { _ = os.RemoveAll(testdataDir) }()
@@ -58,6 +58,7 @@ func TestCopyFile(t *testing.T) {
 	assert.Equal(t, content, data)
 }
 
+// go test -v -count 1 ./file -run TestCopyFile_CreateDestDir
 func TestCopyFile_CreateDestDir(t *testing.T) {
 	require.Nil(t, os.MkdirAll(testdataDir, 0755))
 	defer func() { _ = os.RemoveAll(testdataDir) }()
@@ -74,6 +75,7 @@ func TestCopyFile_CreateDestDir(t *testing.T) {
 	assert.Equal(t, content, data)
 }
 
+// go test -v -count 1 ./file -run TestMoveFileToDir_CreateDestDir
 func TestMoveFileToDir_CreateDestDir(t *testing.T) {
 	require.Nil(t, os.MkdirAll(testdataDir, 0755))
 	defer func() { _ = os.RemoveAll(testdataDir) }()
@@ -87,13 +89,13 @@ func TestMoveFileToDir_CreateDestDir(t *testing.T) {
 	assert.Equal(t, filepath.Join(dstDir, "src.txt"), targetPath)
 }
 
-// go test -v -count 1 ./kit/file -run TestCopyFile_SrcNotExist
+// go test -v -count 1 ./file -run TestCopyFile_SrcNotExist
 func TestCopyFile_SrcNotExist(t *testing.T) {
 	err := CopyFile("/nonexistent/file.txt", "/tmp/dst.txt")
 	assert.NotNil(t, err)
 }
 
-// go test -v -count 1 ./kit/file -run TestMoveFileToDir_SrcNotExist
+// go test -v -count 1 ./file -run TestMoveFileToDir_SrcNotExist
 func TestMoveFileToDir_SrcNotExist(t *testing.T) {
 	_, err := MoveFileToDir("/nonexistent/file.txt", "/tmp")
 	assert.NotNil(t, err)

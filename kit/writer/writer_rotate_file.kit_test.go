@@ -13,6 +13,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+// go test -v -count 1 ./writer -run TestNewRotateFile
 func TestNewRotateFile(t *testing.T) {
 	conf := &ConfigRotate{
 		Dir:            t.TempDir(),
@@ -34,6 +35,7 @@ func TestNewRotateFile(t *testing.T) {
 	assert.True(t, logger.Compress)
 }
 
+// go test -v -count 1 ./writer -run TestNewRotateFileWithFilenameSuffix
 func TestNewRotateFileWithFilenameSuffix(t *testing.T) {
 	conf := &ConfigRotate{
 		Dir:        t.TempDir(),
@@ -48,6 +50,7 @@ func TestNewRotateFileWithFilenameSuffix(t *testing.T) {
 	assert.Equal(t, filepath.Join(conf.Dir, "test.json.log"), logger.Filename)
 }
 
+// go test -v -count 1 ./writer -run TestNewRotateFileRejectsOnlyRotateTime
 func TestNewRotateFileRejectsOnlyRotateTime(t *testing.T) {
 	writer, err := NewRotateFile(&ConfigRotate{
 		Dir:        t.TempDir(),
@@ -59,6 +62,7 @@ func TestNewRotateFileRejectsOnlyRotateTime(t *testing.T) {
 	assert.Contains(t, err.Error(), "rotate time is not supported")
 }
 
+// go test -v -count 1 ./writer -run TestNewRotateFileStorageAge
 func TestNewRotateFileStorageAge(t *testing.T) {
 	writer, err := NewRotateFile(&ConfigRotate{
 		Dir:        t.TempDir(),
@@ -74,6 +78,7 @@ func TestNewRotateFileStorageAge(t *testing.T) {
 	assert.Equal(t, 0, logger.MaxBackups)
 }
 
+// go test -v -count 1 ./writer -run TestNewRotateFileDefaultConfig
 func TestNewRotateFileDefaultConfig(t *testing.T) {
 	writer, err := NewRotateFile(&ConfigRotate{
 		Dir:      t.TempDir(),
@@ -88,12 +93,14 @@ func TestNewRotateFileDefaultConfig(t *testing.T) {
 	assert.Equal(t, 0, logger.MaxBackups)
 }
 
+// go test -v -count 1 ./writer -run TestNewRotateFileRejectsNilConfig
 func TestNewRotateFileRejectsNilConfig(t *testing.T) {
 	writer, err := NewRotateFile(nil)
 	require.Error(t, err)
 	require.Nil(t, writer)
 }
 
+// go test -v -count 1 ./writer -run TestNewRotateFileRotatesBySizeWithTimestampBackup
 func TestNewRotateFileRotatesBySizeWithTimestampBackup(t *testing.T) {
 	dir := t.TempDir()
 	writer, err := NewRotateFile(&ConfigRotate{
@@ -131,6 +138,7 @@ func TestNewRotateFileRotatesBySizeWithTimestampBackup(t *testing.T) {
 	assert.True(t, hasTimestampBackup)
 }
 
+// go test -v -count 1 ./writer -run TestBytesToMegabytes
 func TestBytesToMegabytes(t *testing.T) {
 	tests := []struct {
 		name string
@@ -150,6 +158,7 @@ func TestBytesToMegabytes(t *testing.T) {
 	}
 }
 
+// go test -v -count 1 ./writer -run TestDurationToDays
 func TestDurationToDays(t *testing.T) {
 	tests := []struct {
 		name     string

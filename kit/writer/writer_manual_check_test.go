@@ -11,6 +11,7 @@ import (
 	"testing"
 )
 
+// go test -v -count 1 ./writer -run TestManualWriteRotateFile
 func TestManualWriteRotateFile(t *testing.T) {
 	logDir := filepath.Join(".", "manual-logs")
 	if err := os.RemoveAll(logDir); err != nil {

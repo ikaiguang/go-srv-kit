@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// go test -v -count 1 ./connection -run TestIsWebSocketConn
 func TestIsWebSocketConn(t *testing.T) {
 	t.Run("nil request", func(t *testing.T) {
 		assert.False(t, IsWebSocketConn(nil))
@@ -32,6 +33,7 @@ func TestIsWebSocketConn(t *testing.T) {
 	})
 }
 
+// go test -v -count 1 ./connection -run TestIsValidConnection
 func TestIsValidConnection(t *testing.T) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
@@ -52,6 +54,7 @@ func TestIsValidConnection(t *testing.T) {
 	<-done
 }
 
+// go test -v -count 1 ./connection -run TestCheckEndpointValidity
 func TestCheckEndpointValidity(t *testing.T) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
@@ -72,6 +75,7 @@ func TestCheckEndpointValidity(t *testing.T) {
 	<-done
 }
 
+// go test -v -count 1 ./connection -run TestIsConnCloseErr
 func TestIsConnCloseErr(t *testing.T) {
 	assert.False(t, IsConnCloseErr(errors.New("use of closed network connection")))
 
