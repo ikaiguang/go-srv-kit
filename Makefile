@@ -77,6 +77,7 @@ init:
 	go install github.com/google/wire/cmd/wire@v0.6.0
 	go install github.com/golang/mock/mockgen@v1.6.0
 	go install golang.org/x/tools/cmd/goimports@v0.24.0
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 # ===== include =====
 # ===== include =====
