@@ -113,3 +113,4 @@ _output
 _output_testdata
 mytest
 /.kiro/specs/
+/.agents/specs/
