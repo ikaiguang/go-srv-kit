@@ -1,7 +1,10 @@
 package psqlpkg
 
 import (
+	stderrors "errors"
+
 	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm"
+	"github.com/jackc/pgx/v5/pgconn"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -55,4 +58,19 @@ func NewDB(conf *Config, opts ...gormpkg.Option) (db *gorm.DB, err error) {
 	dialect := postgres.Open(conf.Dsn)
 
 	return gormpkg.NewDB(dialect, connOption)
+}
+
+// IsErrDuplicatedKey ...
+func IsErrDuplicatedKey(err error) bool {
+	if err == nil {
+		return false
+	}
+	if stderrors.Is(err, gorm.ErrDuplicatedKey) {
+		return true
+	}
+	var pgErr *pgconn.PgError
+	if stderrors.As(err, &pgErr) {
+		return pgErr.Code == "23505"
+	}
+	return false
 }

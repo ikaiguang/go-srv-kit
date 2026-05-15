@@ -4,7 +4,7 @@ import (
 	stdlog "log"
 
 	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	debugpkg "github.com/ikaiguang/go-srv-kit/debug"
+	"github.com/ikaiguang/go-srv-kit/kratos/debug"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
 	apputil "github.com/ikaiguang/go-srv-kit/service/app"

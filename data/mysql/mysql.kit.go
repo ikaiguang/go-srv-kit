@@ -1,6 +1,9 @@
 package mysqlpkg
 
 import (
+	stderrors "errors"
+
+	mysqldriver "github.com/go-sql-driver/mysql"
 	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/driver/mysql"
@@ -55,4 +58,19 @@ func NewDB(conf *Config, opts ...gormpkg.Option) (db *gorm.DB, err error) {
 	dialect := mysql.Open(conf.Dsn)
 
 	return gormpkg.NewDB(dialect, connOption)
+}
+
+// IsErrDuplicatedKey ...
+func IsErrDuplicatedKey(err error) bool {
+	if err == nil {
+		return false
+	}
+	if stderrors.Is(err, gorm.ErrDuplicatedKey) {
+		return true
+	}
+	var mysqlErr *mysqldriver.MySQLError
+	if stderrors.As(err, &mysqlErr) {
+		return mysqlErr.Number == 1062
+	}
+	return false
 }

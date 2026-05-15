@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/ikaiguang/go-srv-kit/kratos/debug"
 
-	debugpkg "github.com/ikaiguang/go-srv-kit/debug"
 	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
 	cmdpkg "github.com/ikaiguang/go-srv-kit/kit/cmd"
 	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
