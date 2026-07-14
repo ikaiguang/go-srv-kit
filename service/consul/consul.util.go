@@ -4,11 +4,11 @@ import (
 	stdlog "log"
 	"sync"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 
 	consulapi "github.com/hashicorp/consul/api"
-	consulpkg "github.com/ikaiguang/go-srv-kit/data/consul"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	consulpkg "github.com/ikaiguang/go-consul-kit/consul"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 type consulManager struct {

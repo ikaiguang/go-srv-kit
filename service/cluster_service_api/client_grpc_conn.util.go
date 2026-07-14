@@ -7,9 +7,9 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	middlewarepkg "github.com/ikaiguang/go-kratos-kit/middleware"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 	stdgrpc "google.golang.org/grpc"
 )
 

@@ -1,9 +1,9 @@
 package redisutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	"github.com/redis/go-redis/v9"
 	"sync"
+
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 )
 
 var (

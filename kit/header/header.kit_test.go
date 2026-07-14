@@ -81,3 +81,22 @@ func TestConstants(t *testing.T) {
 	assert.NotEmpty(t, ContentTypeFormURLEncoded)
 	assert.NotEmpty(t, ContentTypeMultipartForm)
 }
+
+func TestCommonHeaderHelpers(t *testing.T) {
+	header := http.Header{}
+
+	SetContentType(header, ContentTypeJSON)
+	assert.Equal(t, ContentTypeJSON, GetContentType(header))
+
+	SetAuthorization(header, "Bearer token")
+	assert.Equal(t, "Bearer token", GetAuthorization(header))
+
+	SetTraceID(header, "trace-id")
+	assert.Equal(t, "trace-id", GetTraceID(header))
+
+	SetRequestID(header, "request-id")
+	assert.Equal(t, "request-id", GetRequestID(header))
+
+	SetIsWebsocket(header)
+	assert.True(t, GetIsWebsocket(header))
+}

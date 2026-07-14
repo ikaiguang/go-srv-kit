@@ -10,6 +10,8 @@ import (
 	"io"
 )
 
+var errInvalidCBCPadding = stderrors.New("invalid pkcs7 padding")
+
 // AESEncryptor ...
 type AESEncryptor interface {
 	EncryptToString(plaintext, key string) (string, error)
@@ -95,6 +97,14 @@ func DecryptCBC(rawData string, key []byte) (res string, err error) {
 
 	// 解填充
 	unPadding := int(encryptData[len(encryptData)-1])
+	if unPadding == 0 || unPadding > blockSize || unPadding > len(encryptData) {
+		return res, errInvalidCBCPadding
+	}
+	for _, b := range encryptData[len(encryptData)-unPadding:] {
+		if int(b) != unPadding {
+			return res, errInvalidCBCPadding
+		}
+	}
 	res = string(encryptData[:(len(encryptData) - unPadding)])
 	return
 }

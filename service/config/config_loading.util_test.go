@@ -1,9 +1,10 @@
 package configutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"os"
 	"testing"
+
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 )
 
 // go test -v -count 1 ./config/ -run TestLoading_Config
@@ -52,7 +53,7 @@ func TestCurrentPath(t *testing.T) {
 	}{
 		{
 			name: "#TestCurrentPath",
-			want: gopath + "/src/github.com/ikaiguang/go-srv-kit/service/config",
+			want: gopath + "/src/github.com/ikaiguang/go-service-kit/config",
 		},
 	}
 	for _, tt := range tests {

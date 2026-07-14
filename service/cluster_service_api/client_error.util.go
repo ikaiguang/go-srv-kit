@@ -1,10 +1,11 @@
 package clientutil
 
 import (
-	"github.com/go-kratos/kratos/v2/errors"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	stdhttp "net/http"
 	"strconv"
+
+	"github.com/go-kratos/kratos/v2/errors"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 var (

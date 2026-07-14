@@ -3,7 +3,7 @@ package configutil
 import (
 	"testing"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 )
 
 // go test -v -count 1 ./config/ -run TestLoadingConfigFromConsul

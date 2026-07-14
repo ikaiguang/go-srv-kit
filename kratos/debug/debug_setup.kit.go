@@ -2,7 +2,7 @@ package debugpkg
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
-	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
+	logpkg "github.com/ikaiguang/go-kratos-kit/log"
 )
 
 // options 配置可选项

@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/ikaiguang/go-srv-kit/kit/header"
 )
 
 // upgrade 升级http

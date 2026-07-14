@@ -6,9 +6,9 @@ import (
 	"sync"
 
 	"github.com/go-kratos/kratos/v2/log"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	logpkg "github.com/ikaiguang/go-kratos-kit/log"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 )
 
 func (s *loggerManager) GetLogger() (log.Logger, error) {

@@ -7,10 +7,9 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	"github.com/ikaiguang/go-srv-kit/kit/header"
-	ippkg "github.com/ikaiguang/go-srv-kit/kit/ip"
-	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
+	authpkg "github.com/ikaiguang/go-auth-kit/auth"
+	ippkg "github.com/ikaiguang/go-kit/ip"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 	"go.opentelemetry.io/otel/trace"
 )
 

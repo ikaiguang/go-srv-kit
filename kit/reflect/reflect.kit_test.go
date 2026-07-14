@@ -50,6 +50,7 @@ func TestIsDefaultValue(t *testing.T) {
 		{"map_nil", (map[string]int)(nil), true},
 		{"map_nonnil", map[string]int{}, false},
 		// 指针
+		{"nil", nil, true},
 		{"ptr_nil", (*int)(nil), true},
 		{"ptr_nonnil", new(int), false},
 	}
@@ -96,24 +97,24 @@ func TestIsEmpty(t *testing.T) {
 func TestSwapObject(t *testing.T) {
 	t.Run("正常交换", func(t *testing.T) {
 		dst := 10
-		src := 20
-		ok := SwapObject(&dst, &src)
+		ok := SwapObject(&dst, new(20))
 		assert.True(t, ok)
 		assert.Equal(t, 20, dst)
 	})
 
 	t.Run("dst非指针返回false", func(t *testing.T) {
 		dst := 10
-		src := 20
-		ok := SwapObject(dst, &src)
+		ok := SwapObject(dst, new(20))
 		assert.False(t, ok)
 	})
 
 	t.Run("类型不匹配返回false", func(t *testing.T) {
-		dst := 10
-		src := "hello"
-		ok := SwapObject(&dst, &src)
+		ok := SwapObject(new(10), new("hello"))
 		assert.False(t, ok)
+	})
+
+	t.Run("nil返回false", func(t *testing.T) {
+		assert.False(t, SwapObject(nil, nil))
 	})
 
 	t.Run("结构体交换", func(t *testing.T) {
@@ -141,5 +142,9 @@ func TestNewObject(t *testing.T) {
 		src := struct{ Name string }{Name: "test"}
 		obj := NewObject(src)
 		assert.NotNil(t, obj)
+	})
+
+	t.Run("nil返回nil", func(t *testing.T) {
+		assert.Nil(t, NewObject(nil))
 	})
 }

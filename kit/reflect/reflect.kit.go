@@ -5,6 +5,9 @@ import "reflect"
 // IsDefaultValue 判断值是否为 Go 默认零值。
 // 性能警告：此函数使用 reflect 包，在性能敏感的热路径中应避免使用。
 func IsDefaultValue(i any) bool {
+	if i == nil {
+		return true
+	}
 	value := reflect.ValueOf(i)
 
 	switch value.Kind() {
@@ -59,6 +62,9 @@ func IsEmpty(object any) bool {
 // SwapObject 将 src 的值复制到 dst。
 // 性能警告：此函数使用 reflect 包，在可能的情况下建议使用直接赋值。
 func SwapObject(dst, src any) bool {
+	if dst == nil || src == nil {
+		return false
+	}
 	dstType := reflect.TypeOf(dst)
 	if dstType.Kind() != reflect.Ptr {
 		return false
@@ -77,6 +83,9 @@ func SwapObject(dst, src any) bool {
 	if !dstValue.IsValid() {
 		return false
 	}
+	if !dstValue.CanSet() {
+		return false
+	}
 	srcValue := reflect.ValueOf(src)
 	if srcValue.Kind() == reflect.Ptr {
 		srcValue = srcValue.Elem()
@@ -91,6 +100,9 @@ func SwapObject(dst, src any) bool {
 // NewObject 创建与 dst 相同类型的新实例。
 // 性能警告：此函数使用 reflect 包，在性能敏感的热路径中应避免使用。
 func NewObject(dst any) any {
+	if dst == nil {
+		return nil
+	}
 	typ := reflect.TypeOf(dst)
 	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()

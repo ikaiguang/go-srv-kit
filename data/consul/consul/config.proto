@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package kit.consulpkg;
+
+option go_package           = "github.com/ikaiguang/go-consul-kit/consul;consulpkg";
+option java_multiple_files  = true;
+option java_package         = "kit.consulpkg";
+option java_outer_classname = "KitConsulPkg";
+
+import "google/protobuf/duration.proto";
+
+// Config consul config
+message Config {
+  bool enable                        = 100;
+  string scheme                      = 1;
+  string address                     = 2;
+  string path_prefix                 = 3;
+  string datacenter                  = 4;
+  google.protobuf.Duration wait_time = 5;  // (s)
+  string token                       = 6;
+  string namespace                   = 7;
+  string partition                   = 8;
+  bool with_http_basic_auth          = 9;
+  string auth_username               = 10;
+  string auth_password               = 11;
+  bool insecure_skip_verify          = 12;
+  string tls_address                 = 13;
+  string tls_ca_pem                  = 14;
+  string tls_cert_pem                = 15;
+  string tls_key_pem                 = 16;
+}

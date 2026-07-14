@@ -79,6 +79,7 @@ func NetLocalIP() (net.IP, error) {
 
 // isPrivateIPv4 ...
 func isPrivateIPv4(ip net.IP) bool {
-	return ip != nil &&
-		(ip[0] == 10 || ip[0] == 172 && (ip[1] >= 16 && ip[1] < 32) || ip[0] == 192 && ip[1] == 168)
+	ipv4 := ip.To4()
+	return ipv4 != nil &&
+		(ipv4[0] == 10 || ipv4[0] == 172 && (ipv4[1] >= 16 && ipv4[1] < 32) || ipv4[0] == 192 && ipv4[1] == 168)
 }

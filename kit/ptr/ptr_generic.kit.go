@@ -6,7 +6,7 @@ func Ptr[T any](v T) *T {
 }
 
 // Value 将指针转换为值，nil 指针返回零值
-func Value[T comparable](p *T) T {
+func Value[T any](p *T) T {
 	if p == nil {
 		var zero T
 		return zero

@@ -31,6 +31,14 @@ func TestStrings(t *testing.T) {
 	})
 }
 
+func TestRandomStringBoundary(t *testing.T) {
+	assert.Empty(t, Strings(-1))
+	assert.Empty(t, Letter(-1))
+	assert.Empty(t, Numeric(-1))
+	assert.Empty(t, String(8, ""))
+	assert.Empty(t, String(-1, CharsetAlphabet))
+}
+
 func TestLetter(t *testing.T) {
 	t.Run("长度正确", func(t *testing.T) {
 		result := Letter(10)
@@ -174,6 +182,63 @@ func TestToken(t *testing.T) {
 	}
 }
 
+func TestSecureRandom(t *testing.T) {
+	t.Run("SecureBytes", func(t *testing.T) {
+		got, err := SecureBytes(16)
+		require.NoError(t, err)
+		assert.Len(t, got, 16)
+
+		empty, err := SecureBytes(0)
+		require.NoError(t, err)
+		assert.Empty(t, empty)
+	})
+
+	t.Run("SecureString", func(t *testing.T) {
+		got, err := SecureString(32, "ABC")
+		require.NoError(t, err)
+		assert.Len(t, got, 32)
+		for _, c := range got {
+			assert.Contains(t, "ABC", string(c))
+		}
+
+		empty, err := SecureString(0, "")
+		require.NoError(t, err)
+		assert.Empty(t, empty)
+
+		_, err = SecureString(8, "")
+		require.Error(t, err)
+	})
+
+	t.Run("SecureToken", func(t *testing.T) {
+		got, err := SecureToken(32)
+		require.NoError(t, err)
+		assert.Len(t, got, 32)
+		for _, c := range got {
+			isAlphanumeric := (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')
+			assert.True(t, isAlphanumeric)
+		}
+	})
+
+	t.Run("SecureHex", func(t *testing.T) {
+		got, err := SecureHex(32)
+		require.NoError(t, err)
+		assert.Len(t, got, 32)
+		for _, c := range got {
+			isHex := (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')
+			assert.True(t, isHex)
+		}
+	})
+
+	t.Run("SecureBase64URL", func(t *testing.T) {
+		got, err := SecureBase64URL(16)
+		require.NoError(t, err)
+		assert.NotEmpty(t, got)
+		assert.NotContains(t, got, "+")
+		assert.NotContains(t, got, "/")
+		assert.NotContains(t, got, "=")
+	})
+}
+
 func TestOrderNo(t *testing.T) {
 	t.Run("最小后缀长度为4", func(t *testing.T) {
 		no := OrderNo(2)
@@ -257,6 +322,11 @@ func TestSample(t *testing.T) {
 		copy(original, slice)
 		Sample(slice, 3)
 		assert.Equal(t, original, slice)
+	})
+
+	t.Run("n小于等于0返回空切片", func(t *testing.T) {
+		assert.Empty(t, Sample([]int{1, 2, 3}, 0))
+		assert.Empty(t, Sample([]int{1, 2, 3}, -1))
 	})
 }
 

@@ -6,9 +6,9 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	configutil "github.com/ikaiguang/go-srv-kit/service/config"
-	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+	configutil "github.com/ikaiguang/go-service-kit/config"
+	middlewareutil "github.com/ikaiguang/go-service-kit/middleware"
+	setuputil "github.com/ikaiguang/go-service-kit/setup"
 )
 
 var _ metadata.Option

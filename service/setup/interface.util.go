@@ -4,12 +4,11 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	consulapi "github.com/hashicorp/consul/api"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
-	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
-	clientutil "github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
+	authpkg "github.com/ikaiguang/go-auth-kit/auth"
+	rabbitmqpkg "github.com/ikaiguang/go-rabbitmq-kit/rabbitmq"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	clientutil "github.com/ikaiguang/go-service-kit/cluster_service_api"
 
-	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"gorm.io/gorm"

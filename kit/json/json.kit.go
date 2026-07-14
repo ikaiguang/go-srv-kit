@@ -3,13 +3,13 @@ package jsonpkg
 import (
 	"encoding/json"
 
-	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
+	"github.com/valyala/bytebufferpool"
 )
 
 // MarshalWithoutEscapeHTML ...
 func MarshalWithoutEscapeHTML(data any) ([]byte, error) {
-	buffer := bufferpkg.GetBuffer()
-	defer bufferpkg.PutBuffer(buffer)
+	buffer := bytebufferpool.Get()
+	defer bytebufferpool.Put(buffer)
 
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)
@@ -22,8 +22,8 @@ func MarshalWithoutEscapeHTML(data any) ([]byte, error) {
 
 // MarshalIndentWithoutEscapeHTML ...
 func MarshalIndentWithoutEscapeHTML(data any, prefix, indent string) ([]byte, error) {
-	buffer := bufferpkg.GetBuffer()
-	defer bufferpkg.PutBuffer(buffer)
+	buffer := bytebufferpool.Get()
+	defer bytebufferpool.Put(buffer)
 
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)

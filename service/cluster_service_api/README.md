@@ -6,7 +6,7 @@
 package serviceapi
 
 import (
-	"github.com/ikaiguang/go-srv-kit/service/cluster_service_api"
+	"github.com/ikaiguang/go-service-kit/cluster_service_api"
 	pingservicev1 "github.com/ikaiguang/go-srv-kit/testdata/ping-service/api/ping-service/v1/services"
 )
 

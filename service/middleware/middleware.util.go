@@ -3,7 +3,7 @@ package middlewareutil
 import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
-	middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
+	middlewarepkg "github.com/ikaiguang/go-kratos-kit/middleware"
 )
 
 // DefaultServerMiddlewares 中间件

@@ -45,6 +45,21 @@ func TestPaginate_ConvertToPageOption(t *testing.T) {
 	}
 }
 
+func TestPaginate_NilSafety(t *testing.T) {
+	opt := ConvertToPageOption(nil)
+	assert.Equal(t, DefaultPageSize, opt.Limit)
+	assert.Equal(t, 0, opt.Offset)
+
+	assert.False(t, HasNextPage(nil))
+
+	resp := CalcPageResponse(nil, 41)
+	assert.Equal(t, uint32(DefaultPageNumber), resp.Page)
+	assert.Equal(t, uint32(DefaultPageSize), resp.PageSize)
+	assert.Equal(t, uint32(3), resp.TotalPage)
+
+	assert.Equal(t, uint32(1), CalcShowFrom(0, 0))
+}
+
 // go test -v -count 1 ./kit/page -run TestPaginate_ParsePageRequest
 func TestPaginate_ParsePageRequest(t *testing.T) {
 	tests := []struct {

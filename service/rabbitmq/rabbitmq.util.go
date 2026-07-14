@@ -1,12 +1,13 @@
 package rabbitmqutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
 	stdlog "log"
 	"sync"
+
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	rabbitmqpkg "github.com/ikaiguang/go-rabbitmq-kit/rabbitmq"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	loggerutil "github.com/ikaiguang/go-service-kit/logger"
 )
 
 type rabbitmqManager struct {

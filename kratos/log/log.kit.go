@@ -2,7 +2,7 @@ package logpkg
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
-	timepkg "github.com/ikaiguang/go-srv-kit/kit/time"
+	timepkg "github.com/ikaiguang/go-kit/time"
 	"go.uber.org/zap/zapcore"
 )
 

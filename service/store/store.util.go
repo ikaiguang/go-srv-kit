@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
-	ospkg "github.com/ikaiguang/go-srv-kit/kit/os"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	filepathpkg "github.com/ikaiguang/go-kit/filepath"
+	ospkg "github.com/ikaiguang/go-kit/os"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 type StoreManager interface {

@@ -3,7 +3,7 @@ package loggerutil
 import (
 	"time"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

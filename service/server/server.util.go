@@ -1,12 +1,12 @@
 package serverutil
 
 import (
-	"github.com/go-kratos/kratos/v2"
+	"sync"
+
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	"sync"
+	middlewareutil "github.com/ikaiguang/go-service-kit/middleware"
+	setuputil "github.com/ikaiguang/go-service-kit/setup"
 )
 
 type ServerManager interface {

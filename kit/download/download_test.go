@@ -35,6 +35,8 @@ func TestStreamDownload(t *testing.T) {
 		got, err := StreamDownload(context.Background(), &DownloadParam{
 			URL:        server.URL + "/test.bin",
 			OutputPath: outputPath,
+			HTTPClient: server.Client(),
+			BufferSize: 4,
 		})
 		require.Nil(t, err)
 		assert.Equal(t, outputPath, got.FilePath)
@@ -60,12 +62,15 @@ func TestStreamDownload(t *testing.T) {
 		}))
 		defer server404.Close()
 
+		target := filepath.Join(TestdataPath, "notfound.bin")
 		_, err := StreamDownload(context.Background(), &DownloadParam{
 			URL:        server404.URL + "/notfound",
-			OutputPath: filepath.Join(TestdataPath, "notfound.bin"),
+			OutputPath: target,
 		})
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "status code: 404")
+		_, statErr := os.Stat(target)
+		assert.True(t, os.IsNotExist(statErr))
 	})
 }
 

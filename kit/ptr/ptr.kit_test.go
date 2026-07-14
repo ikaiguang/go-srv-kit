@@ -9,28 +9,28 @@ import (
 func TestPtr(t *testing.T) {
 	// 测试 string
 	s := "hello"
-	p := Ptr(s)
+	p := new(s)
 	if *p != s {
 		t.Errorf("Ptr(string): got %v, want %v", *p, s)
 	}
 
 	// 测试 int
 	i := 42
-	pi := Ptr(i)
+	pi := new(i)
 	if *pi != i {
 		t.Errorf("Ptr(int): got %v, want %v", *pi, i)
 	}
 
 	// 测试 float64
 	f := 3.14
-	pf := Ptr(f)
+	pf := new(f)
 	if *pf != f {
 		t.Errorf("Ptr(float64): got %v, want %v", *pf, f)
 	}
 
 	// 测试 bool
 	b := true
-	pb := Ptr(b)
+	pb := new(b)
 	if *pb != b {
 		t.Errorf("Ptr(bool): got %v, want %v", *pb, b)
 	}
@@ -57,6 +57,22 @@ func TestValue(t *testing.T) {
 	var nilBool *bool
 	if got := Value(nilBool); got != false {
 		t.Errorf("Value(nil *bool): got %v, want false", got)
+	}
+
+	values := []int{1, 2, 3}
+	gotValues := Value(&values)
+	if len(gotValues) != len(values) {
+		t.Fatalf("Value(&[]int): len got %d, want %d", len(gotValues), len(values))
+	}
+	for i := range values {
+		if gotValues[i] != values[i] {
+			t.Errorf("Value(&[]int)[%d]: got %v, want %v", i, gotValues[i], values[i])
+		}
+	}
+
+	var nilSlice *[]int
+	if got := Value(nilSlice); got != nil {
+		t.Errorf("Value(nil *[]int): got %v, want nil", got)
 	}
 }
 
@@ -92,8 +108,7 @@ func TestSlice(t *testing.T) {
 
 func TestValueSlice(t *testing.T) {
 	// 测试正常切片
-	v1, v2, v3 := 1, 2, 3
-	a := []*int{&v1, &v2, &v3}
+	a := []*int{new(1), new(2), new(3)}
 	result := ValueSlice(a)
 	if len(result) != len(a) {
 		t.Fatalf("ValueSlice: len got %d, want %d", len(result), len(a))

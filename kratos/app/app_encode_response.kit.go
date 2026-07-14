@@ -8,8 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/ikaiguang/go-srv-kit/kit/header"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 const (

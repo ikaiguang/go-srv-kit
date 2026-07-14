@@ -6,8 +6,8 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
 	"github.com/go-kratos/kratos/v2/transport"
-	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
-	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
+	authpkg "github.com/ikaiguang/go-auth-kit/auth"
+	contextpkg "github.com/ikaiguang/go-kratos-kit/context"
 )
 
 // TransportServiceKind 通行类型

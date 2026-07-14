@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package kit.redispkg;
+
+option go_package           = "github.com/ikaiguang/go-redis-kit/redispkg;redispkg";
+option java_multiple_files  = true;
+option java_package         = "kit.redispkg";
+option java_outer_classname = "KitRedisPKG";
+
+import "google/protobuf/duration.proto";
+
+// Config redis config
+message Config {
+  // enable 是否启动
+  bool enable                                 = 100;
+  repeated string addresses                   = 1;
+  string username                             = 2;
+  string password                             = 3;
+  uint32 db                                   = 4;
+  google.protobuf.Duration dial_timeout       = 5;   // (s)
+  google.protobuf.Duration read_timeout       = 6;   // (s)
+  google.protobuf.Duration write_timeout      = 7;   // (s)
+  uint32 conn_max_active                      = 8;   // 连接的最大数量
+  google.protobuf.Duration conn_max_lifetime  = 9;   // 连接可复用的最大时间(s)
+  uint32 conn_max_idle                        = 10;  // 连接池中空闲连接的最大数量
+  uint32 conn_min_idle                        = 11;  // 连接池中空闲连接的最小数量
+  google.protobuf.Duration conn_max_idle_time = 12;  // 设置连接空闲的最长时间(s)
+}

@@ -1,17 +1,17 @@
 package serverutil
 
 import (
-	"github.com/go-kratos/kratos/v2"
+	stdlog "log"
+	"net/url"
+
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	registrypkg "github.com/ikaiguang/go-srv-kit/kratos/registry"
-	apputil "github.com/ikaiguang/go-srv-kit/service/app"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
-	tracerutil "github.com/ikaiguang/go-srv-kit/service/tracer"
-	stdlog "log"
-	"net/url"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	apputil "github.com/ikaiguang/go-service-kit/app"
+	setuputil "github.com/ikaiguang/go-service-kit/setup"
+	tracerutil "github.com/ikaiguang/go-service-kit/tracer"
+	registrypkg "github.com/ikaiguang/kratos-consul-kit/registry"
 )
 
 // NewApp .

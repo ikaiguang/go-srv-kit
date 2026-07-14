@@ -26,6 +26,9 @@ func Name() string {
 
 // Strings : A-Z a-z 0-9
 func Strings(size int) string {
+	if size <= 0 {
+		return ""
+	}
 	res := make([]byte, size)
 	for i := range res {
 		switch rand.Intn(3) {
@@ -42,6 +45,9 @@ func Strings(size int) string {
 
 // Letter : A-Z a-z
 func Letter(size int) string {
+	if size <= 0 {
+		return ""
+	}
 	res := make([]byte, size)
 	for i := range res {
 		switch rand.Intn(2) {
@@ -56,6 +62,9 @@ func Letter(size int) string {
 
 // Numeric 0-9
 func Numeric(size int) string {
+	if size <= 0 {
+		return ""
+	}
 	res := make([]byte, size)
 	for i := range res {
 		res[i] = byte(rand.Intn(10) + 48) // 0-9
@@ -75,6 +84,9 @@ func Hex(n int) string {
 
 // String returns a random string n characters long, composed of entities from charset.
 func String(n int, charset string) string {
+	if n <= 0 || len(charset) == 0 {
+		return ""
+	}
 	randStr := make([]byte, n)
 	charLen := len(charset)
 	for i := range randStr {
@@ -197,6 +209,9 @@ func Shuffle[T any](slice []T) {
 // Sample 从切片中随机选取 n 个不重复元素
 func Sample[T any](slice []T, n int) []T {
 	length := len(slice)
+	if n <= 0 || length == 0 {
+		return []T{}
+	}
 	if n >= length {
 		copied := make([]T, length)
 		copy(copied, slice)

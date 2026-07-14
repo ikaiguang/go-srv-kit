@@ -2,7 +2,7 @@ package ptrpkg
 
 // Deprecated: 使用 Ptr[string] 替代
 func String(a string) *string {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[string] 替代
@@ -12,7 +12,7 @@ func StringValue(a *string) string {
 
 // Deprecated: 使用 Ptr[int] 替代
 func Int(a int) *int {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[int] 替代
@@ -22,7 +22,7 @@ func IntValue(a *int) int {
 
 // Deprecated: 使用 Ptr[int8] 替代
 func Int8(a int8) *int8 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[int8] 替代
@@ -32,7 +32,7 @@ func Int8Value(a *int8) int8 {
 
 // Deprecated: 使用 Ptr[int16] 替代
 func Int16(a int16) *int16 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[int16] 替代
@@ -42,7 +42,7 @@ func Int16Value(a *int16) int16 {
 
 // Deprecated: 使用 Ptr[int32] 替代
 func Int32(a int32) *int32 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[int32] 替代
@@ -52,7 +52,7 @@ func Int32Value(a *int32) int32 {
 
 // Deprecated: 使用 Ptr[int64] 替代
 func Int64(a int64) *int64 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[int64] 替代
@@ -62,7 +62,7 @@ func Int64Value(a *int64) int64 {
 
 // Deprecated: 使用 Ptr[bool] 替代
 func Bool(a bool) *bool {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[bool] 替代
@@ -72,7 +72,7 @@ func BoolValue(a *bool) bool {
 
 // Deprecated: 使用 Ptr[uint] 替代
 func Uint(a uint) *uint {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[uint] 替代
@@ -82,7 +82,7 @@ func UintValue(a *uint) uint {
 
 // Deprecated: 使用 Ptr[uint8] 替代
 func Uint8(a uint8) *uint8 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[uint8] 替代
@@ -92,7 +92,7 @@ func Uint8Value(a *uint8) uint8 {
 
 // Deprecated: 使用 Ptr[uint16] 替代
 func Uint16(a uint16) *uint16 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[uint16] 替代
@@ -102,7 +102,7 @@ func Uint16Value(a *uint16) uint16 {
 
 // Deprecated: 使用 Ptr[uint32] 替代
 func Uint32(a uint32) *uint32 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[uint32] 替代
@@ -112,7 +112,7 @@ func Uint32Value(a *uint32) uint32 {
 
 // Deprecated: 使用 Ptr[uint64] 替代
 func Uint64(a uint64) *uint64 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[uint64] 替代
@@ -122,7 +122,7 @@ func Uint64Value(a *uint64) uint64 {
 
 // Deprecated: 使用 Ptr[float32] 替代
 func Float32(a float32) *float32 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[float32] 替代
@@ -132,7 +132,7 @@ func Float32Value(a *float32) float32 {
 
 // Deprecated: 使用 Ptr[float64] 替代
 func Float64(a float64) *float64 {
-	return Ptr(a)
+	return new(a)
 }
 
 // Deprecated: 使用 Value[float64] 替代

@@ -7,13 +7,12 @@ import (
 	"testing"
 	"testing/quick"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	mysqlutil "github.com/ikaiguang/go-srv-kit/service/mysql"
-	postgresutil "github.com/ikaiguang/go-srv-kit/service/postgres"
-	redisutil "github.com/ikaiguang/go-srv-kit/service/redis"
-	"github.com/redis/go-redis/v9"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	loggerutil "github.com/ikaiguang/go-service-kit/logger"
+	mysqlutil "github.com/ikaiguang/go-service-kit/mysql"
+	postgresutil "github.com/ikaiguang/go-service-kit/postgres"
+	redisutil "github.com/ikaiguang/go-service-kit/redis"
 	"gorm.io/gorm"
 )
 

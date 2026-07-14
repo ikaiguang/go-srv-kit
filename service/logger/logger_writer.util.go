@@ -5,8 +5,8 @@ import (
 	stdlog "log"
 	"sync"
 
-	writerpkg "github.com/ikaiguang/go-srv-kit/kit/writer"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	writerpkg "github.com/ikaiguang/go-kit/writer"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 func (s *loggerManager) GetWriter() (io.Writer, error) {

@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"strings"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )

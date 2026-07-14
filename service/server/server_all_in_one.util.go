@@ -1,13 +1,13 @@
 package serverutil
 
 import (
-	"github.com/go-kratos/kratos/v2"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	cleanuputil "github.com/ikaiguang/go-srv-kit/service/cleanup"
-	configutil "github.com/ikaiguang/go-srv-kit/service/config"
-	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
 	stdlog "log"
+
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	cleanuputil "github.com/ikaiguang/go-service-kit/cleanup"
+	configutil "github.com/ikaiguang/go-service-kit/config"
+	middlewareutil "github.com/ikaiguang/go-service-kit/middleware"
+	setuputil "github.com/ikaiguang/go-service-kit/setup"
 )
 
 func RunServer(app *kratos.App, cleanup func()) {

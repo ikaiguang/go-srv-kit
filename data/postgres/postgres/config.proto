@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package kit.psqlpkg;
+
+option go_package           = "github.com/ikaiguang/go-postgres-kit/postgres;psqlpkg";
+option java_multiple_files  = true;
+option java_package         = "kit.psqlpkg";
+option java_outer_classname = "KitPsqlPKG";
+
+import "google/protobuf/duration.proto";
+
+// Config postgres config
+message Config {
+  bool enable                                 = 100;  // 是否启动
+  string dsn                                  = 1;
+  google.protobuf.Duration slow_threshold     = 2;  // 慢查询(s)
+  bool logger_enable                          = 3;
+  bool logger_colorful                        = 4;
+  string logger_level                         = 5;  // 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+  uint32 conn_max_active                      = 6;  // 连接可复用的最大时间
+  google.protobuf.Duration conn_max_lifetime  = 7;  // 可复用的最大时间(s)
+  uint32 conn_max_idle                        = 8;  // 连接池中空闲连接的最大数量
+  google.protobuf.Duration conn_max_idle_time = 9;  // 设置连接空闲的最长时间(s)
+}

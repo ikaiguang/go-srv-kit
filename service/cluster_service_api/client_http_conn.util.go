@@ -6,11 +6,11 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	clientpkg "github.com/ikaiguang/go-srv-kit/kratos/client"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
-	apputil "github.com/ikaiguang/go-srv-kit/service/app"
+	clientpkg "github.com/ikaiguang/go-kratos-kit/client"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	middlewarepkg "github.com/ikaiguang/go-kratos-kit/middleware"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	apputil "github.com/ikaiguang/go-service-kit/app"
 )
 
 func (s *serviceAPIManager) NewHTTPClient(apiConfig *Config, otherOpts ...http.ClientOption) (*http.Client, error) {

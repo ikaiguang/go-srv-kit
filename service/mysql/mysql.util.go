@@ -1,15 +1,16 @@
 package mysqlutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm"
-	mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	stdlog "log"
 	"sync"
+
+	gormpkg "github.com/ikaiguang/go-gorm-kit/gorm"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	mysqlpkg "github.com/ikaiguang/go-mysql-kit/mysql"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	loggerutil "github.com/ikaiguang/go-service-kit/logger"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type mysqlManager struct {

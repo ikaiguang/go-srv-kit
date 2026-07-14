@@ -1,6 +1,7 @@
 package aespkg
 
 import (
+	"encoding/base64"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,6 +28,30 @@ func TestAesCipher(t *testing.T) {
 	t.Log(decrypted)
 
 	assert.Equal(t, msg, decrypted)
+}
+
+func TestAesCipherDecryptInvalidCiphertext(t *testing.T) {
+	cipher, err := NewAesCipher([]byte("1234567890ABCDEF"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name       string
+		ciphertext string
+	}{
+		{name: "空密文", ciphertext: ""},
+		{name: "非block倍数", ciphertext: base64.StdEncoding.EncodeToString([]byte("short"))},
+		{name: "非法padding", ciphertext: base64.StdEncoding.EncodeToString(make([]byte, 16))},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := cipher.DecryptToString(tt.ciphertext)
+			assert.Error(t, err)
+			assert.Empty(t, got)
+		})
+	}
 }
 
 func BenchmarkAes(b *testing.B) {

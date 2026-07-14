@@ -20,6 +20,9 @@ func CopyFile(from, to string) error {
 	}
 	defer func() { _ = src.Close() }()
 
+	if err := os.MkdirAll(filepath.Dir(to), DefaultFileMode); err != nil {
+		return err
+	}
 	dest, err := os.Create(to)
 	if err != nil {
 		return err
@@ -34,6 +37,9 @@ func CopyFile(from, to string) error {
 
 // MoveFileToDir 移动文件到目录
 func MoveFileToDir(filePath, fileDir string) (targetPath string, err error) {
+	if err = os.MkdirAll(fileDir, DefaultFileMode); err != nil {
+		return targetPath, err
+	}
 	targetPath = filepath.Join(fileDir, filepath.Base(filePath))
 	if err = os.Rename(filePath, targetPath); err != nil {
 		return targetPath, err

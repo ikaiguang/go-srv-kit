@@ -3,10 +3,9 @@ package authutil
 import (
 	"sync"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
-	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	"github.com/redis/go-redis/v9"
+	authpkg "github.com/ikaiguang/go-auth-kit/auth"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	loggerutil "github.com/ikaiguang/go-service-kit/logger"
 )
 
 var (

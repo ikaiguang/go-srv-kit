@@ -8,8 +8,13 @@ import (
 	"time"
 )
 
+const defaultDialTimeout = 3 * time.Second
+
 // IsWebSocketConn 是否websocket
 func IsWebSocketConn(r *http.Request) bool {
+	if r == nil {
+		return false
+	}
 	//if r.Method == http.MethodGet &&
 	//	headerpkg.ContainsValue(r.Header, headerpkg.WebsocketConnection, "upgrade") &&
 	//	headerpkg.ContainsValue(r.Header, headerpkg.WebsocketUpgrade, "websocket") &&
@@ -43,7 +48,7 @@ func CheckEndpointValidity(endpoint string) (bool, error) {
 // IsValidConnection 检查链接有效性
 // @param address: hostname + ":" + port
 func IsValidConnection(address string) (bool, error) {
-	conn, err := net.DialTimeout("tcp", address, 10*time.Second)
+	conn, err := net.DialTimeout("tcp", address, defaultDialTimeout)
 	if err != nil {
 		return false, err
 	}

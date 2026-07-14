@@ -1,11 +1,12 @@
 package tracerutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
-	apputil "github.com/ikaiguang/go-srv-kit/service/app"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	stdlog "log"
+
+	middlewarepkg "github.com/ikaiguang/go-kratos-kit/middleware"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	apputil "github.com/ikaiguang/go-service-kit/app"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 )
 
 func InitTracerWithJaegerExporter(appConfig *configpb.App, exp *otlptrace.Exporter) error {

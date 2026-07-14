@@ -2,13 +2,14 @@ package mongoutil
 
 import (
 	"context"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	mongopkg "github.com/ikaiguang/go-srv-kit/data/mongo"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 	stdlog "log"
 	"sync"
+
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	mongopkg "github.com/ikaiguang/go-mongo-kit/mongo"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	loggerutil "github.com/ikaiguang/go-service-kit/logger"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type mongoManager struct {

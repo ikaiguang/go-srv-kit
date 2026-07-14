@@ -1,10 +1,11 @@
 package loggerutil
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"io"
 	"sync"
+
+	"github.com/go-kratos/kratos/v2/log"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 )
 
 var (

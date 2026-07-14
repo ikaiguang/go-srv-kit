@@ -4,12 +4,11 @@ import (
 	stdlog "log"
 	"sync"
 
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	loggerutil "github.com/ikaiguang/go-service-kit/logger"
 
-	authpkg "github.com/ikaiguang/go-srv-kit/kratos/auth"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	"github.com/redis/go-redis/v9"
+	authpkg "github.com/ikaiguang/go-auth-kit/auth"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 type authInstance struct {

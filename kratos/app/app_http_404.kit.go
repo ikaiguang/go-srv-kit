@@ -4,7 +4,7 @@ import (
 	stdhttp "net/http"
 
 	"github.com/go-kratos/kratos/v2/transport/http"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 var (

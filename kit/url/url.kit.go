@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
+	"github.com/valyala/bytebufferpool"
 )
 
 func Encode(raw string) string {
@@ -33,8 +33,8 @@ func SplicingQueryParam(requestURL string, req QueryParamEncoder) string {
 	paramString := param.Encode()
 	paramString = strings.Replace(paramString, "+", "%20", -1)
 
-	buf := bufferpkg.GetBuffer()
-	defer bufferpkg.PutBuffer(buf)
+	buf := bytebufferpool.Get()
+	defer bytebufferpool.Put(buf)
 
 	buf.WriteString(requestURL)
 	buf.WriteString("?")

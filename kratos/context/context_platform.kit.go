@@ -1,9 +1,5 @@
 package contextpkg
 
-import (
-	"github.com/ikaiguang/go-srv-kit/kit/header"
-)
-
 // TrustedPlatform 信任的平台
 var (
 	defaultTrustedPlatform = headerpkg.RemoteAddr

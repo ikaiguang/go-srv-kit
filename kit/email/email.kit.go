@@ -3,9 +3,10 @@ package emailpkg
 import (
 	_ "embed"
 	"fmt"
-	bufferpkg "github.com/ikaiguang/go-srv-kit/kit/buffer"
-	"gopkg.in/gomail.v2"
 	"html/template"
+
+	"github.com/valyala/bytebufferpool"
+	"gopkg.in/gomail.v2"
 )
 
 var (
@@ -21,7 +22,7 @@ func init() {
 	var err error
 	emailCodeTemplate, err = template.New("email_code").Parse(emailCodeHTML)
 	if err != nil {
-		panic(err)
+		emailCodeTemplate = template.Must(template.New("email_code_fallback").Parse("{{.Issuer}} verification code: {{.VerificationCode}}"))
 	}
 }
 
@@ -107,8 +108,8 @@ func SendCode(sender *Sender, msg *CodeMessage) error {
 		return fmt.Errorf("code is required")
 	}
 
-	var buf = bufferpkg.GetBuffer()
-	defer bufferpkg.PutBuffer(buf)
+	var buf = bytebufferpool.Get()
+	defer bytebufferpool.Put(buf)
 
 	err := emailCodeTemplate.Execute(buf, struct {
 		VerificationCode string

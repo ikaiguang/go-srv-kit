@@ -1,12 +1,13 @@
 package configutil
 
 import (
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	apputil "github.com/ikaiguang/go-srv-kit/service/app"
-	stdlog "log"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	apputil "github.com/ikaiguang/go-service-kit/app"
 )
 
 func LoadingFile(filePath string, loadingOpts ...Option) (*configpb.Bootstrap, error) {

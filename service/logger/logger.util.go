@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/go-kratos/kratos/v2/log"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 )
 
 type loggerManager struct {

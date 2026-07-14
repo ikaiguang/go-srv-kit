@@ -2,9 +2,10 @@ package storeutil
 
 import (
 	"context"
-	consulapi "github.com/hashicorp/consul/api"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
 	stdlog "log"
+
+	consulapi "github.com/hashicorp/consul/api"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 // StoreInConsul 存储文件到consul

@@ -1,7 +1,7 @@
 package configutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 )
 
 func AppConfig(bootstrap *configpb.Bootstrap) *configpb.App {

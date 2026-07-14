@@ -1,10 +1,11 @@
 package postgresutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	loggerutil "github.com/ikaiguang/go-srv-kit/service/logger"
-	"gorm.io/gorm"
 	"sync"
+
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	loggerutil "github.com/ikaiguang/go-service-kit/logger"
+	"gorm.io/gorm"
 )
 
 var (

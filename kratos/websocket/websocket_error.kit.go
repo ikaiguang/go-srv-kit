@@ -3,7 +3,7 @@ package websocketpkg
 import (
 	"github.com/gorilla/websocket"
 
-	connectionpkg "github.com/ikaiguang/go-srv-kit/kit/connection"
+	connectionpkg "github.com/ikaiguang/go-kit/connection"
 )
 
 // IsCloseError .

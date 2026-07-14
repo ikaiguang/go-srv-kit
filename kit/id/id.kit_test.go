@@ -1,38 +1,21 @@
 package idpkg
 
 import (
-	"github.com/stretchr/testify/require"
-	"math"
-	"strconv"
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // ===== Benchmark =====
-// BenchmarkNew_SonySonyflake-8			31080             38894 ns/op               0 B/op          0 allocs/op
 // BenchmarkNew_BwmarrinSnowflake-8		76981             15611 ns/op               0 B/op          0 allocs/op
 // ===== Benchmark =====
-
-// go test -v -count 1 ./kit/id -test.bench BenchmarkNew_SonySonyflake -test.run BenchmarkNew_SonySonyflake
-// BenchmarkNew_SonySonyflake-8       31080             38894 ns/op               0 B/op          0 allocs/op
-func BenchmarkNew_SonySonyflake(b *testing.B) {
-	//node, err := NewSonySonyflake(1)
-	node, err := NewSonySonyflake(math.MaxUint16)
-	if err != nil {
-		b.Error(err)
-		b.FailNow()
-	}
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		_, _ = node.NextID()
-	}
-}
 
 // go test -v -count 1 ./kit/id -test.bench BenchmarkNew_BwmarrinSnowflake -test.run BenchmarkNew_BwmarrinSnowflake
 // BenchmarkNew_BwmarrinSnowflake-8           76981             15611 ns/op               0 B/op          0 allocs/op
 func BenchmarkNew_BwmarrinSnowflake(b *testing.B) {
 	//node, err := NewBwmarrinSnowflake(1)
-	node, err := NewBwmarrinSnowflake(math.MaxUint16)
+	node, err := NewBwmarrinSnowflake(snowflakeMaxNode)
 	if err != nil {
 		b.Error(err)
 		b.FailNow()
@@ -79,38 +62,29 @@ func TestMy_NextID(t *testing.T) {
 	}
 }
 
-// go test -v -count 1 ./kit/id -run TestAll_NextID
-func TestAll_NextID(t *testing.T) {
-	var (
-		total int = 1e5
-	)
-	t.Log("==> total: ", strconv.FormatInt(int64(total), 10))
+func TestIPV4ToNodeID(t *testing.T) {
+	got, err := IPV4ToNodeID("192.168.1.2")
+	require.NoError(t, err)
+	assert.Equal(t, uint16(258), got)
 
-	n1, err := NewBwmarrinSnowflake(1)
-	require.Nil(t, err)
+	got, err = IPV4ToNodeID("192.168.255.255")
+	require.NoError(t, err)
+	assert.Equal(t, uint16(snowflakeMaxNode), got)
 
-	t.Log("==> start bwmarrinSnowflake ...")
-	n1s := time.Now()
-	for i := 0; i <= total; i++ {
-		_, _ = n1.NextID()
-	}
-	n1latency := time.Since(n1s)
-	t.Logf("==> end bwmarrinSnowflake: %s\n", n1latency)
+	_, err = IPV4ToNodeID("2001:db8::1")
+	require.Error(t, err)
 
-	n2, err := NewSonySonyflake(1)
-	require.Nil(t, err)
+	_, err = IPV4ToNodeID("invalid")
+	require.Error(t, err)
+}
 
-	t.Log("==> start sonySonyflake ...")
-	n2s := time.Now()
-	for i := 0; i <= total; i++ {
-		_, _ = n2.NextID()
-	}
-	n2latency := time.Since(n2s)
-	t.Logf("==> end sonySonyflake: %s\n", n2latency)
+func TestNewBwmarrinSnowflakeNodeRange(t *testing.T) {
+	_, err := NewBwmarrinSnowflake(snowflakeMaxNode)
+	require.NoError(t, err)
 
-	if n1latency > n2latency {
-		t.Log("==> sonySonyflake is better than bwmarrinSnowflake, gt: ", (n1latency - n2latency).String())
-	} else {
-		t.Log("==> bwmarrinSnowflake is better than sonySonyflake, gt: ", (n2latency - n1latency).String())
-	}
+	_, err = NewBwmarrinSnowflake(snowflakeMaxNode + 1)
+	require.Error(t, err)
+
+	_, err = NewBwmarrinSnowflake(-1)
+	require.Error(t, err)
 }

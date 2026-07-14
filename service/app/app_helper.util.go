@@ -1,9 +1,9 @@
 package apputil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	apppkg "github.com/ikaiguang/go-srv-kit/kratos/app"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	apppkg "github.com/ikaiguang/go-kratos-kit/app"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 )
 
 var (

@@ -1,15 +1,16 @@
 package apputil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+
 	"github.com/go-kratos/kratos/v2/transport/http"
-	apppkg "github.com/ikaiguang/go-srv-kit/kratos/app"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	apppkg "github.com/ikaiguang/go-kratos-kit/app"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
 
 func ToAppConfig(appConfig *configpb.App) *AppConfig {

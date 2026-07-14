@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package kit.rabbitmqpkg;
+
+option go_package           = "github.com/ikaiguang/go-rabbitmq-kit/rabbitmq;rabbitmqpkg";
+option java_multiple_files  = true;
+option java_package         = "kit.rabbitmqpkg";
+option java_outer_classname = "KitRabbitmqPKG";
+
+// Config rabbitmq config
+message Config {
+  bool enable         = 100;
+  string url          = 1;
+  string tls_address  = 2;
+  string tls_ca_pem   = 3;
+  string tls_cert_pem = 4;
+  string tls_key_pem  = 5;
+}

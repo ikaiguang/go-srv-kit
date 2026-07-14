@@ -1,14 +1,14 @@
 package configutil
 
 import (
-	"github.com/go-kratos/kratos/contrib/config/consul/v2"
+	stdlog "log"
+
 	"github.com/go-kratos/kratos/v2/config"
 	consulapi "github.com/hashicorp/consul/api"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	consulpkg "github.com/ikaiguang/go-srv-kit/data/consul"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
+	consulpkg "github.com/ikaiguang/go-consul-kit/consul"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
 	"google.golang.org/protobuf/proto"
-	stdlog "log"
 )
 
 // LoadingConfigFromConsul 从consul中加载配置

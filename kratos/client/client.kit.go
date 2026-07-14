@@ -9,7 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	apppkg "github.com/ikaiguang/go-srv-kit/kratos/app"
+	apppkg "github.com/ikaiguang/go-kratos-kit/app"
 	stdgrpc "google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 )

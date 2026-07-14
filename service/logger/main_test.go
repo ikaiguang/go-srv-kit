@@ -1,11 +1,12 @@
 package loggerutil
 
 import (
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	"google.golang.org/protobuf/types/known/durationpb"
 	"os"
 	"testing"
 	"time"
+
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 var (

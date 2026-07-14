@@ -6,11 +6,11 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	apppkg "github.com/ikaiguang/go-srv-kit/kratos/app"
-	apputil "github.com/ikaiguang/go-srv-kit/service/app"
-	configutil "github.com/ikaiguang/go-srv-kit/service/config"
-	middlewareutil "github.com/ikaiguang/go-srv-kit/service/middleware"
-	setuputil "github.com/ikaiguang/go-srv-kit/service/setup"
+	apppkg "github.com/ikaiguang/go-kratos-kit/app"
+	apputil "github.com/ikaiguang/go-service-kit/app"
+	configutil "github.com/ikaiguang/go-service-kit/config"
+	middlewareutil "github.com/ikaiguang/go-service-kit/middleware"
+	setuputil "github.com/ikaiguang/go-service-kit/setup"
 )
 
 var _ metadata.Option

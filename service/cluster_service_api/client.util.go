@@ -8,12 +8,12 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
-	configpb "github.com/ikaiguang/go-srv-kit/api/config"
-	connectionpkg "github.com/ikaiguang/go-srv-kit/kit/connection"
-	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/error"
-	logpkg "github.com/ikaiguang/go-srv-kit/kratos/log"
-	registrypkg "github.com/ikaiguang/go-srv-kit/kratos/registry"
-	etcdregistry "github.com/ikaiguang/go-srv-kit/kratos/registry_etcd"
+	connectionpkg "github.com/ikaiguang/go-kit/connection"
+	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	logpkg "github.com/ikaiguang/go-kratos-kit/log"
+	configpb "github.com/ikaiguang/go-service-kit/api/config"
+	registrypkg "github.com/ikaiguang/kratos-consul-kit/registry"
+	etcdregistry "github.com/ikaiguang/kratos-etcd-kit/registry"
 	"google.golang.org/grpc/resolver"
 )
 
