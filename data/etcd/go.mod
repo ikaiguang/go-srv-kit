@@ -1,6 +1,6 @@
-module github.com/ikaiguang/go-etcd-kit
+module github.com/ikaiguang/go-srv-kit/data/etcd
 
-go 1.26
+go 1.26.3
 
 require (
 	go.etcd.io/etcd/client/v3 v3.6.11

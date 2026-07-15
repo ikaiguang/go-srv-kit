@@ -11,7 +11,6 @@ import (
 	threadpkg "github.com/ikaiguang/go-kit/thread"
 	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 	redispkg "github.com/ikaiguang/go-redis-kit/redis"
-	"github.com/redis/go-redis/v9"
 )
 
 // RedisCacheKeyPrefix ...

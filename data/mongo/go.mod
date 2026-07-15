@@ -1,6 +1,6 @@
-module github.com/ikaiguang/go-mongo-kit
+module github.com/ikaiguang/go-srv-kit/data/mongo
 
-go 1.26
+go 1.26.3
 
 require (
 	go.mongodb.org/mongo-driver/v2 v2.6.0

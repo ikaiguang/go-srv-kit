@@ -1,6 +1,6 @@
-module github.com/ikaiguang/go-jaeger-kit
+module github.com/ikaiguang/go-srv-kit/data/jaeger
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/ikaiguang/go-kit v0.0.6

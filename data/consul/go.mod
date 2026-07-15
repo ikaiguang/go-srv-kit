@@ -1,6 +1,6 @@
-module github.com/ikaiguang/go-consul-kit
+module github.com/ikaiguang/go-srv-kit/data/consul
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/hashicorp/consul/api v1.34.2

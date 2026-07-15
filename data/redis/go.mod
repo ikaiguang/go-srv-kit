@@ -1,6 +1,6 @@
-module github.com/ikaiguang/go-redis-kit
+module github.com/ikaiguang/go-srv-kit/data/redis
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/go-redsync/redsync/v4 v4.16.0

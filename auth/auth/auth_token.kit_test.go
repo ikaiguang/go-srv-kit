@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/redis/go-redis/v9"
 )
 
 // go test -v -count 1 ./kratos/auth -run TestNewAuthRepo

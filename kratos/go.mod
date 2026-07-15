@@ -1,6 +1,6 @@
 module github.com/ikaiguang/go-srv-kit/kratos
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/go-kratos/aegis v0.2.0

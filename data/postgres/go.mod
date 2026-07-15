@@ -1,6 +1,6 @@
-module github.com/ikaiguang/go-postgres-kit
+module github.com/ikaiguang/go-srv-kit/data/postgres
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/ikaiguang/go-gorm-kit v0.0.2

@@ -1,6 +1,6 @@
-module github.com/ikaiguang/kratos-etcd-kit
+module github.com/ikaiguang/go-srv-kit/registry/etcd
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/go-kratos/kratos/contrib/registry/etcd/v2 v2.0.0-20260404020628-f149714c1d54

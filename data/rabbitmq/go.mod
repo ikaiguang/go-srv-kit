@@ -1,6 +1,6 @@
-module github.com/ikaiguang/go-rabbitmq-kit
+module github.com/ikaiguang/go-srv-kit/data/rabbitmq
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/ThreeDotsLabs/watermill v1.5.1

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/golang-jwt/jwt/v5"
 	aespkg "github.com/ikaiguang/go-kit/aes"
 	threadpkg "github.com/ikaiguang/go-kit/thread"
 	errorpkg "github.com/ikaiguang/go-kratos-kit/error"

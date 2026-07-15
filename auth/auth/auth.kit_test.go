@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
-	"github.com/redis/go-redis/v9"
 )
 
 func ExampleServer() {

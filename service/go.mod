@@ -1,6 +1,6 @@
-module github.com/ikaiguang/go-service-kit
+module github.com/ikaiguang/go-srv-kit/service
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.3.3
