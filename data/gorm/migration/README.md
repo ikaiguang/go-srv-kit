@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-gorm-kit
+go get github.com/ikaiguang/go-srv-kit/data/gorm
 ```
 
 ```go
-import migrationpkg "github.com/ikaiguang/go-gorm-kit/migration"
+import migrationpkg "github.com/ikaiguang/go-srv-kit/data/gorm/migration"
 ```
 
 ## 核心概念

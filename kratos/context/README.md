@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-kratos-kit
+go get github.com/ikaiguang/go-srv-kit/kratos
 ```
 
 ```go
-import contextpkg "github.com/ikaiguang/go-kratos-kit/context"
+import contextpkg "github.com/ikaiguang/go-srv-kit/kratos/context"
 ```
 
 ## 核心能力

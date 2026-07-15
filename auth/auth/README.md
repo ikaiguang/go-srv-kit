@@ -1,15 +1,15 @@
 # auth
 
-`auth` 是 `github.com/ikaiguang/go-auth-kit/auth` 包，包名为 `authpkg`。它适合在 Go / Kratos 服务中处理 JWT 访问令牌、刷新令牌、认证中间件和 Redis 令牌状态管理。
+`auth` 是 `github.com/ikaiguang/go-srv-kit/auth/auth` 包，包名为 `authpkg`。它适合在 Go / Kratos 服务中处理 JWT 访问令牌、刷新令牌、认证中间件和 Redis 令牌状态管理。
 
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-auth-kit
+go get github.com/ikaiguang/go-srv-kit/auth
 ```
 
 ```go
-import auth "github.com/ikaiguang/go-auth-kit/auth"
+import auth "github.com/ikaiguang/go-srv-kit/auth/auth"
 ```
 
 ## 核心能力
@@ -139,5 +139,4 @@ go test ./...
 - 不传 `TokenManager` 时，`AuthRepo` 不会执行 Redis 白名单、黑名单和登录限制校验。
 - `WithClaims` 用在 `Server` 时需要每次返回新的 `jwt.Claims` 对象，避免并发写问题。
 - `Server` 从 Kratos server transport 上下文读取 `Authorization` 请求头；非 transport 上下文会返回 `ErrWrongContext`。
-- 当前 `auth/auth.kit.proto` 的 `go_package` 仍是 `github.com/ikaiguang/go-kratos-kit/auth;authpkg`，与当前模块路径不一致；重新生成或公开发布前需要先确认是否调整。
 - `auth/*.pb.go` 和 `auth/*_custom.pb.go` 是生成相关文件，不应手工修改。

@@ -5,17 +5,17 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-mysql-kit
+go get github.com/ikaiguang/go-srv-kit/data/mysql
 ```
 
 ```go
-import mysqlpkg "github.com/ikaiguang/go-mysql-kit/mysql"
+import mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql/mysql"
 ```
 
 ## 核心能力
 
 - `Config`：由 `config.proto` 生成的 MySQL 配置结构，包含 `dsn`、慢查询阈值、日志开关、日志级别和连接池参数。
-- `NewDB(conf *Config, opts ...gormpkg.Option) (*gorm.DB, error)`：使用 `gorm.io/driver/mysql` 和 `go-gorm-kit` 创建 GORM DB。
+- `NewDB(conf *Config, opts ...gormpkg.Option) (*gorm.DB, error)`：使用 `gorm.io/driver/mysql` 和本仓库的 GORM 工具包创建 GORM DB。
 - `NewMysqlDB(conf *Config, opts ...gormpkg.Option) (*gorm.DB, error)`：`NewDB` 的同义入口，保留更明确的 MySQL 命名。
 - `IsErrDuplicatedKey(err error) bool`：判断错误是否为 GORM `ErrDuplicatedKey` 或 MySQL driver 错误码 `1062`。
 
@@ -27,8 +27,8 @@ package main
 import (
 	"time"
 
-	gormpkg "github.com/ikaiguang/go-gorm-kit/gorm"
-	mysqlpkg "github.com/ikaiguang/go-mysql-kit/mysql"
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/gorm"
+	mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql/mysql"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -75,7 +75,7 @@ if mysqlpkg.IsErrDuplicatedKey(err) {
 | `slow_threshold` | GORM 慢查询阈值。 |
 | `logger_enable` | 是否启用 GORM 日志。 |
 | `logger_colorful` | 是否启用彩色日志。 |
-| `logger_level` | 日志级别，传给 `go-gorm-kit` 解析。 |
+| `logger_level` | 日志级别，由 `gormpkg.ParseLoggerLevel` 解析。 |
 | `conn_max_active` | 最大打开连接数。 |
 | `conn_max_lifetime` | 连接可复用的最长时间。 |
 | `conn_max_idle` | 最大空闲连接数。 |

@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"io"
 
-	componentpkg "github.com/ikaiguang/go-kit/component"
+	componentpkg "github.com/ikaiguang/go-srv-kit/kit/component"
 )
 
 type Client struct{}

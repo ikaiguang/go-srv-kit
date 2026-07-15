@@ -1,26 +1,23 @@
 ---
 name: my-project
-description: 本仓库专用工作指引。用于本项目 Go、Proto、Wire、配置、测试、实现、重构、评审和问题排查。
+description: Use when modifying, testing, debugging, or reviewing Go code, Proto files, generation workflows, or module dependencies in this repository.
 ---
 
 # My Project
 
-## Overview
+Read root `AGENTS.md` first. Use this skill for repository facts; use matching global skills for general engineering workflows.
 
-修改本仓库代码时使用本 skill。先遵循根目录 `AGENTS.md`，再按任务读取 `references/` 中的细节。
+## Repository Shape
 
-本 skill 负责仓库事实、架构约束和相邻实现入口。复杂工程流程可叠加 `~/.codex/skills` 中的全局 skills，但全局 skills 不能覆盖本仓库的分层、生成代码、规格确认和权限规则。
+- This is a multi-module Go toolkit, not a single business service.
+- Modules include the root plus `auth`, `kit`, `kratos`, `service`, `ping-service`, `data/*`, and `registry/*`.
+- Find the nearest `go.mod` before selecting imports, commands, or test scope.
+- Follow the target package's existing architecture, naming, and construction patterns.
 
-## Quick Routing
+## Workflow
 
-- 仓库结构和分层：读 `references/project-context.md`
-- Proto、Service、Biz、Data、配置接线、Wire：读 `references/service-workflow.md`
-- 函数形态、命名、错误、日志、安全和测试习惯：读 `references/coding-rules.md`
-- Makefile、Proto/Wire 生成、Windows 命令差异：读 `references/commands-and-generation.md`
-
-## Working Rules
-
-- 先读目标模块和相邻实现，再决定改法。
-- 优先做最小改动，保持 `Service -> Biz -> Data` 分层。
-- 本 skill 只负责路由到仓库细节；不要用它代替源码阅读。
-- 默认使用最小必要 skill 集；只有任务确实需要时，再叠加测试、调试、审计、安全、性能等全局工程 skill。
+1. Read the owning `go.mod`, package files, tests, README, and relevant Makefile targets.
+2. Make the smallest compatible change in the owning module.
+3. For Proto or Wire changes, edit source definitions and run the established generator; never hand-edit generated output.
+4. Run targeted tests from the owning module directory, then widen verification only when the change crosses module boundaries.
+5. Check documentation when public behavior, configuration, commands, or examples change.

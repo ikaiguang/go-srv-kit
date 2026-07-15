@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-kratos-kit
+go get github.com/ikaiguang/go-srv-kit/kratos
 ```
 
 ```go
-import pprofpkg "github.com/ikaiguang/go-kratos-kit/pprof"
+import pprofpkg "github.com/ikaiguang/go-srv-kit/kratos/pprof"
 ```
 
 ## 核心能力

@@ -1,15 +1,15 @@
 # etcd
 
-`go-etcd-kit` 目录提供包 `etcdpkg`，用于把项目内的 protobuf 配置转换为 `go.etcd.io/etcd/client/v3` 客户端配置，并创建可用的 etcd v3 客户端。
+`etcd` 包用于把项目内的 protobuf 配置转换为 `go.etcd.io/etcd/client/v3` 客户端配置，并创建可用的 etcd v3 客户端。
 
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-etcd-kit
+go get github.com/ikaiguang/go-srv-kit/data/etcd
 ```
 
 ```go
-import etcdpkg "github.com/ikaiguang/go-etcd-kit/etcd"
+import etcdpkg "github.com/ikaiguang/go-srv-kit/data/etcd/etcd"
 ```
 
 ## 核心能力
@@ -28,7 +28,7 @@ import (
 	"log"
 	"time"
 
-	etcdpkg "github.com/ikaiguang/go-etcd-kit/etcd"
+	etcdpkg "github.com/ikaiguang/go-srv-kit/data/etcd/etcd"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -95,4 +95,4 @@ go test ./etcd
 - `NewClient` 使用 `context.Background()` 执行探测写入，不接收外部 `context.Context`。
 - `NewClient` 创建客户端后，如果探测写入失败，会同时返回非 nil client 和 error，调用方需要自行决定是否关闭该 client。
 - 生产环境不要默认开启 `InsecureSkipVerify`；确需开启时应记录风险和边界。
-- `config.proto` 中的 `go_package` 来自当前源码事实，发布前应确认它与 `go.mod` 模块路径是否一致。
+- `config.proto` 的 `go_package` 与当前 module 和包目录保持一致。

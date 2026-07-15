@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kit.psqlpkg;
 
-option go_package           = "github.com/ikaiguang/go-postgres-kit/postgres;psqlpkg";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/postgres/postgres;psqlpkg";
 option java_multiple_files  = true;
 option java_package         = "kit.psqlpkg";
 option java_outer_classname = "KitPsqlPKG";

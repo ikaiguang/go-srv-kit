@@ -7,13 +7,13 @@
 当前 `go.mod` 模块路径为：
 
 ```bash
-go get github.com/ikaiguang/go-redis-kit
+go get github.com/ikaiguang/go-srv-kit/data/redis
 ```
 
 导入本包：
 
 ```go
-import redispkg "github.com/ikaiguang/go-redis-kit/redis"
+import redispkg "github.com/ikaiguang/go-srv-kit/data/redis/redis"
 ```
 
 ## 核心能力
@@ -21,7 +21,7 @@ import redispkg "github.com/ikaiguang/go-redis-kit/redis"
 - `Config`：由 `redis/config.proto` 生成的 Redis 配置结构，包含地址、认证、DB、超时和连接池参数。
 - `NewDB(conf *Config)`：根据 `Config` 创建 `redis.UniversalClient`，并通过 `Ping` 验证连接。
 - `IsNilErr(err error)`：判断错误是否为 `redis.Nil`。
-- `NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option)`：创建实现 `github.com/ikaiguang/go-kit/locker.Locker` 的分布式锁。
+- `NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option)`：创建实现 `github.com/ikaiguang/go-srv-kit/kit/locker.Locker` 的分布式锁。
 - `Locker.Once(ctx, lockName)`：获取一次性锁，不启动自动续期。
 - `Locker.Mutex(ctx, lockName)`：获取互斥锁，并按内部间隔续期，直到调用 `Unlock`。
 
@@ -109,4 +109,3 @@ make protoc-config-protobuf
 - `Config` 中的 duration 字段会被直接调用 `AsDuration`，使用前应显式赋值。
 - `Password`、Redis 地址和锁名可能包含敏感业务信息，示例和日志中不要输出真实凭据。
 - 默认锁过期时间为 8 秒，默认加锁尝试次数为 1；需要改变 redsync 行为时可通过 `NewLocker` 的 `redsync.Option` 参数传入。
-- 当前 `go.mod` 模块路径和 `redis/config.proto` 的 `go_package` 路径存在拼写差异，发布前建议确认包路径策略。

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kit.error.errorpkg;
 
-option go_package           = "github.com/ikaiguang/go-kratos-kit/error;errorpkg";
+option go_package           = "github.com/ikaiguang/go-srv-kit/kratos/error;errorpkg";
 option java_multiple_files  = true;
 option java_package         = "kit.error.errorpkg";
 option java_outer_classname = "KitErrorErrorPkg";

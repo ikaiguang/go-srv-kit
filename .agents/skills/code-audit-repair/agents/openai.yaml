@@ -1,3 +1,4 @@
-display_name: Code Audit Repair
-short_description: 全库或多模块审计、补测试、补文档和低风险修复。
-default_prompt: 使用 $code-audit-repair 对当前代码库执行综合审计、补测试、补文档和低风险修复。
+interface:
+  display_name: "Code Audit Repair"
+  short_description: "面向当前多模块 Go 仓库的综合审计与低风险修复。"
+  default_prompt: "使用 $code-audit-repair 审计当前仓库，并在授权范围内完成低风险修复。"

@@ -1,21 +1,21 @@
 # postgres
 
-`postgres` 目录提供包 `psqlpkg`，导入路径为 `github.com/ikaiguang/go-postgres-kit/postgres`。该包适合在 Go 服务中统一创建 GORM PostgreSQL 连接，并复用 protobuf 形式的数据库配置。
+`postgres` 目录提供包 `psqlpkg`，导入路径为 `github.com/ikaiguang/go-srv-kit/data/postgres/postgres`。该包适合在 Go 服务中统一创建 GORM PostgreSQL 连接，并复用 protobuf 形式的数据库配置。
 
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-postgres-kit
+go get github.com/ikaiguang/go-srv-kit/data/postgres
 ```
 
 ```go
-import psqlpkg "github.com/ikaiguang/go-postgres-kit/postgres"
+import psqlpkg "github.com/ikaiguang/go-srv-kit/data/postgres/postgres"
 ```
 
 ## 核心能力
 
 - `Config`：由 `config.proto` 生成的 PostgreSQL 配置结构，包含 DSN、日志、慢查询阈值和连接池参数。
-- `NewDB(conf *Config, opts ...gormpkg.Option)`：根据 `Config` 和可选的 `go-gorm-kit/gorm` 选项创建 `*gorm.DB`。
+- `NewDB(conf *Config, opts ...gormpkg.Option)`：根据 `Config` 和可选的 `gormpkg` 选项创建 `*gorm.DB`。
 - `NewPostgresDB(conf *Config, opts ...gormpkg.Option)`：`NewDB` 的语义化别名，便于调用方表达数据库类型。
 - `IsErrDuplicatedKey(err error)`：识别 GORM 重复键错误和 PostgreSQL `23505` 唯一键冲突。
 - `Validate()` / `ValidateAll()`：由 `protoc-gen-validate` 生成的配置校验方法。
@@ -29,7 +29,7 @@ import psqlpkg "github.com/ikaiguang/go-postgres-kit/postgres"
 | `SlowThreshold` | 慢查询阈值。 |
 | `LoggerEnable` | 是否启用 GORM 日志。 |
 | `LoggerColorful` | 日志输出是否启用颜色。 |
-| `LoggerLevel` | 日志级别，支持值由 `go-gorm-kit/gorm.ParseLoggerLevel` 解析。 |
+| `LoggerLevel` | 日志级别，支持值由 `gormpkg.ParseLoggerLevel` 解析。 |
 | `ConnMaxActive` | 连接池最大打开连接数。 |
 | `ConnMaxLifetime` | 连接可复用的最长时间。 |
 | `ConnMaxIdle` | 连接池最大空闲连接数。 |
@@ -43,7 +43,7 @@ package data
 import (
 	"time"
 
-	psqlpkg "github.com/ikaiguang/go-postgres-kit/postgres"
+	psqlpkg "github.com/ikaiguang/go-srv-kit/data/postgres/postgres"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/gorm"
 )

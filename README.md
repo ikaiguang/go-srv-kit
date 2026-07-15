@@ -75,23 +75,15 @@ cd go-srv-kit
 make init
 ```
 
-### 运行示例服务
+### 验证模块
 
 **Windows** 系统，请使用 `cmd` 或 `git-bash` 运行。
 
-```bash
-# 启动项目
-make run-service
-# 或
-go run ./testdata/ping-service/cmd/ping-service/... -conf=./testdata/ping-service/configs
+本仓库包含多个 Go module。进入目标 module 后运行测试，例如：
 
-# 运行测试
-make testing-service
-# 或
-curl http://127.0.0.1:10101/api/v1/ping/logger && echo "\n"
-curl http://127.0.0.1:10101/api/v1/ping/error && echo "\n"
-curl http://127.0.0.1:10101/api/v1/ping/panic && echo "\n"
-curl http://127.0.0.1:10101/api/v1/ping/say_hello && echo "\n"
+```bash
+cd kit
+go test ./...
 ```
 
 ### 访问 API 文档
@@ -112,17 +104,16 @@ http://127.0.0.1:10101/api/swagger/
 
 ```
 go-srv-kit/
-├── api/              # Proto 定义文件
-├── cmd/              # 命令行工具
-├── data/             # 数据层组件实现
-├── kit/              # 通用工具库
-├── kratos/           # Kratos 框架扩展
-├── service/          # 服务层工具
-├── testdata/         # 测试数据和示例服务
-├── websocket/        # WebSocket 支持
-├── wire/             # Wire 依赖注入工具
-├── .claude/          # Claude Code 智能开发配置
-├── CLAUDE.md         # 项目架构和开发指南
+├── auth/             # 认证 module
+├── data/             # 数据组件 modules
+├── docs/             # 项目文档
+├── kit/              # 通用工具 module
+├── kratos/           # Kratos 扩展 module
+├── ping-service/     # 示例服务 module
+├── registry/         # 服务注册 modules
+├── service/          # 服务基础设施 module
+├── third_party/      # 第三方 Proto
+├── AGENTS.md         # Agent 协作和仓库约束
 └── README.md         # 本文件
 ```
 
@@ -205,8 +196,8 @@ export SERVER_HTTP_ADDR=0.0.0.0:8080
 
 ### 文档
 
-- [CLAUDE.md](CLAUDE.md) - 项目架构和开发指南
-- [.claude/rules/](.claude/rules/) - 编码规范和开发流程
+- [AGENTS.md](AGENTS.md) - Agent 协作和仓库约束
+- [Go 编码规范](docs/reference/CODE_STYLE.md) - Go 编码风格和安全约定
 
 ### API 开发流程
 

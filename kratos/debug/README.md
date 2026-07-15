@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-kratos-kit
+go get github.com/ikaiguang/go-srv-kit/kratos
 ```
 
 ```go
-import debugpkg "github.com/ikaiguang/go-kratos-kit/debug"
+import debugpkg "github.com/ikaiguang/go-srv-kit/kratos/debug"
 ```
 
 ## 核心能力

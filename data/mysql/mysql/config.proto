@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kit.mysqlpkg;
 
-option go_package           = "github.com/ikaiguang/go-mysql-kit/mysql;mysqlpkg";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/mysql/mysql;mysqlpkg";
 option java_multiple_files  = true;
 option java_package         = "kit.mysqlpkg";
 option java_outer_classname = "KitMysqlPKG";

@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-kratos-kit
+go get github.com/ikaiguang/go-srv-kit/kratos
 ```
 
 ```go
-import websocketpkg "github.com/ikaiguang/go-kratos-kit/websocket"
+import websocketpkg "github.com/ikaiguang/go-srv-kit/kratos/websocket"
 ```
 
 ## 核心能力

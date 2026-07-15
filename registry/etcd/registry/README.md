@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/kratos-etcd-kit
+go get github.com/ikaiguang/go-srv-kit/registry/etcd
 ```
 
 ```go
-import etcdregistry "github.com/ikaiguang/kratos-etcd-kit/registry"
+import etcdregistry "github.com/ikaiguang/go-srv-kit/registry/etcd/registry"
 ```
 
 ## 核心能力
@@ -25,7 +25,7 @@ package main
 import (
 	"time"
 
-	etcdregistry "github.com/ikaiguang/kratos-etcd-kit/registry"
+	etcdregistry "github.com/ikaiguang/go-srv-kit/registry/etcd/registry"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 

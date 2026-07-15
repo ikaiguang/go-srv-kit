@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/kratos-consul-kit
+go get github.com/ikaiguang/go-srv-kit/registry/consul
 ```
 
 ```go
-import registrypkg "github.com/ikaiguang/kratos-consul-kit/registry"
+import registrypkg "github.com/ikaiguang/go-srv-kit/registry/consul/registry"
 ```
 
 ## 核心 API
@@ -27,7 +27,7 @@ import (
 	"time"
 
 	consulregistry "github.com/go-kratos/kratos/contrib/registry/consul/v2"
-	registrypkg "github.com/ikaiguang/kratos-consul-kit/registry"
+	registrypkg "github.com/ikaiguang/go-srv-kit/registry/consul/registry"
 	"github.com/hashicorp/consul/api"
 )
 
