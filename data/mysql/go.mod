@@ -1,4 +1,4 @@
-module github.com/ikaiguang/go-srv-kit/data/mysql
+module github.com/ikaiguang/go-srv-kit/data/mysql/v3
 
 go 1.26.3
 

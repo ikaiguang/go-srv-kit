@@ -3,9 +3,8 @@
 package auth
 
 import (
-	strconv "strconv"
-
 	errors "github.com/go-kratos/kratos/v2/errors"
+	strconv "strconv"
 )
 
 var ERROR_http_code = map[string]int{

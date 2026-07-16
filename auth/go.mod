@@ -1,4 +1,4 @@
-module github.com/ikaiguang/go-srv-kit/auth
+module github.com/ikaiguang/go-srv-kit/auth/v3
 
 go 1.26.3
 

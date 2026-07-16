@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kit.rabbitmqpkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3/rabbitmq;rabbitmqpkg";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3;rabbitmq";
 option java_multiple_files  = true;
 option java_package         = "kit.rabbitmqpkg";
 option java_outer_classname = "KitRabbitmqPKG";

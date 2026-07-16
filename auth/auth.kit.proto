@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pkg.auth.authpkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/auth/auth;authpkg";
+option go_package           = "github.com/ikaiguang/go-srv-kit/auth/v3;auth";
 option java_multiple_files  = true;
 option java_package         = "pkg.auth.authpkg";
 option java_outer_classname = "PkgAuthAuthPkg";
