@@ -1,5 +1,5 @@
-# 默认不对未声明类型做换行转换，避免误改 Excel、字体、词库等资源文件。
-* -text
+# 默认自动识别文本并统一使用 LF；二进制类型在下方显式排除。
+* text=auto eol=lf
 
 # Go / Protobuf
 *.go                 text eol=lf
@@ -30,9 +30,9 @@
 *.bash               text eol=lf
 *.zsh                text eol=lf
 *.mk                 text eol=lf
-*.bat                text eol=crlf
-*.cmd                text eol=crlf
-*.ps1                text eol=crlf
+*.bat                text eol=lf
+*.cmd                text eol=lf
+*.ps1                text eol=lf
 Makefile             text eol=lf
 Dockerfile           text eol=lf
 Dockerfile-*         text eol=lf
