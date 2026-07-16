@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.rabbitmqpkg;
+package kit.v3.rabbitmqpkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3;rabbitmq";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3;rabbitmqpkg";
 option java_multiple_files  = true;
-option java_package         = "kit.rabbitmqpkg";
-option java_outer_classname = "KitRabbitmqPKG";
+option java_package         = "kit.v3.rabbitmqpkg";
+option java_outer_classname = "KitV3RabbitmqPkg";
 
 // Config rabbitmq config
 message Config {

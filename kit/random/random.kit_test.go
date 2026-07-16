@@ -267,6 +267,39 @@ func TestSecureRandom(t *testing.T) {
 	})
 }
 
+func TestSecureVerifyCode(t *testing.T) {
+	code, err := SecureVerifyCode(6)
+	require.NoError(t, err)
+	assert.Len(t, code, 6)
+	for _, c := range code {
+		assert.True(t, c >= '0' && c <= '9')
+	}
+}
+
+func TestSecurePassword(t *testing.T) {
+	password, err := SecurePassword(20)
+	require.NoError(t, err)
+	assert.Len(t, password, 20)
+
+	var hasUpper, hasLower, hasDigit, hasSpecial bool
+	for _, c := range password {
+		switch {
+		case c >= 'A' && c <= 'Z':
+			hasUpper = true
+		case c >= 'a' && c <= 'z':
+			hasLower = true
+		case c >= '0' && c <= '9':
+			hasDigit = true
+		default:
+			hasSpecial = true
+		}
+	}
+	assert.True(t, hasUpper)
+	assert.True(t, hasLower)
+	assert.True(t, hasDigit)
+	assert.True(t, hasSpecial)
+}
+
 func TestOrderNo(t *testing.T) {
 	t.Run("最小后缀长度为4", func(t *testing.T) {
 		no := OrderNo(2)

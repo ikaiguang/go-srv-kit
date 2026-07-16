@@ -55,6 +55,9 @@ func NewRotateFile(cfg *ConfigRotate, configOpts ...Option) (writer io.Writer, e
 		filenameSuffix: _defaultRotationFilenameSuffix,
 	}
 	for i := range configOpts {
+		if configOpts[i] == nil {
+			continue
+		}
 		configOpts[i](configOpt)
 	}
 

@@ -76,6 +76,38 @@ func TestZip_Directory(t *testing.T) {
 	assert.Greater(t, info.Size(), int64(0))
 }
 
+func TestZipExcludesDestinationInsideSource(t *testing.T) {
+	root := t.TempDir()
+	sourceDir := filepath.Join(root, "source")
+	require.NoError(t, os.MkdirAll(sourceDir, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(sourceDir, "input.txt"), []byte("input"), 0o644))
+
+	zipPath := filepath.Join(sourceDir, "archive.zip")
+	require.NoError(t, Zip(sourceDir, zipPath))
+
+	reader, err := zip.OpenReader(zipPath)
+	require.NoError(t, err)
+	defer func() { _ = reader.Close() }()
+
+	var names []string
+	for _, entry := range reader.File {
+		names = append(names, entry.Name)
+	}
+	assert.Contains(t, names, "input.txt")
+	assert.NotContains(t, names, "archive.zip")
+}
+
+func TestZipFileRejectsSourceAsDestination(t *testing.T) {
+	filePath := filepath.Join(t.TempDir(), "input.txt")
+	require.NoError(t, os.WriteFile(filePath, []byte("input"), 0o644))
+
+	err := ZipFile(filePath, filePath)
+	require.Error(t, err)
+	content, readErr := os.ReadFile(filePath)
+	require.NoError(t, readErr)
+	assert.Equal(t, []byte("input"), content)
+}
+
 // go test -v -count 1 ./kit/zip -run TestZip_SingleFile
 func TestZip_SingleFile(t *testing.T) {
 	setup(t)

@@ -94,6 +94,19 @@ func TestNewRotateFileRejectsNilConfig(t *testing.T) {
 	require.Nil(t, writer)
 }
 
+func TestNewRotateFileIgnoresNilOption(t *testing.T) {
+	var writer io.Writer
+	var err error
+	require.NotPanics(t, func() {
+		writer, err = NewRotateFile(&ConfigRotate{
+			Dir:      t.TempDir(),
+			Filename: "test",
+		}, nil)
+	})
+	require.NoError(t, err)
+	require.NotNil(t, writer)
+}
+
 func TestNewRotateFileRotatesBySizeWithTimestampBackup(t *testing.T) {
 	dir := t.TempDir()
 	writer, err := NewRotateFile(&ConfigRotate{

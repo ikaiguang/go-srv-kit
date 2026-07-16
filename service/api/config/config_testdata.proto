@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package saas.api.kit.configs;
+package saas.api.kit.v3.configs;
 
 option go_package           = "github.com/ikaiguang/go-srv-kit/service/v3/api/config;configpb";
 option java_multiple_files  = true;
-option java_package         = "saas.api.kit.configs";
-option java_outer_classname = "SaasApiKitConfigs";
+option java_package         = "saas.api.kit.v3.configs";
+option java_outer_classname = "SaasApiKitV3Configs";
 
 message TestingConfig {
   message Testdata {

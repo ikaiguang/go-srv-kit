@@ -1,5 +1,7 @@
 # go-srv-kit v3 多 Module 开发指南
 
+子 module 的实际发布命令见[《v3 子 Module 发布指南》](module_release.md)。
+
 ## 1. 目标与结论
 
 本仓库现有 17 个独立 Go modules。v3 采用以下方案：

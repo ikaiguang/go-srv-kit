@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.consulpkg;
+package kit.v3.consulpkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/consul/v3;consul";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/consul/v3;consulpkg";
 option java_multiple_files  = true;
-option java_package         = "kit.consulpkg";
-option java_outer_classname = "KitConsulPkg";
+option java_package         = "kit.v3.consulpkg";
+option java_outer_classname = "KitV3ConsulPkg";
 
 import "google/protobuf/duration.proto";
 

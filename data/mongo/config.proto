@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.mongopkg;
+package kit.v3.mongopkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/mongo/v3;mongo";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/mongo/v3;mongopkg";
 option java_multiple_files  = true;
-option java_package         = "kit.mongopkg";
-option java_outer_classname = "KitMongoPkg";
+option java_package         = "kit.v3.mongopkg";
+option java_outer_classname = "KitV3MongoPkg";
 
 import "google/protobuf/duration.proto";
 

@@ -45,6 +45,49 @@ func SecureToken(length int) (string, error) {
 	return SecureString(length, CharsetAlphanumeric)
 }
 
+// SecureVerifyCode generates a numeric verification code using crypto/rand.
+func SecureVerifyCode(length int) (string, error) {
+	return SecureString(length, CharsetNumeral)
+}
+
+// SecurePassword generates a password containing uppercase, lowercase,
+// numeric, and special characters using crypto/rand.
+func SecurePassword(length int) (string, error) {
+	if length < 8 {
+		length = 8
+	}
+	password := make([]byte, length)
+	requiredCharsets := []string{CharsetUppercase, CharsetLowercase, CharsetNumeral, CharsetSpecial}
+	for i, charset := range requiredCharsets {
+		value, err := SecureString(1, charset)
+		if err != nil {
+			return "", err
+		}
+		password[i] = value[0]
+	}
+	rest, err := SecureString(length-len(requiredCharsets), CharsetPassword)
+	if err != nil {
+		return "", err
+	}
+	copy(password[len(requiredCharsets):], rest)
+	if err := secureShuffle(password); err != nil {
+		return "", err
+	}
+	return string(password), nil
+}
+
+func secureShuffle(data []byte) error {
+	for i := len(data) - 1; i > 0; i-- {
+		index, err := rand.Int(rand.Reader, big.NewInt(int64(i+1)))
+		if err != nil {
+			return err
+		}
+		j := int(index.Int64())
+		data[i], data[j] = data[j], data[i]
+	}
+	return nil
+}
+
 // SecureHex 生成十六进制安全随机字符串。
 func SecureHex(length int) (string, error) {
 	return SecureString(length, CharsetHex)

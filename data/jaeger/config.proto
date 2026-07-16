@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.jaegerpkg;
+package kit.v3.jaegerpkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/jaeger/v3;jaeger";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/jaeger/v3;jaegerpkg";
 option java_multiple_files  = true;
-option java_package         = "kit.jaegerpkg";
-option java_outer_classname = "KitJaegerPkg";
+option java_package         = "kit.v3.jaegerpkg";
+option java_outer_classname = "KitV3JaegerPkg";
 
 import "google/protobuf/duration.proto";
 

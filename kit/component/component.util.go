@@ -21,6 +21,7 @@ type closerEntry struct {
 type Lifecycle struct {
 	mu      sync.Mutex
 	closers []closerEntry
+	closed  bool
 }
 
 // newLifecycle 创建生命周期管理器
@@ -34,8 +35,16 @@ func (l *Lifecycle) Register(name string, closer io.Closer) {
 		return
 	}
 	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.closers = append(l.closers, closerEntry{name: name, closer: closer})
+	if !l.closed {
+		l.closers = append(l.closers, closerEntry{name: name, closer: closer})
+		l.mu.Unlock()
+		return
+	}
+	l.mu.Unlock()
+
+	if err := closer.Close(); err != nil {
+		stdlog.Printf("|*** STOP: close late registration: %s failed: %s", name, err.Error())
+	}
 }
 
 // Close 按注册逆序关闭所有组件
@@ -44,6 +53,11 @@ func (l *Lifecycle) Close() error {
 		return nil
 	}
 	l.mu.Lock()
+	if l.closed {
+		l.mu.Unlock()
+		return nil
+	}
+	l.closed = true
 	closers := l.closers
 	l.closers = nil
 	l.mu.Unlock()

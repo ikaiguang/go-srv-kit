@@ -32,12 +32,13 @@ type aesCipher struct {
 
 // NewAESCipher creates the legacy deterministic AES-CBC cipher.
 func NewAESCipher(key []byte) (Encryptor, error) {
-	block, err := aes.NewCipher(key)
+	keyCopy := append([]byte(nil), key...)
+	block, err := aes.NewCipher(keyCopy)
 	if err != nil {
 		return nil, err
 	}
 	a := &aesCipher{
-		key:       key,
+		key:       keyCopy,
 		block:     block,
 		blockSize: block.BlockSize(),
 	}

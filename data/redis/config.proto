@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.redispkg;
+package kit.v3.redispkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/redis/v3;redis";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/redis/v3;redispkg";
 option java_multiple_files  = true;
-option java_package         = "kit.redispkg";
-option java_outer_classname = "KitRedisPKG";
+option java_package         = "kit.v3.redispkg";
+option java_outer_classname = "KitV3RedisPkg";
 
 import "google/protobuf/duration.proto";
 

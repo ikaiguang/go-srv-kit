@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.etcdpkg;
+package kit.v3.etcdpkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/etcd/v3;etcd";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/etcd/v3;etcdpkg";
 option java_multiple_files  = true;
-option java_package         = "kit.etcdpkg";
-option java_outer_classname = "KitEtcdPkg";
+option java_package         = "kit.v3.etcdpkg";
+option java_outer_classname = "KitV3EtcdPkg";
 
 import "google/protobuf/duration.proto";
 

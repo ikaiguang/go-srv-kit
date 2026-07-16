@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.api.configs;
+package kit.api.v3.configs;
 
 option go_package           = "github.com/ikaiguang/go-srv-kit/service/v3/api/config;configpb";
 option java_multiple_files  = true;
-option java_package         = "kit.api.configs";
-option java_outer_classname = "KitApiConfigs";
+option java_package         = "kit.api.v3.configs";
+option java_outer_classname = "KitApiV3Configs";
 
 import "google/protobuf/duration.proto";
 import "validate/validate.proto";

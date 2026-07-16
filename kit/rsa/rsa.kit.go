@@ -148,6 +148,9 @@ func NewRsaCipherBase64(pubKeyBase64, priKeyBase64 []byte) (*RsaCipher, error) {
 }
 
 func (r *RsaCipher) Encrypt(plainText []byte) ([]byte, error) {
+	if r == nil || r.publicKey == nil {
+		return nil, errors.New("RSA public key is not configured")
+	}
 	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, r.publicKey, plainText)
 	if err != nil {
 		return nil, err
@@ -156,6 +159,9 @@ func (r *RsaCipher) Encrypt(plainText []byte) ([]byte, error) {
 }
 
 func (r *RsaCipher) Decrypt(cipherText []byte) ([]byte, error) {
+	if r == nil || r.privateKey == nil {
+		return nil, errors.New("RSA private key is not configured")
+	}
 	s, err := base64util.Decode(cipherText)
 	if err != nil {
 		return nil, err
@@ -184,6 +190,9 @@ func (r *RsaCipher) DecryptToString(cipherText string) (string, error) {
 }
 
 func (r *RsaCipher) Sign(text []byte) ([]byte, error) {
+	if r == nil || r.privateKey == nil {
+		return nil, errors.New("RSA private key is not configured")
+	}
 	h := sha256.New()
 	h.Write(text)
 	signature, err := rsa.SignPKCS1v15(rand.Reader, r.privateKey, crypto.SHA256, h.Sum(nil))
@@ -194,6 +203,9 @@ func (r *RsaCipher) Sign(text []byte) ([]byte, error) {
 }
 
 func (r *RsaCipher) VerifySign(text, signature []byte) (bool, error) {
+	if r == nil || r.publicKey == nil {
+		return false, errors.New("RSA public key is not configured")
+	}
 	hashed := sha256.Sum256(text)
 	err := rsa.VerifyPKCS1v15(r.publicKey, crypto.SHA256, hashed[:], signature)
 	if err != nil {

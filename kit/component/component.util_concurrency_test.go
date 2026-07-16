@@ -16,8 +16,12 @@ func (f closerFunc) Close() error { return f() }
 
 func TestLifecycleCloseAllowsReentrantRegister(t *testing.T) {
 	lc := newLifecycle()
+	var lateClosed atomic.Bool
 	lc.Register("reentrant", closerFunc(func() error {
-		lc.Register("late", closerFunc(func() error { return nil }))
+		lc.Register("late", closerFunc(func() error {
+			lateClosed.Store(true)
+			return nil
+		}))
 		return nil
 	}))
 
@@ -31,6 +35,25 @@ func TestLifecycleCloseAllowsReentrantRegister(t *testing.T) {
 		}
 	case <-time.After(200 * time.Millisecond):
 		t.Fatal("Lifecycle.Close deadlocked while a closer registered another resource")
+	}
+	if !lateClosed.Load() {
+		t.Fatal("closer registered during Close was not closed")
+	}
+}
+
+func TestLifecycleRegisterAfterCloseClosesImmediately(t *testing.T) {
+	lc := newLifecycle()
+	if err := lc.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	var closed atomic.Bool
+	lc.Register("late", closerFunc(func() error {
+		closed.Store(true)
+		return nil
+	}))
+	if !closed.Load() {
+		t.Fatal("closer registered after Close was not closed")
 	}
 }
 

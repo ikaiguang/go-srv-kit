@@ -25,6 +25,10 @@ func Zip(resourcePath string, zipPath string) error {
 	if !fileInfo.IsDir() {
 		return ZipFile(resourcePath, zipPath)
 	}
+	zipAbs, err := filepath.Abs(zipPath)
+	if err != nil {
+		return err
+	}
 
 	if err := os.MkdirAll(filepath.Dir(zipPath), filepkg.DefaultFileMode); err != nil {
 		return err
@@ -47,6 +51,13 @@ func Zip(resourcePath string, zipPath string) error {
 		if entries[i].IsDir() {
 			continue
 		}
+		fileAbs, absErr := filepath.Abs(fps[i])
+		if absErr != nil {
+			return absErr
+		}
+		if fileAbs == zipAbs {
+			continue
+		}
 		zipFilePath, err := filepath.Rel(resourcePath, fps[i])
 		if err != nil {
 			return err
@@ -63,6 +74,13 @@ func Zip(resourcePath string, zipPath string) error {
 // @param filePath 被压缩资源；例: runtime/videos/a.mp4
 // @param zipPath 压缩到zip的路径；例: runtime/zip/videos.zip
 func ZipFile(filePath string, zipPath string) error {
+	same, err := sameFilePath(filePath, zipPath)
+	if err != nil {
+		return err
+	}
+	if same {
+		return errors.New("zip source and destination must be different files")
+	}
 	if err := os.MkdirAll(filepath.Dir(zipPath), filepkg.DefaultFileMode); err != nil {
 		return err
 	}
@@ -81,6 +99,18 @@ func ZipFile(filePath string, zipPath string) error {
 		return err
 	}
 	return err
+}
+
+func sameFilePath(first, second string) (bool, error) {
+	firstAbs, err := filepath.Abs(first)
+	if err != nil {
+		return false, err
+	}
+	secondAbs, err := filepath.Abs(second)
+	if err != nil {
+		return false, err
+	}
+	return firstAbs == secondAbs, nil
 }
 
 // AddFileToZip 添加文件到zip

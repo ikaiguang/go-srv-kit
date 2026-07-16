@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.page.pagepkg;
+package kit.page.v3.pagepkg;
 
 option go_package           = "github.com/ikaiguang/go-srv-kit/kit/v3/page;pagepkg";
 option java_multiple_files  = true;
-option java_package         = "kit.page.pagepkg";
-option java_outer_classname = "KitPagePagePkg";
+option java_package         = "kit.page.v3.pagepkg";
+option java_outer_classname = "KitPageV3PagePkg";
 
 // PageRequest 分页请求
 message PageRequest {

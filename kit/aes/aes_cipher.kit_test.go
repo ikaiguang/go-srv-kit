@@ -30,6 +30,27 @@ func TestAesCipher(t *testing.T) {
 	assert.Equal(t, msg, decrypted)
 }
 
+func TestAesCipherCopiesKeyMaterial(t *testing.T) {
+	key := []byte("1234567890ABCDEF")
+	cipher, err := NewAESCipher(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	before, err := cipher.EncryptToString("message")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := range key {
+		key[i] = 'X'
+	}
+	after, err := cipher.EncryptToString("message")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, before, after)
+}
+
 func TestAesCipherDecryptInvalidCiphertext(t *testing.T) {
 	cipher, err := NewAESCipher([]byte("1234567890ABCDEF"))
 	if err != nil {

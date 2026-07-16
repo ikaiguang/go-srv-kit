@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.app.apppkg;
+package kit.app.v3.apppkg;
 
 option go_package           = "github.com/ikaiguang/go-srv-kit/kratos/v3/app;apppkg";
 option java_multiple_files  = true;
-option java_package         = "kit.app.apppkg";
-option java_outer_classname = "KitAppAppPkg";
+option java_package         = "kit.app.v3.apppkg";
+option java_outer_classname = "KitAppV3AppPkg";
 
 import "google/protobuf/any.proto";
 

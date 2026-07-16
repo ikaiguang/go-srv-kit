@@ -1,0 +1,17 @@
+# name	directory	module_path	tag_prefix
+root	.	github.com/ikaiguang/go-srv-kit/v3	-
+kit	kit	github.com/ikaiguang/go-srv-kit/kit/v3	kit
+data/consul	data/consul	github.com/ikaiguang/go-srv-kit/data/consul/v3	data/consul
+data/etcd	data/etcd	github.com/ikaiguang/go-srv-kit/data/etcd/v3	data/etcd
+data/gorm	data/gorm	github.com/ikaiguang/go-srv-kit/data/gorm/v3	data/gorm
+data/jaeger	data/jaeger	github.com/ikaiguang/go-srv-kit/data/jaeger/v3	data/jaeger
+data/mongo	data/mongo	github.com/ikaiguang/go-srv-kit/data/mongo/v3	data/mongo
+data/mysql	data/mysql	github.com/ikaiguang/go-srv-kit/data/mysql/v3	data/mysql
+data/postgres	data/postgres	github.com/ikaiguang/go-srv-kit/data/postgres/v3	data/postgres
+data/rabbitmq	data/rabbitmq	github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3	data/rabbitmq
+data/redis	data/redis	github.com/ikaiguang/go-srv-kit/data/redis/v3	data/redis
+kratos	kratos	github.com/ikaiguang/go-srv-kit/kratos/v3	kratos
+ping-service	ping-service	github.com/ikaiguang/go-srv-kit/ping-service/v3	ping-service
+registry/consul	registry/consul	github.com/ikaiguang/go-srv-kit/registry/consul/v3	registry/consul
+registry/etcd	registry/etcd	github.com/ikaiguang/go-srv-kit/registry/etcd/v3	registry/etcd
+service	service	github.com/ikaiguang/go-srv-kit/service/v3	service

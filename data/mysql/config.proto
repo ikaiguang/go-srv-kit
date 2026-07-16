@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package kit.mysqlpkg;
+package kit.v3.mysqlpkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/mysql/v3;mysql";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/mysql/v3;mysqlpkg";
 option java_multiple_files  = true;
-option java_package         = "kit.mysqlpkg";
-option java_outer_classname = "KitMysqlPKG";
+option java_package         = "kit.v3.mysqlpkg";
+option java_outer_classname = "KitV3MysqlPkg";
 
 import "google/protobuf/duration.proto";
 

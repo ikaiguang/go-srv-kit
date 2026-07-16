@@ -171,12 +171,14 @@ const (
 	CharsetPassword     = CharsetAlphanumeric + "!@#$%^&*"
 )
 
-// VerifyCode 生成纯数字验证码（短信/邮箱验证码）
+// VerifyCode 生成纯数字验证码（短信/邮箱验证码）。
+// Deprecated: use SecureVerifyCode for security-sensitive verification codes.
 func VerifyCode(length int) string {
 	return Digits(length)
 }
 
-// Password 生成随机密码（包含大小写字母、数字、特殊字符）
+// Password 生成随机密码（包含大小写字母、数字、特殊字符）。
+// Deprecated: use SecurePassword for generated credentials.
 func Password(length int) string {
 	if length < 8 {
 		length = 8

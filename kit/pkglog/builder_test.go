@@ -18,6 +18,16 @@ func TestBuilderDefaultsText(t *testing.T) {
 	}
 }
 
+func TestBuilderIgnoresNilOptions(t *testing.T) {
+	var buf bytes.Buffer
+	handler := NewHandler(nil, WithWriter(&buf), WithFilter(nil))
+	logger := NewLogger(handler, nil)
+	logger.Info("hello")
+	if !strings.Contains(buf.String(), "hello") {
+		t.Fatalf("output = %q", buf.String())
+	}
+}
+
 func TestBuilderJSON(t *testing.T) {
 	var buf bytes.Buffer
 	logger := slog.New(NewHandler(WithWriter(&buf), WithFormat(FormatJSON)))

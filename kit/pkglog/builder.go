@@ -89,6 +89,9 @@ func NewHandler(opts ...Option) slog.Handler {
 		extractors: []Extractor{AttrsFromContext},
 	}
 	for _, o := range opts {
+		if o == nil {
+			continue
+		}
 		o(cfg)
 	}
 	h := newBaseHandler(cfg)
@@ -102,6 +105,9 @@ func NewLogger(handler slog.Handler, opts ...Option) *slog.Logger {
 		extractors: []Extractor{AttrsFromContext},
 	}
 	for _, o := range opts {
+		if o == nil {
+			continue
+		}
 		o(cfg)
 	}
 	return slog.New(newComposedHandler(handler, cfg))

@@ -71,6 +71,27 @@ func TestRsaCipher_Sign(t *testing.T) {
 	assert.True(t, valid)
 }
 
+func TestRsaCipherZeroValueReturnsErrors(t *testing.T) {
+	var nilCipher *RsaCipher
+	zeroCipher := &RsaCipher{}
+
+	for name, cipher := range map[string]*RsaCipher{"nil": nilCipher, "zero": zeroCipher} {
+		t.Run(name, func(t *testing.T) {
+			assert.NotPanics(t, func() {
+				_, err := cipher.Encrypt([]byte("message"))
+				assert.Error(t, err)
+				_, err = cipher.Decrypt(nil)
+				assert.Error(t, err)
+				_, err = cipher.Sign([]byte("message"))
+				assert.Error(t, err)
+				valid, err := cipher.VerifySign([]byte("message"), nil)
+				assert.False(t, valid)
+				assert.Error(t, err)
+			})
+		})
+	}
+}
+
 func TestRsa(t *testing.T) {
 	// rsa 密钥文件产生
 	priKey, pubKey, err := GenerateRSAKey()
