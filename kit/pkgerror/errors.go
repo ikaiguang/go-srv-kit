@@ -1,4 +1,4 @@
-// Package errors provides simple error handling primitives.
+// Package pkgerror provides simple error handling primitives.
 //
 // The traditional error handling idiom in Go is roughly akin to
 //
@@ -90,7 +90,7 @@
 // considered a part of its stable public interface.
 //
 // See the documentation for Frame.Format for more details.
-package errors
+package pkgerror
 
 import (
 	"fmt"

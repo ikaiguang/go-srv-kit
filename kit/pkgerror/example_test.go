@@ -1,9 +1,9 @@
-package errors_test
+package pkgerror_test
 
 import (
 	"fmt"
 
-	errors "github.com/ikaiguang/go-srv-kit/kit/v3/error"
+	errors "github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror"
 )
 
 func ExampleNew() {

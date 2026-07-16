@@ -5,13 +5,13 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/gorm
+go get github.com/ikaiguang/go-srv-kit/data/gorm/v3
 ```
 
 导入时建议使用别名，避免和官方 GORM 包名混淆：
 
 ```go
-import gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/gorm"
+import gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3/gorm"
 ```
 
 ## 核心能力
@@ -37,7 +37,7 @@ package data
 import (
 	"time"
 
-	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/gorm"
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3/gorm"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

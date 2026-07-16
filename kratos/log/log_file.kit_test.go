@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	timepkg "github.com/ikaiguang/go-kit/time"
+	timepkg "github.com/ikaiguang/go-srv-kit/kit/v3/time"
 	"github.com/stretchr/testify/require"
 
-	writerpkg "github.com/ikaiguang/go-kit/writer"
+	writerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/writer"
 )
 
 // go test -v ./log/ -count=1 -run TestNewFileLogger_Xxx

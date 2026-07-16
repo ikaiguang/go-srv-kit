@@ -1,9 +1,9 @@
-module github.com/ikaiguang/go-srv-kit/data/jaeger
+module github.com/ikaiguang/go-srv-kit/data/jaeger/v3
 
 go 1.26.3
 
 require (
-	github.com/ikaiguang/go-kit v0.0.6
+	github.com/ikaiguang/go-srv-kit/kit/v3 v3.0.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.43.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.43.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.43.0

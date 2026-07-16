@@ -7,7 +7,7 @@ package migrationpkg
 //	"testing"
 //	"time"
 //
-//	gormpkg "github.com/ikaiguang/go-gorm-kit/gorm"
+//	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3/gorm"
 //	"github.com/stretchr/testify/require"
 //	"gorm.io/driver/mysql"
 //	"gorm.io/gorm"

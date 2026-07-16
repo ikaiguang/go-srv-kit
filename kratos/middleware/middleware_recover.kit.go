@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 
 var _ = recovery.ErrUnknownRequest

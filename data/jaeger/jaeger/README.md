@@ -1,15 +1,15 @@
 # jaeger
 
-`jaeger` 目录提供包 `jaegerpkg`，导入路径为 `github.com/ikaiguang/go-srv-kit/data/jaeger/jaeger`。该包负责根据配置创建 OpenTelemetry OTLP trace exporter，用于把服务链路追踪数据发送到 Jaeger Collector 或兼容 OTLP 的后端。
+`jaeger` 目录提供包 `jaegerpkg`，导入路径为 `github.com/ikaiguang/go-srv-kit/data/jaeger/v3/jaeger`。该包负责根据配置创建 OpenTelemetry OTLP trace exporter，用于把服务链路追踪数据发送到 Jaeger Collector 或兼容 OTLP 的后端。
 
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/jaeger
+go get github.com/ikaiguang/go-srv-kit/data/jaeger/v3
 ```
 
 ```go
-import jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger/jaeger"
+import jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger/v3/jaeger"
 ```
 
 ## 核心能力
@@ -32,7 +32,7 @@ import (
 	"log"
 	"time"
 
-	jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger/jaeger"
+	jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger/v3/jaeger"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

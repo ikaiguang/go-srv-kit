@@ -9,8 +9,8 @@ package apppkg
 //	stdhttp "net/http"
 //
 //	"github.com/go-kratos/kratos/v2/transport/http"
-//	headerpkg "github.com/ikaiguang/go-kit/header"
-//	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+//	headerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/header"
+//	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 //	"github.com/tidwall/sjson"
 //	"google.golang.org/protobuf/encoding/protojson"
 //	"google.golang.org/protobuf/proto"

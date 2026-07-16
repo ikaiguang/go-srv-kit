@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/kratos
+go get github.com/ikaiguang/go-srv-kit/kratos/v3
 ```
 
 ```go
-import middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/middleware"
+import middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/v3/middleware"
 ```
 
 ## 核心能力

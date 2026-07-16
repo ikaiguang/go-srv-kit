@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/kratos
+go get github.com/ikaiguang/go-srv-kit/kratos/v3
 ```
 
 ```go
-import transportpkg "github.com/ikaiguang/go-srv-kit/kratos/transport"
+import transportpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/transport"
 ```
 
 ## 核心能力

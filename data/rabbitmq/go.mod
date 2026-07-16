@@ -1,11 +1,11 @@
-module github.com/ikaiguang/go-srv-kit/data/rabbitmq
+module github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3
 
 go 1.26.3
 
 require (
 	github.com/ThreeDotsLabs/watermill v1.5.1
 	github.com/ThreeDotsLabs/watermill-amqp/v3 v3.0.2
-	github.com/ikaiguang/go-kit v0.0.6
+	github.com/ikaiguang/go-srv-kit/kit/v3 v3.0.0
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/protobuf v1.36.11
 )

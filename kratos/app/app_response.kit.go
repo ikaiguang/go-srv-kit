@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
-	headerpkg "github.com/ikaiguang/go-kit/header"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/header"
 	"google.golang.org/grpc/codes"
 )
 

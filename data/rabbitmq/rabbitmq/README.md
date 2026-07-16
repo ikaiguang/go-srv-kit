@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/rabbitmq
+go get github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3
 ```
 
 ```go
-import rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq/rabbitmq"
+import rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3/rabbitmq"
 ```
 
 ## 核心能力

@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	writerpkg "github.com/ikaiguang/go-kit/writer"
+	writerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/writer"
 )
 
 // 轮转日志参数

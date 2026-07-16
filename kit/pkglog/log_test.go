@@ -1,4 +1,4 @@
-package log
+package pkglog
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"testing"
 )
 
+// go test -v -count 1 ./pkglog -run TestSetDefault
 func TestSetDefault(t *testing.T) {
 	old := Default()
 	defer SetDefault(old)

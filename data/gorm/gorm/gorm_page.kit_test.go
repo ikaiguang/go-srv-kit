@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	pagepkg "github.com/ikaiguang/go-kit/page"
+	pagepkg "github.com/ikaiguang/go-srv-kit/kit/v3/page"
 	"github.com/stretchr/testify/require"
 )
 

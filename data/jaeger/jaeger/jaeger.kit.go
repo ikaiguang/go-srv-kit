@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	connectionpkg "github.com/ikaiguang/go-kit/connection"
+	connectionpkg "github.com/ikaiguang/go-srv-kit/kit/v3/connection"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"

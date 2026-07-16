@@ -1,10 +1,10 @@
-module github.com/ikaiguang/go-srv-kit/data/gorm
+module github.com/ikaiguang/go-srv-kit/data/gorm/v3
 
 go 1.26.3
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/ikaiguang/go-kit v0.0.4
+	github.com/ikaiguang/go-srv-kit/kit/v3 v3.0.0
 	github.com/stretchr/testify v1.11.1
 	gorm.io/gorm v1.31.1
 	gorm.io/hints v1.1.2

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/middleware"
-	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 
 // validator ...

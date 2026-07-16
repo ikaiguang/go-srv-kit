@@ -1,4 +1,4 @@
-module github.com/ikaiguang/go-srv-kit/kratos
+module github.com/ikaiguang/go-srv-kit/kratos/v3
 
 go 1.26.3
 
@@ -7,7 +7,7 @@ require (
 	github.com/go-kratos/kratos/v2 v2.9.2
 	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/websocket v1.5.3
-	github.com/ikaiguang/go-kit v0.0.6
+	github.com/ikaiguang/go-srv-kit/kit/v3 v3.0.0
 	github.com/stretchr/testify v1.11.1
 	github.com/valyala/bytebufferpool v1.0.0
 	go.opentelemetry.io/otel v1.43.0

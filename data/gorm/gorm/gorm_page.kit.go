@@ -3,7 +3,7 @@ package gormpkg
 import (
 	"gorm.io/gorm"
 
-	pagepkg "github.com/ikaiguang/go-kit/page"
+	pagepkg "github.com/ikaiguang/go-srv-kit/kit/v3/page"
 )
 
 // PaginatorArgs 列表参数

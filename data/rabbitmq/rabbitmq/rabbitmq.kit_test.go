@@ -11,8 +11,8 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-amqp/v3/pkg/amqp"
 	"github.com/ThreeDotsLabs/watermill/message"
-	threadpkg "github.com/ikaiguang/go-kit/thread"
-	uuidpkg "github.com/ikaiguang/go-kit/uuid"
+	threadpkg "github.com/ikaiguang/go-srv-kit/kit/v3/thread"
+	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/v3/uuid"
 	"github.com/stretchr/testify/require"
 )
 

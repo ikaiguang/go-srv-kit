@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	timepkg "github.com/ikaiguang/go-kit/time"
+	timepkg "github.com/ikaiguang/go-srv-kit/kit/v3/time"
 	"gorm.io/gorm/logger"
 )
 

@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport"
 	"go.opentelemetry.io/otel/trace"
 
-	uuidpkg "github.com/ikaiguang/go-kit/uuid"
+	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/v3/uuid"
 )
 
 // RequestAndResponseHeader 请求头 and 响应头

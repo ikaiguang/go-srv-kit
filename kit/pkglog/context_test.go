@@ -1,4 +1,4 @@
-package log
+package pkglog
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// go test -v -count 1 ./pkglog -run TestContextWithAttrsAppendsAttrs
 func TestContextWithAttrsAppendsAttrs(t *testing.T) {
 	ctx := ContextWithAttrs(context.Background(), slog.String("a", "1"))
 	ctx = ContextWithAttrs(ctx, slog.String("b", "2"))

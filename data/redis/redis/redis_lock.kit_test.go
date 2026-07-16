@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	lockerpkg "github.com/ikaiguang/go-kit/locker"
+	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/locker"
 )
 
 const (

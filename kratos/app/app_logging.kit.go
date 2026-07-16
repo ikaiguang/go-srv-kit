@@ -14,9 +14,9 @@ import (
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	ippkg "github.com/ikaiguang/go-kit/ip"
-	contextpkg "github.com/ikaiguang/go-kratos-kit/context"
-	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	ippkg "github.com/ikaiguang/go-srv-kit/kit/v3/ip"
+	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/context"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 
 var (

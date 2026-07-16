@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	apppkg "github.com/ikaiguang/go-kratos-kit/app"
+	apppkg "github.com/ikaiguang/go-srv-kit/kratos/v3/app"
 )
 
 // DefaultServerMiddlewares 中间件

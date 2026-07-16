@@ -7,13 +7,13 @@
 当前 `go.mod` 模块路径为：
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/redis
+go get github.com/ikaiguang/go-srv-kit/data/redis/v3
 ```
 
 导入本包：
 
 ```go
-import redispkg "github.com/ikaiguang/go-srv-kit/data/redis/redis"
+import redispkg "github.com/ikaiguang/go-srv-kit/data/redis/v3/redis"
 ```
 
 ## 核心能力
@@ -21,7 +21,7 @@ import redispkg "github.com/ikaiguang/go-srv-kit/data/redis/redis"
 - `Config`：由 `redis/config.proto` 生成的 Redis 配置结构，包含地址、认证、DB、超时和连接池参数。
 - `NewDB(conf *Config)`：根据 `Config` 创建 `redis.UniversalClient`，并通过 `Ping` 验证连接。
 - `IsNilErr(err error)`：判断错误是否为 `redis.Nil`。
-- `NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option)`：创建实现 `github.com/ikaiguang/go-srv-kit/kit/locker.Locker` 的分布式锁。
+- `NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option)`：创建实现 `github.com/ikaiguang/go-srv-kit/kit/v3/locker.Locker` 的分布式锁。
 - `Locker.Once(ctx, lockName)`：获取一次性锁，不启动自动续期。
 - `Locker.Mutex(ctx, lockName)`：获取互斥锁，并按内部间隔续期，直到调用 `Unlock`。
 
