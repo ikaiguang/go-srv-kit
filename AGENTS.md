@@ -13,7 +13,8 @@
 
 - Use `.agents/skills/my-project` for repository-specific Go, module, Proto, generation, test, and debugging context.
 - Use `.agents/skills/code-audit-repair` only for explicit whole-repository or multi-module audits.
-- Use matching global Superpowers skills for general design, planning, debugging, TDD, review, and verification workflows.
+- Use global Superpowers skills only for complex design, cross-module changes, systematic debugging, high-risk TDD/review/verification, or when the user explicitly requests them.
+- Do not automatically load `superpowers:using-superpowers` or other Superpowers skills for every turn. For simple Q&A, narrowly scoped changes, routine refactoring, and standard test or formatting tasks, use built-in reasoning or `/plan` when sufficient.
 - Use `docs/superpowers/specs/` and `docs/superpowers/plans/` as the only design and implementation-plan document locations.
 - User instructions and repository facts take precedence over generic skill defaults.
 
