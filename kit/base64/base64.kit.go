@@ -41,12 +41,22 @@ func Decode(src []byte) ([]byte, error) {
 	return dst[:n], nil
 }
 
-// ExampleDecodeString ...
-func ExampleDecodeString(s string) ([]byte, error) {
+// DecodeString decodes a standard base64 string.
+func DecodeString(s string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(s)
 }
 
-// ExampleEncodeToString ...
-func ExampleEncodeToString(s []byte) string {
+// EncodeToString encodes bytes using standard base64.
+func EncodeToString(s []byte) string {
 	return base64.StdEncoding.EncodeToString(s)
+}
+
+// Deprecated: use DecodeString instead.
+func ExampleDecodeString(s string) ([]byte, error) {
+	return DecodeString(s)
+}
+
+// Deprecated: use EncodeToString instead.
+func ExampleEncodeToString(s []byte) string {
+	return EncodeToString(s)
 }

@@ -36,6 +36,15 @@ func TestToDay(t *testing.T) {
 	assert.Equal(t, 0, result.Second())
 }
 
+func TestCanonicalStartNames(t *testing.T) {
+	input := time.Date(2024, 3, 10, 15, 30, 0, 0, time.FixedZone("test", -5*60*60))
+	assert.Equal(t, StartOfDay(input), ToDay(input))
+	assert.Equal(t, time.Date(2024, 3, 1, 0, 0, 0, 0, input.Location()), StartOfMonth(input))
+	assert.Equal(t, StartOfMonth(input), ThisMonth(input))
+	assert.Equal(t, time.Date(2024, 1, 1, 0, 0, 0, 0, input.Location()), StartOfYear(input))
+	assert.Equal(t, StartOfYear(input), ThisYear(input))
+}
+
 func TestToHour(t *testing.T) {
 	input := time.Date(2024, 8, 15, 14, 30, 45, 0, time.Local)
 	result := ToHour(input)

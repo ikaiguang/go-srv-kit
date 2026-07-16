@@ -46,11 +46,9 @@ func Today() time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
 }
 
-// ToDay 2019-08-21 22:07:07 -> 2019-08-21 00:00:00
+// Deprecated: use StartOfDay instead.
 func ToDay(t time.Time) time.Time {
-	y, m, d := t.Date()
-
-	return time.Date(y, m, d, 0, 0, 0, 0, t.Location())
+	return StartOfDay(t)
 }
 
 // ToHour 2019-08-21 22:07:07 -> 2019-08-21 22:00:00
@@ -67,17 +65,23 @@ func ToMinute(t time.Time) time.Time {
 	return time.Date(y, m, d, t.Hour(), t.Minute(), 0, 0, t.Location())
 }
 
-// ThisMonth 2019-08-21 22:07:07 -> 2019-08-01 00:00:00
-func ThisMonth(t time.Time) time.Time {
+// StartOfMonth returns the first instant of the month containing t.
+func StartOfMonth(t time.Time) time.Time {
 	y, m, _ := t.Date()
 
 	return time.Date(y, m, 1, 0, 0, 0, 0, t.Location())
 }
 
-// ThisYear 2019-08-21 22:07:07 -> 2019-01-01 00:00:00
-func ThisYear(t time.Time) time.Time {
+// Deprecated: use StartOfMonth instead.
+func ThisMonth(t time.Time) time.Time { return StartOfMonth(t) }
+
+// StartOfYear returns the first instant of the year containing t.
+func StartOfYear(t time.Time) time.Time {
 	return time.Date(t.Year(), 1, 1, 0, 0, 0, 0, t.Location())
 }
+
+// Deprecated: use StartOfYear instead.
+func ThisYear(t time.Time) time.Time { return StartOfYear(t) }
 
 // TimestampToTime timestamp to Time
 func TimestampToTime(u int64) time.Time {
@@ -141,8 +145,8 @@ func WeekStart(t time.Time) time.Time {
 	if weekday == time.Sunday {
 		weekday = 7
 	}
-	d := time.Duration(1-weekday) * 24 * time.Hour
-	return ToDay(t.Add(d))
+	dayOffset := 1 - int(weekday)
+	return StartOfDay(t.AddDate(0, 0, dayOffset))
 }
 
 // WeekEnd 获取指定时间所在周的周日 23:59:59
@@ -153,7 +157,7 @@ func WeekEnd(t time.Time) time.Time {
 
 // MonthEnd 获取指定时间所在月的最后一天 23:59:59
 func MonthEnd(t time.Time) time.Time {
-	return ThisMonth(t).AddDate(0, 1, 0).Add(-time.Second)
+	return StartOfMonth(t).AddDate(0, 1, 0).Add(-time.Second)
 }
 
 // DaysBetween 计算两个时间之间的天数差（绝对值）
@@ -169,14 +173,15 @@ func DaysBetween(a, b time.Time) int {
 	return days
 }
 
-// StartOfDay 获取指定时间当天的 00:00:00（等价于 ToDay）
+// StartOfDay returns the first instant of the day containing t.
 func StartOfDay(t time.Time) time.Time {
-	return ToDay(t)
+	y, m, d := t.Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, t.Location())
 }
 
 // EndOfDay 获取指定时间当天的 23:59:59
 func EndOfDay(t time.Time) time.Time {
-	return ToDay(t).Add(24*time.Hour - time.Second)
+	return StartOfDay(t).AddDate(0, 0, 1).Add(-time.Second)
 }
 
 // AddDays 增加天数（支持负数）

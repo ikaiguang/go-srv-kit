@@ -2,6 +2,7 @@ package connectionpkg
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"testing"
@@ -28,6 +29,14 @@ func TestIsWebSocketConn(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "http://example.com/ws", nil)
 		require.NoError(t, err)
 
+		assert.False(t, IsWebSocketConn(req))
+	})
+
+	t.Run("connection token must match exactly", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "http://example.com/ws", nil)
+		require.NoError(t, err)
+		req.Header.Set("Connection", "notupgrade")
+		req.Header.Set("Upgrade", "websocket")
 		assert.False(t, IsWebSocketConn(req))
 	})
 }
@@ -77,4 +86,26 @@ func TestIsConnCloseErr(t *testing.T) {
 
 	err := &net.OpError{Err: errors.New("use of closed network connection")}
 	assert.True(t, IsConnCloseErr(err))
+}
+
+func TestConnectionCanonicalNames(t *testing.T) {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	defer func() { _ = listener.Close() }()
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		conn, acceptErr := listener.Accept()
+		if acceptErr == nil {
+			_ = conn.Close()
+		}
+	}()
+	reachable, err := IsEndpointReachable("http://" + listener.Addr().String())
+	require.NoError(t, err)
+	assert.True(t, reachable)
+	<-done
+
+	assert.True(t, IsConnectionClosedError(net.ErrClosed))
+	assert.True(t, IsConnectionClosedError(fmt.Errorf("wrapped: %w", net.ErrClosed)))
 }

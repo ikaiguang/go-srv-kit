@@ -1,6 +1,7 @@
 package stringpkg
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -82,4 +83,9 @@ func TestToString(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestToStringDoesNotNarrowUnsignedValues(t *testing.T) {
+	maxUint := ^uint(0)
+	assert.Equal(t, strconv.FormatUint(uint64(maxUint), 10), ToString(maxUint))
 }

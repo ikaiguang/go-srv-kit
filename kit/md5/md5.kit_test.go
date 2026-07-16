@@ -20,7 +20,7 @@ func TestMd5(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Md5([]byte(tt.plaintext))
+			got, err := MD5([]byte(tt.plaintext))
 			assert.Nil(t, err)
 			assert.Equal(t, tt.want, got)
 		})

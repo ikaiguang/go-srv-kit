@@ -34,7 +34,7 @@ A5JwkWJ4ZfSs6F2tfwIDAQAB
 -----END PUBLIC KEY-----`)
 
 func TestRsa_Encrypt(t *testing.T) {
-	r, err := NewRsaCipher(publicKey, privateKey)
+	r, err := NewRSACipher(publicKey, privateKey)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +53,7 @@ func TestRsa_Encrypt(t *testing.T) {
 }
 
 func TestRsaCipher_Sign(t *testing.T) {
-	r, err := NewRsaCipher(publicKey, privateKey)
+	r, err := NewRSACipher(publicKey, privateKey)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,14 +73,14 @@ func TestRsaCipher_Sign(t *testing.T) {
 
 func TestRsa(t *testing.T) {
 	// rsa 密钥文件产生
-	priKey, pubKey, err := GenRsaKey()
+	priKey, pubKey, err := GenerateRSAKey()
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(string(priKey))
 	t.Log(string(pubKey))
 
-	r, err := NewRsaCipher(pubKey, priKey)
+	r, err := NewRSACipher(pubKey, priKey)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,7 +111,7 @@ func TestRsa(t *testing.T) {
 }
 
 func BenchmarkRasEncrypt(b *testing.B) {
-	cipher, err := NewRsaCipher(publicKey, privateKey)
+	cipher, err := NewRSACipher(publicKey, privateKey)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -130,7 +130,7 @@ func BenchmarkRasEncrypt(b *testing.B) {
 }
 
 func BenchmarkRasSign(b *testing.B) {
-	cipher, err := NewRsaCipher(publicKey, privateKey)
+	cipher, err := NewRSACipher(publicKey, privateKey)
 	if err != nil {
 		b.Fatal(err)
 	}

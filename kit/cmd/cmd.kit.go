@@ -12,6 +12,9 @@ import (
 
 // RunCommandContext 运行命令（支持 Context）
 func RunCommandContext(ctx context.Context, command string, args []string) ([]byte, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	cmd := exec.CommandContext(ctx, command, args...)
 
 	slog.DebugContext(ctx, "cmd", slog.String("command", command), slog.Any("args", args))
@@ -19,8 +22,11 @@ func RunCommandContext(ctx context.Context, command string, args []string) ([]by
 	return run(cmd)
 }
 
-// RunCommandWithWorkDirContext 运行命令（支持 Context 和工作目录）
-func RunCommandWithWorkDirContext(ctx context.Context, workDir, command string, args []string) ([]byte, error) {
+// RunCommandInDirContext runs a command in workDir with context cancellation.
+func RunCommandInDirContext(ctx context.Context, workDir, command string, args []string) ([]byte, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workDir
 
@@ -29,14 +35,24 @@ func RunCommandWithWorkDirContext(ctx context.Context, workDir, command string, 
 	return run(cmd)
 }
 
+// Deprecated: use RunCommandInDirContext instead.
+func RunCommandWithWorkDirContext(ctx context.Context, workDir, command string, args []string) ([]byte, error) {
+	return RunCommandInDirContext(ctx, workDir, command, args)
+}
+
 // Deprecated: 使用 RunCommandContext 替代
 func RunCommand(command string, args []string) (output []byte, err error) {
 	return RunCommandContext(context.Background(), command, args)
 }
 
-// Deprecated: 使用 RunCommandWithWorkDirContext 替代
+// RunCommandInDir runs a command in workDir.
+func RunCommandInDir(workDir, command string, args []string) ([]byte, error) {
+	return RunCommandInDirContext(context.Background(), workDir, command, args)
+}
+
+// Deprecated: use RunCommandInDir instead.
 func RunCommandWithWorkDir(workDir, command string, args []string) (output []byte, err error) {
-	return RunCommandWithWorkDirContext(context.Background(), workDir, command, args)
+	return RunCommandInDir(workDir, command, args)
 }
 
 // run 运行命令

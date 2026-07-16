@@ -21,11 +21,11 @@ func NewRandHandler() *rand.Rand {
 
 // Name random name
 func Name() string {
-	return strconv.FormatInt(time.Now().UnixNano(), 36) + "_" + Strings(5)
+	return strconv.FormatInt(time.Now().UnixNano(), 36) + "_" + AlphanumericString(5)
 }
 
-// Strings : A-Z a-z 0-9
-func Strings(size int) string {
+// AlphanumericString returns a pseudo-random ASCII alphanumeric string.
+func AlphanumericString(size int) string {
 	if size <= 0 {
 		return ""
 	}
@@ -43,8 +43,8 @@ func Strings(size int) string {
 	return string(res)
 }
 
-// Letter : A-Z a-z
-func Letter(size int) string {
+// Letters returns a pseudo-random ASCII letter string.
+func Letters(size int) string {
 	if size <= 0 {
 		return ""
 	}
@@ -60,8 +60,8 @@ func Letter(size int) string {
 	return string(res)
 }
 
-// Numeric 0-9
-func Numeric(size int) string {
+// Digits returns a pseudo-random ASCII digit string.
+func Digits(size int) string {
 	if size <= 0 {
 		return ""
 	}
@@ -74,16 +74,16 @@ func Numeric(size int) string {
 
 // AlphabetLower 从小写字符集生成指定长度的随机字符串
 func AlphabetLower(n int) string {
-	return String(n, CharsetLowercase)
+	return StringFromCharset(n, CharsetLowercase)
 }
 
 // Hex 生成十六进制随机字符串
 func Hex(n int) string {
-	return String(n, CharsetHex)
+	return StringFromCharset(n, CharsetHex)
 }
 
-// String returns a random string n characters long, composed of entities from charset.
-func String(n int, charset string) string {
+// StringFromCharset returns a pseudo-random string drawn from charset.
+func StringFromCharset(n int, charset string) string {
 	if n <= 0 || len(charset) == 0 {
 		return ""
 	}
@@ -95,6 +95,18 @@ func String(n int, charset string) string {
 	return string(randStr)
 }
 
+// Deprecated: use AlphanumericString instead.
+func Strings(size int) string { return AlphanumericString(size) }
+
+// Deprecated: use Letters instead.
+func Letter(size int) string { return Letters(size) }
+
+// Deprecated: use Digits instead.
+func Numeric(size int) string { return Digits(size) }
+
+// Deprecated: use StringFromCharset instead.
+func String(n int, charset string) string { return StringFromCharset(n, charset) }
+
 // Int32Between random number between min-max
 func Int32Between(min, max int32) int32 {
 	if min == max {
@@ -103,7 +115,8 @@ func Int32Between(min, max int32) int32 {
 	if min >= max {
 		min, max = max, min
 	}
-	return rand.Int31n(max-min) + min
+	span := uint64(int64(max) - int64(min))
+	return int32(int64(min) + int64(randomUint64n(span)))
 }
 
 // Int64Between random number between min-max
@@ -114,7 +127,8 @@ func Int64Between(min, max int64) int64 {
 	if min >= max {
 		min, max = max, min
 	}
-	return rand.Int63n(max-min) + min
+	span := uint64(max) - uint64(min)
+	return int64(uint64(min) + randomUint64n(span))
 }
 
 // NumericBetween random number between min-max
@@ -130,7 +144,21 @@ func IntBetween(min, max int) int {
 	if min >= max {
 		min, max = max, min
 	}
-	return rand.Intn(max-min) + min
+	return int(Int64Between(int64(min), int64(max)))
+}
+
+// randomUint64n returns a value in [0, n) without modulo bias.
+func randomUint64n(n uint64) uint64 {
+	if n == 0 {
+		return rand.Uint64()
+	}
+	threshold := -n % n
+	for {
+		v := rand.Uint64()
+		if v >= threshold {
+			return v % n
+		}
+	}
 }
 
 // ==================== 常用应用场景 ====================
@@ -145,7 +173,7 @@ const (
 
 // VerifyCode 生成纯数字验证码（短信/邮箱验证码）
 func VerifyCode(length int) string {
-	return Numeric(length)
+	return Digits(length)
 }
 
 // Password 生成随机密码（包含大小写字母、数字、特殊字符）
@@ -169,7 +197,7 @@ func Password(length int) string {
 
 // Token 生成 URL 安全的随机 token
 func Token(length int) string {
-	return String(length, CharsetAlphanumeric)
+	return StringFromCharset(length, CharsetAlphanumeric)
 }
 
 // OrderNo 生成订单号：时间戳前缀 + 随机数字后缀
@@ -177,7 +205,7 @@ func OrderNo(randomSuffixLen int) string {
 	if randomSuffixLen < 4 {
 		randomSuffixLen = 4
 	}
-	return time.Now().Format("20060102150405") + Numeric(randomSuffixLen)
+	return time.Now().Format("20060102150405") + Digits(randomSuffixLen)
 }
 
 // TraceID 生成 32 位十六进制 trace ID

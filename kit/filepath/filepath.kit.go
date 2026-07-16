@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	filepkg "github.com/ikaiguang/go-kit/file"
+	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
 )
 
 // WalkDir 遍历所有的目录与文件（使用 filepath.WalkDir + fs.DirEntry）
@@ -77,7 +77,7 @@ func RenewDir(destDir string) (err error) {
 			return err
 		}
 	} else if os.IsNotExist(err) {
-		err = nil // 文件不存在
+		// Continue and create the directory below.
 	} else {
 		return err
 	}

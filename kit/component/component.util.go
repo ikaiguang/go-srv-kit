@@ -30,6 +30,9 @@ func newLifecycle() *Lifecycle {
 
 // Register 注册一个需要关闭的组件
 func (l *Lifecycle) Register(name string, closer io.Closer) {
+	if l == nil || closer == nil {
+		return
+	}
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.closers = append(l.closers, closerEntry{name: name, closer: closer})
@@ -37,19 +40,23 @@ func (l *Lifecycle) Register(name string, closer io.Closer) {
 
 // Close 按注册逆序关闭所有组件
 func (l *Lifecycle) Close() error {
+	if l == nil {
+		return nil
+	}
 	l.mu.Lock()
-	defer l.mu.Unlock()
+	closers := l.closers
+	l.closers = nil
+	l.mu.Unlock()
 
 	var errs []error
-	for i := len(l.closers) - 1; i >= 0; i-- {
-		entry := l.closers[i]
+	for i := len(closers) - 1; i >= 0; i-- {
+		entry := closers[i]
 		stdlog.Printf("|*** STOP: close: %s", entry.name)
 		if err := entry.closer.Close(); err != nil {
 			stdlog.Printf("|*** STOP: close: %s failed: %s", entry.name, err.Error())
 			errs = append(errs, err)
 		}
 	}
-	l.closers = nil
 	if len(errs) > 0 {
 		return stderrors.Join(errs...)
 	}
@@ -91,6 +98,14 @@ func NewComponent[T any](name string, factory func() (T, error), lc *Lifecycle) 
 // Get 获取组件实例，首次调用时触发 factory 初始化
 // 热路径（已初始化）无锁；首次初始化通过 mu 互斥；失败不缓存，下次重试
 func (c *Component[T]) Get() (T, error) {
+	if c == nil {
+		var zero T
+		return zero, stderrors.New("component is nil")
+	}
+	if c.factory == nil {
+		var zero T
+		return zero, stderrors.New("component factory is nil")
+	}
 	// 快速路径：原子读，已初始化时无锁返回
 	if cv := c.state.Load(); cv != nil {
 		return cv.value, nil
@@ -112,12 +127,11 @@ func (c *Component[T]) Get() (T, error) {
 		return zero, err
 	}
 
-	// 成功：先发布 value 到 state，再注册 Closer
-	// 顺序保证：state 可见时 Closer 已准备好（Register 仍在 mu 保护内）
-	c.state.Store(&componentValue[T]{value: v})
-	if closer, ok := any(v).(io.Closer); ok {
+	// Register the closer before publishing the initialized value.
+	if closer, ok := any(v).(io.Closer); ok && c.lc != nil {
 		c.lc.Register(c.name, closer)
 	}
+	c.state.Store(&componentValue[T]{value: v})
 	return v, nil
 }
 
@@ -147,6 +161,14 @@ func NewComponentGroup[T any](baseType string, factoryFn func(name string) func(
 
 // Get 获取指定名称的实例，首次调用时创建 Component 并懒加载
 func (g *ComponentGroup[T]) Get(name string) (T, error) {
+	if g == nil {
+		var zero T
+		return zero, stderrors.New("component group is nil")
+	}
+	if g.factoryFn == nil {
+		var zero T
+		return zero, stderrors.New("component group factory is nil")
+	}
 	// 快速路径：读锁查询已创建的 Component
 	g.mu.RLock()
 	comp, ok := g.instances[name]

@@ -1,6 +1,7 @@
 package randompkg
 
 import (
+	"math"
 	"testing"
 	"unicode"
 
@@ -37,6 +38,13 @@ func TestRandomStringBoundary(t *testing.T) {
 	assert.Empty(t, Numeric(-1))
 	assert.Empty(t, String(8, ""))
 	assert.Empty(t, String(-1, CharsetAlphabet))
+}
+
+func TestCanonicalRandomStringNames(t *testing.T) {
+	assert.Len(t, AlphanumericString(8), 8)
+	assert.Len(t, Letters(8), 8)
+	assert.Len(t, Digits(8), 8)
+	assert.Len(t, StringFromCharset(8, "AB"), 8)
 }
 
 func TestLetter(t *testing.T) {
@@ -102,6 +110,26 @@ func TestIntBetween(t *testing.T) {
 		assert.GreaterOrEqual(t, result, 10)
 		assert.Less(t, result, 20)
 	}
+}
+
+func TestBetweenFullWidthDoesNotPanic(t *testing.T) {
+	assert.NotPanics(t, func() {
+		for range 100 {
+			got32 := Int32Between(math.MinInt32, math.MaxInt32)
+			assert.GreaterOrEqual(t, got32, int32(math.MinInt32))
+			assert.Less(t, got32, int32(math.MaxInt32))
+
+			got64 := Int64Between(math.MinInt64, math.MaxInt64)
+			assert.GreaterOrEqual(t, got64, int64(math.MinInt64))
+			assert.Less(t, got64, int64(math.MaxInt64))
+
+			maxInt := int(^uint(0) >> 1)
+			minInt := -maxInt - 1
+			gotInt := IntBetween(minInt, maxInt)
+			assert.GreaterOrEqual(t, gotInt, minInt)
+			assert.Less(t, gotInt, maxInt)
+		}
+	})
 }
 
 func TestName(t *testing.T) {

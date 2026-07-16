@@ -97,6 +97,11 @@ func TestCommonHeaderHelpers(t *testing.T) {
 	SetRequestID(header, "request-id")
 	assert.Equal(t, "request-id", GetRequestID(header))
 
-	SetIsWebsocket(header)
-	assert.True(t, GetIsWebsocket(header))
+	SetIsWebSocket(header)
+	assert.True(t, GetIsWebSocket(header))
+}
+
+func TestSetIsWebSocketHandlesNilHeader(t *testing.T) {
+	assert.NotPanics(t, func() { SetIsWebSocket(nil) })
+	assert.False(t, GetIsWebSocket(nil))
 }

@@ -1,0 +1,85 @@
+# 默认不对未声明类型做换行转换，避免误改 Excel、字体、词库等资源文件。
+* -text
+
+# Go / Protobuf
+*.go                 text eol=lf
+*.mod                text eol=lf
+*.sum                text eol=lf
+*.proto              text eol=lf
+
+# 配置与数据文本
+*.yaml               text eol=lf
+*.yml                text eol=lf
+*.json               text eol=lf
+*.toml               text eol=lf
+*.ini                text eol=lf
+*.cfg                text eol=lf
+*.conf               text eol=lf
+*.csv                text eol=lf
+*.sql                text eol=lf
+
+# 文档与图表文本
+*.md                 text eol=lf
+*.MD                 text eol=lf
+*.txt                text eol=lf
+*.puml               text eol=lf
+*.plantuml           text eol=lf
+
+# 脚本、构建与部署入口
+*.sh                 text eol=lf
+*.bash               text eol=lf
+*.zsh                text eol=lf
+*.mk                 text eol=lf
+*.bat                text eol=crlf
+*.cmd                text eol=crlf
+*.ps1                text eol=crlf
+Makefile             text eol=lf
+Dockerfile           text eol=lf
+Dockerfile-*         text eol=lf
+**/Dockerfile        text eol=lf
+**/Dockerfile.*      text eol=lf
+
+# 模板与前端静态资源
+*.tpl                text eol=lf
+*.tmpl               text eol=lf
+*.gotmpl             text eol=lf
+*.html               text eol=lf
+*.css                text eol=lf
+*.js                 text eol=lf
+*.ts                 text eol=lf
+*.vue                text eol=lf
+*.xml                text eol=lf
+
+# 生成文件：保留文本属性，同时标记为生成物，降低代码统计和 Review 噪音。
+*.pb.go              text eol=lf linguist-generated=true
+*_grpc.pb.go         text eol=lf linguist-generated=true
+*.pb.validate.go     text eol=lf linguist-generated=true
+*_errors.pb.go       text eol=lf linguist-generated=true
+*_errors_custom.pb.go text eol=lf linguist-generated=true
+*.swagger.json       text eol=lf linguist-generated=true
+openapi.yaml         text eol=lf linguist-generated=true
+
+# 常见二进制资源
+*.xlsx               binary
+*.xls                binary
+*.png                binary
+*.jpg                binary
+*.jpeg               binary
+*.gif                binary
+*.ico                binary
+*.webp               binary
+*.svg                text eol=lf
+*.ttf                binary
+*.otf                binary
+*.woff               binary
+*.woff2              binary
+*.zip                binary
+*.tar                binary
+*.gz                 binary
+*.xdb                binary
+
+# 仓库元文件
+.editorconfig        text eol=lf
+.gitattributes       text eol=lf
+.gitignore           text eol=lf
+.gitlab-ci.yml       text eol=lf

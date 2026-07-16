@@ -157,3 +157,52 @@ func TestUnzip_RejectsZipSlip(t *testing.T) {
 	_, err = os.Stat(filepath.Join(testdataDir, "evil.txt"))
 	assert.True(t, os.IsNotExist(err))
 }
+
+func TestUnzipCreatesImplicitParentDirectories(t *testing.T) {
+	root := t.TempDir()
+	zipPath := filepath.Join(root, "nested.zip")
+	file, err := os.Create(zipPath)
+	require.NoError(t, err)
+	zipWriter := zip.NewWriter(file)
+	entry, err := zipWriter.Create("nested/path/file.txt")
+	require.NoError(t, err)
+	_, err = entry.Write([]byte("nested"))
+	require.NoError(t, err)
+	require.NoError(t, zipWriter.Close())
+	require.NoError(t, file.Close())
+
+	dest := filepath.Join(root, "output")
+	require.NoError(t, Unzip(zipPath, dest))
+	content, err := os.ReadFile(filepath.Join(dest, "nested", "path", "file.txt"))
+	require.NoError(t, err)
+	assert.Equal(t, []byte("nested"), content)
+
+	require.Error(t, ExtractZipEntry(nil, dest))
+}
+
+func TestUnzipRejectsDestinationSymlinkEscape(t *testing.T) {
+	root := t.TempDir()
+	dest := filepath.Join(root, "output")
+	outside := filepath.Join(root, "outside")
+	require.NoError(t, os.MkdirAll(dest, 0o755))
+	require.NoError(t, os.MkdirAll(outside, 0o755))
+	if err := os.Symlink(outside, filepath.Join(dest, "nested")); err != nil {
+		t.Skipf("symlinks unavailable: %v", err)
+	}
+
+	zipPath := filepath.Join(root, "symlink-escape.zip")
+	file, err := os.Create(zipPath)
+	require.NoError(t, err)
+	zipWriter := zip.NewWriter(file)
+	entry, err := zipWriter.Create("nested/escape.txt")
+	require.NoError(t, err)
+	_, err = entry.Write([]byte("escape"))
+	require.NoError(t, err)
+	require.NoError(t, zipWriter.Close())
+	require.NoError(t, file.Close())
+
+	err = Unzip(zipPath, dest)
+	require.Error(t, err)
+	_, statErr := os.Stat(filepath.Join(outside, "escape.txt"))
+	assert.True(t, os.IsNotExist(statErr))
+}

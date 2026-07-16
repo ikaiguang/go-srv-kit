@@ -35,6 +35,9 @@ type Sender struct {
 }
 
 func (s *Sender) Validate() error {
+	if s == nil {
+		return fmt.Errorf("sender is nil")
+	}
 	if s.Issuer == "" {
 		s.Issuer = DefaultIssuer
 	}
@@ -56,6 +59,9 @@ type Message struct {
 }
 
 func (msg *Message) Validate() error {
+	if msg == nil {
+		return fmt.Errorf("message is nil")
+	}
 	if msg.From == "" {
 		return fmt.Errorf("from is required")
 	}
@@ -72,6 +78,9 @@ func (msg *Message) Validate() error {
 }
 
 func (msg *Message) EmailMessage() *gomail.Message {
+	if msg == nil {
+		return nil
+	}
 	content := gomail.NewMessage()
 	content.SetHeader("From", msg.From)
 	content.SetHeader("To", msg.To...)
@@ -104,6 +113,12 @@ type CodeMessage struct {
 }
 
 func SendCode(sender *Sender, msg *CodeMessage) error {
+	if sender == nil {
+		return fmt.Errorf("sender is nil")
+	}
+	if msg == nil || msg.Message == nil {
+		return fmt.Errorf("code message is nil")
+	}
 	if msg.Code == "" {
 		return fmt.Errorf("code is required")
 	}

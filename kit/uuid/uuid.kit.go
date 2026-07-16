@@ -9,13 +9,16 @@ import (
 
 // New ...
 func New() string {
+	return NewXID()
+}
+
+// NewXID returns a globally unique XID string.
+func NewXID() string {
 	return xid.New().String()
 }
 
-// NewUUID ...
-func NewUUID() string {
-	return xid.New().String()
-}
+// Deprecated: NewUUID returned an XID, not a UUID. Use NewXID instead.
+func NewUUID() string { return NewXID() }
 
 // NewWithTime ...
 func NewWithTime(t time.Time) string {
@@ -47,6 +50,10 @@ func Sort(ids []xid.ID) {
 	xid.Sort(ids)
 }
 
-func UUID() string {
-	return uuid.New().String()
+// NewRandomUUID returns a random RFC 4122 UUID string.
+func NewRandomUUID() string {
+	return uuid.NewString()
 }
+
+// Deprecated: use NewRandomUUID instead.
+func UUID() string { return NewRandomUUID() }

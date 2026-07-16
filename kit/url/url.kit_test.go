@@ -56,6 +56,12 @@ func TestGenRequestURL(t *testing.T) {
 	}
 }
 
+func TestBuildRequestURLNormalizesSeparator(t *testing.T) {
+	assert.Equal(t, "https://api.example.com/v1/users", BuildRequestURL("https://api.example.com/", "/v1/users"))
+	assert.Equal(t, "https://api.example.com/v1/users", BuildRequestURL("https://api.example.com", "v1/users"))
+	assert.Equal(t, "https://api.example.com/v1/users", GenRequestURL("https://api.example.com/", "/v1/users"))
+}
+
 // mockQueryParam 实现 QueryParamEncoder 接口
 type mockQueryParam struct {
 	values url.Values
@@ -64,6 +70,10 @@ type mockQueryParam struct {
 func (m *mockQueryParam) Encoder() url.Values {
 	return m.values
 }
+
+type nilFuncEncoder func() url.Values
+
+func (f nilFuncEncoder) Encoder() url.Values { return f() }
 
 func TestSplicingQueryParam(t *testing.T) {
 	t.Run("有参数", func(t *testing.T) {
@@ -83,4 +93,19 @@ func TestSplicingQueryParam(t *testing.T) {
 		result := SplicingQueryParam("https://api.example.com/users", req)
 		assert.Equal(t, "https://api.example.com/users", result)
 	})
+}
+
+func TestAppendQueryParamsMergesExistingQueryAndHandlesNil(t *testing.T) {
+	requestURL := "https://api.example.com/users?existing=1"
+	req := &mockQueryParam{values: url.Values{"page": {"2"}}}
+
+	got := AppendQueryParams(requestURL, req)
+	parsed, err := url.Parse(got)
+	assert.NoError(t, err)
+	assert.Equal(t, "1", parsed.Query().Get("existing"))
+	assert.Equal(t, "2", parsed.Query().Get("page"))
+	assert.Equal(t, requestURL, AppendQueryParams(requestURL, nil))
+	var nilFunc nilFuncEncoder
+	assert.Equal(t, requestURL, AppendQueryParams(requestURL, nilFunc))
+	assert.Equal(t, got, SplicingQueryParam(requestURL, req))
 }

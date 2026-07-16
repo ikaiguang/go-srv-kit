@@ -1,13 +1,59 @@
 package rotatelogs
 
 import (
+	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/jonboulle/clockwork"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestRotateLogsWriteLifecycle(t *testing.T) {
+	rl, err := New(filepath.Join(t.TempDir(), "app-%Y%m%d.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	n, err := rl.Write([]byte("first"))
+	if err != nil {
+		t.Fatalf("first write failed: %v", err)
+	}
+	if n != len("first") {
+		t.Fatalf("first write length = %d, want %d", n, len("first"))
+	}
+	if err := rl.Close(); err != nil {
+		t.Fatalf("close failed: %v", err)
+	}
+	if _, err := rl.Write([]byte("after-close")); !errors.Is(err, os.ErrClosed) {
+		t.Fatalf("write after close error = %v, want os.ErrClosed", err)
+	}
+	if err := rl.Rotate(); !errors.Is(err, os.ErrClosed) {
+		t.Fatalf("rotate after close error = %v, want os.ErrClosed", err)
+	}
+	if err := rl.Close(); err != nil {
+		t.Fatalf("second close should be idempotent: %v", err)
+	}
+}
+
+func TestRotateLogsClosePropagatesFileError(t *testing.T) {
+	rl, err := New(filepath.Join(t.TempDir(), "app-%Y%m%d.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := rl.Write([]byte("first")); err != nil {
+		t.Fatal(err)
+	}
+	if err := rl.outFh.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := rl.Close(); err == nil {
+		t.Fatal("expected Close to propagate the underlying file error")
+	}
+}
 
 func TestGenFilename(t *testing.T) {
 	// Mock time

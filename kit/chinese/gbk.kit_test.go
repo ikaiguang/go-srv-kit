@@ -10,15 +10,15 @@ import (
 func TestGbkToUtf8AndUtf8ToGbk(t *testing.T) {
 	src := []byte("中文测试")
 
-	gbkBytes, err := Utf8ToGbk(src)
+	gbkBytes, err := UTF8ToGBK(src)
 	require.NoError(t, err)
-	assert.False(t, IsUtf8(string(gbkBytes)))
+	assert.False(t, IsUTF8(string(gbkBytes)))
 	assert.True(t, IsGBK(string(gbkBytes)))
 
-	got, err := GbkToUtf8(gbkBytes)
+	got, err := GBKToUTF8(gbkBytes)
 	require.NoError(t, err)
 	assert.Equal(t, src, got)
-	assert.True(t, IsUtf8(string(got)))
+	assert.True(t, IsUTF8(string(got)))
 }
 
 func TestIsGBK(t *testing.T) {

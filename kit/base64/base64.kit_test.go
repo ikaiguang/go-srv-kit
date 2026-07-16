@@ -18,3 +18,11 @@ func TestBase64(t *testing.T) {
 
 	assert.Equal(t, src, decoded)
 }
+
+func TestStringHelpers(t *testing.T) {
+	encoded := EncodeToString([]byte("hello"))
+	decoded, err := DecodeString(encoded)
+	assert.NoError(t, err)
+	assert.Equal(t, []byte("hello"), decoded)
+	assert.Equal(t, encoded, ExampleEncodeToString([]byte("hello")))
+}

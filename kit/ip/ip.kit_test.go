@@ -15,7 +15,7 @@ func TestLocalIP(t *testing.T) {
 }
 
 func TestNewLocalIP(t *testing.T) {
-	ip := NewLocalIP()
+	ip := DetectLocalIP()
 	assert.NotEmpty(t, ip)
 	assert.True(t, IsValidIP(ip), "NewLocalIP 返回的应是有效 IP: %s", ip)
 }

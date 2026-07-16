@@ -84,6 +84,9 @@ func DecryptCBC(rawData string, key []byte) (res string, err error) {
 	}
 	iv := encryptData[:blockSize]
 	encryptData = encryptData[blockSize:]
+	if len(encryptData) == 0 {
+		return res, stderrors.New("cipherText contains no encrypted blocks")
+	}
 
 	// CBC mode always works in whole blocks.
 	if len(encryptData)%blockSize != 0 {

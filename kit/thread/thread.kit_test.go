@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type contextKey string
+
 // go test -v -count 1 ./kratos/thread -run TestGoSafe
 func TestGoSafe(t *testing.T) {
 	type args struct {
@@ -32,11 +34,12 @@ func TestGoSafe(t *testing.T) {
 }
 
 func TestGoSafeWithContext(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "key", "value")
+	const key contextKey = "key"
+	ctx := context.WithValue(context.Background(), key, "value")
 	done := make(chan string, 1)
 
 	GoSafeWithContext(ctx, func(ctx context.Context) {
-		done <- ctx.Value("key").(string)
+		done <- ctx.Value(key).(string)
 	})
 
 	select {
@@ -50,7 +53,7 @@ func TestGoSafeWithContext(t *testing.T) {
 func TestGoWithContextNilContext(t *testing.T) {
 	done := make(chan struct{}, 1)
 
-	GoWithContext(nil, func(ctx context.Context) {
+	GoWithContext(nil, func(ctx context.Context) { //nolint:staticcheck // verifies nil-context compatibility
 		require.NotNil(t, ctx)
 		done <- struct{}{}
 	})

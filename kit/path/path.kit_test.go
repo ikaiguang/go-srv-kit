@@ -9,7 +9,7 @@ import (
 
 // go test -v -count 1 ./kit/path -run TestPath
 func TestPath(t *testing.T) {
-	path := Path()
+	path := PackageDir()
 	t.Log("==> path :", path)
 	assert.NotEmpty(t, path, "Path() 不应返回空字符串")
 	assert.NotEqual(t, ".", path, "Path() 不应返回 '.'")

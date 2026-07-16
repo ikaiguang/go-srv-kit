@@ -9,7 +9,7 @@ import (
 
 func TestAesCipher(t *testing.T) {
 	key := []byte("1234567890ABCDEF")
-	cipher, err := NewAesCipher(key)
+	cipher, err := NewAESCipher(key)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func TestAesCipher(t *testing.T) {
 }
 
 func TestAesCipherDecryptInvalidCiphertext(t *testing.T) {
-	cipher, err := NewAesCipher([]byte("1234567890ABCDEF"))
+	cipher, err := NewAESCipher([]byte("1234567890ABCDEF"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +55,7 @@ func TestAesCipherDecryptInvalidCiphertext(t *testing.T) {
 }
 
 func BenchmarkAes(b *testing.B) {
-	aesCipher, err := NewAesCipher([]byte("ur38ifsewn8b49i9"))
+	aesCipher, err := NewAESCipher([]byte("ur38ifsewn8b49i9"))
 	if err != nil {
 		b.Fatal(err)
 	}

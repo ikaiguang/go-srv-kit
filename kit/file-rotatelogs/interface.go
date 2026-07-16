@@ -48,6 +48,7 @@ type RotateLogs struct {
 	rotationSize  int64
 	rotationCount uint
 	forceNewFile  bool
+	closed        bool
 }
 
 // Clock is the interface used by the RotateLogs

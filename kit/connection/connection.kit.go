@@ -1,6 +1,7 @@
 package connectionpkg
 
 import (
+	"errors"
 	"net"
 	"net/http"
 	"net/url"
@@ -22,15 +23,24 @@ func IsWebSocketConn(r *http.Request) bool {
 	//	r.Header.Get(headerpkg.WebsocketSecKey) != "" {
 	//	return true
 	//}
-	if strings.Contains(strings.ToLower(r.Header.Get("Connection")), "upgrade") &&
+	if headerContainsToken(r.Header.Get("Connection"), "upgrade") &&
 		strings.EqualFold(r.Header.Get("Upgrade"), "websocket") {
 		return true
 	}
 	return false
 }
 
-// CheckEndpointValidity ...
-func CheckEndpointValidity(endpoint string) (bool, error) {
+func headerContainsToken(value, target string) bool {
+	for _, token := range strings.Split(value, ",") {
+		if strings.EqualFold(strings.TrimSpace(token), target) {
+			return true
+		}
+	}
+	return false
+}
+
+// IsEndpointReachable reports whether the endpoint accepts a TCP connection.
+func IsEndpointReachable(endpoint string) (bool, error) {
 	if !strings.Contains(endpoint, "://") && !strings.HasPrefix(endpoint, "//") {
 		endpoint = "//" + endpoint
 	}
@@ -38,16 +48,29 @@ func CheckEndpointValidity(endpoint string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	addr := u.Host
-	if !strings.Contains(addr, ":") {
-		addr += ":80"
+	host := u.Hostname()
+	if host == "" {
+		return false, &url.Error{Op: "parse", URL: endpoint, Err: errors.New("endpoint host is empty")}
 	}
-	return IsValidConnection(addr)
+	port := u.Port()
+	if port == "" {
+		switch strings.ToLower(u.Scheme) {
+		case "https", "wss":
+			port = "443"
+		default:
+			port = "80"
+		}
+	}
+	return IsConnectionReachable(net.JoinHostPort(host, port))
 }
 
-// IsValidConnection 检查链接有效性
-// @param address: hostname + ":" + port
-func IsValidConnection(address string) (bool, error) {
+// Deprecated: use IsEndpointReachable instead.
+func CheckEndpointValidity(endpoint string) (bool, error) {
+	return IsEndpointReachable(endpoint)
+}
+
+// IsConnectionReachable reports whether address accepts a TCP connection.
+func IsConnectionReachable(address string) (bool, error) {
 	conn, err := net.DialTimeout("tcp", address, defaultDialTimeout)
 	if err != nil {
 		return false, err
@@ -55,4 +78,9 @@ func IsValidConnection(address string) (bool, error) {
 	defer func() { _ = conn.Close() }()
 
 	return true, nil
+}
+
+// Deprecated: use IsConnectionReachable instead.
+func IsValidConnection(address string) (bool, error) {
+	return IsConnectionReachable(address)
 }

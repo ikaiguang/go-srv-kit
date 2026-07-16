@@ -4,6 +4,7 @@ import (
 	"context"
 	stderrors "errors"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -24,7 +25,7 @@ func (s *local) Mutex(ctx context.Context, lockName string) (Unlocker, error) {
 	locker = lockerInterface.(*localLock)
 	if !locker.mu.TryLock() {
 		err := ErrorLockerFailed(lockName, stderrors.New("try lock failed"))
-		return locker, err
+		return nil, err
 	}
 	return locker, nil
 }
@@ -43,14 +44,12 @@ func (s *local) Once(ctx context.Context, lockName string) (Unlocker, error) {
 }
 
 func (s *local) Unlock(ctx context.Context, lockName string) {
-	lockerInterface, ok := s.sm.LoadAndDelete(lockName)
+	lockerInterface, ok := s.sm.Load(lockName)
 	if !ok {
 		return
 	}
 	locker := lockerInterface.(*localLock)
-	_ = locker.mu.TryLock()
 	_, _ = locker.Unlock(ctx)
-	return
 }
 
 // localLock ...
@@ -58,6 +57,7 @@ type localLock struct {
 	sm       *sync.Map
 	mu       *sync.Mutex
 	lockName string
+	released atomic.Bool
 }
 
 func newLocalLock(sm *sync.Map, mu *sync.Mutex, lockName string) *localLock {
@@ -70,9 +70,11 @@ func newLocalLock(sm *sync.Map, mu *sync.Mutex, lockName string) *localLock {
 
 // Unlock ...
 func (s *localLock) Unlock(ctx context.Context) (bool, error) {
-	_ = s.mu.TryLock()
+	if !s.released.CompareAndSwap(false, true) {
+		return false, nil
+	}
+	s.sm.CompareAndDelete(s.lockName, s)
 	s.mu.Unlock()
-	s.sm.Delete(s.lockName)
 	return true, nil
 }
 

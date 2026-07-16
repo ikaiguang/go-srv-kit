@@ -3,9 +3,16 @@ package curlpkg
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"io"
 	"net/http"
 	"time"
+)
+
+var (
+	errNilHTTPClient   = errors.New("http client is nil")
+	errNilHTTPRequest  = errors.New("http request is nil")
+	errNilHTTPResponse = errors.New("http response or body is nil")
 )
 
 const (
@@ -92,6 +99,9 @@ func NewHTTPClient(opts ...Option) *http.Client {
 		timeout: DefaultTimeout,
 	}
 	for _, o := range opts {
+		if o == nil {
+			continue
+		}
 		o(&options)
 	}
 
@@ -111,8 +121,13 @@ func NewHTTPClient(opts ...Option) *http.Client {
 
 // Do 请求
 func Do(httpReq *http.Request, opts ...Option) (httpCode int, bodyBytes []byte, err error) {
+	if httpReq == nil {
+		return 0, nil, errNilHTTPRequest
+	}
 	httpClient := NewHTTPClient(opts...)
-	defer httpClient.CloseIdleConnections()
+	if httpClient.Transport != nil {
+		defer httpClient.CloseIdleConnections()
+	}
 
 	httpResp, err := httpClient.Do(httpReq)
 	if err != nil {
@@ -125,6 +140,9 @@ func Do(httpReq *http.Request, opts ...Option) (httpCode int, bodyBytes []byte, 
 
 // Default http.DefaultClient
 func Default(httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
+	if httpReq == nil {
+		return 0, nil, errNilHTTPRequest
+	}
 	httpResp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
 		return httpCode, bodyBytes, err
@@ -136,6 +154,12 @@ func Default(httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) 
 
 // DoWithClient 请求一次后关闭连接
 func DoWithClient(httpClient *http.Client, httpReq *http.Request) (httpCode int, bodyBytes []byte, err error) {
+	if httpClient == nil {
+		return 0, nil, errNilHTTPClient
+	}
+	if httpReq == nil {
+		return 0, nil, errNilHTTPRequest
+	}
 	// 哪里开启，哪里关闭
 	//defer httpClient.CloseIdleConnections()
 
@@ -150,6 +174,9 @@ func DoWithClient(httpClient *http.Client, httpReq *http.Request) (httpCode int,
 
 // response
 func response(httpResp *http.Response) (httpCode int, bodyBytes []byte, err error) {
+	if httpResp == nil || httpResp.Body == nil {
+		return 0, nil, errNilHTTPResponse
+	}
 	//defer func() { _ = httpResp.Body.Close() }()
 
 	// resp

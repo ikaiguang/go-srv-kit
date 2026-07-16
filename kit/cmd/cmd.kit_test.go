@@ -12,7 +12,7 @@ import (
 )
 
 func TestExecShell(t *testing.T) {
-	got := ExecShell()
+	got := ShellCommandArgs()
 	require.NotEmpty(t, got)
 	if runtime.GOOS == "windows" {
 		assert.Equal(t, []string{"cmd.exe", "/C"}, got)
@@ -40,6 +40,24 @@ func TestRunCommandContext(t *testing.T) {
 	assert.Equal(t, "hello", strings.TrimSpace(string(got)))
 }
 
+func TestRunCommandContextHandlesNilContext(t *testing.T) {
+	var command string
+	var args []string
+	if runtime.GOOS == "windows" {
+		command = "cmd.exe"
+		args = []string{"/C", "echo hello"}
+	} else {
+		command = "sh"
+		args = []string{"-c", "printf hello"}
+	}
+
+	assert.NotPanics(t, func() {
+		got, err := RunCommandContext(nil, command, args) //nolint:staticcheck // verifies nil-context compatibility
+		require.NoError(t, err)
+		assert.Equal(t, "hello", strings.TrimSpace(string(got)))
+	})
+}
+
 func TestRunCommandWithWorkDirContext(t *testing.T) {
 	ctx := context.Background()
 	workDir := t.TempDir()
@@ -54,7 +72,7 @@ func TestRunCommandWithWorkDirContext(t *testing.T) {
 		command = "pwd"
 	}
 
-	got, err := RunCommandWithWorkDirContext(ctx, workDir, command, args)
+	got, err := RunCommandInDirContext(ctx, workDir, command, args)
 	require.NoError(t, err)
 	assert.Equal(t, workDir, strings.TrimSpace(string(got)))
 }

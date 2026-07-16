@@ -1,6 +1,7 @@
 package pagepkg
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -58,6 +59,17 @@ func TestPaginate_NilSafety(t *testing.T) {
 	assert.Equal(t, uint32(3), resp.TotalPage)
 
 	assert.Equal(t, uint32(1), CalcShowFrom(0, 0))
+}
+
+func TestConvertToPageOptionNormalizesZeroPage(t *testing.T) {
+	opt := ConvertToPageOption(&PageRequest{Page: 0, PageSize: 10})
+	assert.Equal(t, 10, opt.Limit)
+	assert.Equal(t, 0, opt.Offset)
+}
+
+func TestPageDisplayBoundsDoNotOverflow(t *testing.T) {
+	assert.Equal(t, uint32(math.MaxUint32), CalcShowFrom(math.MaxUint32, math.MaxUint32))
+	assert.Equal(t, uint32(math.MaxUint32), CalcShowTo(math.MaxUint32-1, 10))
 }
 
 // go test -v -count 1 ./kit/page -run TestPaginate_ParsePageRequest

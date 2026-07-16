@@ -3,7 +3,7 @@ package rotatelogs
 import (
 	"time"
 
-	"github.com/lestrrat-go/file-rotatelogs/internal/option"
+	"github.com/ikaiguang/go-srv-kit/kit/file-rotatelogs/internal/option"
 )
 
 const (
@@ -82,7 +82,7 @@ func WithHandler(h Handler) Option {
 }
 
 // ForceNewFile ensures a new file is created every time New()
-// is called. If the base file name already exists, an implicit 
+// is called. If the base file name already exists, an implicit
 // rotation is performed
 func ForceNewFile() Option {
 	return option.New(optkeyForceNewFile, true)

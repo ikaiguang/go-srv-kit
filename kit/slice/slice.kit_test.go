@@ -16,6 +16,19 @@ func TestReverse(t *testing.T) {
 	t.Log(s)
 }
 
+func TestReverseDeprecatedInvalidInputDoesNotPanic(t *testing.T) {
+	for _, input := range []any{nil, 42, "not a slice", [2]int{1, 2}} {
+		func() {
+			defer func() {
+				if recovered := recover(); recovered != nil {
+					t.Fatalf("Reverse(%T) panicked: %v", input, recovered)
+				}
+			}()
+			Reverse(input)
+		}()
+	}
+}
+
 func TestReverseSlice(t *testing.T) {
 	t.Run("int切片反转", func(t *testing.T) {
 		s := []int{1, 2, 3, 4, 5}

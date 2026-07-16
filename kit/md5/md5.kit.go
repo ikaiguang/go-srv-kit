@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-// Md5 .
-func Md5(bodyBytes []byte) (res string, err error) {
+// MD5 returns the MD5 digest of bodyBytes as lowercase hexadecimal.
+func MD5(bodyBytes []byte) (res string, err error) {
 	handler := md5.New()
 	_, err = handler.Write(bodyBytes)
 	if err != nil {
@@ -18,8 +18,8 @@ func Md5(bodyBytes []byte) (res string, err error) {
 	return res, err
 }
 
-// FileMd5 获取文件的MD5
-func FileMd5(path string) (string, error) {
+// FileMD5 returns the MD5 digest of a file as lowercase hexadecimal.
+func FileMD5(path string) (string, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return "", err
@@ -34,3 +34,9 @@ func FileMd5(path string) (string, error) {
 
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
+
+// Deprecated: use MD5 instead.
+func Md5(bodyBytes []byte) (string, error) { return MD5(bodyBytes) }
+
+// Deprecated: use FileMD5 instead.
+func FileMd5(path string) (string, error) { return FileMD5(path) }

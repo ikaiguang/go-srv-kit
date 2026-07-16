@@ -8,6 +8,9 @@ import (
 // 注意：Reverse 使用 reflect，性能较差且缺乏编译期类型检查。
 func Reverse(slice interface{}) {
 	reflectValue := reflect.ValueOf(slice)
+	if !reflectValue.IsValid() || reflectValue.Kind() != reflect.Slice {
+		return
+	}
 
 	swap := reflect.Swapper(slice)
 

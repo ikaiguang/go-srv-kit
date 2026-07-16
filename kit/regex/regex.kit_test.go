@@ -26,7 +26,7 @@ func TestIsPhone(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, IsPhone(tt.phone))
+			assert.Equal(t, tt.want, IsChineseMainlandMobile(tt.phone))
 		})
 	}
 }
@@ -72,7 +72,7 @@ func TestIsIDCard(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, IsIDCard(tt.id))
+			assert.Equal(t, tt.want, IsChineseCitizenIDFormat(tt.id))
 		})
 	}
 }
@@ -93,7 +93,7 @@ func TestIsPostCode(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, IsPostCode(tt.code))
+			assert.Equal(t, tt.want, IsChinesePostalCode(tt.code))
 		})
 	}
 }

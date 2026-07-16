@@ -28,7 +28,8 @@ func (s *cleanup) Cleanup() {
 	s.cleanupList = nil
 }
 
-func Merge(cleanupManager CleanupManager, cleanup func(), err error) (CleanupManager, error) {
+// AppendOrCleanup registers cleanup after success or rolls back on err.
+func AppendOrCleanup(cleanupManager CleanupManager, cleanup func(), err error) (CleanupManager, error) {
 	if cleanupManager == nil {
 		cleanupManager = NewCleanupManager()
 	}
@@ -38,4 +39,9 @@ func Merge(cleanupManager CleanupManager, cleanup func(), err error) (CleanupMan
 	}
 	cleanupManager.Append(cleanup)
 	return cleanupManager, nil
+}
+
+// Deprecated: use AppendOrCleanup instead.
+func Merge(cleanupManager CleanupManager, cleanup func(), err error) (CleanupManager, error) {
+	return AppendOrCleanup(cleanupManager, cleanup, err)
 }

@@ -2,11 +2,69 @@ package componentpkg
 
 import (
 	"fmt"
+	"io"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"testing/quick"
+	"time"
 )
+
+type closerFunc func() error
+
+func (f closerFunc) Close() error { return f() }
+
+func TestLifecycleCloseAllowsReentrantRegister(t *testing.T) {
+	lc := newLifecycle()
+	lc.Register("reentrant", closerFunc(func() error {
+		lc.Register("late", closerFunc(func() error { return nil }))
+		return nil
+	}))
+
+	done := make(chan error, 1)
+	go func() { done <- lc.Close() }()
+
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(200 * time.Millisecond):
+		t.Fatal("Lifecycle.Close deadlocked while a closer registered another resource")
+	}
+}
+
+func TestComponentGetHandlesOptionalDependencies(t *testing.T) {
+	t.Run("nil lifecycle", func(t *testing.T) {
+		component := NewComponent("closer", func() (io.Closer, error) {
+			return closerFunc(func() error { return nil }), nil
+		}, nil)
+		if _, err := component.Get(); err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	t.Run("nil factory", func(t *testing.T) {
+		component := NewComponent[int]("missing", nil, newLifecycle())
+		if _, err := component.Get(); err == nil {
+			t.Fatal("expected an error for a nil component factory")
+		}
+	})
+
+	t.Run("nil component", func(t *testing.T) {
+		var component *Component[int]
+		if _, err := component.Get(); err == nil {
+			t.Fatal("expected an error for a nil component")
+		}
+	})
+
+	t.Run("nil component group", func(t *testing.T) {
+		var group *ComponentGroup[int]
+		if _, err := group.Get("missing"); err == nil {
+			t.Fatal("expected an error for a nil component group")
+		}
+	})
+}
 
 // closableValue 实现 Closer 接口的测试值，用于验证自动注册到 Lifecycle
 type closableValue struct {

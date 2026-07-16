@@ -84,3 +84,24 @@ func TestLocal_LockMutex(t *testing.T) {
 		_, _ = unlock2.Unlock(ctx)
 	})
 }
+
+func TestLocal_StaleUnlockDoesNotReleaseNewOwner(t *testing.T) {
+	locker := NewLocalLocker()
+	ctx := context.Background()
+	name := localKeyName + "_stale"
+
+	stale, err := locker.Once(ctx, name)
+	require.NoError(t, err)
+	_, err = stale.Unlock(ctx)
+	require.NoError(t, err)
+
+	current, err := locker.Mutex(ctx, name)
+	require.NoError(t, err)
+	t.Cleanup(func() { _, _ = current.Unlock(ctx) })
+
+	_, err = stale.Unlock(ctx)
+	require.NoError(t, err)
+
+	_, err = locker.Mutex(ctx, name)
+	require.Error(t, err, "a stale unlocker must not remove the current owner")
+}

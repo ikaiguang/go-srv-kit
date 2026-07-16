@@ -15,7 +15,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewUUID(t *testing.T) {
-	id := NewUUID()
+	id := NewXID()
 	assert.NotEmpty(t, id)
 	assert.Equal(t, 20, len(id))
 }
@@ -23,7 +23,7 @@ func TestNewUUID(t *testing.T) {
 func TestNewUUID_Uniqueness(t *testing.T) {
 	ids := make(map[string]struct{}, 10000)
 	for i := 0; i < 10000; i++ {
-		id := NewUUID()
+		id := NewXID()
 		_, exists := ids[id]
 		assert.False(t, exists, "生成了重复 ID: %s", id)
 		ids[id] = struct{}{}
@@ -94,7 +94,7 @@ func TestSort(t *testing.T) {
 }
 
 func TestUUID(t *testing.T) {
-	id := UUID()
+	id := NewRandomUUID()
 	assert.NotEmpty(t, id)
 	// UUID v4 格式: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 	assert.Equal(t, 36, len(id), "UUID 长度应为 36")
@@ -107,7 +107,7 @@ func TestUUID(t *testing.T) {
 func TestUUID_Uniqueness(t *testing.T) {
 	ids := make(map[string]struct{}, 1000)
 	for i := 0; i < 1000; i++ {
-		id := UUID()
+		id := NewRandomUUID()
 		_, exists := ids[id]
 		assert.False(t, exists, "生成了重复 UUID: %s", id)
 		ids[id] = struct{}{}

@@ -91,7 +91,7 @@ func New(p string, options ...Option) (*RotateLogs, error) {
 		maxAge:        maxAge,
 		pattern:       pattern,
 		rotationTime:  rotationTime,
-		rotationSize: rotationSize,
+		rotationSize:  rotationSize,
 		rotationCount: rotationCount,
 		forceNewFile:  forceNewFile,
 	}, nil
@@ -129,6 +129,9 @@ func (rl *RotateLogs) Write(p []byte) (n int, err error) {
 	// Guard against concurrent writes
 	rl.mutex.Lock()
 	defer rl.mutex.Unlock()
+	if rl.closed {
+		return 0, os.ErrClosed
+	}
 
 	out, err := rl.getWriter_nolock(false, false)
 	if err != nil {
@@ -218,7 +221,10 @@ func (rl *RotateLogs) getWriter_nolock(bailOnRotateFail, useGenerationalNames bo
 		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 	}
 
-	rl.outFh.Close()
+	var closeErr error
+	if rl.outFh != nil {
+		closeErr = rl.outFh.Close()
+	}
 	rl.outFh = fh
 	rl.curBaseFn = baseFn
 	rl.curFn = filename
@@ -229,6 +235,9 @@ func (rl *RotateLogs) getWriter_nolock(bailOnRotateFail, useGenerationalNames bo
 			prev:    previousFn,
 			current: filename,
 		})
+	}
+	if closeErr != nil {
+		return nil, errors.Wrap(closeErr, "failed to close previous log file")
 	}
 	return fh, nil
 }
@@ -271,6 +280,9 @@ func (g *cleanupGuard) Run() {
 func (rl *RotateLogs) Rotate() error {
 	rl.mutex.Lock()
 	defer rl.mutex.Unlock()
+	if rl.closed {
+		return os.ErrClosed
+	}
 	if _, err := rl.getWriter_nolock(true, true); err != nil {
 		return err
 	}
@@ -293,8 +305,6 @@ func (rl *RotateLogs) rotate_nolock(filename string) error {
 	defer guard.Run()
 
 	if rl.linkName != "" {
-		tmpLinkName := filename + `_symlink`
-
 		// Change how the link name is generated based on where the
 		// target location is. if the location is directly underneath
 		// the main filename's parent directory, then we create a
@@ -303,17 +313,14 @@ func (rl *RotateLogs) rotate_nolock(filename string) error {
 		linkDir := filepath.Dir(rl.linkName)
 
 		baseDir := filepath.Dir(filename)
-		if strings.Contains(rl.linkName, baseDir) {
+		linkDirFromBase, relErr := filepath.Rel(baseDir, linkDir)
+		if relErr == nil && linkDirFromBase != ".." && !strings.HasPrefix(linkDirFromBase, ".."+string(os.PathSeparator)) {
 			tmp, err := filepath.Rel(linkDir, filename)
 			if err != nil {
 				return errors.Wrapf(err, `failed to evaluate relative path from %#v to %#v`, baseDir, rl.linkName)
 			}
 
 			linkDest = tmp
-		}
-
-		if err := os.Symlink(linkDest, tmpLinkName); err != nil {
-			return errors.Wrap(err, `failed to create new symlink`)
 		}
 
 		// the directory where rl.linkName should be created must exist
@@ -324,7 +331,16 @@ func (rl *RotateLogs) rotate_nolock(filename string) error {
 			}
 		}
 
+		// Keep the temporary link in linkDir so the final rename remains on
+		// the same filesystem even when logs and the stable link differ.
+		tmpLinkName := filepath.Join(linkDir, "."+filepath.Base(rl.linkName)+"_symlink")
+		_ = os.Remove(tmpLinkName)
+		if err := os.Symlink(linkDest, tmpLinkName); err != nil {
+			return errors.Wrap(err, `failed to create new symlink`)
+		}
+
 		if err := os.Rename(tmpLinkName, rl.linkName); err != nil {
+			_ = os.Remove(tmpLinkName)
 			return errors.Wrap(err, `failed to rename new symlink`)
 		}
 	}
@@ -396,12 +412,16 @@ func (rl *RotateLogs) rotate_nolock(filename string) error {
 func (rl *RotateLogs) Close() error {
 	rl.mutex.Lock()
 	defer rl.mutex.Unlock()
+	if rl.closed {
+		return nil
+	}
+	rl.closed = true
 
 	if rl.outFh == nil {
 		return nil
 	}
 
-	rl.outFh.Close()
+	err := rl.outFh.Close()
 	rl.outFh = nil
-	return nil
+	return err
 }

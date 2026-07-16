@@ -30,6 +30,9 @@ func NewClient(sender Sender) (Client, error) {
 }
 
 func (s *client) Send(message *Message) error {
+	if s == nil || s.dialer == nil {
+		return fmt.Errorf("email client is nil")
+	}
 	if err := message.Validate(); err != nil {
 		return err
 	}
@@ -37,6 +40,9 @@ func (s *client) Send(message *Message) error {
 }
 
 func (s *client) SendCode(message *CodeMessage) error {
+	if s == nil || s.conf == nil || message == nil || message.Message == nil {
+		return fmt.Errorf("code message or email client is nil")
+	}
 	if message.Code == "" {
 		return fmt.Errorf("code is required")
 	}
@@ -72,10 +78,16 @@ func DefaultClient(sender Sender) (Client, error) {
 }
 
 func (s *defaultClient) Send(message *Message) error {
+	if s == nil {
+		return fmt.Errorf("email client is nil")
+	}
 	return Send(s.sender, message)
 }
 
 func (s *defaultClient) SendCode(message *CodeMessage) error {
+	if s == nil {
+		return fmt.Errorf("email client is nil")
+	}
 	return SendCode(s.sender, message)
 }
 

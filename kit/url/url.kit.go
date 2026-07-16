@@ -2,9 +2,8 @@ package urlpkg
 
 import (
 	"net/url"
+	"reflect"
 	"strings"
-
-	"github.com/valyala/bytebufferpool"
 )
 
 func Encode(raw string) string {
@@ -14,9 +13,20 @@ func EncodeValues(values url.Values) string {
 	return Encode(values.Encode())
 }
 
-// GenRequestURL 拼接请求 URL
+// BuildRequestURL joins an endpoint and API path with one separator.
+func BuildRequestURL(endpoint, apiPath string) string {
+	if endpoint == "" {
+		return apiPath
+	}
+	if apiPath == "" {
+		return endpoint
+	}
+	return strings.TrimRight(endpoint, "/") + "/" + strings.TrimLeft(apiPath, "/")
+}
+
+// Deprecated: use BuildRequestURL instead.
 func GenRequestURL(endpoint, apiPath string) string {
-	return endpoint + apiPath
+	return BuildRequestURL(endpoint, apiPath)
 }
 
 // QueryParamEncoder ...
@@ -24,20 +34,40 @@ type QueryParamEncoder interface {
 	Encoder() url.Values
 }
 
-// SplicingQueryParam 输出例子：a=1&b=xxx
-func SplicingQueryParam(requestURL string, req QueryParamEncoder) string {
+// AppendQueryParams merges encoded parameters into an existing request URL.
+func AppendQueryParams(requestURL string, req QueryParamEncoder) string {
+	if req == nil || isNilEncoder(req) {
+		return requestURL
+	}
 	param := req.Encoder()
 	if len(param) == 0 {
 		return requestURL
 	}
-	paramString := param.Encode()
-	paramString = strings.Replace(paramString, "+", "%20", -1)
+	parsed, err := url.Parse(requestURL)
+	if err != nil {
+		return requestURL
+	}
+	query := parsed.Query()
+	for key, values := range param {
+		for _, value := range values {
+			query.Add(key, value)
+		}
+	}
+	parsed.RawQuery = EncodeValues(query)
+	return parsed.String()
+}
 
-	buf := bytebufferpool.Get()
-	defer bytebufferpool.Put(buf)
+func isNilEncoder(req QueryParamEncoder) bool {
+	v := reflect.ValueOf(req)
+	switch v.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+		return v.IsNil()
+	default:
+		return false
+	}
+}
 
-	buf.WriteString(requestURL)
-	buf.WriteString("?")
-	buf.WriteString(paramString)
-	return buf.String()
+// Deprecated: use AppendQueryParams instead.
+func SplicingQueryParam(requestURL string, req QueryParamEncoder) string {
+	return AppendQueryParams(requestURL, req)
 }

@@ -1,11 +1,42 @@
 package idpkg
 
 import (
+	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+type testSnowflake struct {
+	next atomic.Uint64
+}
+
+func (s *testSnowflake) NextID() (uint64, error) {
+	return s.next.Add(1), nil
+}
+
+func TestConcurrentSetNodeAndNextID(t *testing.T) {
+	original := nodeHandler
+	t.Cleanup(func() { SetNode(original) })
+
+	var wg sync.WaitGroup
+	for range 8 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for range 1000 {
+				SetNode(&testSnowflake{})
+				if _, err := NextID(); err != nil {
+					t.Errorf("NextID: %v", err)
+					return
+				}
+			}
+		}()
+	}
+	wg.Wait()
+}
 
 // ===== Benchmark =====
 // BenchmarkNew_BwmarrinSnowflake-8		76981             15611 ns/op               0 B/op          0 allocs/op
@@ -63,18 +94,18 @@ func TestMy_NextID(t *testing.T) {
 }
 
 func TestIPV4ToNodeID(t *testing.T) {
-	got, err := IPV4ToNodeID("192.168.1.2")
+	got, err := IPv4ToNodeID("192.168.1.2")
 	require.NoError(t, err)
 	assert.Equal(t, uint16(258), got)
 
-	got, err = IPV4ToNodeID("192.168.255.255")
+	got, err = IPv4ToNodeID("192.168.255.255")
 	require.NoError(t, err)
 	assert.Equal(t, uint16(snowflakeMaxNode), got)
 
-	_, err = IPV4ToNodeID("2001:db8::1")
+	_, err = IPv4ToNodeID("2001:db8::1")
 	require.Error(t, err)
 
-	_, err = IPV4ToNodeID("invalid")
+	_, err = IPv4ToNodeID("invalid")
 	require.Error(t, err)
 }
 
@@ -87,4 +118,21 @@ func TestNewBwmarrinSnowflakeNodeRange(t *testing.T) {
 
 	_, err = NewBwmarrinSnowflake(-1)
 	require.Error(t, err)
+}
+
+func TestConcurrentNewBwmarrinSnowflake(t *testing.T) {
+	var wg sync.WaitGroup
+	for i := range 16 {
+		wg.Add(1)
+		go func(nodeID int) {
+			defer wg.Done()
+			for range 100 {
+				if _, err := NewBwmarrinSnowflake(int64(nodeID)); err != nil {
+					t.Errorf("NewBwmarrinSnowflake: %v", err)
+					return
+				}
+			}
+		}(i)
+	}
+	wg.Wait()
 }

@@ -9,49 +9,29 @@ import (
 	"strconv"
 )
 
-// Deprecated: 函数名未明确指示使用的哈希算法（实际使用 MD5）。请使用 Md5 替代。
+// Deprecated: 函数名未明确指示使用的哈希算法（实际使用 MD5）。请使用 MD5 替代。
 func Hash(filePath string) (string, int64, error) {
-	f, err := os.Open(filePath)
-	if err != nil {
-		return "", 0, err
-	}
-	defer func() { _ = f.Close() }()
-
-	return HashFromFile(f)
+	return MD5(filePath)
 }
 
-// Deprecated: 函数名未明确指示使用的哈希算法（实际使用 MD5）。请使用 Md5FromFile 替代。
+// Deprecated: 函数名未明确指示使用的哈希算法（实际使用 MD5）。请使用 MD5FromReader 替代。
 func HashFromFile(f io.Reader) (string, int64, error) {
-	hash := md5.New()
-	buf := make([]byte, 1<<20)
-	var size int64 = 0
-	for {
-		n, err := f.Read(buf)
-		if err != nil && err != io.EOF {
-			return "", 0, err
-		}
-		if n == 0 {
-			break
-		}
-		hash.Write(buf[:n])
-		size += int64(n)
-	}
-	return hex.EncodeToString(hash.Sum(nil)), size, nil
+	return MD5FromReader(f)
 }
 
-// Md5 return md5, size, err
-func Md5(filePath string) (string, int64, error) {
+// MD5 returns the MD5 digest and size of a file.
+func MD5(filePath string) (string, int64, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return "", 0, err
 	}
 	defer func() { _ = f.Close() }()
 
-	return Md5FromFile(f)
+	return MD5FromReader(f)
 }
 
-// Md5FromFile return md5, size, err
-func Md5FromFile(f io.Reader) (string, int64, error) {
+// MD5FromReader returns the MD5 digest and number of bytes read.
+func MD5FromReader(f io.Reader) (string, int64, error) {
 	h := md5.New()
 	size, err := io.Copy(h, f)
 	if err != nil {
@@ -60,8 +40,8 @@ func Md5FromFile(f io.Reader) (string, int64, error) {
 	return hex.EncodeToString(h.Sum(nil)), size, nil
 }
 
-// Sha256FromFile return hash, size, err
-func Sha256FromFile(f io.Reader) (string, int64, error) {
+// SHA256FromReader returns the SHA-256 digest and number of bytes read.
+func SHA256FromReader(f io.Reader) (string, int64, error) {
 	h := sha256.New()
 	size, err := io.Copy(h, f)
 	if err != nil {
@@ -70,16 +50,28 @@ func Sha256FromFile(f io.Reader) (string, int64, error) {
 	return hex.EncodeToString(h.Sum(nil)), size, nil
 }
 
-// Sha256 return hash, size, err
-func Sha256(filePath string) (string, int64, error) {
+// SHA256 returns the SHA-256 digest and size of a file.
+func SHA256(filePath string) (string, int64, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return "", 0, err
 	}
 	defer func() { _ = f.Close() }()
 
-	return Sha256FromFile(f)
+	return SHA256FromReader(f)
 }
+
+// Deprecated: use MD5 instead.
+func Md5(filePath string) (string, int64, error) { return MD5(filePath) }
+
+// Deprecated: use MD5FromReader instead.
+func Md5FromFile(f io.Reader) (string, int64, error) { return MD5FromReader(f) }
+
+// Deprecated: use SHA256FromReader instead.
+func Sha256FromFile(f io.Reader) (string, int64, error) { return SHA256FromReader(f) }
+
+// Deprecated: use SHA256 instead.
+func Sha256(filePath string) (string, int64, error) { return SHA256(filePath) }
 
 // Identifier return hash + "-" + size
 // md5(32)+size(19)=51; sha256(64)碰撞概率非常低
@@ -88,7 +80,7 @@ func Identifier(hash string, size int64) string {
 	return hash + "-" + strconv.FormatInt(size, 10)
 }
 
-// Deprecated: 请使用 Md5() + Identifier() 组合替代。
+// Deprecated: 请使用 MD5() + Identifier() 组合替代。
 func HashIdentifier(filePath string) (string, int64, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -100,9 +92,9 @@ func HashIdentifier(filePath string) (string, int64, error) {
 }
 
 // HashIdentifierFromFile ...
-// Deprecated: 请使用 Md5FromFile() + Identifier() 组合替代。
+// Deprecated: 请使用 MD5FromReader() + Identifier() 组合替代。
 func HashIdentifierFromFile(f io.Reader) (string, int64, error) {
-	hash, size, err := HashFromFile(f)
+	hash, size, err := MD5FromReader(f)
 	if err != nil {
 		return "", size, err
 	}

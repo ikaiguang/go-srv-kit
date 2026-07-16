@@ -11,11 +11,14 @@ const (
 	WindowsShellBin string = "cmd.exe /C" // windows
 )
 
-// ExecShell 执行二进制
-func ExecShell() []string {
+// ShellCommandArgs returns the platform shell executable and command flag.
+func ShellCommandArgs() []string {
 	shellBin := LinuxShellBin
 	if runtime.GOOS == "windows" {
 		shellBin = WindowsShellBin
 	}
 	return strings.Split(strings.TrimSpace(shellBin), " ")
 }
+
+// Deprecated: use ShellCommandArgs instead.
+func ExecShell() []string { return ShellCommandArgs() }

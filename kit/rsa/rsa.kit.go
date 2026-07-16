@@ -9,7 +9,7 @@ import (
 	"encoding/pem"
 	"errors"
 
-	base64util "github.com/ikaiguang/go-kit/base64"
+	base64util "github.com/ikaiguang/go-srv-kit/kit/base64"
 )
 
 // Encryptor ...
@@ -18,8 +18,8 @@ type Encryptor interface {
 	DecryptToString(ciphertext string) (string, error)
 }
 
-// GenRsaKey RSA公钥私钥产生（2048位）
-func GenRsaKey() ([]byte, []byte, error) {
+// GenerateRSAKey generates a 2048-bit RSA private and public key pair.
+func GenerateRSAKey() ([]byte, []byte, error) {
 	// 私钥
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
@@ -47,8 +47,8 @@ func GenRsaKey() ([]byte, []byte, error) {
 	return priKeyBytes, pubKeyBytes, nil
 }
 
-// ParserPublicKey 解析公钥
-func ParserPublicKey(key []byte) (*rsa.PublicKey, error) {
+// ParsePublicKey parses a PKIX PEM-encoded RSA public key.
+func ParsePublicKey(key []byte) (*rsa.PublicKey, error) {
 	block, _ := pem.Decode(key)
 	if block == nil || block.Type != "PUBLIC KEY" {
 		return nil, errors.New("failed to decode PEM block containing public key")
@@ -64,8 +64,8 @@ func ParserPublicKey(key []byte) (*rsa.PublicKey, error) {
 	return pub, nil
 }
 
-// ParserPrivateKey 解析私钥
-func ParserPrivateKey(key []byte) (*rsa.PrivateKey, error) {
+// ParsePrivateKey parses a PKCS#1 PEM-encoded RSA private key.
+func ParsePrivateKey(key []byte) (*rsa.PrivateKey, error) {
 	block, _ := pem.Decode(key)
 	if block == nil || block.Type != "RSA PRIVATE KEY" {
 		return nil, errors.New("failed to decode PEM block containing private key")
@@ -83,8 +83,8 @@ type RsaCipher struct {
 	privateKey *rsa.PrivateKey
 }
 
-// NewRsaCipher rsa加解密
-func NewRsaCipher(pubKey, priKey []byte) (*RsaCipher, error) {
+// NewRSACipher creates an RSA cipher from PEM-encoded keys.
+func NewRSACipher(pubKey, priKey []byte) (*RsaCipher, error) {
 	r := &RsaCipher{}
 	err := r.parsePriKey(priKey)
 	if err != nil {
@@ -97,8 +97,8 @@ func NewRsaCipher(pubKey, priKey []byte) (*RsaCipher, error) {
 	return r, nil
 }
 
-// NewRsaCipherBase64 rsa加解密
-func NewRsaCipherBase64(pubKeyBase64, priKeyBase64 []byte) (*RsaCipher, error) {
+// NewRSACipherBase64 creates an RSA cipher from base64-encoded PEM keys.
+func NewRSACipherBase64(pubKeyBase64, priKeyBase64 []byte) (*RsaCipher, error) {
 	pubKey, err := base64util.Decode(pubKeyBase64)
 	if err != nil {
 		return nil, err
@@ -107,11 +107,11 @@ func NewRsaCipherBase64(pubKeyBase64, priKeyBase64 []byte) (*RsaCipher, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewRsaCipher(pubKey, priKey)
+	return NewRSACipher(pubKey, priKey)
 }
 
 func (r *RsaCipher) parsePubKey(pubKey []byte) error {
-	publicKey, err := ParserPublicKey(pubKey)
+	publicKey, err := ParsePublicKey(pubKey)
 	if err != nil {
 		return err
 	}
@@ -120,12 +120,31 @@ func (r *RsaCipher) parsePubKey(pubKey []byte) error {
 }
 
 func (r *RsaCipher) parsePriKey(priKey []byte) error {
-	privateKey, err := ParserPrivateKey(priKey)
+	privateKey, err := ParsePrivateKey(priKey)
 	if err != nil {
 		return err
 	}
 	r.privateKey = privateKey
 	return nil
+}
+
+// Deprecated: use GenerateRSAKey instead.
+func GenRsaKey() ([]byte, []byte, error) { return GenerateRSAKey() }
+
+// Deprecated: use ParsePublicKey instead.
+func ParserPublicKey(key []byte) (*rsa.PublicKey, error) { return ParsePublicKey(key) }
+
+// Deprecated: use ParsePrivateKey instead.
+func ParserPrivateKey(key []byte) (*rsa.PrivateKey, error) { return ParsePrivateKey(key) }
+
+// Deprecated: use NewRSACipher instead.
+func NewRsaCipher(pubKey, priKey []byte) (*RsaCipher, error) {
+	return NewRSACipher(pubKey, priKey)
+}
+
+// Deprecated: use NewRSACipherBase64 instead.
+func NewRsaCipherBase64(pubKeyBase64, priKeyBase64 []byte) (*RsaCipher, error) {
+	return NewRSACipherBase64(pubKeyBase64, priKeyBase64)
 }
 
 func (r *RsaCipher) Encrypt(plainText []byte) ([]byte, error) {

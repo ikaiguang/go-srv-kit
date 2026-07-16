@@ -3,6 +3,7 @@ package idpkg
 import (
 	stderrors "errors"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/bwmarrin/snowflake"
@@ -15,7 +16,10 @@ const (
 )
 
 var (
-	DefaultEpoch = time.Date(2026, 1, 1, 0, 0, 0, 0, time.Local)
+	// use SetDefaultEpoch and DefaultEpochValue for synchronized access.
+	defaultEpoch = time.Date(2026, 1, 1, 0, 0, 0, 0, time.Local)
+
+	snowflakeConfigMu sync.Mutex
 )
 
 type Snowflake interface {
@@ -27,17 +31,33 @@ type bwmarrinSnowflake struct {
 }
 
 func NewBwmarrinSnowflake(nodeid int64) (Snowflake, error) {
-	snowflake.Epoch = DefaultEpoch.UnixMilli()
-	snowflake.NodeBits = snowflakeNodeBits
-	snowflake.StepBits = snowflakeStepBits
 	if nodeid < 0 || nodeid > snowflakeMaxNode {
 		return nil, stderrors.New("Node number must be between 0 and " + strconv.FormatInt(snowflakeMaxNode, 10))
 	}
+	snowflakeConfigMu.Lock()
+	defer snowflakeConfigMu.Unlock()
+	snowflake.Epoch = defaultEpoch.UnixMilli()
+	snowflake.NodeBits = snowflakeNodeBits
+	snowflake.StepBits = snowflakeStepBits
 	node, err := snowflake.NewNode(nodeid)
 	if err != nil {
 		return nil, err
 	}
 	return &bwmarrinSnowflake{node: node}, nil
+}
+
+// SetDefaultEpoch updates the epoch used by subsequently created Snowflake nodes.
+func SetDefaultEpoch(epoch time.Time) {
+	snowflakeConfigMu.Lock()
+	defer snowflakeConfigMu.Unlock()
+	defaultEpoch = epoch
+}
+
+// DefaultEpochValue returns the epoch used by subsequently created Snowflake nodes.
+func DefaultEpochValue() time.Time {
+	snowflakeConfigMu.Lock()
+	defer snowflakeConfigMu.Unlock()
+	return defaultEpoch
 }
 
 func (s *bwmarrinSnowflake) NextID() (uint64, error) {

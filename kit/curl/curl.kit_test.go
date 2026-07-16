@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -52,7 +53,7 @@ func TestNewRequestContext(t *testing.T) {
 	assert.Equal(t, http.MethodDelete, req.Method)
 	assert.Equal(t, context.Canceled, req.Context().Err())
 
-	req, err = NewPutRequestContext(nil, "http://example.com/put", bytes.NewBufferString("body"))
+	req, err = NewPutRequestContext(nil, "http://example.com/put", bytes.NewBufferString("body")) //nolint:staticcheck // verifies nil-context compatibility
 	require.NoError(t, err)
 	assert.Equal(t, http.MethodPut, req.Method)
 	assert.NotNil(t, req.Context())
@@ -138,4 +139,54 @@ type errReader struct{}
 
 func (errReader) Read(_ []byte) (int, error) {
 	return 0, errors.New("read failed")
+}
+
+type trackingTransport struct {
+	closed atomic.Int32
+}
+
+func (t *trackingTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return &http.Response{
+		StatusCode: http.StatusOK,
+		Body:       io.NopCloser(bytes.NewReader(nil)),
+		Header:     make(http.Header),
+	}, nil
+}
+
+func (t *trackingTransport) CloseIdleConnections() {
+	t.closed.Add(1)
+}
+
+func TestHTTPHelpersRejectNilInputs(t *testing.T) {
+	assert.NotPanics(t, func() {
+		_, _, err := Do(nil)
+		require.Error(t, err)
+	})
+	assert.NotPanics(t, func() {
+		_, _, err := Default(nil)
+		require.Error(t, err)
+	})
+	assert.NotPanics(t, func() {
+		req, err := NewGetRequest("http://example.com", nil)
+		require.NoError(t, err)
+		_, _, err = DoWithClient(nil, req)
+		require.Error(t, err)
+	})
+	assert.NotPanics(t, func() {
+		client := NewHTTPClient(nil)
+		require.NotNil(t, client)
+	})
+}
+
+func TestDoDoesNotCloseSharedDefaultTransport(t *testing.T) {
+	original := http.DefaultTransport
+	transport := &trackingTransport{}
+	http.DefaultTransport = transport
+	t.Cleanup(func() { http.DefaultTransport = original })
+
+	req, err := NewGetRequest("http://example.com", nil)
+	require.NoError(t, err)
+	_, _, err = Do(req)
+	require.NoError(t, err)
+	assert.Zero(t, transport.closed.Load())
 }

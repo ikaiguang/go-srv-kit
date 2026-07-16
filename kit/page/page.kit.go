@@ -28,9 +28,16 @@ func ConvertToPageOption(pageRequest *PageRequest) *PageOption {
 	if pageRequest == nil {
 		pageRequest = DefaultPageRequest()
 	}
+	page := ParsePage(pageRequest.Page)
+	pageSize := ParsePageSize(pageRequest.PageSize)
+	offset := uint64(pageSize) * (uint64(page) - 1)
+	maxInt := int(^uint(0) >> 1)
+	if offset > uint64(maxInt) {
+		offset = uint64(maxInt)
+	}
 	opts := &PageOption{
-		Limit:  int(pageRequest.PageSize),
-		Offset: int(pageRequest.PageSize * (pageRequest.Page - 1)),
+		Limit:  int(pageSize),
+		Offset: int(offset),
 	}
 	return opts
 }

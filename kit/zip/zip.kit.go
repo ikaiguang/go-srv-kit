@@ -2,14 +2,15 @@ package zippkg
 
 import (
 	"archive/zip"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
-	filepkg "github.com/ikaiguang/go-kit/file"
-	filepathpkg "github.com/ikaiguang/go-kit/filepath"
+	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
+	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
 )
 
 // Zip 压缩目录
@@ -38,12 +39,12 @@ func Zip(resourcePath string, zipPath string) error {
 	defer func() { _ = zipWriter.Close() }()
 
 	// 读取文件
-	fps, fis, err := filepathpkg.WaldDir(resourcePath)
+	fps, entries, err := filepathpkg.WalkDir(resourcePath)
 	if err != nil {
 		return err
 	}
 	for i := range fps {
-		if fis[i].IsDir() {
+		if entries[i].IsDir() {
 			continue
 		}
 		zipFilePath, err := filepath.Rel(resourcePath, fps[i])
@@ -86,6 +87,9 @@ func ZipFile(filePath string, zipPath string) error {
 // @param srcFilePath 被压缩资源；例: runtime/videos/xxx.mp4
 // @param zipFilePath 压缩到zip的路径；例: videos/test.mp4
 func AddFileToZip(zipWriter *zip.Writer, srcFilePath, zipFilePath string) error {
+	if zipWriter == nil {
+		return errors.New("zip writer is nil")
+	}
 	srcFile, err := os.Open(srcFilePath)
 	if err != nil {
 		return err
@@ -118,7 +122,7 @@ func Unzip(zipPath, unzipResourceDir string) (err error) {
 
 	// 解压文件
 	for _, rf := range reader.File {
-		err = UnzipFn(rf, unzipResourceDir)
+		err = ExtractZipEntry(rf, unzipResourceDir)
 		if err != nil {
 			return err
 		}
@@ -126,9 +130,11 @@ func Unzip(zipPath, unzipResourceDir string) (err error) {
 	return err
 }
 
-// UnzipFn 解压文件到指定目录
-// @param unzipResourceDir 解缩到zip的路径；例: runtime/videos
-func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
+// ExtractZipEntry extracts one ZIP entry into the destination directory.
+func ExtractZipEntry(zipFile *zip.File, unzipResourceDir string) (err error) {
+	if zipFile == nil {
+		return errors.New("zip file entry is nil")
+	}
 	// 输出文件
 	outputPath, err := safeUnzipPath(unzipResourceDir, zipFile.Name)
 	if err != nil {
@@ -137,15 +143,32 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 
 	// 创建文件夹
 	if zipFile.FileInfo().IsDir() {
-		err = os.MkdirAll(outputPath, filepkg.DefaultFileMode)
+		if err = rejectSymlinkPath(unzipResourceDir, outputPath); err != nil {
+			return err
+		}
+		err = os.MkdirAll(outputPath, 0o755)
 		if err != nil {
 			return err
 		}
 		return err
 	}
 
+	parentDir := filepath.Dir(outputPath)
+	if err = rejectSymlinkPath(unzipResourceDir, parentDir); err != nil {
+		return err
+	}
+	if err = os.MkdirAll(parentDir, 0o755); err != nil {
+		return err
+	}
+	if err = rejectSymlinkPath(unzipResourceDir, outputPath); err != nil {
+		return err
+	}
+	mode := zipFile.Mode().Perm()
+	if mode == 0 {
+		mode = 0o644
+	}
 	// 创建输出文件
-	outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, filepkg.DefaultFileMode)
+	outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, mode)
 	if err != nil {
 		return err
 	}
@@ -166,6 +189,11 @@ func UnzipFn(zipFile *zip.File, unzipResourceDir string) (err error) {
 	return err
 }
 
+// Deprecated: use ExtractZipEntry instead.
+func UnzipFn(zipFile *zip.File, unzipResourceDir string) error {
+	return ExtractZipEntry(zipFile, unzipResourceDir)
+}
+
 func safeUnzipPath(destDir, zipFileName string) (string, error) {
 	cleanDest, err := filepath.Abs(destDir)
 	if err != nil {
@@ -179,4 +207,41 @@ func safeUnzipPath(destDir, zipFileName string) (string, error) {
 		return "", fmt.Errorf("illegal file path in zip: %s", zipFileName)
 	}
 	return outputPath, nil
+}
+
+func rejectSymlinkPath(destDir, targetPath string) error {
+	cleanDest, err := filepath.Abs(destDir)
+	if err != nil {
+		return err
+	}
+	cleanTarget, err := filepath.Abs(targetPath)
+	if err != nil {
+		return err
+	}
+	rel, err := filepath.Rel(cleanDest, cleanTarget)
+	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+		return fmt.Errorf("illegal file path in zip: %s", targetPath)
+	}
+
+	current := cleanDest
+	parts := []string{}
+	if rel != "." {
+		parts = strings.Split(rel, string(os.PathSeparator))
+	}
+	for i := -1; i < len(parts); i++ {
+		if i >= 0 {
+			current = filepath.Join(current, parts[i])
+		}
+		info, statErr := os.Lstat(current)
+		if os.IsNotExist(statErr) {
+			return nil
+		}
+		if statErr != nil {
+			return statErr
+		}
+		if info.Mode()&os.ModeSymlink != 0 {
+			return fmt.Errorf("refusing to extract through symlink: %s", current)
+		}
+	}
+	return nil
 }

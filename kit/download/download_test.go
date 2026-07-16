@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -79,10 +80,67 @@ func TestCheckOrCreateDir(t *testing.T) {
 	testDir := filepath.Join(TestdataPath, "subdir", "nested")
 	defer func() { _ = os.RemoveAll(TestdataPath) }()
 
-	err := CheckOrCreateDir(filepath.Join(testDir, "file.txt"))
+	err := EnsureOutputDirectory(filepath.Join(testDir, "file.txt"))
 	require.Nil(t, err)
 
 	info, err := os.Stat(testDir)
 	require.Nil(t, err)
 	assert.True(t, info.IsDir())
+}
+
+func TestStreamDownloadRejectsNilParam(t *testing.T) {
+	assert.NotPanics(t, func() {
+		_, err := StreamDownload(context.Background(), nil)
+		require.Error(t, err)
+	})
+}
+
+func TestStreamDownloadRejectsOversizedBuffer(t *testing.T) {
+	_, err := StreamDownload(context.Background(), &DownloadParam{
+		URL:        "http://example.invalid",
+		OutputPath: filepath.Join(t.TempDir(), "output.bin"),
+		BufferSize: (16 << 20) + 1,
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "buffer size")
+}
+
+func TestStreamDownloadSupportsConcurrentSameTarget(t *testing.T) {
+	content := []byte("concurrent download")
+	ready := make(chan struct{}, 2)
+	release := make(chan struct{})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ready <- struct{}{}
+		<-release
+		_, _ = w.Write(content)
+	}))
+	defer server.Close()
+
+	outputPath := filepath.Join(t.TempDir(), "same-target.bin")
+	errs := make(chan error, 2)
+	var wg sync.WaitGroup
+	for range 2 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			_, err := StreamDownload(context.Background(), &DownloadParam{
+				URL:        server.URL,
+				OutputPath: outputPath,
+				HTTPClient: server.Client(),
+			})
+			errs <- err
+		}()
+	}
+	<-ready
+	<-ready
+	close(release)
+	wg.Wait()
+	close(errs)
+
+	for err := range errs {
+		require.NoError(t, err)
+	}
+	got, err := os.ReadFile(outputPath)
+	require.NoError(t, err)
+	assert.Equal(t, content, got)
 }

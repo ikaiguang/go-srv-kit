@@ -30,3 +30,14 @@ func TestDecryptCBCInvalidPadding(t *testing.T) {
 	require.Error(t, err)
 	assert.Empty(t, got)
 }
+
+func TestDecryptCBCRejectsIVOnlyCiphertext(t *testing.T) {
+	key := []byte("1234567890ABCDEF")
+	ciphertext := base64.URLEncoding.EncodeToString(make([]byte, 16))
+
+	assert.NotPanics(t, func() {
+		got, err := DecryptCBC(ciphertext, key)
+		require.Error(t, err)
+		assert.Empty(t, got)
+	})
+}

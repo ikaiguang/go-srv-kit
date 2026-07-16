@@ -18,8 +18,8 @@ var (
 // gbk2312Decoder  = simplifiedchinese.HZGB2312.NewDecoder()
 )
 
-// GbkToUtf8 ...
-func GbkToUtf8(gbkByte []byte) (res []byte, err error) {
+// GBKToUTF8 converts GB18030, GBK, or HZ-GB2312 bytes to UTF-8.
+func GBKToUTF8(gbkByte []byte) (res []byte, err error) {
 	if res, err = simplifiedchinese.GB18030.NewDecoder().Bytes(gbkByte); err == nil {
 		return res, err
 	}
@@ -29,8 +29,8 @@ func GbkToUtf8(gbkByte []byte) (res []byte, err error) {
 	return simplifiedchinese.HZGB2312.NewDecoder().Bytes(gbkByte)
 }
 
-// Utf8ToGbk ...
-func Utf8ToGbk(utf8Byte []byte) (res []byte, err error) {
+// UTF8ToGBK converts UTF-8 bytes to a compatible Chinese encoding.
+func UTF8ToGBK(utf8Byte []byte) (res []byte, err error) {
 	if res, err = simplifiedchinese.GB18030.NewEncoder().Bytes(utf8Byte); err == nil {
 		return res, err
 	}
@@ -40,14 +40,23 @@ func Utf8ToGbk(utf8Byte []byte) (res []byte, err error) {
 	return simplifiedchinese.HZGB2312.NewEncoder().Bytes(utf8Byte)
 }
 
-// IsUtf8 是否utf8
-func IsUtf8(s string) bool {
+// IsUTF8 reports whether s contains valid UTF-8.
+func IsUTF8(s string) bool {
 	return utf8.ValidString(s)
 }
 
+// Deprecated: use GBKToUTF8 instead.
+func GbkToUtf8(gbkByte []byte) ([]byte, error) { return GBKToUTF8(gbkByte) }
+
+// Deprecated: use UTF8ToGBK instead.
+func Utf8ToGbk(utf8Byte []byte) ([]byte, error) { return UTF8ToGBK(utf8Byte) }
+
+// Deprecated: use IsUTF8 instead.
+func IsUtf8(s string) bool { return IsUTF8(s) }
+
 // IsGBK 是否gbk
 func IsGBK(s string) bool {
-	if IsUtf8(s) {
+	if IsUTF8(s) {
 		return false
 	}
 	data := []byte(s)

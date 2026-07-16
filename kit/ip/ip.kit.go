@@ -27,10 +27,13 @@ func LocalIP() string {
 	return _localIP
 }
 
-// NewLocalIP ...
-func NewLocalIP() string {
+// DetectLocalIP detects the current private IPv4 address without using the cache.
+func DetectLocalIP() string {
 	return PrivateIPv4().String()
 }
+
+// Deprecated: use DetectLocalIP instead.
+func NewLocalIP() string { return DetectLocalIP() }
 
 // IsValidIP 有效的ip
 func IsValidIP(ip string) bool {
@@ -44,7 +47,7 @@ func PrivateIPv4() net.IP {
 		return _IP
 	}
 
-	ip, netErr := NetLocalIP()
+	ip, netErr := OutboundIP()
 	if netErr == nil && IsValidIP(ip.String()) {
 		return ip
 	}
@@ -65,7 +68,8 @@ func PrivateIPv4() net.IP {
 	return _IP
 }
 
-func NetLocalIP() (net.IP, error) {
+// OutboundIP detects the local address selected for outbound traffic.
+func OutboundIP() (net.IP, error) {
 	conn, err := net.DialTimeout("udp", DefaultDNSAddress, time.Second)
 	if err != nil {
 		return nil, err
@@ -76,6 +80,9 @@ func NetLocalIP() (net.IP, error) {
 
 	return conn.LocalAddr().(*net.UDPAddr).IP, nil
 }
+
+// Deprecated: use OutboundIP instead.
+func NetLocalIP() (net.IP, error) { return OutboundIP() }
 
 // isPrivateIPv4 ...
 func isPrivateIPv4(ip net.IP) bool {

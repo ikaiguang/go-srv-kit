@@ -1,6 +1,11 @@
 package emailpkg
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
 func fakeSender() *Sender {
 	return &Sender{
@@ -37,12 +42,12 @@ func TestSendCode(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "#TestSendCode",
+			name: "#missing SMTP host",
 			args: args{
-				sender: fakeSender(),
+				sender: &Sender{},
 				msg:    fakeCodeMessage(),
 			},
-			wantErr: true, // 无真实 SMTP 凭证，预期发送失败
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
@@ -52,4 +57,22 @@ func TestSendCode(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestEmailNilSafety(t *testing.T) {
+	message := fakeCodeMessage().Message
+	sender := fakeSender()
+
+	assert.NotPanics(t, func() {
+		require.Error(t, Send(nil, message))
+		require.Error(t, Send(sender, nil))
+		require.Error(t, SendCode(sender, nil))
+	})
+
+	client, err := NewClient(*sender)
+	require.NoError(t, err)
+	assert.NotPanics(t, func() {
+		require.Error(t, client.Send(nil))
+		require.Error(t, client.SendCode(nil))
+	})
 }

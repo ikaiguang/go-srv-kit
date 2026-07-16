@@ -30,8 +30,8 @@ type aesCipher struct {
 	blockSize int
 }
 
-// NewAesCipher aes加解密
-func NewAesCipher(key []byte) (Encryptor, error) {
+// NewAESCipher creates the legacy deterministic AES-CBC cipher.
+func NewAESCipher(key []byte) (Encryptor, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -42,6 +42,11 @@ func NewAesCipher(key []byte) (Encryptor, error) {
 		blockSize: block.BlockSize(),
 	}
 	return a, nil
+}
+
+// Deprecated: use NewAESCipher instead.
+func NewAesCipher(key []byte) (Encryptor, error) {
+	return NewAESCipher(key)
 }
 
 // EncryptToString 加密

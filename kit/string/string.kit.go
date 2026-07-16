@@ -31,10 +31,10 @@ func ToCamel(s string) string {
 	num := len(s) - 1
 	for i := 0; i <= num; i++ {
 		d := s[i]
-		if k == false && d >= 'A' && d <= 'Z' {
+		if !k && d >= 'A' && d <= 'Z' {
 			k = true
 		}
-		if d >= 'a' && d <= 'z' && (j || k == false) {
+		if d >= 'a' && d <= 'z' && (j || !k) {
 			d = d - 32
 			j = false
 			k = true
@@ -60,21 +60,21 @@ func ToString(v any) string {
 	case float32:
 		key = strconv.FormatFloat(float64(v), 'f', -1, 64)
 	case int:
-		key = strconv.Itoa(v)
+		key = strconv.FormatInt(int64(v), 10)
 	case uint:
-		key = strconv.Itoa(int(v))
+		key = strconv.FormatUint(uint64(v), 10)
 	case int8:
-		key = strconv.Itoa(int(v))
+		key = strconv.FormatInt(int64(v), 10)
 	case uint8:
-		key = strconv.Itoa(int(v))
+		key = strconv.FormatUint(uint64(v), 10)
 	case int16:
-		key = strconv.Itoa(int(v))
+		key = strconv.FormatInt(int64(v), 10)
 	case uint16:
-		key = strconv.Itoa(int(v))
+		key = strconv.FormatUint(uint64(v), 10)
 	case int32:
-		key = strconv.Itoa(int(v))
+		key = strconv.FormatInt(int64(v), 10)
 	case uint32:
-		key = strconv.Itoa(int(v))
+		key = strconv.FormatUint(uint64(v), 10)
 	case int64:
 		key = strconv.FormatInt(v, 10)
 	case uint64:
