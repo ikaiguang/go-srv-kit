@@ -7,6 +7,7 @@
 - Run the smallest relevant tests after changes, then expand verification when risk warrants it.
 - Do not edit generated Proto or Wire output directly; change the source and run the repository generator.
 - Preserve public API compatibility unless the user explicitly approves a breaking change.
+- 在 `docs/*` 下新增或更新的设计、规格、实施计划和审查记录，正文默认使用中文；代码标识符、命令、路径、协议名、库/工具名称及不宜翻译的专业术语保留英文。
 
 ## Skills
 

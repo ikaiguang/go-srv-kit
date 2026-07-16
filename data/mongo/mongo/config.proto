@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kit.mongopkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/mongo/mongo;mongopkg";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/mongo/v3/mongo;mongopkg";
 option java_multiple_files  = true;
 option java_package         = "kit.mongopkg";
 option java_outer_classname = "KitMongoPkg";

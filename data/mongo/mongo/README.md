@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/mongo
+go get github.com/ikaiguang/go-srv-kit/data/mongo/v3
 ```
 
 ```go
-import mongopkg "github.com/ikaiguang/go-srv-kit/data/mongo/mongo"
+import mongopkg "github.com/ikaiguang/go-srv-kit/data/mongo/v3/mongo"
 ```
 
 ## 核心能力
@@ -32,7 +32,7 @@ import (
 	"os"
 	"time"
 
-	mongopkg "github.com/ikaiguang/go-srv-kit/data/mongo/mongo"
+	mongopkg "github.com/ikaiguang/go-srv-kit/data/mongo/v3/mongo"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

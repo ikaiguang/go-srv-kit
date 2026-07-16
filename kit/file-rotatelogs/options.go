@@ -3,7 +3,7 @@ package rotatelogs
 import (
 	"time"
 
-	"github.com/ikaiguang/go-srv-kit/kit/file-rotatelogs/internal/option"
+	"github.com/ikaiguang/go-srv-kit/kit/v3/file-rotatelogs/internal/option"
 )
 
 const (

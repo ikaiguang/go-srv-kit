@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	filepkg "github.com/ikaiguang/go-srv-kit/kit/file"
-	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/filepath"
+	filepkg "github.com/ikaiguang/go-srv-kit/kit/v3/file"
+	filepathpkg "github.com/ikaiguang/go-srv-kit/kit/v3/filepath"
 )
 
 // Zip 压缩目录

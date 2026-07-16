@@ -1,4 +1,4 @@
-module github.com/ikaiguang/go-srv-kit/data/consul
+module github.com/ikaiguang/go-srv-kit/data/consul/v3
 
 go 1.26.3
 

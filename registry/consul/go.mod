@@ -1,4 +1,4 @@
-module github.com/ikaiguang/go-srv-kit/registry/consul
+module github.com/ikaiguang/go-srv-kit/registry/consul/v3
 
 go 1.26.3
 

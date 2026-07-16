@@ -1,4 +1,4 @@
-module github.com/ikaiguang/go-srv-kit/data/mongo
+module github.com/ikaiguang/go-srv-kit/data/mongo/v3
 
 go 1.26.3
 

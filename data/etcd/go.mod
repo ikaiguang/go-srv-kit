@@ -1,4 +1,4 @@
-module github.com/ikaiguang/go-srv-kit/data/etcd
+module github.com/ikaiguang/go-srv-kit/data/etcd/v3
 
 go 1.26.3
 

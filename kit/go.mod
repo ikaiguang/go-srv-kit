@@ -1,4 +1,4 @@
-module github.com/ikaiguang/go-srv-kit/kit
+module github.com/ikaiguang/go-srv-kit/kit/v3
 
 go 1.26.3
 

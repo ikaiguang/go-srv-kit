@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/etcd
+go get github.com/ikaiguang/go-srv-kit/data/etcd/v3
 ```
 
 ```go
-import etcdpkg "github.com/ikaiguang/go-srv-kit/data/etcd/etcd"
+import etcdpkg "github.com/ikaiguang/go-srv-kit/data/etcd/v3/etcd"
 ```
 
 ## 核心能力
@@ -28,7 +28,7 @@ import (
 	"log"
 	"time"
 
-	etcdpkg "github.com/ikaiguang/go-srv-kit/data/etcd/etcd"
+	etcdpkg "github.com/ikaiguang/go-srv-kit/data/etcd/v3/etcd"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

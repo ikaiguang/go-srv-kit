@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/consul
+go get github.com/ikaiguang/go-srv-kit/data/consul/v3
 ```
 
 ```go
-import consulpkg "github.com/ikaiguang/go-srv-kit/data/consul/consul"
+import consulpkg "github.com/ikaiguang/go-srv-kit/data/consul/v3/consul"
 ```
 
 ## 核心能力
@@ -27,7 +27,7 @@ package main
 import (
 	"log"
 
-	consulpkg "github.com/ikaiguang/go-srv-kit/data/consul/consul"
+	consulpkg "github.com/ikaiguang/go-srv-kit/data/consul/v3/consul"
 )
 
 func main() {

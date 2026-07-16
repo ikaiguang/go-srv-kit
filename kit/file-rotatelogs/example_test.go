@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	rotatelogs "github.com/ikaiguang/go-srv-kit/kit/file-rotatelogs"
+	rotatelogs "github.com/ikaiguang/go-srv-kit/kit/v3/file-rotatelogs"
 )
 
 func ExampleForceNewFile() {

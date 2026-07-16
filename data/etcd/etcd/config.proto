@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kit.etcdpkg;
 
-option go_package           = "github.com/ikaiguang/go-srv-kit/data/etcd/etcd;etcdpkg";
+option go_package           = "github.com/ikaiguang/go-srv-kit/data/etcd/v3/etcd;etcdpkg";
 option java_multiple_files  = true;
 option java_package         = "kit.etcdpkg";
 option java_outer_classname = "KitEtcdPkg";

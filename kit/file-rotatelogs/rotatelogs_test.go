@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	rotatelogs "github.com/ikaiguang/go-srv-kit/kit/file-rotatelogs"
+	rotatelogs "github.com/ikaiguang/go-srv-kit/kit/v3/file-rotatelogs"
 	"github.com/jonboulle/clockwork"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"

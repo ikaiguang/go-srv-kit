@@ -9,7 +9,7 @@ import (
 	"encoding/pem"
 	"errors"
 
-	base64util "github.com/ikaiguang/go-srv-kit/kit/base64"
+	base64util "github.com/ikaiguang/go-srv-kit/kit/v3/base64"
 )
 
 // Encryptor ...
