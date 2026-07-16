@@ -7,7 +7,7 @@ error chain。
 维护，保留原项目的 BSD-2-Clause 许可证和公开 API。仓库内的 import path 为：
 
 ```go
-import errors "github.com/ikaiguang/go-srv-kit/kit/v3/error"
+import errors "github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror"
 ```
 
 ## 基本用法

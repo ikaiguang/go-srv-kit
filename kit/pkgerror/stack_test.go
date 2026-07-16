@@ -32,8 +32,8 @@ func TestFrameFormat(t *testing.T) {
 	}, {
 		initpc,
 		"%+s",
-		"github.com/ikaiguang/go-srv-kit/kit/v3/error.init\n" +
-			"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go",
+		"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.init\n" +
+			"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go",
 	}, {
 		0,
 		"%s",
@@ -79,8 +79,8 @@ func TestFrameFormat(t *testing.T) {
 	}, {
 		initpc,
 		"%+v",
-		"github.com/ikaiguang/go-srv-kit/kit/v3/error.init\n" +
-			"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:9",
+		"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.init\n" +
+			"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:9",
 	}, {
 		0,
 		"%v",
@@ -98,7 +98,7 @@ func TestFuncname(t *testing.T) {
 	}{
 		{"", ""},
 		{"runtime.main", "main"},
-		{"github.com/ikaiguang/go-srv-kit/kit/v3/error.funcname", "funcname"},
+		{"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.funcname", "funcname"},
 		{"funcname", "funcname"},
 		{"io.copyBuffer", "copyBuffer"},
 		{"main.(*R).Write", "(*R).Write"},
@@ -119,25 +119,25 @@ func TestStackTrace(t *testing.T) {
 		want []string
 	}{{
 		New("ooh"), []string{
-			"github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTrace\n" +
-				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:121",
+			"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTrace\n" +
+				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:121",
 		},
 	}, {
 		Wrap(New("ooh"), "ahh"), []string{
-			"github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTrace\n" +
-				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:126", // this is the stack of Wrap, not New
+			"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTrace\n" +
+				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:126", // this is the stack of Wrap, not New
 		},
 	}, {
 		Cause(Wrap(New("ooh"), "ahh")), []string{
-			"github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTrace\n" +
-				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:131", // this is the stack of New
+			"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTrace\n" +
+				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:131", // this is the stack of New
 		},
 	}, {
 		func() error { return New("ooh") }(), []string{
-			`github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTrace.func1` +
-				"\n\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:136", // this is the stack of New
-			"github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTrace\n" +
-				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:136", // this is the stack of New's caller
+			`github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTrace.func1` +
+				"\n\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:136", // this is the stack of New
+			"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTrace\n" +
+				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:136", // this is the stack of New's caller
 		},
 	}, {
 		Cause(func() error {
@@ -145,12 +145,12 @@ func TestStackTrace(t *testing.T) {
 				return Errorf("hello %s", fmt.Sprintf("world: %s", "ooh"))
 			}()
 		}()), []string{
-			`github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTrace.TestStackTrace.func2.func3` +
-				"\n\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:145", // this is the stack of Errorf
-			`github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTrace.func2` +
-				"\n\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:146", // this is the stack of Errorf's caller
-			"github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTrace\n" +
-				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:147", // this is the stack of Errorf's caller's caller
+			`github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTrace.TestStackTrace.func2.func3` +
+				"\n\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:145", // this is the stack of Errorf
+			`github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTrace.func2` +
+				"\n\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:146", // this is the stack of Errorf's caller
+			"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTrace\n" +
+				"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:147", // this is the stack of Errorf's caller's caller
 		},
 	}}
 	for i, tt := range tests {
@@ -196,7 +196,7 @@ func TestStackTraceFormat(t *testing.T) {
 	}, {
 		nil,
 		"%#v",
-		`\[\]errors.Frame\(nil\)`,
+		`\[\]pkgerror.Frame\(nil\)`,
 	}, {
 		make(StackTrace, 0),
 		"%s",
@@ -212,7 +212,7 @@ func TestStackTraceFormat(t *testing.T) {
 	}, {
 		make(StackTrace, 0),
 		"%#v",
-		`\[\]errors.Frame{}`,
+		`\[\]pkgerror.Frame{}`,
 	}, {
 		stackTrace()[:2],
 		"%s",
@@ -225,14 +225,14 @@ func TestStackTraceFormat(t *testing.T) {
 		stackTrace()[:2],
 		"%+v",
 		"\n" +
-			"github.com/ikaiguang/go-srv-kit/kit/v3/error.stackTrace\n" +
-			"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:174\n" +
-			"github.com/ikaiguang/go-srv-kit/kit/v3/error.TestStackTraceFormat\n" +
-			"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:225",
+			"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.stackTrace\n" +
+			"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:174\n" +
+			"github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror.TestStackTraceFormat\n" +
+			"\t(?:.+/)?github.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:225",
 	}, {
 		stackTrace()[:2],
 		"%#v",
-		`\[\]errors.Frame{stack_test.go:174, stack_test.go:233}`,
+		`\[\]pkgerror.Frame{stack_test.go:174, stack_test.go:233}`,
 	}}
 
 	for i, tt := range tests {

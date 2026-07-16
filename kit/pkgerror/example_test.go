@@ -19,8 +19,8 @@ func ExampleNew_printf() {
 
 	// Example output:
 	// whoops
-	// github.com/ikaiguang/go-srv-kit/kit/v3/error_test.ExampleNew_printf
-	//         .../kit/error/example_test.go:17
+	// github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror_test.ExampleNew_printf
+	//         .../kit/pkgerror/example_test.go:17
 }
 
 func ExampleWithMessage() {
@@ -46,8 +46,8 @@ func ExampleWithStack_printf() {
 
 	// Example Output:
 	// whoops
-	// github.com/ikaiguang/go-srv-kit/kit/v3/error_test.ExampleWithStack_printf
-	//         .../kit/error/example_test.go:44
+	// github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror_test.ExampleWithStack_printf
+	//         .../kit/pkgerror/example_test.go:44
 }
 
 func ExampleWrap() {
@@ -80,8 +80,8 @@ func ExampleWrap_extended() {
 
 	// Example output:
 	// error
-	// github.com/ikaiguang/go-srv-kit/kit/v3/error_test.fn
-	//         .../kit/error/example_test.go:67
+	// github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror_test.fn
+	//         .../kit/pkgerror/example_test.go:67
 	// inner
 	// middle
 	// outer
@@ -101,8 +101,8 @@ func ExampleErrorf_extended() {
 
 	// Example output:
 	// whoops: foo
-	// github.com/ikaiguang/go-srv-kit/kit/v3/error_test.ExampleErrorf_extended
-	//         .../kit/error/example_test.go:91
+	// github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror_test.ExampleErrorf_extended
+	//         .../kit/pkgerror/example_test.go:91
 }
 
 func Example_stackTrace() {
@@ -119,10 +119,10 @@ func Example_stackTrace() {
 	fmt.Printf("%+v", st[0:2]) // top two frames
 
 	// Example output:
-	// github.com/ikaiguang/go-srv-kit/kit/v3/error_test.fn
-	//         .../kit/error/example_test.go:67
-	// github.com/ikaiguang/go-srv-kit/kit/v3/error_test.Example_stackTrace
-	//         .../kit/error/example_test.go:104
+	// github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror_test.fn
+	//         .../kit/pkgerror/example_test.go:67
+	// github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror_test.Example_stackTrace
+	//         .../kit/pkgerror/example_test.go:104
 }
 
 func ExampleCause_printf() {

@@ -12,7 +12,7 @@ func TestFrameMarshalText(t *testing.T) {
 		want string
 	}{{
 		initpc,
-		`^github.com/ikaiguang/go-srv-kit/kit/v3/error\.init(\.ializers)? (?:.+/)?github\.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:\d+$`,
+		`^github.com/ikaiguang/go-srv-kit/kit/v3/pkgerror\.init(\.ializers)? (?:.+/)?github\.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:\d+$`,
 	}, {
 		0,
 		`^unknown$`,
@@ -34,7 +34,7 @@ func TestFrameMarshalJSON(t *testing.T) {
 		want string
 	}{{
 		initpc,
-		`^"github\.com/ikaiguang/go-srv-kit/kit/v3/error\.init(\.ializers)? (?:.+/)?github\.com/ikaiguang/go-srv-kit/kit(?:/v3)?/error/stack_test.go:\d+"$`,
+		`^"github\.com/ikaiguang/go-srv-kit/kit/v3/pkgerror\.init(\.ializers)? (?:.+/)?github\.com/ikaiguang/go-srv-kit/kit(?:/v3)?/pkgerror/stack_test.go:\d+"$`,
 	}, {
 		0,
 		`^"unknown"$`,
