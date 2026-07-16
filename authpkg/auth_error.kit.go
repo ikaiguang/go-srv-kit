@@ -1,4 +1,4 @@
-package auth
+package authpkg
 
 import (
 	"github.com/go-kratos/kratos/v2/errors"

@@ -4,7 +4,7 @@
 // 	protoc        v6.31.1
 // source: auth.kit.proto
 
-package auth
+package authpkg
 
 import (
 	_ "github.com/go-kratos/kratos/v2/errors"

@@ -1,4 +1,4 @@
-package auth
+package authpkg
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/golang-jwt/jwt/v5"
 	uuidpkg "github.com/ikaiguang/go-kit/uuid"
 	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
 )
