@@ -1,32 +1,51 @@
 # Agent Instructions
 
-## Working Rules
+## Scope And Priority
 
-- Read the target files and adjacent implementations before changing code.
-- Follow existing package patterns and keep changes narrowly scoped.
-- Run the smallest relevant tests after changes, then expand verification when risk warrants it.
-- Do not edit generated Proto or Wire output directly; change the source and run the repository generator.
-- Preserve public API compatibility unless the user explicitly approves a breaking change.
-- 在 `docs/*` 下新增或更新的设计、规格、实施计划和审查记录，正文默认使用中文；代码标识符、命令、路径、协议名、库/工具名称及不宜翻译的专业术语保留英文。
+- This file is the repository-wide rule source. More specific instructions in a nested directory take precedence for that directory.
+- Read the target package, its tests, the nearest `go.mod`, and relevant README/Makefile entries before changing code.
+- Follow existing package patterns, keep changes narrowly scoped, and preserve public API compatibility unless the user explicitly approves a breaking change.
+- Preserve unrelated working-tree changes and do not perform releases, pushes, deployments, or destructive operations without explicit authorization.
 
-## Skills
+## Repository Shape
 
-- Use `.agents/skills/my-project` for repository-specific Go, module, Proto, generation, test, and debugging context.
-- Use `.agents/skills/code-audit-repair` only for explicit whole-repository or multi-module audits.
-- Use global Superpowers skills only for complex design, cross-module changes, systematic debugging, high-risk TDD/review/verification, or when the user explicitly requests them.
-- Do not automatically load `superpowers:using-superpowers` or other Superpowers skills for every turn. For simple Q&A, narrowly scoped changes, routine refactoring, and standard test or formatting tasks, use built-in reasoning or `/plan` when sufficient.
-- Use `docs/superpowers/specs/` and `docs/superpowers/plans/` as the only design and implementation-plan document locations.
-- User instructions and repository facts take precedence over generic skill defaults.
+- This is a Go v3 multi-module toolkit, not a single business service.
+- Modules include the root, `authpkg/`, `kit/`, `kratos/`, `service/`, `ping-service/`, `data/*`, and `registry/*`.
+- Find the nearest `go.mod` before choosing imports, dependency versions, commands, or test scope.
+- A root `go test ./...` does not cover nested modules. Run tests from the module that owns the changed package.
+- Treat current source, Makefile fragments, and `devops/module-release/modules.tsv` as authoritative when prose documentation disagrees.
 
-## Repository
+## Changes And Generation
 
-- This is a multi-module Go repository. Locate the nearest `go.mod` before choosing commands or package paths.
-- Run Go tests from the owning module directory; start with the affected package.
-- Treat root and module Makefiles as the source of truth for Proto and other generation commands.
+- Prefer the smallest compatible change in the owning module; do not impose a business-service layer model on toolkit packages.
+- Do not edit files marked `Code generated` or generated Proto/OpenAPI output directly. Change the source `.proto` or generator input and run the established Makefile target.
+- Before running a Make target, inspect the root Makefile include graph and use `make -n` when practical. The root Makefile includes only selected fragments and does not expose every module's Proto target.
+- Treat `third_party/` as imported protocol definitions. Change it only when the task explicitly requires updating those definitions.
+- For dependency changes, keep module paths and `/v3` major-version semantics correct and update only the owning module's `go.mod`/`go.sum`.
+- If public behavior, configuration, commands, or examples change, update the nearest README or stable documentation in the same task.
+
+## Verification
+
+- Start with the affected package from its owning module, then widen to the module or dependent modules when risk warrants it.
+- Use `GOWORK=off` for release-readiness checks so a local workspace cannot hide missing requirements or unpublished versions.
+- For Proto changes, run the relevant generation target and verify that regenerated output is consistent.
+- For agent/document-only changes, validate links, referenced paths, frontmatter, whitespace, and `git diff --check`; Go tests are not required unless code behavior changed.
+- Report commands actually run, their results, and any validation intentionally skipped.
+
+## Documentation
+
+- Under `docs/*`, write design, specification, implementation-plan, and review prose in Chinese by default.
+- Keep code identifiers, commands, paths, protocol names, library/tool names, and terms that do not translate cleanly in English.
+- Keep durable rules in this file, repo-local skills, module READMEs, or stable docs; do not commit one-off agent task records as permanent guidance.
+
+## Repo-Local Skills
+
+- Use `.agents/skills/my-project` for repository-specific Go, module, Proto, generation, dependency, test, debugging, and review context.
+- Use `.agents/skills/code-audit-repair` only when the user explicitly requests a whole-repository or multi-module audit.
+- Repo-local skills add project facts; they must not duplicate this file or invent workflows and architecture that are absent from the repository.
 
 ## Context7
 
 - Use Context7 for current documentation when the user asks about a library, framework, SDK, API, CLI tool, or cloud service.
-- Start with `resolve-library-id`, then call `query-docs` with the selected `/org/project` ID and the user's full concept-specific question.
-- Use separate documentation queries for distinct concepts.
-- Do not use Context7 for business-logic debugging, refactoring, code review, scripts written from scratch, or general programming concepts.
+- Resolve the library ID first, then query the selected `/org/project` ID with the user's full concept-specific question. Use separate queries for distinct concepts.
+- Do not use Context7 for repository business logic, refactoring, code review, scripts written from scratch, or general programming concepts.

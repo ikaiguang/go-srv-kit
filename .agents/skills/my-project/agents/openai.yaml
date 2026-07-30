@@ -1,4 +1,4 @@
 interface:
   display_name: "My Project"
   short_description: "当前多模块 Go 工具库的代码、生成与测试上下文。"
-  default_prompt: "使用 $my-project 处理本仓库中的 Go、Proto、生成、测试或问题排查任务。"
+  default_prompt: "使用 $my-project 处理本仓库中的 Go、Proto、生成、依赖、测试或问题排查任务。"
