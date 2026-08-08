@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	consulregistry "github.com/go-kratos/kratos/contrib/registry/consul/v2"
+	consulregistry "github.com/go-kratos/kratos/contrib/registry/consul/v3"
 	"github.com/hashicorp/consul/api"
 )
 

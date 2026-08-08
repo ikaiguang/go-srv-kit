@@ -26,7 +26,7 @@ import (
 	"log"
 	"time"
 
-	consulregistry "github.com/go-kratos/kratos/contrib/registry/consul/v2"
+	consulregistry "github.com/go-kratos/kratos/contrib/registry/consul/v3"
 	registrypkg "github.com/ikaiguang/go-srv-kit/registry/consul/v3/registry"
 	"github.com/hashicorp/consul/api"
 )
