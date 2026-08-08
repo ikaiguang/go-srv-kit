@@ -1,6 +1,6 @@
 # consul
 
-`consul` 包负责把项目内的 protobuf 配置 `Config` 转换为 HashiCorp Consul API client 配置，并创建 `*api.Client`。
+`consulpkg` 包负责把项目内的 protobuf 配置 `Config` 转换为 HashiCorp Consul API client 配置，并创建 `*api.Client`。
 
 ## 安装
 
@@ -15,9 +15,9 @@ import "github.com/ikaiguang/go-srv-kit/data/consul/v3"
 ## 核心能力
 
 - `Config`：由 `config.proto` 生成的 Consul 连接配置，覆盖地址、ACL token、命名空间、分区、HTTP Basic Auth 和 TLS PEM 等字段。
-- `NewClient(conf *Config, opts ...Option)`：根据 `Config` 创建 `*api.Client`，并写入 KV `ping=pong` 验证连接。
+- `NewClient(conf *Config, opts ...Option)`：根据 `Config` 创建 `*api.Client`，并通过只读 GET `ping` 验证连接。
 - `NewConsulClient(conf *Config, opts ...Option)`：`NewClient` 的兼容封装。
-- `WithWriter(writer io.Writer)`：保留的 option 入口；当前创建 client 的逻辑尚未使用该 writer。
+- `WithWriter(writer io.Writer)`：设置 Consul API logger 的输出目标。
 
 ## 快速使用
 
@@ -27,11 +27,11 @@ package main
 import (
 	"log"
 
-	"github.com/ikaiguang/go-srv-kit/data/consul/v3"
+	consulpkg "github.com/ikaiguang/go-srv-kit/data/consul/v3"
 )
 
 func main() {
-	client, err := consul.NewConsulClient(&consul.Config{
+	client, err := consulpkg.NewConsulClient(&consulpkg.Config{
 		Scheme:     "http",
 		Address:    "127.0.0.1:8500",
 		Datacenter: "dc1",
@@ -84,10 +84,10 @@ protoc --proto_path=. --proto_path="$(go env GOPATH)/src" --proto_path=./third_p
 go test ./...
 ```
 
-当前仓库没有 `consul` 包单元测试。若后续为 `NewClient` 添加测试，建议隔离真实 Consul 依赖，或明确记录需要外部 Consul 服务和 KV 写权限。
+当前单元测试使用内存 HTTP transport 验证连接探测为 GET，不依赖真实 Consul 服务。
 
 ## 注意事项
 
-- `NewClient` 会向 Consul KV 写入 `ping=pong`，这既是连接验证，也是写权限验证。
+- `NewClient` 会读取 Consul KV `ping` 验证连接，不会创建或修改该 key。
 - `Token`、`AuthPassword`、`TlsKeyPem` 属于敏感配置，不应输出到日志或提交真实值。
 - `InsecureSkipVerify` 会降低 TLS 安全性，只应在明确风险的测试环境使用。

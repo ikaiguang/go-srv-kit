@@ -1,9 +1,10 @@
-package mongo
+package mongopkg
 
 import (
 	"context"
 	"io"
 	"log/slog"
+	"os"
 	"testing"
 	"time"
 
@@ -16,7 +17,7 @@ var (
 		Debug:             true,
 		AppName:           "mongo:test",
 		Hosts:             nil,
-		Addr:              "mongodb://mongo:Mongo.123456@my-mongo:27017/admin",
+		Addr:              os.Getenv("MONGO_TEST_URI"),
 		MaxPoolSize:       100,
 		MinPoolSize:       2,
 		MaxConnecting:     10,
@@ -30,6 +31,10 @@ var (
 
 // go test -v ./data/mongo/ -count=1 -run TestNewMongoClient
 func TestNewMongoClient(t *testing.T) {
+	if dbConfig.Addr == "" {
+		t.Skip("set MONGO_TEST_URI to run the MongoDB integration test")
+	}
+
 	type args struct {
 		config *Config
 		logger *slog.Logger
@@ -62,5 +67,15 @@ func TestNewMongoClient(t *testing.T) {
 			//}
 			defer func() { _ = got.Disconnect(context.Background()) }()
 		})
+	}
+}
+
+func TestNewMongoClientRejectsNilConfig(t *testing.T) {
+	client, err := NewMongoClient(nil, nil)
+	if err == nil {
+		t.Fatal("NewMongoClient(nil, nil) error = nil, want error")
+	}
+	if client != nil {
+		t.Fatalf("NewMongoClient(nil, nil) client = %v, want nil", client)
 	}
 }

@@ -1,6 +1,6 @@
 # registry
 
-`registry` 目录提供包 `etcdregistry`，用于基于已有 `*clientv3.Client` 创建 Kratos etcd 注册中心。它适合在 Kratos 服务启动或 Wire 装配阶段复用统一的 etcd registry 创建逻辑。
+`registry` 目录提供包 `registrypkg`，用于基于已有 `*clientv3.Client` 创建 Kratos etcd 注册中心。它适合在 Kratos 服务启动或 Wire 装配阶段复用统一的 etcd registry 创建逻辑。
 
 ## 安装
 
@@ -9,7 +9,7 @@ go get github.com/ikaiguang/go-srv-kit/registry/etcd/v3
 ```
 
 ```go
-import etcdregistry "github.com/ikaiguang/go-srv-kit/registry/etcd/v3/registry"
+import registrypkg "github.com/ikaiguang/go-srv-kit/registry/etcd/v3/registry"
 ```
 
 ## 核心能力
@@ -25,7 +25,7 @@ package main
 import (
 	"time"
 
-	etcdregistry "github.com/ikaiguang/go-srv-kit/registry/etcd/v3/registry"
+	registrypkg "github.com/ikaiguang/go-srv-kit/registry/etcd/v3/registry"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -39,7 +39,7 @@ func main() {
 	}
 	defer client.Close()
 
-	registry, err := etcdregistry.NewEtcdRegistry(client)
+	registry, err := registrypkg.NewEtcdRegistry(client)
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +51,7 @@ func main() {
 调用方也可以传入 Kratos etcd registry 的原生 option：
 
 ```go
-registry, err := etcdregistry.NewEtcdRegistry(
+registry, err := registrypkg.NewEtcdRegistry(
 	client,
 	// etcdregistry.Namespace("/services"),
 )

@@ -1,6 +1,7 @@
 package registrypkg
 
 import (
+	"errors"
 	"time"
 
 	consulregistry "github.com/go-kratos/kratos/contrib/registry/consul/v2"
@@ -13,6 +14,10 @@ const (
 
 // NewConsulRegistry consul
 func NewConsulRegistry(consulClient *api.Client, opts ...consulregistry.Option) (*consulregistry.Registry, error) {
+	if consulClient == nil {
+		return nil, errors.New("consul client is nil")
+	}
+
 	var registryOpts = []consulregistry.Option{
 		consulregistry.WithHealthCheck(true),
 		consulregistry.WithHeartbeat(true),

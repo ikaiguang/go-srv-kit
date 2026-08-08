@@ -1,4 +1,4 @@
-package mongo
+package mongopkg
 
 import (
 	"context"
@@ -10,6 +10,15 @@ import (
 
 type monitorOption struct {
 	slowThreshold time.Duration
+	logCommand    bool
+}
+
+// WithCommandLogging controls whether started events include the full Mongo
+// command. It should only be enabled when command contents are safe to log.
+func WithCommandLogging(enabled bool) MonitorOption {
+	return func(o *monitorOption) {
+		o.logCommand = enabled
+	}
 }
 
 type MonitorOption func(*monitorOption)
@@ -30,15 +39,15 @@ func NewMonitor(logger *slog.Logger, opts ...MonitorOption) *event.CommandMonito
 	loggerHandler := loggerWithDefault(logger).With("module", "mongo-driver-monitor")
 	return &event.CommandMonitor{
 		Started: func(ctx context.Context, evt *event.CommandStartedEvent) {
-			loggerHandler.LogAttrs(
-				ctx,
-				slog.LevelInfo,
-				"mongo command started",
+			attrs := []slog.Attr{
 				slog.Int64("request_id", evt.RequestID),
 				slog.String("database", evt.DatabaseName),
 				slog.String("command_name", evt.CommandName),
-				slog.String("command", evt.Command.String()),
-			)
+			}
+			if options.logCommand {
+				attrs = append(attrs, slog.String("command", evt.Command.String()))
+			}
+			loggerHandler.LogAttrs(ctx, slog.LevelDebug, "mongo command started", attrs...)
 		},
 		Succeeded: func(ctx context.Context, evt *event.CommandSucceededEvent) {
 			attrs := []slog.Attr{

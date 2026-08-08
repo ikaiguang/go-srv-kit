@@ -1,8 +1,15 @@
-package consul
+package consulpkg
 
 import (
+	"context"
+	"errors"
+	"time"
+
 	"github.com/hashicorp/consul/api"
+	"github.com/hashicorp/go-hclog"
 )
+
+const defaultProbeTimeout = 5 * time.Second
 
 // NewConsulClient .
 func NewConsulClient(conf *Config, opts ...Option) (*api.Client, error) {
@@ -11,7 +18,49 @@ func NewConsulClient(conf *Config, opts ...Option) (*api.Client, error) {
 
 // NewClient ...
 func NewClient(conf *Config, opts ...Option) (*api.Client, error) {
+	defConfig, err := buildConfig(conf, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	consulCC, err := api.NewClient(defConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = probeClient(consulCC); err != nil {
+		return nil, err
+	}
+
+	return consulCC, nil
+}
+
+func probeClient(consulCC *api.Client) error {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultProbeTimeout)
+	defer cancel()
+	queryOpts := (&api.QueryOptions{}).WithContext(ctx)
+	_, _, err := consulCC.KV().Get("ping", queryOpts)
+	return err
+}
+
+func buildConfig(conf *Config, opts ...Option) (*api.Config, error) {
+	if conf == nil {
+		return nil, errors.New("consul config is nil")
+	}
+
+	option := &options{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(option)
+		}
+	}
 	defConfig := api.DefaultConfig()
+	if option.writer != nil {
+		defConfig = api.DefaultConfigWithLogger(hclog.New(&hclog.LoggerOptions{
+			Name:   "consul-api",
+			Output: option.writer,
+		}))
+	}
 	// basic
 	if conf.Scheme != "" {
 		defConfig.Scheme = conf.Scheme
@@ -61,20 +110,5 @@ func NewClient(conf *Config, opts ...Option) (*api.Client, error) {
 		defConfig.TLSConfig.KeyPEM = []byte(conf.TlsKeyPem)
 	}
 
-	// new client
-	consulCC, err := api.NewClient(defConfig)
-	if err != nil {
-		return consulCC, err
-	}
-
-	// ping 验证连接
-	const pingKey = "ping"
-	const pingValue = "pong"
-	kv := &api.KVPair{Key: pingKey, Value: []byte(pingValue)}
-	_, err = consulCC.KV().Put(kv, nil)
-	if err != nil {
-		return consulCC, err
-	}
-
-	return consulCC, err
+	return defConfig, nil
 }

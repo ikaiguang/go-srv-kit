@@ -1,6 +1,6 @@
 # etcd
 
-`etcd` 包用于把项目内的 protobuf 配置转换为 `go.etcd.io/etcd/client/v3` 客户端配置，并创建可用的 etcd v3 客户端。
+`etcdpkg` 包用于把项目内的 protobuf 配置转换为 `go.etcd.io/etcd/client/v3` 客户端配置，并创建可用的 etcd v3 客户端。
 
 ## 安装
 
@@ -16,7 +16,7 @@ import "github.com/ikaiguang/go-srv-kit/data/etcd/v3"
 
 - `Config`：由 `config.proto` 生成的 etcd 配置结构，包含 endpoints、账号密码、拨号超时、CA 证书和 `insecure_skip_verify`。
 - `NewEtcdClient`：接收 `*Config`，转换为 `clientv3.Config`，并在存在 `CaCert` 时配置 TLS Root CA。
-- `NewClient`：接收原生 `*clientv3.Config`，创建客户端并通过写入 `/ping=pong` 验证连接。
+- `NewClient`：接收原生 `*clientv3.Config`，创建客户端并通过只读 GET `/ping` 验证连接。
 - `Validate` / `ValidateAll`：由 `protoc-gen-validate` 生成的配置校验方法。
 
 ## 快速使用
@@ -28,12 +28,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/ikaiguang/go-srv-kit/data/etcd/v3"
+	etcdpkg "github.com/ikaiguang/go-srv-kit/data/etcd/v3"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func main() {
-	client, err := etcd.NewEtcdClient(&etcd.Config{
+	client, err := etcdpkg.NewEtcdClient(&etcdpkg.Config{
 		Endpoints:   []string{"127.0.0.1:2379"},
 		DialTimeout: durationpb.New(5 * time.Second),
 	})
@@ -47,7 +47,7 @@ func main() {
 使用 TLS CA 证书：
 
 ```go
-client, err := etcd.NewEtcdClient(&etcd.Config{
+client, err := etcdpkg.NewEtcdClient(&etcdpkg.Config{
 	Endpoints:          []string{"127.0.0.1:2379"},
 	Username:           "user",
 	Password:           "password",
@@ -60,7 +60,7 @@ client, err := etcd.NewEtcdClient(&etcd.Config{
 如果调用方已经构造好 etcd 原生配置，可以直接调用：
 
 ```go
-client, err := etcd.NewClient(&clientv3.Config{
+client, err := etcdpkg.NewClient(&clientv3.Config{
 	Endpoints:   []string{"127.0.0.1:2379"},
 	DialTimeout: 5 * time.Second,
 })
@@ -90,12 +90,12 @@ protoc --proto_path=. --proto_path="$(go env GOPATH)/src" --proto_path=./third_p
 go test ./...
 ```
 
-当前目录没有 `*_test.go`。`NewClient` 会连接真实 etcd 并写入 `/ping`，后续补测试时建议使用可控的集成测试环境，或对构造逻辑拆出可单测的部分。
+当前单元测试覆盖 nil 配置、无效 CA PEM 和 TLS 配置转换，不依赖真实 etcd 服务。真实连接探测需要在集成环境另行验证。
 
 ## 注意事项
 
-- `NewEtcdClient` 假设 `Config.DialTimeout` 非空；传入 nil 可能导致运行时 panic。调用前应提供有效的 `google.protobuf.Duration`。
-- `NewClient` 使用 `context.Background()` 执行探测写入，不接收外部 `context.Context`。
-- `NewClient` 创建客户端后，如果探测写入失败，会同时返回非 nil client 和 error，调用方需要自行决定是否关闭该 client。
+- `NewClient` 使用只读 GET `/ping` 探测连接，超时采用 `clientv3.Config.DialTimeout`，未配置时默认为 5 秒。
+- 探测失败时会关闭已创建的 client，并返回 nil client 和带上下文的 error。
+- CA PEM 无法解析时会在创建 client 前返回错误。
 - 生产环境不要默认开启 `InsecureSkipVerify`；确需开启时应记录风险和边界。
 - `config.proto` 的 `go_package` 与当前 module 和包目录保持一致。
