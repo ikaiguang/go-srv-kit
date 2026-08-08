@@ -1,10 +1,12 @@
-package postgres
+package psqlpkg
 
 import (
 	stderrors "errors"
+	"time"
 
-	gormpkg "github.com/ikaiguang/go-gorm-kit/gorm"
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3"
 	"github.com/jackc/pgx/v5/pgconn"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,28 +18,45 @@ func NewPostgresDB(conf *Config, opts ...gormpkg.Option) (db *gorm.DB, err error
 
 // NewDB 初始化
 func NewDB(conf *Config, opts ...gormpkg.Option) (db *gorm.DB, err error) {
-	// 链接选项
+	connOption, err := buildConnOption(conf, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return gormpkg.NewDB(postgres.Open(conf.Dsn), connOption)
+}
+
+func buildConnOption(conf *Config, opts ...gormpkg.Option) (*gormpkg.ConnOption, error) {
+	if conf == nil {
+		return nil, stderrors.New("postgres config is nil")
+	}
+
 	connOption := &gormpkg.ConnOption{
 		LoggerEnable:              conf.LoggerEnable,
 		LoggerLevel:               gormpkg.ParseLoggerLevel(conf.LoggerLevel),
 		LoggerWriters:             nil,
 		LoggerColorful:            conf.LoggerColorful,
-		SlowThreshold:             conf.SlowThreshold.AsDuration(),
+		SlowThreshold:             durationOrZero(conf.SlowThreshold),
 		IgnoreRecordNotFoundError: false,
 
 		ConnMaxActive:   int(conf.ConnMaxActive),
-		ConnMaxLifetime: conf.ConnMaxLifetime.AsDuration(),
+		ConnMaxLifetime: durationOrZero(conf.ConnMaxLifetime),
 		ConnMaxIdle:     int(conf.ConnMaxIdle),
-		ConnMaxIdleTime: conf.ConnMaxIdleTime.AsDuration(),
+		ConnMaxIdleTime: durationOrZero(conf.ConnMaxIdleTime),
 	}
 	for _, o := range opts {
-		o(connOption)
+		if o != nil {
+			o(connOption)
+		}
 	}
+	return connOption, nil
+}
 
-	// 拨号
-	dialect := postgres.Open(conf.Dsn)
-
-	return gormpkg.NewDB(dialect, connOption)
+func durationOrZero(value *durationpb.Duration) time.Duration {
+	if value == nil {
+		return 0
+	}
+	return value.AsDuration()
 }
 
 // IsErrDuplicatedKey ...

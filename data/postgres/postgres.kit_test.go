@@ -1,53 +1,71 @@
-package postgres
+package psqlpkg
 
 import (
+	"errors"
+	"fmt"
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/gorm"
 )
 
-var (
-	dbConfig = &Config{
-		Dsn:             "host=127.0.0.1 user=postgres password=Postgres.123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai",
-		SlowThreshold:   durationpb.New(time.Millisecond * 100),
-		LoggerEnable:    true,
-		LoggerLevel:     "INFO",
-		ConnMaxActive:   100,
-		ConnMaxLifetime: durationpb.New(time.Minute * 30),
-		ConnMaxIdle:     10,
-		ConnMaxIdleTime: durationpb.New(time.Hour),
-	}
-)
+func TestBuildConnOption(t *testing.T) {
+	t.Run("nil config", func(t *testing.T) {
+		option, err := buildConnOption(nil)
+		require.EqualError(t, err, "postgres config is nil")
+		require.Nil(t, option)
+	})
 
-// go test -v ./data/postgres/ -count=1 -run TestNewDB_Xxx
-//
-// ===== 创建用户：修改密码：分配权限 =====
-// CREATE DATABASE test ENCODING = 'utf8';
-// CREATE USER postgres WITH PASSWORD 'Postgres.123456';
-// ALTER USER postgres WITH PASSWORD 'Postgres.123456';
-// GRANT ALL PRIVILEGES ON DATABASE test TO postgres;
-func TestNewDB_Xxx(t *testing.T) {
-	db, err := NewPostgresDB(dbConfig)
-	require.Nil(t, err)
+	t.Run("nil durations", func(t *testing.T) {
+		option, err := buildConnOption(&Config{})
+		require.NoError(t, err)
+		require.Zero(t, option.SlowThreshold)
+		require.Zero(t, option.ConnMaxLifetime)
+		require.Zero(t, option.ConnMaxIdleTime)
+	})
 
-	// testDBConn
-	testDBConn(t, db)
+	t.Run("configured pool", func(t *testing.T) {
+		option, err := buildConnOption(&Config{
+			SlowThreshold:   durationpb.New(100 * time.Millisecond),
+			ConnMaxActive:   100,
+			ConnMaxLifetime: durationpb.New(30 * time.Minute),
+			ConnMaxIdle:     10,
+			ConnMaxIdleTime: durationpb.New(time.Hour),
+		})
+		require.NoError(t, err)
+		require.Equal(t, 100*time.Millisecond, option.SlowThreshold)
+		require.Equal(t, 100, option.ConnMaxActive)
+		require.Equal(t, 30*time.Minute, option.ConnMaxLifetime)
+		require.Equal(t, 10, option.ConnMaxIdle)
+		require.Equal(t, time.Hour, option.ConnMaxIdleTime)
+	})
 }
 
-// testDBConn .
-func testDBConn(t *testing.T, db *gorm.DB) {
-	stdDB, err := db.DB()
-	if err != nil {
-		t.Error(err)
-		return
+func TestNewDBNilConfig(t *testing.T) {
+	db, err := NewDB(nil)
+	require.EqualError(t, err, "postgres config is nil")
+	require.Nil(t, db)
+}
+
+func TestIsErrDuplicatedKey(t *testing.T) {
+	tests := []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{name: "nil", err: nil, want: false},
+		{name: "gorm duplicate", err: gorm.ErrDuplicatedKey, want: true},
+		{name: "wrapped driver duplicate", err: fmt.Errorf("insert: %w", &pgconn.PgError{Code: "23505"}), want: true},
+		{name: "other driver error", err: &pgconn.PgError{Code: "23503"}, want: false},
+		{name: "other error", err: errors.New("other"), want: false},
 	}
 
-	err = stdDB.Ping()
-	if err != nil {
-		t.Error(err)
-		return
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, IsErrDuplicatedKey(tt.err))
+		})
 	}
 }

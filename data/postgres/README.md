@@ -1,15 +1,15 @@
 # postgres
 
-`postgres` 目录提供包 `psqlpkg`，导入路径为 `github.com/ikaiguang/go-srv-kit/data/postgres/postgres`。该包适合在 Go 服务中统一创建 GORM PostgreSQL 连接，并复用 protobuf 形式的数据库配置。
+`postgres` 目录提供包 `psqlpkg`，导入路径为 `github.com/ikaiguang/go-srv-kit/data/postgres/v3`。该包适合在 Go 服务中统一创建 GORM PostgreSQL 连接，并复用 protobuf 形式的数据库配置。
 
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/postgres
+go get github.com/ikaiguang/go-srv-kit/data/postgres/v3
 ```
 
 ```go
-import psqlpkg "github.com/ikaiguang/go-srv-kit/data/postgres/postgres"
+import psqlpkg "github.com/ikaiguang/go-srv-kit/data/postgres/v3"
 ```
 
 ## 核心能力
@@ -43,7 +43,7 @@ package data
 import (
 	"time"
 
-	psqlpkg "github.com/ikaiguang/go-srv-kit/data/postgres/postgres"
+	psqlpkg "github.com/ikaiguang/go-srv-kit/data/postgres/v3"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"gorm.io/gorm"
 )
@@ -96,10 +96,10 @@ make protoc-config-protobuf
 ## 测试
 
 ```bash
-go test ./postgres
+go test ./...
 ```
 
-当前测试 `TestNewDB_Xxx` 会使用 `postgres.kit_test.go` 中的本地 DSN，并调用 `Ping()` 检查数据库连接。运行该测试前需要本机 PostgreSQL 可访问，且存在测试数据库和用户。
+当前单元测试覆盖配置转换、nil 配置和重复键错误识别，不依赖真实 PostgreSQL。真实连接与 `Ping` 应在集成环境使用受控凭据另行验证。
 
 如果只做文档调整，也可以运行全仓库检查：
 
@@ -109,7 +109,7 @@ go test ./...
 
 ## 注意事项
 
-- `NewDB` 当前直接读取 `conf` 及其中的 duration 字段，调用前不要传入 `nil` 配置或未初始化的 duration 指针。
+- `NewDB` 对 nil 配置返回错误；未配置的 duration 字段按零值处理。
 - `Dsn` 可能包含密码和内网地址，不要把真实生产 DSN 写入文档、测试或日志。
 - 连接生命周期和连接池参数会传给底层 `database/sql`，应按服务并发量和 PostgreSQL 资源限制配置。
 - `IsErrDuplicatedKey` 只判断重复键场景；其他 PostgreSQL 错误应由调用方按业务语义处理。
