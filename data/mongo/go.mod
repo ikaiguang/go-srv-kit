@@ -3,7 +3,7 @@ module github.com/ikaiguang/go-srv-kit/data/mongo/v3
 go 1.26.3
 
 require (
-	go.mongodb.org/mongo-driver/v2 v2.6.0
+	go.mongodb.org/mongo-driver/v2 v2.8.0
 	google.golang.org/protobuf v1.36.11
 )
 
