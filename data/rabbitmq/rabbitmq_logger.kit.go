@@ -1,9 +1,10 @@
-package rabbitmq
+package rabbitmqpkg
 
 import (
 	"context"
 	"io"
 	"log/slog"
+	"sort"
 
 	"github.com/ThreeDotsLabs/watermill"
 )
@@ -30,14 +31,20 @@ func NewLogger(handler *slog.Logger) watermill.LoggerAdapter {
 
 func NewLoggerFromWriters(writers ...io.Writer) watermill.LoggerAdapter {
 	handler := slog.NewTextHandler(io.MultiWriter(writers...), &slog.HandlerOptions{
-		Level: slog.LevelDebug,
+		Level:     slog.LevelDebug,
+		AddSource: true,
 	})
 	return NewLogger(slog.New(handler))
 }
 
 func attrs(fields watermill.LogFields) []slog.Attr {
 	var attributes = make([]slog.Attr, 0, len(fields))
+	keys := make([]string, 0, len(fields))
 	for k := range fields {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
 		attributes = append(attributes, slog.Any(k, fields[k]))
 	}
 	return attributes

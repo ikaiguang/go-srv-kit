@@ -9,7 +9,7 @@ go get github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3
 ```
 
 ```go
-import rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3/rabbitmq"
+import rabbitmqpkg "github.com/ikaiguang/go-srv-kit/data/rabbitmq/v3"
 ```
 
 ## 核心能力
@@ -104,17 +104,20 @@ subscriber, err := rabbitmqpkg.NewSubscriber(
 ## 测试
 
 ```bash
-go test ./rabbitmq
+GOWORK=off go test ./...
 ```
 
-当前测试文件包含需要 RabbitMQ 服务的集成示例。运行全量测试前，请确认本地 RabbitMQ 地址、账号和 topic 配置适合当前环境，避免连接到真实生产资源。
+默认测试只覆盖配置校验和日志适配，不连接外部 RabbitMQ。
 
 ## 生成配置代码
 
-`Config` 来自 `rabbitmq/config.proto`。修改 proto 后使用仓库 Makefile 生成：
+`Config` 来自 `rabbitmq/config.proto`。修改 proto 后在仓库根目录生成：
 
 ```bash
-make protoc-config-protobuf
+protoc --proto_path=. --proto_path="$(go env GOPATH)/src" --proto_path=./third_party \
+  --go_out=paths=source_relative:. \
+  --validate_out=paths=source_relative,lang=go:. \
+  data/rabbitmq/config.proto
 ```
 
 不要手工修改 `config.pb.go` 或 `config.pb.validate.go`。
@@ -122,6 +125,7 @@ make protoc-config-protobuf
 ## 注意事项
 
 - `Config.Url` 可能包含账号密码，示例、日志和提交记录中不要使用真实凭据。
+- `NewLoggerFromWriters` 创建的 handler 默认启用 `AddSource`；传入自定义 `*slog.Logger` 时，source 是否输出由调用方的 handler 配置决定。
 - `WithNonDurable` 会创建 non-durable queue 配置，适合临时消息或示例，不适合需要持久化保障的场景。
 - `WithTLSConfig` 只负责注入 TLS 配置；证书文件读取、密钥保护和服务端校验策略由调用方负责。
 - `NewPublisherWithConnection`、`NewSubscriberWithConnection` 等函数复用传入连接，关闭 publisher/subscriber 时会同步关闭底层连接，使用前需要确认生命周期。

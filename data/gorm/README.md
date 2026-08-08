@@ -11,7 +11,7 @@ go get github.com/ikaiguang/go-srv-kit/data/gorm/v3
 导入时建议使用别名，避免和官方 GORM 包名混淆：
 
 ```go
-import gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3/gorm"
+import gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3"
 ```
 
 ## 核心能力
@@ -37,7 +37,7 @@ package data
 import (
 	"time"
 
-	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3/gorm"
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -59,7 +59,7 @@ func OpenDB(dsn string) (*gorm.DB, error) {
 
 ## 分页、条件和排序
 
-`AssembleWheres` 与 `AssembleOrders` 会校验字段名，只允许字母、数字、下划线和点号。字段名、操作符和表名仍应来自服务端可信配置，不要把用户输入直接拼进字段名或操作符。
+`AssembleWheres` 与 `AssembleOrders` 会校验字段名，只允许字母、数字、下划线和点号；安全版本还会限制操作符、占位符和排序方向。字段名和表名仍应来自服务端可信配置，不要把用户输入直接拼进查询结构。
 
 ```go
 args := gormpkg.InitPaginatorArgs(1, 20)
@@ -157,14 +157,14 @@ err = gormpkg.ForceIndex(db.WithContext(ctx), "idx_users_status").
 ## 测试
 
 ```bash
-go test ./gorm
+GOWORK=off go test ./...
 ```
 
-仓库内部分数据库集成测试当前以注释形式保留，需要真实数据库环境时再按测试文件中的示例配置连接。
+默认测试使用 GORM DryRun，不依赖外部数据库。
 
 ## 注意事项
 
 - 本包不管理具体数据库驱动依赖，业务项目需要自行引入 `gorm.io/driver/...`。
 - `BatchInsert` 的表名、列名和冲突 SQL 由调用方实现，务必保持可信来源。
-- 安全版本的条件和排序 helper 只校验字段名，不校验操作符语义。
+- `UnsafeAssembleWheres` 和 `UnsafeAssembleOrders` 不执行输入校验，只能接收可信代码生成的表达式。
 - `RemoveCallback` 当前是占位实现，不会移除 GORM callback。

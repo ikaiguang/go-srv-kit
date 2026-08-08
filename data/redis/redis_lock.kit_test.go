@@ -1,147 +1,89 @@
-package redis
+package redispkg
 
 import (
 	"context"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-
 	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/locker"
 )
 
-const (
-	keyName = "test-redsync"
-)
-
-// go test -v -count 1 ./data/redis -run TestLockOnce
-func TestLockOnce(t *testing.T) {
-
-	redisCC, err := NewDB(redisConfig)
-	require.Nil(t, err)
-	locker := NewLocker(redisCC)
-
-	ctx := context.Background()
-
-	tests := []struct {
-		name         string
-		lockerStatus bool
-		isLockFailed bool
-		unlock       lockerpkg.Unlocker
-	}{
-		{
-			name:         "#加锁成功",
-			lockerStatus: true,
-			isLockFailed: false,
-		},
-		{
-			name:         "#加锁一定的时间后",
-			lockerStatus: true,
-			isLockFailed: false,
-		},
+func TestLockerOnce(t *testing.T) {
+	config := testRedisConfig(t)
+	db, err := NewDB(config)
+	if err != nil {
+		t.Fatalf("NewDB() error = %v", err)
 	}
+	defer db.Close()
 
-	for i, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			unlock, err := locker.Once(ctx, keyName)
-			tests[i].unlock = unlock
-			if tt.lockerStatus {
-				require.Nil(t, err, "期望加锁成功")
-				require.NotNil(t, unlock)
-			} else {
-				require.NotNil(t, err, "期望加锁失败")
-			}
-		})
-
-		// 睡眠
-		if i == len(tests)-1 {
-			continue
-		}
-		sleepDuration := _lockExpire + 2*time.Second
-		t.Logf("==> 睡眠%v,尝试加锁是否成功。设置的加锁时长为%v\n", sleepDuration, _lockExpire)
-		time.Sleep(sleepDuration)
+	locker := NewLocker(db)
+	first, err := locker.Once(context.Background(), "once-lock")
+	if err != nil {
+		t.Fatalf("Once() error = %v", err)
 	}
-
-	// 解锁
-	for i := range tests {
-		if tests[i].unlock == nil {
-			continue
-		}
-		ok, err := tests[i].unlock.Unlock(context.Background())
-		if err != nil {
-			t.Logf("unlock[%d] error : %v\n", i+1, err)
-		}
-		if !ok {
-			t.Logf("unlock[%d] status : %v\n", i+1, ok)
-		}
+	if _, err = locker.Once(context.Background(), "once-lock"); !lockerpkg.IsErrorLockFailed(err) {
+		t.Fatalf("second Once() error = %v, want lock failed", err)
+	}
+	if ok, unlockErr := first.Unlock(context.Background()); unlockErr != nil || !ok {
+		t.Fatalf("Unlock() = (%v, %v), want (true, nil)", ok, unlockErr)
 	}
 }
 
-// go test -v -count 1 ./data/redis -run TestLockMutex
-func TestLockMutex(t *testing.T) {
+func TestLockerMutexCanBeReacquired(t *testing.T) {
+	config := testRedisConfig(t)
+	db, err := NewDB(config)
+	if err != nil {
+		t.Fatalf("NewDB() error = %v", err)
+	}
+	defer db.Close()
 
-	redisCC, err := NewDB(redisConfig)
-	require.Nil(t, err)
-	locker := NewLocker(redisCC)
+	locker := NewLocker(db)
+	first, err := locker.Mutex(context.Background(), "mutex-lock")
+	if err != nil {
+		t.Fatalf("Mutex() error = %v", err)
+	}
+	if _, err = locker.Mutex(context.Background(), "mutex-lock"); !lockerpkg.IsErrorLockFailed(err) {
+		t.Fatalf("second Mutex() error = %v, want lock failed", err)
+	}
+	if ok, unlockErr := first.Unlock(context.Background()); unlockErr != nil || !ok {
+		t.Fatalf("Unlock() = (%v, %v), want (true, nil)", ok, unlockErr)
+	}
+	if second, reacquireErr := locker.Mutex(context.Background(), "mutex-lock"); reacquireErr != nil {
+		t.Fatalf("reacquire Mutex() error = %v", reacquireErr)
+	} else {
+		_, _ = second.Unlock(context.Background())
+	}
+}
 
-	ctx := context.Background()
+func TestMutexLockStopExtendingIsIdempotent(t *testing.T) {
+	lock := &mutexLock{stopExtend: make(chan struct{}), extendDone: make(chan struct{})}
+	done := make(chan struct{})
+	go func() {
+		<-lock.stopExtend
+		close(lock.extendDone)
+		close(done)
+	}()
 
-	tests := []struct {
-		name         string
-		lockerStatus bool
-		isLockFailed bool
-		unlock       lockerpkg.Unlocker
-	}{
-		{
-			name:         "#加锁成功",
-			lockerStatus: true,
-			isLockFailed: false,
-		},
-		{
-			name:         "#加锁失败#1",
-			lockerStatus: false,
-			isLockFailed: true,
-		},
-		{
-			name:         "#加锁失败#2",
-			lockerStatus: false,
-			isLockFailed: true,
-		},
+	if err := lock.stopExtending(context.Background()); err != nil {
+		t.Fatalf("stopExtending() error = %v", err)
+	}
+	if err := lock.stopExtending(context.Background()); err != nil {
+		t.Fatalf("second stopExtending() error = %v", err)
 	}
 
-	for i, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			unlock, err := locker.Mutex(ctx, keyName)
-			tests[i].unlock = unlock
-			if tt.lockerStatus {
-				require.Nil(t, err, "期望加锁成功")
-			} else {
-				require.NotNil(t, err, "期望加锁失败")
-				require.True(t, lockerpkg.IsErrorLockFailed(err), "应返回 LockFailed 错误")
-			}
-		})
-
-		// 睡眠
-		if i == len(tests)-1 {
-			continue
-		}
-		// lockExpire 默认8秒
-		sleepDuration := _lockExpire + time.Second
-		t.Logf("==> 睡眠:%v,尝试加锁是否成功。设置的加锁时长为:%v\n", sleepDuration, _lockExpire)
-		time.Sleep(sleepDuration)
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("stopExtending() did not close the stop channel")
 	}
+}
 
-	// 解锁
-	for i := range tests {
-		if tests[i].unlock == nil {
-			continue
-		}
-		ok, err := tests[i].unlock.Unlock(context.Background())
-		if err != nil {
-			t.Logf("unlock[%d] error : %v\n", i+1, err)
-		}
-		if !ok {
-			t.Logf("unlock[%d] status : %v\n", i+1, ok)
-		}
+func TestNewLockerRejectsNilClient(t *testing.T) {
+	locker := NewLocker(nil)
+	if _, err := locker.Once(context.Background(), "nil-client"); !lockerpkg.IsErrorLockFailed(err) {
+		t.Fatalf("Once() error = %v, want lock failed", err)
+	}
+	if _, err := locker.Mutex(nil, "nil-context"); !lockerpkg.IsErrorLockFailed(err) {
+		t.Fatalf("Mutex(nil) error = %v, want lock failed", err)
 	}
 }

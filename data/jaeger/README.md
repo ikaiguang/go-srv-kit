@@ -1,6 +1,6 @@
 # jaeger
 
-`jaeger` 目录提供包 `jaegerpkg`，导入路径为 `github.com/ikaiguang/go-srv-kit/data/jaeger/v3/jaeger`。该包负责根据配置创建 OpenTelemetry OTLP trace exporter，用于把服务链路追踪数据发送到 Jaeger Collector 或兼容 OTLP 的后端。
+`jaeger` 目录提供包 `jaegerpkg`，导入路径为 `github.com/ikaiguang/go-srv-kit/data/jaeger/v3`。该包负责根据配置创建 OpenTelemetry OTLP trace exporter，用于把服务链路追踪数据发送到 Jaeger Collector 或兼容 OTLP 的后端。
 
 ## 安装
 
@@ -9,7 +9,7 @@ go get github.com/ikaiguang/go-srv-kit/data/jaeger/v3
 ```
 
 ```go
-import jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger/v3/jaeger"
+import jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger/v3"
 ```
 
 ## 核心能力
@@ -32,7 +32,7 @@ import (
 	"log"
 	"time"
 
-	jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger/v3/jaeger"
+	jaegerpkg "github.com/ikaiguang/go-srv-kit/data/jaeger/v3"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -69,13 +69,13 @@ exp, err := jaegerpkg.NewExporter(&jaegerpkg.Config{
 ## 测试
 
 ```bash
-go test ./jaeger
+GOWORK=off go test ./...
 ```
 
 如果默认 Go 构建缓存目录不可写，可使用：
 
 ```bash
-env GOCACHE=/tmp/go-build-cache go test ./jaeger
+env GOWORK=off GOCACHE=/tmp/go-build-cache go test ./...
 ```
 
 ## 生成文件
@@ -86,10 +86,13 @@ env GOCACHE=/tmp/go-build-cache go test ./jaeger
 - `config.pb.validate.go`
 - `config.swagger.json`
 
-不要手动修改生成文件。修改 `config.proto` 后，按仓库 Makefile 重新生成：
+不要手动修改生成文件。修改 `config.proto` 后，在仓库根目录重新生成：
 
 ```bash
-make protoc-config-protobuf
+protoc --proto_path=. --proto_path="$(go env GOPATH)/src" --proto_path=./third_party \
+  --go_out=paths=source_relative:. \
+  --validate_out=paths=source_relative,lang=go:. \
+  data/jaeger/config.proto
 ```
 
 ## 注意事项
@@ -97,5 +100,5 @@ make protoc-config-protobuf
 - `NewExporter` 会先调用地址有效性检查，`Config.Addr` 应为可解析的 `host:port`。
 - `Config.Kind` 只有值为 `http` 时走 HTTP exporter；其他值会走 gRPC exporter。
 - `Config.IsInsecure` 会启用非 TLS 连接，生产环境应根据链路追踪后端和网络边界谨慎配置。
-- `Config.WithHttpBasicAuth`、`Username` 和 `Password` 当前未被 `NewHTTPExporter` 或 `NewGRPCExporter` 使用。
+- `Config.WithHttpBasicAuth` 会为 HTTP exporter 设置 Basic Authorization header；gRPC exporter 不使用该配置。
 - `Option` 和 `WithWriter` 已定义，但当前 exporter 创建流程未消费这些选项。

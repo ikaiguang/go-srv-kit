@@ -1,7 +1,9 @@
-package jaeger
+package jaegerpkg
 
 import (
 	"context"
+	"encoding/base64"
+	"errors"
 	"fmt"
 
 	connectionpkg "github.com/ikaiguang/go-srv-kit/kit/v3/connection"
@@ -24,6 +26,9 @@ func NewJaegerExporter(conf *Config, opts ...Option) (*otlptrace.Exporter, error
 
 // NewExporter jaeger.Exporter
 func NewExporter(conf *Config, opts ...Option) (*otlptrace.Exporter, error) {
+	if conf == nil {
+		return nil, errors.New("jaeger config is nil")
+	}
 	isValidConnection, err := connectionpkg.CheckEndpointValidity(conf.Addr)
 	if err != nil {
 		err = fmt.Errorf("address error : %w", err)
@@ -40,6 +45,9 @@ func NewExporter(conf *Config, opts ...Option) (*otlptrace.Exporter, error) {
 }
 
 func NewHTTPExporter(conf *Config) (*otlptrace.Exporter, error) {
+	if conf == nil {
+		return nil, errors.New("jaeger config is nil")
+	}
 	opts := []otlptracehttp.Option{
 		otlptracehttp.WithEndpoint(conf.Addr),
 	}
@@ -48,6 +56,12 @@ func NewHTTPExporter(conf *Config) (*otlptrace.Exporter, error) {
 	}
 	if conf.Timeout.AsDuration() > 0 {
 		opts = append(opts, otlptracehttp.WithTimeout(conf.Timeout.AsDuration()))
+	}
+	if conf.WithHttpBasicAuth {
+		credentials := base64.StdEncoding.EncodeToString([]byte(conf.Username + ":" + conf.Password))
+		opts = append(opts, otlptracehttp.WithHeaders(map[string]string{
+			"Authorization": "Basic " + credentials,
+		}))
 	}
 	exp, err := otlptracehttp.New(context.Background(), opts...)
 	if err != nil {
@@ -58,6 +72,9 @@ func NewHTTPExporter(conf *Config) (*otlptrace.Exporter, error) {
 }
 
 func NewGRPCExporter(conf *Config) (*otlptrace.Exporter, error) {
+	if conf == nil {
+		return nil, errors.New("jaeger config is nil")
+	}
 	opts := []otlptracegrpc.Option{
 		otlptracegrpc.WithEndpoint(conf.Addr),
 	}

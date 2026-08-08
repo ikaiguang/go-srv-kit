@@ -1,7 +1,8 @@
-package gorm
+package gormpkg
 
 import (
 	"context"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -10,6 +11,11 @@ const (
 	DefaultPlaceholder     = "?" // param placeholder
 	invalidWhereColumnName = "bad_where_from_invalid_column"
 )
+
+var validWhereOperators = map[string]struct{}{
+	"=": {}, "!=": {}, "<>": {}, ">": {}, ">=": {}, "<": {}, "<=": {},
+	"LIKE": {}, "NOT LIKE": {}, "IN": {}, "NOT IN": {}, "IS": {}, "IS NOT": {},
+}
 
 // Where 条件；例：where id = ?(where id = 1)
 type Where struct {
@@ -39,6 +45,9 @@ func AssembleWheres(db *gorm.DB, wheres []*Where) *gorm.DB {
 		return db
 	}
 	for i := range wheres {
+		if wheres[i] == nil {
+			continue
+		}
 		column := wheres[i].Field
 		if !IsValidColumnName(column) {
 			column = invalidWhereColumnName
@@ -46,7 +55,15 @@ func AssembleWheres(db *gorm.DB, wheres []*Where) *gorm.DB {
 				db.Logger.Error(context.Background(), "invalid column(", wheres[i].Field, ")")
 			}
 		}
-		db = db.Where(column+" "+wheres[i].Operator+" "+wheres[i].Placeholder, wheres[i].Value)
+		operator := strings.ToUpper(strings.Join(strings.Fields(wheres[i].Operator), " "))
+		if _, ok := validWhereOperators[operator]; !ok {
+			operator = "="
+		}
+		placeholder := strings.TrimSpace(wheres[i].Placeholder)
+		if placeholder != "?" && placeholder != "(?)" {
+			placeholder = DefaultPlaceholder
+		}
+		db = db.Where(column+" "+operator+" "+placeholder, wheres[i].Value)
 	}
 	return db
 }
@@ -58,6 +75,9 @@ func UnsafeAssembleWheres(db *gorm.DB, wheres []*Where) *gorm.DB {
 		return db
 	}
 	for i := range wheres {
+		if wheres[i] == nil {
+			continue
+		}
 		db = db.Where(wheres[i].Field+" "+wheres[i].Operator+" "+wheres[i].Placeholder, wheres[i].Value)
 	}
 	return db

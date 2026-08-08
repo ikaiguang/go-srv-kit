@@ -1,4 +1,4 @@
-package gorm
+package gormpkg
 
 import (
 	"gorm.io/gorm"
@@ -32,6 +32,9 @@ func InitPaginatorArgsByPageRequest(pageRequest *pagepkg.PageRequest) *Paginator
 
 // Paginator 分页
 func Paginator(db *gorm.DB, pageOption *pagepkg.PageOption) *gorm.DB {
+	if db == nil || pageOption == nil {
+		return db
+	}
 	// limit offset
 	return db.Limit(pageOption.Limit).Offset(pageOption.Offset)
 }

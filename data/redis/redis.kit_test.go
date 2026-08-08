@@ -1,65 +1,59 @@
-package redis
+package redispkg
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-var (
-	redisConfig = &Config{
-		Addresses:       []string{"127.0.0.1:6379"},
-		Username:        "",
-		Password:        "",
-		Db:              0,
-		DialTimeout:     durationpb.New(time.Second * 3),
-		ReadTimeout:     durationpb.New(time.Second * 3),
-		WriteTimeout:    durationpb.New(time.Second * 3),
-		ConnMaxActive:   100,
-		ConnMaxLifetime: durationpb.New(time.Minute * 30),
-		ConnMaxIdle:     10,
-		ConnMaxIdleTime: durationpb.New(time.Hour),
+func testRedisConfig(t *testing.T) *Config {
+	t.Helper()
+	address := os.Getenv("REDIS_TEST_ADDR")
+	if address == "" {
+		t.Skip("set REDIS_TEST_ADDR to run Redis integration tests")
 	}
-)
+	return &Config{
+		Addresses:       []string{address},
+		DialTimeout:     durationpb.New(time.Second),
+		ReadTimeout:     durationpb.New(time.Second),
+		WriteTimeout:    durationpb.New(time.Second),
+		ConnMaxActive:   10,
+		ConnMaxLifetime: durationpb.New(time.Minute),
+		ConnMaxIdle:     2,
+		ConnMinIdle:     1,
+		ConnMaxIdleTime: durationpb.New(time.Minute),
+	}
+}
 
-// go test -v ./data/redis/ -count=1 -run TestNewDB_Xxx
-func TestNewDB_Xxx(t *testing.T) {
-	db, err := NewDB(redisConfig)
-	require.Nil(t, err)
+func TestNewDB(t *testing.T) {
+	config := testRedisConfig(t)
+	db, err := NewDB(config)
+	if err != nil {
+		t.Fatalf("NewDB() error = %v", err)
+	}
+	defer db.Close()
 
 	ctx := context.Background()
-
-	tests := []struct {
-		name  string
-		key   string
-		value string
-		want  string
-	}{
-		{
-			name:  "#set-foo1",
-			key:   "foo1",
-			value: "bar1",
-			want:  "bar1",
-		},
-		{
-			name:  "#set-foo1",
-			key:   "foo2",
-			value: "bar2",
-			want:  "bar2",
-		},
+	if err = db.Set(ctx, "foo", "bar", 0).Err(); err != nil {
+		t.Fatalf("Set() error = %v", err)
 	}
+	value, err := db.Get(ctx, "foo").Result()
+	if err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+	if value != "bar" {
+		t.Fatalf("Get() = %q, want bar", value)
+	}
+}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			setRes, setErr := db.Set(ctx, tt.key, tt.value, 0).Result()
-			require.Nil(t, setErr)
-			t.Log(setRes)
-			gotCmd := db.Get(ctx, tt.key)
-			require.Nil(t, gotCmd.Err())
-			require.Equal(t, tt.want, gotCmd.Val())
-		})
+func TestNewDBRejectsInvalidConfig(t *testing.T) {
+	if db, err := NewDB(nil); err == nil || db != nil {
+		t.Fatalf("NewDB(nil) = (%v, %v), want (nil, error)", db, err)
+	}
+	if db, err := NewDB(&Config{}); err == nil || db != nil {
+		t.Fatalf("NewDB(empty) = (%v, %v), want (nil, error)", db, err)
 	}
 }

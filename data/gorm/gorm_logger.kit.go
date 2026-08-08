@@ -1,4 +1,4 @@
-package gorm
+package gormpkg
 
 import (
 	"strings"
@@ -8,6 +8,9 @@ import (
 
 // NewLogger 数据库日志
 func NewLogger(conf *logger.Config, writers ...logger.Writer) logger.Interface {
+	if conf == nil {
+		conf = &logger.Config{}
+	}
 	if len(writers) == 0 {
 		return logger.New(NewStdWriter(), *conf)
 	}
@@ -19,6 +22,9 @@ func NewLogger(conf *logger.Config, writers ...logger.Writer) logger.Interface {
 
 // NewLoggerForConn 数据库链接日志
 func NewLoggerForConn(opt *ConnOption) logger.Interface {
+	if opt == nil {
+		opt = &ConnOption{}
+	}
 	loggerConfig := &logger.Config{
 		LogLevel:                  opt.LoggerLevel,
 		SlowThreshold:             opt.SlowThreshold,

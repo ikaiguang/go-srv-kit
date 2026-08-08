@@ -1,226 +1,47 @@
-package gorm
+package gormpkg
 
 import (
+	"strings"
 	"testing"
-	"time"
 
-	pagepkg "github.com/ikaiguang/go-srv-kit/kit/v3/page"
-	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
+	"gorm.io/gorm/utils/tests"
 )
 
-// go test -v ./data/gorm/ -count=1 -run TestPaging
-func TestPaging(t *testing.T) {
-	var data = []struct {
-		name          string
-		pageReq       *pagepkg.PageRequest
-		paginatorArgs *PaginatorArgs
-	}{
-		{
-			name: "#分页：顺序：第 1 页",
-			pageReq: &pagepkg.PageRequest{
-				Page:     1,
-				PageSize: 5,
-			},
-			paginatorArgs: &PaginatorArgs{
-				PageOrders: []*Order{
-					{
-						Field: "id",
-						Order: "asc",
-					},
-				},
-				PageWheres: []*Where{
-					{
-						Field:       "id",
-						Operator:    ">",
-						Placeholder: DefaultPlaceholder,
-						Value:       5,
-					},
-				},
-			},
-		},
-		{
-			name: "#分页：顺序：第 2 页",
-			pageReq: &pagepkg.PageRequest{
-				Page:     2,
-				PageSize: 5,
-			},
-			paginatorArgs: &PaginatorArgs{
-				PageOrders: []*Order{
-					{
-						Field: "id",
-						Order: "asc",
-					},
-				},
-				PageWheres: []*Where{
-					{
-						Field:       "id",
-						Operator:    ">",
-						Placeholder: DefaultPlaceholder,
-						Value:       5,
-					},
-				},
-			},
-		},
-		{
-			name: "#分页：顺序：第 100 页",
-			pageReq: &pagepkg.PageRequest{
-				Page:     100,
-				PageSize: 20,
-			},
-			paginatorArgs: &PaginatorArgs{
-				PageOrders: []*Order{
-					{
-						Field: "id",
-						Order: "asc",
-					},
-				},
-				PageWheres: []*Where{
-					{
-						Field:       "id",
-						Operator:    ">",
-						Placeholder: DefaultPlaceholder,
-						Value:       5,
-					},
-				},
-			},
-		},
-		{
-			name: "#分页：倒序：第 1 页",
-			pageReq: &pagepkg.PageRequest{
-				Page:     1,
-				PageSize: 5,
-			},
-			paginatorArgs: &PaginatorArgs{
-				PageOrders: []*Order{
-					{
-						Field: "id",
-						Order: "desc",
-					},
-				},
-				PageWheres: []*Where{
-					{
-						Field:       "id",
-						Operator:    ">",
-						Placeholder: DefaultPlaceholder,
-						Value:       5,
-					},
-				},
-			},
-		},
-		{
-			name: "#分页：倒序：第 2 页",
-			pageReq: &pagepkg.PageRequest{
-				Page:     2,
-				PageSize: 5,
-			},
-			paginatorArgs: &PaginatorArgs{
-				PageOrders: []*Order{
-					{
-						Field: "id",
-						Order: "desc",
-					},
-				},
-				PageWheres: []*Where{
-					{
-						Field:       "id",
-						Operator:    ">",
-						Placeholder: DefaultPlaceholder,
-						Value:       5,
-					},
-				},
-			},
-		},
-		{
-			name: "#分页：倒序：第 100 页",
-			pageReq: &pagepkg.PageRequest{
-				Page:     100,
-				PageSize: 20,
-			},
-			paginatorArgs: &PaginatorArgs{
-				PageOrders: []*Order{
-					{
-						Field: "id",
-						Order: "desc",
-					},
-				},
-				PageWheres: []*Where{
-					{
-						Field:       "id",
-						Operator:    ">",
-						Placeholder: DefaultPlaceholder,
-						Value:       5,
-					},
-				},
-			},
-		},
+type queryTestModel struct {
+	ID        uint64
+	IsDeleted bool
+}
+
+func TestQueryHelpersGenerateSafeSQL(t *testing.T) {
+	db, err := gorm.Open(tests.DummyDialector{}, &gorm.Config{DryRun: true})
+	if err != nil {
+		t.Fatalf("gorm.Open() error = %v", err)
 	}
 
-	for _, dd := range data {
-		t.Run(dd.name, func(t *testing.T) {
-			var (
-				dataModels []*User
-				counter    int64
-			)
-			// 数据库
-			db := dbConn.Table((&User{}).TableName())
-
-			// 分页
-			pageReq, pageOption := pagepkg.ParsePageRequest(dd.pageReq)
-			t.Logf("pageReq:  第 %d 页", pageReq.Page)
-
-			// 条件
-			db = AssembleWheres(db, dd.paginatorArgs.PageWheres)
-
-			// 计算总数
-			if db.Count(&counter).Error != nil {
-				t.Errorf("分页：计算总数失败！")
-				t.FailNow()
-			}
-
-			// 排序
-			db = AssembleOrders(db, dd.paginatorArgs.PageOrders)
-			// 分页
-			db = Paginator(db, pageOption)
-
-			// 总数为 0，无需分页！
-			if counter == 0 {
-				t.Log("分页：总数为 0，无需分页！")
-				return
-			}
-
-			// 分页查询
-			if db.Find(&dataModels).Error != nil {
-				t.Errorf("分页：查询失败！")
-				t.FailNow()
-			}
-
-			pageResp := pagepkg.CalcPageResponse(pageReq, uint32(counter))
-			t.Log("==> pageResp.TotalNumber", pageResp.TotalNumber)
-			t.Log("==> pageResp.TotalPage", pageResp.TotalPage)
-			t.Log("==> pageResp.Page", pageResp.Page)
-			t.Log("==> pageResp.PageSize", pageResp.PageSize)
-
-			var idList = make([]uint64, len(dataModels))
-			for i := range dataModels {
-				idList[i] = dataModels[i].Id
-			}
-			t.Log("==> idList", idList)
+	sql := db.ToSQL(func(tx *gorm.DB) *gorm.DB {
+		tx = QueryUndeletedData(tx.Model(&queryTestModel{}))
+		tx = AssembleWheres(tx, []*Where{
+			nil,
+			{Field: "id", Operator: "= ?; DROP TABLE users", Placeholder: "? OR 1=1", Value: 7},
 		})
+		tx = AssembleOrders(tx, []*Order{nil, NewOrder("id", "asc; DROP TABLE users")})
+		return tx.Find(&[]queryTestModel{})
+	})
+
+	if strings.Contains(strings.ToUpper(sql), "DROP TABLE") || strings.Contains(sql, "OR 1=1") {
+		t.Fatalf("query contains unsafe SQL: %s", sql)
+	}
+	if !strings.Contains(sql, "is_deleted = 0") {
+		t.Fatalf("query does not contain undeleted predicate: %s", sql)
+	}
+	if !strings.Contains(sql, "ORDER BY id desc") {
+		t.Fatalf("query does not sanitize order direction: %s", sql)
 	}
 }
 
-// go test -v ./data/gorm/ -count=1 -run TestTest_CreateUser
-func TestTest_CreateUser(t *testing.T) {
-	userModel := &User{
-		Id:   0,
-		Name: "😊_" + time.Now().Format(time.RFC3339),
-		Age:  30,
+func TestPaginatorNilOption(t *testing.T) {
+	if got := Paginator(nil, nil); got != nil {
+		t.Fatalf("Paginator(nil, nil) = %v, want nil", got)
 	}
-	err := dbConn.Create(userModel).Error
-	require.Nil(t, err)
-
-	var dataModel = &User{}
-	err = dbConn.Where("id = ?", userModel.Id).First(dataModel).Error
-	require.Nil(t, err)
-	t.Logf("==> dataModel : %#v\n", dataModel)
 }

@@ -13,7 +13,7 @@ go get github.com/ikaiguang/go-srv-kit/data/redis/v3
 导入本包：
 
 ```go
-import redispkg "github.com/ikaiguang/go-srv-kit/data/redis/v3/redis"
+import redispkg "github.com/ikaiguang/go-srv-kit/data/redis/v3"
 ```
 
 ## 核心能力
@@ -81,31 +81,34 @@ defer unlock.Unlock(context.Background())
 
 ## 测试
 
-本包测试会连接默认 Redis 地址 `127.0.0.1:6379`，属于集成测试。运行前请先启动本地 Redis，或按测试代码调整环境。
+默认单元测试不连接外部 Redis。设置 `REDIS_TEST_ADDR` 后，会额外执行连接和分布式锁集成测试。
 
 ```bash
-go test ./redis
+GOWORK=off go test ./...
 ```
 
-也可以运行指定用例：
+Windows CMD 下执行集成测试：
 
-```bash
-go test -v ./redis -count=1 -run TestNewDB_Xxx
-go test -v ./redis -count=1 -run TestLockOnce
-go test -v ./redis -count=1 -run TestLockMutex
+```bat
+set "REDIS_TEST_ADDR=127.0.0.1:6379"
+set "GOWORK=off"
+go test -count=1 ./...
 ```
 
 ## 生成代码
 
-`config.pb.go` 和 `config.pb.validate.go` 是生成文件，不要手动修改。修改 `redis/config.proto` 后，按 `Makefile` 目标重新生成：
+`config.pb.go` 和 `config.pb.validate.go` 是生成文件，不要手动修改。修改 `redis/config.proto` 后，在仓库根目录重新生成：
 
 ```bash
-make protoc-config-protobuf
+protoc --proto_path=. --proto_path="$(go env GOPATH)/src" --proto_path=./third_party \
+  --go_out=paths=source_relative:. \
+  --validate_out=paths=source_relative,lang=go:. \
+  data/redis/config.proto
 ```
 
 ## 注意事项
 
-- `NewDB` 会立即执行 `Ping`；Redis 不可达时会返回连接错误。
+- `NewDB` 会在有限超时内执行 `Ping`；Redis 不可达时会关闭客户端并返回 `nil, error`。
 - `Config` 中的 duration 字段会被直接调用 `AsDuration`，使用前应显式赋值。
 - `Password`、Redis 地址和锁名可能包含敏感业务信息，示例和日志中不要输出真实凭据。
 - 默认锁过期时间为 8 秒，默认加锁尝试次数为 1；需要改变 redsync 行为时可通过 `NewLocker` 的 `redsync.Option` 参数传入。

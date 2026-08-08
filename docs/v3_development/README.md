@@ -68,7 +68,7 @@ module path 增加 `/v3` 后，module 内所有跨包 import 都必须同步更�
 import (
 	filepkg "github.com/ikaiguang/go-srv-kit/kit/v3/file"
 	authpkg "github.com/ikaiguang/go-srv-kit/auth/v3/auth"
-	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3/gorm"
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3"
 	mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql/v3/mysql"
 	clientutil "github.com/ikaiguang/go-srv-kit/service/v3/cluster_service_api"
 )

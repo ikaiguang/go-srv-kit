@@ -1,11 +1,19 @@
-package gorm
+package gormpkg
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
 // NewDB creates a new DB instance
 func NewDB(dialect gorm.Dialector, connOption *ConnOption) (db *gorm.DB, err error) {
+	if dialect == nil {
+		return nil, errors.New("gorm dialector is nil")
+	}
+	if connOption == nil {
+		connOption = &ConnOption{}
+	}
 	// 日志
 	loggerHandler := NewLoggerForConn(connOption)
 

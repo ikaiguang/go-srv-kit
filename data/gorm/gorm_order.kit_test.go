@@ -1,4 +1,4 @@
-package gorm
+package gormpkg
 
 import (
 	"testing"
@@ -54,5 +54,14 @@ func TestPaginate_ParseDirection(t *testing.T) {
 			got := ParseOrderDirection(param.given)
 			require.Equal(t, param.want, got, "Direction")
 		})
+	}
+}
+
+func TestIsValidColumnName(t *testing.T) {
+	for _, field := range []string{"id", "users.id", "schema.users.id"} {
+		require.True(t, IsValidColumnName(field), "field = %q", field)
+	}
+	for _, field := range []string{"", ".id", "users.", "users..id", "id desc", "id;drop"} {
+		require.False(t, IsValidColumnName(field), "field = %q", field)
 	}
 }

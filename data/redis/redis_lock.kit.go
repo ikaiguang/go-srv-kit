@@ -1,11 +1,15 @@
-package redis
+package redispkg
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/go-redsync/redsync/v4"
+	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
 	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/locker"
 	threadpkg "github.com/ikaiguang/go-srv-kit/kit/v3/thread"
+	"github.com/redis/go-redis/v9"
 )
 
 const (
@@ -18,6 +22,7 @@ const (
 type Locker struct {
 	rs   *redsync.Redsync
 	opts []redsync.Option
+	err  error
 }
 
 // NewLocker ..
@@ -29,6 +34,10 @@ func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerpkg.
 	}
 	lockerOpts = append(lockerOpts, opts...)
 
+	if redisCC == nil {
+		return &Locker{opts: lockerOpts, err: errors.New("redis client is nil")}
+	}
+
 	// 锁
 	return &Locker{
 		rs:   redsync.New(goredis.NewPool(redisCC)),
@@ -38,6 +47,17 @@ func NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option) lockerpkg.
 
 // Once ...
 func (s *Locker) Once(ctx context.Context, lockName string) (locker lockerpkg.Unlocker, err error) {
+	if ctx == nil {
+		return nil, lockerpkg.ErrorLockerFailed(lockName, errors.New("redis lock context is nil"))
+	}
+	if s == nil || s.err != nil || s.rs == nil {
+		if s != nil && s.err != nil {
+			err = s.err
+		} else {
+			err = errors.New("redis locker is not initialized")
+		}
+		return nil, lockerpkg.ErrorLockerFailed(lockName, err)
+	}
 	m := &onceLock{lockName: lockName}
 	m.mutex = s.rs.NewMutex(lockName, s.opts...)
 	if err = m.mutex.LockContext(ctx); err != nil {
@@ -49,6 +69,17 @@ func (s *Locker) Once(ctx context.Context, lockName string) (locker lockerpkg.Un
 
 // Mutex ...
 func (s *Locker) Mutex(ctx context.Context, lockName string) (locker lockerpkg.Unlocker, err error) {
+	if ctx == nil {
+		return nil, lockerpkg.ErrorLockerFailed(lockName, errors.New("redis lock context is nil"))
+	}
+	if s == nil || s.err != nil || s.rs == nil {
+		if s != nil && s.err != nil {
+			err = s.err
+		} else {
+			err = errors.New("redis locker is not initialized")
+		}
+		return nil, lockerpkg.ErrorLockerFailed(lockName, err)
+	}
 	m := &mutexLock{lockName: lockName}
 	m.mutex = s.rs.NewMutex(lockName, s.opts...)
 	if err = m.mutex.LockContext(ctx); err != nil {
@@ -57,7 +88,8 @@ func (s *Locker) Mutex(ctx context.Context, lockName string) (locker lockerpkg.U
 	}
 
 	// 续期锁，防止锁自动过期
-	m.stopExtend = make(chan bool)
+	m.stopExtend = make(chan struct{})
+	m.extendDone = make(chan struct{})
 	threadpkg.GoSafe(func() {
 		m.extend(ctx)
 	})

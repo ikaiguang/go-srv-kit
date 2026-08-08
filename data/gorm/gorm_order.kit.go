@@ -1,4 +1,4 @@
-package gorm
+package gormpkg
 
 import (
 	"context"
@@ -45,6 +45,9 @@ func AssembleOrders(db *gorm.DB, orders []*Order) *gorm.DB {
 	}
 
 	for i := range orders {
+		if orders[i] == nil {
+			continue
+		}
 		column := orders[i].Field
 		if !IsValidColumnName(column) {
 			column = invalidOrderColumnName
@@ -65,6 +68,9 @@ func UnsafeAssembleOrders(db *gorm.DB, orders []*Order) *gorm.DB {
 	}
 
 	for i := range orders {
+		if orders[i] == nil {
+			continue
+		}
 		db = db.Order(orders[i].Field + " " + orders[i].Order)
 	}
 	return db

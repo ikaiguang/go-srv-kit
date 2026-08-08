@@ -1,4 +1,4 @@
-package gorm
+package gormpkg
 
 // BatchInsertOption 批量插入选项
 type BatchInsertOption func(*batchInsertOptions)
@@ -78,6 +78,9 @@ func WithBatchInsertIgnore() BatchInsertOption {
 // Postgres : ON CONFLICT(id) DO UPDATE SET column_2= CONCAT(test_table.column_2, excluded.column_2);
 func WithBatchInsertConflictAction(req *BatchInsertConflictActionReq) BatchInsertOption {
 	return func(options *batchInsertOptions) {
+		if req == nil {
+			return
+		}
 		options.withConflictAction = true
 		options.onConflictValueAlias = req.OnConflictValueAlias
 		options.onConflictTarget = req.OnConflictTarget

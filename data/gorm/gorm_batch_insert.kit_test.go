@@ -1,96 +1,77 @@
-package gorm
+package gormpkg
 
 import (
-	"strconv"
+	"context"
+	"strings"
 	"testing"
-	"time"
 
-	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
+	"gorm.io/gorm/utils/tests"
 )
 
-// go test -v ./data/gorm/ -count=1 -run TestBatchInsert_ForMySQL
-func TestBatchInsert_ForMySQL(t *testing.T) {
-	dataModels := getDataModels()
-
-	var args = []struct {
-		name string
-		opts []BatchInsertOption
-	}{
-		//{
-		//	name: "#batch_insert_for_mysql",
-		//	opts: nil,
-		//},
-		{
-			name: "#batch_insert_for_mysql_#_with_ignore",
-			opts: []BatchInsertOption{
-				WithBatchInsertIgnore(),
-			},
-		},
-		{
-			name: "#batch_insert_for_mysql_#_with_conflict_action",
-			opts: []BatchInsertOption{
-				WithBatchInsertConflictAction(dataModels.ConflictActionForMySQL()),
-			},
-		},
-	}
-
-	for _, data := range args {
-		t.Run(data.name, func(t *testing.T) {
-			err := BatchInsert(dbConn, &dataModels, data.opts...)
-			require.Nil(t, err)
-		})
-	}
+type batchInsertTestRepo struct {
+	table   string
+	columns []string
+	rows    int
 }
 
-// go test -v ./data/gorm/ -count=1 -run TestBatchInsert_ForPostgres
-func TestBatchInsert_ForPostgres(t *testing.T) {
-	dataModels := getDataModels()
-
-	var args = []struct {
-		name string
-		opts []BatchInsertOption
-	}{
-		//{
-		//	name: "#batch_insert_for_mysql",
-		//	opts: nil,
-		//},
-		//{
-		//	// 无IGNORE语法
-		//	name: "#batch_insert_for_mysql_#_with_ignore",
-		//	//opts: []BatchInsertOption{
-		//	//	WithBatchInsertIgnore(),
-		//	//},
-		//},
-		{
-			name: "#batch_insert_for_mysql_#_with_conflict_action",
-			opts: []BatchInsertOption{
-				WithBatchInsertConflictAction(dataModels.ConflictActionForPostgres()),
-			},
-		},
-	}
-
-	for _, data := range args {
-		t.Run(data.name, func(t *testing.T) {
-			err := BatchInsert(psqlConn, &dataModels, data.opts...)
-			require.Nil(t, err)
-		})
-	}
+func (s *batchInsertTestRepo) TableName() string { return s.table }
+func (s *batchInsertTestRepo) Len() int          { return s.rows }
+func (s *batchInsertTestRepo) InsertColumns() ([]string, string) {
+	return s.columns, strings.TrimSuffix(strings.Repeat("?, ", len(s.columns)), ", ")
 }
-
-// getDataModels 获取数据模型
-func getDataModels() UserSlice {
-	var (
-		now        = time.Now().Format(time.RFC3339)
-		userTotal  = 10
-		userModels = make([]*User, userTotal)
-	)
-	_ = now
-	for i := 0; i < userTotal; i++ {
-		userModels[i] = &User{
-			//Name: "user_" + now + "_" + strconv.Itoa(i),
-			Name: "user_" + strconv.Itoa(i),
-			Age:  i + 1,
+func (s *batchInsertTestRepo) InsertValues(args *BatchInsertValueArgs) ([]any, []string) {
+	values := make([]any, 0, (args.StepEnd-args.StepStart)*len(s.columns))
+	placeholders := make([]string, 0, args.StepEnd-args.StepStart)
+	for i := args.StepStart; i < args.StepEnd; i++ {
+		placeholders = append(placeholders, "("+args.InsertPlaceholder+")")
+		for range s.columns {
+			values = append(values, i)
 		}
 	}
-	return userModels
+	return values, placeholders
+}
+
+func TestBatchInsertValidation(t *testing.T) {
+	db, err := gorm.Open(tests.DummyDialector{}, &gorm.Config{DryRun: true})
+	if err != nil {
+		t.Fatalf("gorm.Open() error = %v", err)
+	}
+
+	tests := []struct {
+		name    string
+		db      *gorm.DB
+		repo    BatchInsertRepo
+		wantErr string
+	}{
+		{name: "nil db", repo: &batchInsertTestRepo{}, wantErr: "db is nil"},
+		{name: "nil repo", db: db, wantErr: "repo is nil"},
+		{name: "invalid table", db: db, repo: &batchInsertTestRepo{table: "users; DROP TABLE users", columns: []string{"id"}, rows: 1}, wantErr: "table name is invalid"},
+		{name: "empty columns", db: db, repo: &batchInsertTestRepo{table: "users", rows: 1}, wantErr: "columns are empty"},
+		{name: "invalid column", db: db, repo: &batchInsertTestRepo{table: "users", columns: []string{"id) VALUES (1)"}, rows: 1}, wantErr: "column name is invalid"},
+		{name: "valid", db: db, repo: &batchInsertTestRepo{table: "app.users", columns: []string{"id", "name"}, rows: 2}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := BatchInsertWithContext(context.Background(), tt.db, tt.repo, nil)
+			if tt.wantErr == "" {
+				if err != nil {
+					t.Fatalf("BatchInsertWithContext() error = %v", err)
+				}
+				return
+			}
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("BatchInsertWithContext() error = %v, want containing %q", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestWithBatchInsertConflictActionNil(t *testing.T) {
+	options := &batchInsertOptions{}
+	WithBatchInsertConflictAction(nil)(options)
+	if options.withConflictAction {
+		t.Fatal("WithBatchInsertConflictAction(nil) enabled conflict action")
+	}
 }

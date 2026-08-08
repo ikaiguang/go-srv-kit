@@ -1,71 +1,70 @@
-package jaeger
+package jaegerpkg
 
 import (
+	"context"
+	"net"
 	"testing"
 	"time"
 
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// go test -v ./data/jaeger/ -count=1 -run TestNewJaegerExporter_Xxx
-func TestNewJaegerExporter_Xxx(t *testing.T) {
-	type args struct {
-		conf *Config
-		opts []Option
+func TestNewExporterRejectsInvalidConfig(t *testing.T) {
+	if _, err := NewExporter(nil); err == nil {
+		t.Fatal("NewExporter(nil) error = nil")
 	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *otlptrace.Exporter
-		wantErr bool
-	}{
-		{
-			name: "#NewJaegerExporter_GRPC",
-			args: args{
-				conf: &Config{
-					Kind:              string(KindGRPC),
-					Addr:              "my-jaeger:4317",
-					IsInsecure:        true,
-					Timeout:           durationpb.New(time.Second * 30),
-					WithHttpBasicAuth: false,
-					Username:          "",
-					Password:          "",
-				},
-				opts: nil,
-			},
-			want:    nil,
-			wantErr: false,
-		},
-		{
-			name: "#NewJaegerExporter_HTTP",
-			args: args{
-				conf: &Config{
-					Kind:              string(KindHTTP),
-					Addr:              "my-jaeger:4318",
-					IsInsecure:        true,
-					Timeout:           durationpb.New(time.Second * 30),
-					WithHttpBasicAuth: false,
-					Username:          "",
-					Password:          "",
-				},
-				opts: nil,
-			},
-			want:    nil,
-			wantErr: false,
-		},
+	if _, err := NewExporter(&Config{}); err == nil {
+		t.Fatal("NewExporter() invalid address error = nil")
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewJaegerExporter(tt.args.conf, tt.args.opts...)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewJaegerExporter() error = %+v, wantErr %v", err, tt.wantErr)
+}
+
+func TestNewExporter(t *testing.T) {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen() error = %v", err)
+	}
+	defer listener.Close()
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		for {
+			conn, acceptErr := listener.Accept()
+			if acceptErr != nil {
 				return
 			}
-			//if !reflect.DeepEqual(got, tt.want) {
-			//	t.Errorf("NewJaegerExporter() got = %v, want %v", got, tt.want)
-			//}
-			t.Logf("==> got: %#v\n", got)
+			_ = conn.Close()
+		}
+	}()
+
+	for _, kind := range []Kind{KindHTTP, KindGRPC} {
+		t.Run(string(kind), func(t *testing.T) {
+			exporter, exportErr := NewExporter(&Config{
+				Kind:       string(kind),
+				Addr:       listener.Addr().String(),
+				IsInsecure: true,
+				Timeout:    durationpb.New(time.Second),
+			})
+			if exportErr != nil {
+				t.Fatalf("NewExporter() error = %v", exportErr)
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			if shutdownErr := exporter.Shutdown(ctx); shutdownErr != nil {
+				t.Fatalf("Exporter.Shutdown() error = %v", shutdownErr)
+			}
 		})
+	}
+
+	_ = listener.Close()
+	<-done
+}
+
+func TestDirectExporterConstructorsRejectNilConfig(t *testing.T) {
+	if _, err := NewHTTPExporter(nil); err == nil {
+		t.Fatal("NewHTTPExporter(nil) error = nil")
+	}
+	if _, err := NewGRPCExporter(nil); err == nil {
+		t.Fatal("NewGRPCExporter(nil) error = nil")
 	}
 }

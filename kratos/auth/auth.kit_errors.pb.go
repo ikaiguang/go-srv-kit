@@ -4,8 +4,9 @@ package authpkg
 
 import (
 	fmt "fmt"
-	errors "github.com/go-kratos/kratos/v2/errors"
 	strconv "strconv"
+
+	errors "github.com/go-kratos/kratos/v2/errors"
 )
 
 // This is a compile-time assertion to ensure that this generated file

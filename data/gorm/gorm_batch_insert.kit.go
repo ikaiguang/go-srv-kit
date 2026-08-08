@@ -1,7 +1,8 @@
-package gorm
+package gormpkg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"strings"
@@ -54,7 +55,20 @@ func BatchInsert(db *gorm.DB, repo BatchInsertRepo, opts ...BatchInsertOption) e
 
 // BatchInsertWithContext 批量插入
 func BatchInsertWithContext(ctx context.Context, db *gorm.DB, repo BatchInsertRepo, opts ...BatchInsertOption) error {
-	if repo.Len() == 0 {
+	if ctx == nil {
+		return errors.New("batch insert context is nil")
+	}
+	if db == nil {
+		return errors.New("batch insert db is nil")
+	}
+	if repo == nil {
+		return errors.New("batch insert repo is nil")
+	}
+	repoLen := repo.Len()
+	if repoLen < 0 {
+		return fmt.Errorf("batch insert repo length is negative: %d", repoLen)
+	}
+	if repoLen == 0 {
 		if db.Logger != nil {
 			db.Logger.Info(ctx, "insert data is empty")
 		}
@@ -64,11 +78,27 @@ func BatchInsertWithContext(ctx context.Context, db *gorm.DB, repo BatchInsertRe
 	// 选项
 	opt := &batchInsertOptions{}
 	for i := range opts {
-		opts[i](opt)
+		if opts[i] != nil {
+			opts[i](opt)
+		}
 	}
 
 	// insert columns
 	insertColumnList, insertPlaceholder := repo.InsertColumns()
+	if !IsValidColumnName(repo.TableName()) {
+		return fmt.Errorf("batch insert table name is invalid: %q", repo.TableName())
+	}
+	if len(insertColumnList) == 0 {
+		return errors.New("batch insert columns are empty")
+	}
+	for _, column := range insertColumnList {
+		if !IsValidColumnName(column) {
+			return fmt.Errorf("batch insert column name is invalid: %q", column)
+		}
+	}
+	if strings.TrimSpace(insertPlaceholder) == "" {
+		return errors.New("batch insert placeholder is empty")
+	}
 	insertColumnStr := strings.Join(insertColumnList, ", ")
 
 	// SQL
@@ -104,14 +134,14 @@ func BatchInsertWithContext(ctx context.Context, db *gorm.DB, repo BatchInsertRe
 	// insert channelLen records at a time
 	columnLen := len(insertColumnList)
 	channelLen := 65535 / columnLen
-	channelCount := int(math.Ceil(float64(repo.Len()) / float64(channelLen)))
+	channelCount := int(math.Ceil(float64(repoLen) / float64(channelLen)))
 
 	// insert
 	for i := 1; i <= channelCount; i++ {
 		start := (i - 1) * channelLen
 		end := i * channelLen
-		if end > repo.Len() {
-			end = repo.Len()
+		if end > repoLen {
+			end = repoLen
 		}
 
 		// insert

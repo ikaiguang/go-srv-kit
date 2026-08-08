@@ -1,4 +1,4 @@
-package gorm
+package gormpkg
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 
 var (
 	// isValidColumnNameRegex 支持字母、数字、下划线、点号（表名限定如 table.column）
-	isValidColumnNameRegex = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_.]*$`)
+	isValidColumnNameRegex = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$`)
 )
 
 // IsValidColumnName 判断是否为有效的字段名
@@ -22,6 +22,12 @@ func IsValidColumnName(field string) bool {
 // ExecWithTransaction 在事务中执行一系列操作; 无需手动开启事务
 // DOCS: https://gorm.io/zh_CN/docs/transactions.html
 func ExecWithTransaction(dbConn *gorm.DB, fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error) {
+	if dbConn == nil {
+		return stderrors.New("gorm db is nil")
+	}
+	if fc == nil {
+		return stderrors.New("gorm transaction callback is nil")
+	}
 	return dbConn.Transaction(fc, opts...)
 }
 
@@ -33,30 +39,60 @@ type TransactionInterface interface {
 }
 
 func NewTransaction(ctx context.Context, db *gorm.DB, opts ...*sql.TxOptions) TransactionInterface {
+	if db == nil {
+		return &transaction{err: stderrors.New("gorm db is nil")}
+	}
+	if ctx == nil {
+		return &transaction{err: stderrors.New("gorm transaction context is nil")}
+	}
 	tx := db.WithContext(ctx).Begin(opts...)
-
-	return &transaction{tx: tx}
+	return &transaction{tx: tx, err: tx.Error}
 }
 
 type transaction struct {
-	tx *gorm.DB
+	tx  *gorm.DB
+	err error
 }
 
 func (s *transaction) Do(ctx context.Context, fc func(ctx context.Context, tx *gorm.DB) error) error {
+	if s.err != nil {
+		return s.err
+	}
+	if ctx == nil {
+		return stderrors.New("gorm transaction context is nil")
+	}
+	if fc == nil {
+		return stderrors.New("gorm transaction callback is nil")
+	}
 	return fc(ctx, s.tx)
 }
 
 func (s *transaction) Commit(ctx context.Context) error {
+	if s.err != nil {
+		return s.err
+	}
+	if ctx == nil {
+		return stderrors.New("gorm transaction context is nil")
+	}
 	return s.tx.WithContext(ctx).Commit().Error
 }
 
 func (s *transaction) Rollback(ctx context.Context) error {
+	if s.err != nil {
+		return s.err
+	}
+	if ctx == nil {
+		return stderrors.New("gorm transaction context is nil")
+	}
 	return s.tx.WithContext(ctx).Rollback().Error
 }
 
 func (s *transaction) CommitAndErrRollback(ctx context.Context, resultErr error) (err error) {
 	if resultErr != nil {
-		return s.Rollback(ctx)
+		if rollbackErr := s.Rollback(ctx); rollbackErr != nil {
+			return stderrors.Join(resultErr, rollbackErr)
+		}
+		return resultErr
 	}
 	defer func() {
 		if err != nil {

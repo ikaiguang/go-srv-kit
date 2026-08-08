@@ -1,4 +1,4 @@
-package gorm
+package gormpkg
 
 import (
 	"time"
@@ -27,7 +27,7 @@ type Model struct {
 }
 
 type ModelForMysql struct {
-	Id          uint64    `gorm:"column:id;type:uint;autoIncrement;default:current_timestamp();comment:ID" json:"id"`
+	Id          uint64    `gorm:"column:id;type:uint;autoIncrement;comment:ID" json:"id"`
 	CreatedTime time.Time `gorm:"column:created_time;type:time;not null;default:current_timestamp();comment:创建时间" json:"created_time"`
 	UpdatedTime time.Time `gorm:"column:updated_time;type:time;not null;default:current_timestamp();comment:更新时间" json:"updated_time"`
 	IsDeleted   bool      `gorm:"column:is_deleted;type:uint;default:0;comment:是否已删除" json:"is_deleted"`
@@ -35,7 +35,7 @@ type ModelForMysql struct {
 }
 
 type ModelForPostgres struct {
-	Id          uint64    `gorm:"column:id;type:uint;autoIncrement;default:current_timestamp;comment:ID" json:"id"`
+	Id          uint64    `gorm:"column:id;type:uint;autoIncrement;comment:ID" json:"id"`
 	CreatedTime time.Time `gorm:"column:created_time;type:time;not null;default:current_timestamp;comment:创建时间" json:"created_time"`
 	UpdatedTime time.Time `gorm:"column:updated_time;type:time;not null;default:current_timestamp;comment:更新时间" json:"updated_time"`
 	IsDeleted   bool      `gorm:"column:is_deleted;type:uint;default:0;comment:是否已删除" json:"is_deleted"`
@@ -44,12 +44,12 @@ type ModelForPostgres struct {
 
 // QueryUndeletedData 未删除的数据
 func QueryUndeletedData(dbConn *gorm.DB) *gorm.DB {
-	return dbConn.Where(FieldIsDeleted, 0)
+	return dbConn.Where(FieldIsDeleted+" = ?", 0)
 }
 
 // QueryDeletedData 删除的数据
 func QueryDeletedData(dbConn *gorm.DB) *gorm.DB {
-	return dbConn.Where(FieldIsDeleted, 1)
+	return dbConn.Where(FieldIsDeleted+" = ?", 1)
 }
 
 // SetUpdateTime 设置更新时间字段
