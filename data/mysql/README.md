@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/data/mysql
+go get github.com/ikaiguang/go-srv-kit/data/mysql/v3
 ```
 
 ```go
-import mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql/mysql"
+import mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql/v3"
 ```
 
 ## 核心能力
@@ -27,8 +27,8 @@ package main
 import (
 	"time"
 
-	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/gorm"
-	mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql/mysql"
+	gormpkg "github.com/ikaiguang/go-srv-kit/data/gorm/v3"
+	mysqlpkg "github.com/ikaiguang/go-srv-kit/data/mysql/v3"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -84,10 +84,10 @@ if mysqlpkg.IsErrDuplicatedKey(err) {
 ## 测试
 
 ```bash
-go test ./mysql
+go test ./...
 ```
 
-当前测试会尝试连接 `mysql/mysql.kit_test.go` 中的本地 MySQL 示例 DSN，并执行 `Ping`。如果本机没有对应数据库，测试会失败；这属于环境依赖，不代表文档或编译一定有问题。
+当前单元测试覆盖配置转换、nil 配置和重复键错误识别，不依赖真实 MySQL。真实连接与 `Ping` 应在集成环境使用受控凭据另行验证。
 
 ## 生成
 
@@ -101,6 +101,6 @@ make protoc-config-protobuf
 
 ## 注意事项
 
-- `NewDB` 当前不对 `conf` 或 `conf.SlowThreshold` 等 duration 字段做 nil 保护，调用前应传入完整配置。
+- `NewDB` 对 nil 配置返回错误；未配置的 duration 字段按零值处理。
 - DSN、日志和错误信息可能包含敏感信息，生产环境应使用脱敏后的配置和日志策略。
 - `NewDB` 只负责构建 DB 实例；业务层仍应自行管理迁移、事务边界、超时上下文和关闭流程。
