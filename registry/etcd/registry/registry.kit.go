@@ -3,7 +3,7 @@ package registrypkg
 import (
 	"errors"
 
-	etcdregistry "github.com/go-kratos/kratos/contrib/registry/etcd/v2"
+	etcdregistry "github.com/go-kratos/kratos/contrib/registry/etcd/v3"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 

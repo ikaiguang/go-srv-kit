@@ -14,7 +14,7 @@ import registrypkg "github.com/ikaiguang/go-srv-kit/registry/etcd/v3/registry"
 
 ## 核心能力
 
-- `NewEtcdRegistry`：接收 etcd v3 client 和可选的 Kratos etcd registry option，返回 `*etcdregistry.Registry`。
+- `NewEtcdRegistry`：接收 etcd v3 client 和来自 `github.com/go-kratos/kratos/contrib/registry/etcd/v3` 的可选 registry option，返回 `*etcdregistry.Registry`。
 - 默认配置：函数内部默认添加 `etcdregistry.MaxRetry(3)`，再追加调用方传入的自定义 option。
 
 ## 快速使用
