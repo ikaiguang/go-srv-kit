@@ -4,9 +4,9 @@ go 1.26.3
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/ikaiguang/go-srv-kit/kit/v3 v3.0.0
+	github.com/ikaiguang/go-srv-kit/kit/v3 v3.0.1
 	github.com/stretchr/testify v1.11.1
-	gorm.io/gorm v1.31.1
+	gorm.io/gorm v1.31.2
 	gorm.io/hints v1.1.2
 )
 
