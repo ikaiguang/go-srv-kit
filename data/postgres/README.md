@@ -87,10 +87,13 @@ if err := db.Create(&model).Error; err != nil {
 - `config.pb.validate.go`
 - `config.swagger.json`
 
-修改 `config.proto` 后，在仓库根目录运行：
+修改 `data/postgres/config.proto` 后，必须在仓库根目录运行以下命令，保留唯一的仓库相对 descriptor path：
 
 ```bash
-make protoc-config-protobuf
+protoc --proto_path=. --proto_path=./third_party \
+  --go_out=paths=source_relative:. \
+  --validate_out=paths=source_relative,lang=go:. \
+  data/postgres/config.proto
 ```
 
 ## 测试

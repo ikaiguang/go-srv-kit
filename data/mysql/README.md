@@ -91,10 +91,13 @@ go test ./...
 
 ## 生成
 
-`Config` 来自 `mysql/config.proto`，相关 Go 文件是生成文件。修改 proto 后应在仓库根目录执行：
+`Config` 来自 `data/mysql/config.proto`，相关 Go 文件是生成文件。修改 proto 后必须在仓库根目录执行，保留唯一的仓库相对 descriptor path：
 
 ```bash
-make protoc-config-protobuf
+protoc --proto_path=. --proto_path=./third_party \
+  --go_out=paths=source_relative:. \
+  --validate_out=paths=source_relative,lang=go:. \
+  data/mysql/config.proto
 ```
 
 不要手动修改 `*.pb.go` 或 `*.validate.go`。

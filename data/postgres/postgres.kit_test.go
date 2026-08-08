@@ -50,6 +50,10 @@ func TestNewDBNilConfig(t *testing.T) {
 	require.Nil(t, db)
 }
 
+func TestConfigDescriptorPath(t *testing.T) {
+	require.Equal(t, "data/postgres/config.proto", File_data_postgres_config_proto.Path())
+}
+
 func TestIsErrDuplicatedKey(t *testing.T) {
 	tests := []struct {
 		name string
