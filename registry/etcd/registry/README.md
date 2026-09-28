@@ -14,7 +14,8 @@ import registrypkg "github.com/ikaiguang/go-srv-kit/registry/etcd/v3/registry"
 
 ## 核心能力
 
-- `NewEtcdRegistry`：接收 etcd v3 client 和来自 `github.com/go-kratos/kratos/contrib/registry/etcd/v3` 的可选 registry option，返回 `*etcdregistry.Registry`。
+- `NewRegistry`：接收 etcd v3 client 和来自 `github.com/go-kratos/kratos/contrib/registry/etcd/v3` 的可选 registry option，返回 `*etcdregistry.Registry`。
+- `NewEtcdRegistry`：兼容旧调用的别名，新代码使用 `NewRegistry`。
 - 默认配置：函数内部默认添加 `etcdregistry.MaxRetry(3)`，再追加调用方传入的自定义 option。
 
 ## 快速使用
@@ -39,7 +40,7 @@ func main() {
 	}
 	defer client.Close()
 
-	registry, err := registrypkg.NewEtcdRegistry(client)
+	registry, err := registrypkg.NewRegistry(client)
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +52,7 @@ func main() {
 调用方也可以传入 Kratos etcd registry 的原生 option：
 
 ```go
-registry, err := registrypkg.NewEtcdRegistry(
+registry, err := registrypkg.NewRegistry(
 	client,
 	// etcdregistry.Namespace("/services"),
 )

@@ -29,8 +29,8 @@ var (
 	}
 )
 
-// go test -v ./data/mongo/ -count=1 -run TestNewMongoClient
-func TestNewMongoClient(t *testing.T) {
+// go test -v ./data/mongo/ -count=1 -run TestNewClient
+func TestNewClient(t *testing.T) {
 	if dbConfig.Addr == "" {
 		t.Skip("set MONGO_TEST_URI to run the MongoDB integration test")
 	}
@@ -57,9 +57,9 @@ func TestNewMongoClient(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewMongoClient(tt.args.config, tt.args.logger)
+			got, err := NewClient(tt.args.config, tt.args.logger)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("NewMongoClient() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("NewClient() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			//if !reflect.DeepEqual(got, tt.want) {
@@ -70,12 +70,20 @@ func TestNewMongoClient(t *testing.T) {
 	}
 }
 
-func TestNewMongoClientRejectsNilConfig(t *testing.T) {
-	client, err := NewMongoClient(nil, nil)
-	if err == nil {
-		t.Fatal("NewMongoClient(nil, nil) error = nil, want error")
+func TestClientConstructorsRejectNilConfig(t *testing.T) {
+	constructors := map[string]func(*Config, *slog.Logger) (*mongo.Client, error){
+		"NewClient":      NewClient,
+		"NewMongoClient": NewMongoClient,
 	}
-	if client != nil {
-		t.Fatalf("NewMongoClient(nil, nil) client = %v, want nil", client)
+	for name, constructor := range constructors {
+		t.Run(name, func(t *testing.T) {
+			client, err := constructor(nil, nil)
+			if err == nil {
+				t.Fatalf("%s(nil, nil) error = nil, want error", name)
+			}
+			if client != nil {
+				t.Fatalf("%s(nil, nil) client = %v, want nil", name, client)
+			}
+		})
 	}
 }

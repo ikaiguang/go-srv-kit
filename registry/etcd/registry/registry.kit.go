@@ -7,8 +7,14 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
-// NewEtcdRegistry creates etcd registry
+// NewEtcdRegistry creates an etcd registry.
+// Deprecated: use NewRegistry.
 func NewEtcdRegistry(etcdClient *clientv3.Client, opts ...etcdregistry.Option) (*etcdregistry.Registry, error) {
+	return NewRegistry(etcdClient, opts...)
+}
+
+// NewRegistry creates an etcd registry with the package defaults.
+func NewRegistry(etcdClient *clientv3.Client, opts ...etcdregistry.Option) (*etcdregistry.Registry, error) {
 	if etcdClient == nil {
 		return nil, errors.New("etcd client is nil")
 	}

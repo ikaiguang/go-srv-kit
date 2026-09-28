@@ -2,12 +2,26 @@ package registrypkg
 
 import "testing"
 
-func TestNewConsulRegistryRejectsNilClient(t *testing.T) {
-	registry, err := NewConsulRegistry(nil)
-	if err == nil {
-		t.Fatal("NewConsulRegistry(nil) error = nil, want error")
+func TestRegistryConstructorsRejectNilClient(t *testing.T) {
+	constructors := map[string]func() (bool, error){
+		"NewRegistry": func() (bool, error) {
+			registry, err := NewRegistry(nil)
+			return registry == nil, err
+		},
+		"NewConsulRegistry": func() (bool, error) {
+			registry, err := NewConsulRegistry(nil)
+			return registry == nil, err
+		},
 	}
-	if registry != nil {
-		t.Fatalf("NewConsulRegistry(nil) registry = %v, want nil", registry)
+	for name, constructor := range constructors {
+		t.Run(name, func(t *testing.T) {
+			isNil, err := constructor()
+			if err == nil {
+				t.Fatalf("%s(nil) error = nil, want error", name)
+			}
+			if !isNil {
+				t.Fatalf("%s(nil) registry is non-nil, want nil", name)
+			}
+		})
 	}
 }

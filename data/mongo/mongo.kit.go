@@ -14,8 +14,14 @@ import (
 
 const defaultProbeTimeout = 5 * time.Second
 
-// NewMongoClient ...
+// NewMongoClient creates a MongoDB client.
+// Deprecated: use NewClient.
 func NewMongoClient(config *Config, logger *slog.Logger) (*mongo.Client, error) {
+	return NewClient(config, logger)
+}
+
+// NewClient creates and probes a MongoDB client.
+func NewClient(config *Config, logger *slog.Logger) (*mongo.Client, error) {
 	if config == nil {
 		return nil, errors.New("mongo config is nil")
 	}

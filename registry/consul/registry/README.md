@@ -15,7 +15,8 @@ import registrypkg "github.com/ikaiguang/go-srv-kit/registry/consul/v3/registry"
 ## 核心 API
 
 - `DefaultTimeout`：默认 registry 超时时间，当前为 `time.Minute`。
-- `NewConsulRegistry(consulClient *api.Client, opts ...consulregistry.Option) (*consulregistry.Registry, error)`：基于调用方传入的 Consul client 创建 Kratos Consul registry，并默认启用健康检查、心跳和 `DefaultTimeout`。
+- `NewRegistry(consulClient *api.Client, opts ...consulregistry.Option) (*consulregistry.Registry, error)`：基于调用方传入的 Consul client 创建 Kratos Consul registry，并默认启用健康检查、心跳和 `DefaultTimeout`。
+- `NewConsulRegistry(...)`：兼容旧调用的别名，新代码使用 `NewRegistry`。
 
 ## 快速使用
 
@@ -37,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	registry, err := registrypkg.NewConsulRegistry(
+	registry, err := registrypkg.NewRegistry(
 		consulClient,
 		consulregistry.WithTimeout(30*time.Second),
 	)
@@ -57,6 +58,6 @@ go test ./registry
 
 ## 注意事项
 
-- `NewConsulRegistry` 不创建 Consul client，也不读取配置文件；Consul 地址、ACL token、TLS、连接超时和其他认证配置由调用方在 `api.NewClient` 前后处理。
+- `NewRegistry` 不创建 Consul client，也不读取配置文件；Consul 地址、ACL token、TLS、连接超时和其他认证配置由调用方在 `api.NewClient` 前后处理。
 - 默认参数会启用健康检查和心跳。如果业务服务需要不同策略，可通过追加 `consulregistry.Option` 覆盖 Kratos Consul registry 支持的配置。
 - 不要在示例、配置或日志中记录未脱敏的 Consul token、账号密码、私钥或内网地址。

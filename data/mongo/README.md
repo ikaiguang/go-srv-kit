@@ -15,7 +15,8 @@ import "github.com/ikaiguang/go-srv-kit/data/mongo/v3"
 ## 核心能力
 
 - `Config`：由 `config.proto` 生成的 Mongo 配置类型，包含连接地址、hosts、连接池、超时、心跳、空闲连接和慢查询阈值等字段。
-- `NewMongoClient(config *Config, logger *slog.Logger)`：根据配置创建 `*mongo.Client`，设置 command monitor，并在返回前执行 `Ping`。
+- `NewClient(config *Config, logger *slog.Logger)`：根据配置创建 `*mongo.Client`，设置 command monitor，并在返回前执行 `Ping`。
+- `NewMongoClient(config *Config, logger *slog.Logger)`：兼容旧调用的别名，新代码使用 `NewClient`。
 - `NewMonitor(logger *slog.Logger, opts ...MonitorOption)`：创建 MongoDB command monitor，记录 started、succeeded 和 failed 事件。
 - `WithSlowThreshold(time.Duration)`：设置慢查询阈值；成功命令耗时达到阈值时输出 warn 日志，否则输出 debug 日志。
 - `WithCommandLogging(bool)`：控制 started 日志是否包含完整 Mongo command；默认关闭。
@@ -58,7 +59,7 @@ func openMongo(ctx context.Context) error {
 		Level:     slog.LevelDebug,
 		AddSource: true,
 	}))
-	client, err := mongopkg.NewMongoClient(cfg, logger)
+	client, err := mongopkg.NewClient(cfg, logger)
 	if err != nil {
 		return err
 	}
@@ -114,7 +115,7 @@ go test ./... -run '^$'
 
 ## 注意事项
 
-- `NewMongoClient` 会立即 `Ping` MongoDB；连接串、hosts、认证信息和网络环境必须可用。
+- `NewClient` 会立即 `Ping` MongoDB；连接串、hosts、认证信息和网络环境必须可用。
 - 示例中请使用环境变量或占位值传递连接串，不要把真实账号、密码、Token 或内网地址写入文档和代码。
 - command monitor 默认只记录 request ID、database 和 command name。仅当 `Config.Debug=true` 或显式使用 `WithCommandLogging(true)` 时记录完整命令，启用前必须确认命令不包含敏感明文。
 - `logger` 可以传 `nil`，包内会回退到 `slog.Default()`。

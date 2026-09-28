@@ -11,8 +11,14 @@ import (
 
 const defaultProbeTimeout = 5 * time.Second
 
-// NewDB redis db
+// NewDB creates a Redis client.
+// Deprecated: use NewClient.
 func NewDB(conf *Config) (db redis.UniversalClient, err error) {
+	return NewClient(conf)
+}
+
+// NewClient creates and probes a Redis client.
+func NewClient(conf *Config) (db redis.UniversalClient, err error) {
 	if conf == nil {
 		return nil, stderrors.New("redis config is nil")
 	}

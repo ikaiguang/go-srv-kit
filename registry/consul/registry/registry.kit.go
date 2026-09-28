@@ -12,8 +12,14 @@ const (
 	DefaultTimeout = time.Minute
 )
 
-// NewConsulRegistry consul
+// NewConsulRegistry creates a Consul registry.
+// Deprecated: use NewRegistry.
 func NewConsulRegistry(consulClient *api.Client, opts ...consulregistry.Option) (*consulregistry.Registry, error) {
+	return NewRegistry(consulClient, opts...)
+}
+
+// NewRegistry creates a Consul registry with the package defaults.
+func NewRegistry(consulClient *api.Client, opts ...consulregistry.Option) (*consulregistry.Registry, error) {
 	if consulClient == nil {
 		return nil, errors.New("consul client is nil")
 	}

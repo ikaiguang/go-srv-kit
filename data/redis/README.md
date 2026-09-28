@@ -19,7 +19,8 @@ import redispkg "github.com/ikaiguang/go-srv-kit/data/redis/v3"
 ## 核心能力
 
 - `Config`：由 `redis/config.proto` 生成的 Redis 配置结构，包含地址、认证、DB、超时和连接池参数。
-- `NewDB(conf *Config)`：根据 `Config` 创建 `redis.UniversalClient`，并通过 `Ping` 验证连接。
+- `NewClient(conf *Config)`：根据 `Config` 创建 `redis.UniversalClient`，并通过 `Ping` 验证连接。
+- `NewDB(conf *Config)`：兼容旧调用的别名，新代码使用 `NewClient`。
 - `IsNilErr(err error)`：判断错误是否为 `redis.Nil`。
 - `NewLocker(redisCC redis.UniversalClient, opts ...redsync.Option)`：创建实现 `github.com/ikaiguang/go-srv-kit/kit/v3/locker.Locker` 的分布式锁。
 - `Locker.Once(ctx, lockName)`：获取一次性锁，不启动自动续期。
@@ -42,7 +43,7 @@ conf := &redispkg.Config{
 	ConnMaxIdleTime: durationpb.New(time.Hour),
 }
 
-db, err := redispkg.NewDB(conf)
+db, err := redispkg.NewClient(conf)
 if err != nil {
 	return err
 }
@@ -108,7 +109,7 @@ protoc --proto_path=. --proto_path="$(go env GOPATH)/src" --proto_path=./third_p
 
 ## 注意事项
 
-- `NewDB` 会在有限超时内执行 `Ping`；Redis 不可达时会关闭客户端并返回 `nil, error`。
+- `NewClient` 会在有限超时内执行 `Ping`；Redis 不可达时会关闭客户端并返回 `nil, error`。
 - `Config` 中的 duration 字段会被直接调用 `AsDuration`，使用前应显式赋值。
 - `Password`、Redis 地址和锁名可能包含敏感业务信息，示例和日志中不要输出真实凭据。
 - 默认锁过期时间为 8 秒，默认加锁尝试次数为 1；需要改变 redsync 行为时可通过 `NewLocker` 的 `redsync.Option` 参数传入。
