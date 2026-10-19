@@ -3,7 +3,7 @@
 package errorpkg
 
 import (
-	errors "github.com/go-kratos/kratos/v2/errors"
+	errors "github.com/go-kratos/kratos/v3/errors"
 	strconv "strconv"
 )
 

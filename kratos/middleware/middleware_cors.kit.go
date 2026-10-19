@@ -4,7 +4,7 @@ import (
 	stdhttp "net/http"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/go-kratos/kratos/v3/transport/http"
 	"github.com/gorilla/handlers"
 )
 

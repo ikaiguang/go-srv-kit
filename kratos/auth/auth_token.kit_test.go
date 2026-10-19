@@ -1,16 +1,17 @@
 package authpkg
 
 import (
+	"log/slog"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	"github.com/redis/go-redis/v9"
 )
 
 // go test -v -count 1 ./kratos/auth -run TestNewAuthRepo
 func TestNewAuthRepo(t *testing.T) {
 	type args struct {
 		redisCC redis.UniversalClient
-		logger  log.Logger
+		logger  *slog.Logger
 		config  Config
 	}
 	tests := []struct {
@@ -23,7 +24,7 @@ func TestNewAuthRepo(t *testing.T) {
 			name: "#test",
 			args: args{
 				redisCC: &redis.Client{},
-				logger:  log.DefaultLogger,
+				logger:  slog.Default(),
 				config: Config{
 					SignCrypto:    NewSignEncryptor("SignKey"),
 					RefreshCrypto: NewCBCCipher("RefreshKey"),

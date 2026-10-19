@@ -15,7 +15,7 @@ import clientpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/client"
 ## 核心能力
 
 - `NewHTTPClient`：直接调用 Kratos `http.NewClient`。
-- `NewGRPCClient`：按 `insecure` 参数选择 `grpc.DialInsecure` 或 `grpc.Dial`。
+- `NewGRPCClient`：使用 Kratos v3 `grpc.NewClient`，按 `insecure` 参数配置明文或 TLS 连接。
 - `NewSampleHTTPClient`：创建带 recovery、endpoint 和自定义 `ResponseDecoder` 的 HTTP client。
 - `ResponseDecoder`：解码 `apppkg.Response.Data`，目标可以是 protobuf message 或普通 JSON 结构。
 

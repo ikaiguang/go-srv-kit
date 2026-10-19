@@ -1,8 +1,14 @@
 package logpkg
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
+	"context"
+	"log/slog"
+	"runtime"
+	"strings"
+
+	"github.com/go-kratos/kratos/v3/log"
 	timepkg "github.com/ikaiguang/go-srv-kit/kit/v3/time"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -30,11 +36,31 @@ var (
 	CallerSkipForHelper = DefaultCallerSkip + 2
 )
 
-// NewMultiLogger wraps multi logger.
-func NewMultiLogger(logs ...log.Logger) log.Logger {
-	return &MultiLogger{
-		logs: logs,
+// Logger is implemented by slog.Logger and the package logger wrappers.
+type Logger interface {
+	Handler() slog.Handler
+}
+
+// ToSlog returns logger as a standard library slog logger.
+func ToSlog(logger Logger) *slog.Logger {
+	if logger == nil {
+		return NewNopLogger()
 	}
+	if slogLogger, ok := logger.(*slog.Logger); ok {
+		return slogLogger
+	}
+	return slog.New(logger.Handler())
+}
+
+// NewMultiLogger wraps multiple loggers.
+func NewMultiLogger(loggers ...Logger) *slog.Logger {
+	handlers := make([]slog.Handler, 0, len(loggers))
+	for _, logger := range loggers {
+		if logger != nil {
+			handlers = append(handlers, logger.Handler())
+		}
+	}
+	return slog.New(&multiHandler{handlers: handlers})
 }
 
 const (
@@ -112,17 +138,116 @@ func SetZapLoggerKeys(encoderConfig *zapcore.EncoderConfig, loggerKeys map[Logge
 	}
 }
 
-// MultiLogger 多日志
-type MultiLogger struct {
-	logs []log.Logger
+type multiHandler struct {
+	handlers []slog.Handler
 }
 
-// Log ...
-func (s *MultiLogger) Log(level log.Level, keyvals ...any) error {
-	for i := range s.logs {
-		if logErr := s.logs[i].Log(level, keyvals...); logErr != nil {
-			return logErr
+func (h *multiHandler) Enabled(ctx context.Context, level slog.Level) bool {
+	for _, handler := range h.handlers {
+		if handler.Enabled(ctx, level) {
+			return true
+		}
+	}
+	return false
+}
+
+func (h *multiHandler) Handle(ctx context.Context, record slog.Record) error {
+	for _, handler := range h.handlers {
+		if handler.Enabled(ctx, record.Level) {
+			if err := handler.Handle(ctx, record.Clone()); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
+}
+
+func (h *multiHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	handlers := make([]slog.Handler, len(h.handlers))
+	for i, handler := range h.handlers {
+		handlers[i] = handler.WithAttrs(attrs)
+	}
+	return &multiHandler{handlers: handlers}
+}
+
+func (h *multiHandler) WithGroup(name string) slog.Handler {
+	handlers := make([]slog.Handler, len(h.handlers))
+	for i, handler := range h.handlers {
+		handlers[i] = handler.WithGroup(name)
+	}
+	return &multiHandler{handlers: handlers}
+}
+
+type zapHandler struct {
+	logger *zap.Logger
+	attrs  []zap.Field
+	groups []string
+}
+
+func (h *zapHandler) Enabled(_ context.Context, level slog.Level) bool {
+	return h.logger.Core().Enabled(ToZapLevel(level))
+}
+
+func (h *zapHandler) Handle(_ context.Context, record slog.Record) error {
+	fields := append([]zap.Field(nil), h.attrs...)
+	record.Attrs(func(attr slog.Attr) bool {
+		fields = appendSlogAttr(fields, h.groups, attr)
+		return true
+	})
+	entry := zapcore.Entry{
+		Level:   ToZapLevel(record.Level),
+		Time:    record.Time,
+		Message: record.Message,
+	}
+	if record.PC != 0 {
+		frame, _ := runtime.CallersFrames([]uintptr{record.PC}).Next()
+		entry.Caller = zapcore.EntryCaller{
+			Defined:  true,
+			PC:       record.PC,
+			File:     frame.File,
+			Line:     frame.Line,
+			Function: frame.Function,
+		}
+	}
+	if checked := h.logger.Core().Check(entry, nil); checked != nil {
+		checked.Write(fields...)
+	}
+	return nil
+}
+
+func (h *zapHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	clone := &zapHandler{
+		logger: h.logger,
+		attrs:  append([]zap.Field(nil), h.attrs...),
+		groups: append([]string(nil), h.groups...),
+	}
+	for _, attr := range attrs {
+		clone.attrs = appendSlogAttr(clone.attrs, clone.groups, attr)
+	}
+	return clone
+}
+
+func (h *zapHandler) WithGroup(name string) slog.Handler {
+	clone := &zapHandler{
+		logger: h.logger,
+		attrs:  append([]zap.Field(nil), h.attrs...),
+		groups: append([]string(nil), h.groups...),
+	}
+	if name != "" {
+		clone.groups = append(clone.groups, name)
+	}
+	return clone
+}
+
+func appendSlogAttr(fields []zap.Field, groups []string, attr slog.Attr) []zap.Field {
+	attr.Value = attr.Value.Resolve()
+	if attr.Value.Kind() == slog.KindGroup {
+		groups = append(groups, attr.Key)
+		for _, child := range attr.Value.Group() {
+			fields = appendSlogAttr(fields, groups, child)
+		}
+		return fields
+	}
+	keyParts := append(append([]string(nil), groups...), attr.Key)
+	return append(fields, zap.Any(strings.Join(keyParts, "."), attr.Value.Any()))
 }

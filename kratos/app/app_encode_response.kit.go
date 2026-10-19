@@ -4,10 +4,11 @@ import (
 	"context"
 	stdhttp "net/http"
 
-	"github.com/go-kratos/kratos/v2/encoding"
-	"github.com/go-kratos/kratos/v2/encoding/json"
-	"github.com/go-kratos/kratos/v2/errors"
-	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/go-kratos/kratos/v3/encoding"
+	"github.com/go-kratos/kratos/v3/encoding/json"
+	"github.com/go-kratos/kratos/v3/errors"
+	"github.com/go-kratos/kratos/v3/transport/http"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/header"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 

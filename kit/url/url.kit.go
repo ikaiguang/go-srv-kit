@@ -60,7 +60,7 @@ func AppendQueryParams(requestURL string, req QueryParamEncoder) string {
 func isNilEncoder(req QueryParamEncoder) bool {
 	v := reflect.ValueOf(req)
 	switch v.Kind() {
-	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
 		return v.IsNil()
 	default:
 		return false

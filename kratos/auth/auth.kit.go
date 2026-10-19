@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/middleware"
-	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/go-kratos/kratos/v3/middleware"
+	"github.com/go-kratos/kratos/v3/transport"
 	"github.com/golang-jwt/jwt/v5"
-	uuidpkg "github.com/ikaiguang/go-kit/uuid"
-	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/v3/uuid"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 
 const (

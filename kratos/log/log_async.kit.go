@@ -80,6 +80,6 @@ func Recover() {
 		buf := make([]byte, 64<<10) //nolint:mnd
 		n := runtime.Stack(buf, false)
 		buf = buf[:n]
-		Error("threadpkg.Recover: %+v\n%s\n", rerr, buf)
+		Errorf("threadpkg.Recover: %+v\n%s\n", rerr, buf)
 	}
 }

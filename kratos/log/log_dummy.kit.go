@@ -1,23 +1,23 @@
 package logpkg
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
+	"context"
+	"log/slog"
 )
 
-// dummy .
-type dummy struct{}
+type discardHandler struct{}
+
+func (discardHandler) Enabled(context.Context, slog.Level) bool  { return false }
+func (discardHandler) Handle(context.Context, slog.Record) error { return nil }
+func (h discardHandler) WithAttrs([]slog.Attr) slog.Handler      { return h }
+func (h discardHandler) WithGroup(string) slog.Handler           { return h }
 
 // NewDummyLogger ...
-func NewDummyLogger() (log.Logger, error) {
-	return &dummy{}, nil
+func NewDummyLogger() (*slog.Logger, error) {
+	return NewNopLogger(), nil
 }
 
 // NewNopLogger ...
-func NewNopLogger() log.Logger {
-	return &dummy{}
-}
-
-// Log .
-func (s *dummy) Log(level log.Level, keyvals ...any) error {
-	return nil
+func NewNopLogger() *slog.Logger {
+	return slog.New(discardHandler{})
 }

@@ -2,13 +2,14 @@ package clientpkg
 
 import (
 	"context"
+	"crypto/tls"
 	stdjson "encoding/json"
 	"io"
 	stdhttp "net/http"
 
-	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/go-kratos/kratos/v3/middleware/recovery"
+	"github.com/go-kratos/kratos/v3/transport/grpc"
+	"github.com/go-kratos/kratos/v3/transport/http"
 	apppkg "github.com/ikaiguang/go-srv-kit/kratos/v3/app"
 	stdgrpc "google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
@@ -22,9 +23,12 @@ func NewHTTPClient(ctx context.Context, opts ...http.ClientOption) (*http.Client
 // NewGRPCClient ...
 func NewGRPCClient(ctx context.Context, insecure bool, opts ...grpc.ClientOption) (*stdgrpc.ClientConn, error) {
 	if insecure {
-		return grpc.DialInsecure(ctx, opts...)
+		opts = append(opts, grpc.WithTLSConfig(nil))
+	} else {
+		tlsOpt := grpc.WithTLSConfig(&tls.Config{MinVersion: tls.VersionTLS12})
+		opts = append([]grpc.ClientOption{tlsOpt}, opts...)
 	}
-	return grpc.Dial(ctx, opts...)
+	return grpc.NewClient(ctx, opts...)
 }
 
 // NewSampleHTTPClient ...

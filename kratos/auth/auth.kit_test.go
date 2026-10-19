@@ -2,16 +2,17 @@ package authpkg
 
 import (
 	"context"
+	"log/slog"
 
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/selector"
+	"github.com/go-kratos/kratos/v3/middleware/selector"
+	"github.com/redis/go-redis/v9"
 )
 
 func ExampleServer() {
 	var (
 		redisCC   = &redis.Client{}
 		signKey   = ""
-		logger    = log.DefaultLogger
+		logger    = slog.Default()
 		whiteList = map[string]struct{}{}
 	)
 	authConfig := Config{

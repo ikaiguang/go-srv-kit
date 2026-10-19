@@ -1,7 +1,8 @@
 package debugpkg
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
+	"log/slog"
+
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/log"
 )
 
@@ -27,8 +28,8 @@ var (
 )
 
 // Setup 启动
-func Setup(logger log.Logger) {
-	handler = log.NewHelper(logger)
+func Setup(logger logpkg.Logger) {
+	handler = logpkg.ToSlog(logger)
 }
 
 // CloseDebug ...
@@ -37,8 +38,6 @@ func CloseDebug() {
 }
 
 // defaultHandler .
-func defaultHandler() *log.Helper {
-	logger, _ := logpkg.NewDummyLogger()
-
-	return log.NewHelper(logger)
+func defaultHandler() *slog.Logger {
+	return logpkg.NewNopLogger()
 }

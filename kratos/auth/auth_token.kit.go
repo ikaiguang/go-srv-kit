@@ -2,12 +2,14 @@ package authpkg
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
-	aespkg "github.com/ikaiguang/go-kit/aes"
-	threadpkg "github.com/ikaiguang/go-kit/thread"
-	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	"github.com/golang-jwt/jwt/v5"
+	aespkg "github.com/ikaiguang/go-srv-kit/kit/v3/aes"
+	threadpkg "github.com/ikaiguang/go-srv-kit/kit/v3/thread"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
+	logpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/log"
 )
 
 // Config ...
@@ -159,7 +161,7 @@ type authRepo struct {
 	refreshTokenExpire  time.Duration
 	previousTokenExpire time.Duration
 
-	log           *log.Helper
+	log           *slog.Logger
 	signEncryptor SignEncryptor
 	refreshCrypto RefreshEncryptor
 	tokenManger   TokenManager
@@ -168,7 +170,7 @@ type authRepo struct {
 }
 
 // NewAuthRepo ...
-func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManager) (AuthRepo, error) {
+func NewAuthRepo(config Config, logger logpkg.Logger, tokenManger TokenManager) (AuthRepo, error) {
 	if config.SignCrypto == nil {
 		e := errorpkg.ErrorBadRequest("invalid SignCrypto")
 		err := errorpkg.WithStack(e)
@@ -201,7 +203,7 @@ func NewAuthRepo(config Config, logger log.Logger, tokenManger TokenManager) (Au
 
 		signEncryptor: config.SignCrypto,
 		refreshCrypto: config.RefreshCrypto,
-		log:           log.NewHelper(log.With(logger, "module", "kit.auth.token.repo")),
+		log:           logpkg.ToSlog(logger).With("module", "kit.auth.token.repo"),
 		tokenManger:   tokenManger,
 
 		jwtValidator: jwt.NewValidator(),
@@ -312,7 +314,7 @@ func (s *authRepo) RefreshToken(ctx context.Context, originRefreshClaims *Claims
 			// ctx many be cancel
 			deleteErr := s.tokenManger.DeleteExpireTokens(context.Background(), userIdentifier)
 			if deleteErr != nil {
-				s.log.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
+				s.log.ErrorContext(ctx, "deleteExpireTokens failed", "err", deleteErr)
 			}
 		})
 	}
@@ -352,12 +354,12 @@ func (s *authRepo) checkLimitAndDeleteExpireTokens(ctx context.Context, authClai
 	newCtx := context.Background()
 	checkErr := s.checkLimitAndLogoutOtherAccount(newCtx, authClaims)
 	if checkErr != nil {
-		s.log.WithContext(ctx).Errorw("msg", "checkLoginLimit failed", "err", checkErr)
+		s.log.ErrorContext(ctx, "checkLoginLimit failed", "err", checkErr)
 	}
 	if s.tokenManger != nil {
 		deleteErr := s.tokenManger.DeleteExpireTokens(newCtx, authClaims.Payload.UserIdentifier())
 		if deleteErr != nil {
-			s.log.WithContext(ctx).Errorw("msg", "deleteExpireTokens failed", "err", deleteErr)
+			s.log.ErrorContext(ctx, "deleteExpireTokens failed", "err", deleteErr)
 		}
 	}
 }

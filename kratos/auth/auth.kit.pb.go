@@ -7,12 +7,11 @@
 package authpkg
 
 import (
-	reflect "reflect"
-	sync "sync"
-
-	_ "github.com/go-kratos/kratos/v2/errors"
+	_ "github.com/go-kratos/kratos/v3/errors"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (

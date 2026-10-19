@@ -3,7 +3,7 @@ package apppkg
 import (
 	stdhttp "net/http"
 
-	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/go-kratos/kratos/v3/transport/http"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 

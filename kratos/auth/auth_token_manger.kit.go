@@ -3,14 +3,16 @@ package authpkg
 import (
 	"context"
 	stderrors "errors"
+	"log/slog"
 	"strconv"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
-	lockerpkg "github.com/ikaiguang/go-kit/locker"
-	threadpkg "github.com/ikaiguang/go-kit/thread"
-	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
-	redispkg "github.com/ikaiguang/go-redis-kit/redis"
+	redispkg "github.com/ikaiguang/go-srv-kit/data/redis/v3"
+	lockerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/locker"
+	threadpkg "github.com/ikaiguang/go-srv-kit/kit/v3/thread"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
+	logpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/log"
+	"github.com/redis/go-redis/v9"
 )
 
 // RedisCacheKeyPrefix ...
@@ -88,7 +90,7 @@ type TokenManager interface {
 
 // tokenManger ...
 type tokenManger struct {
-	log                *log.Helper
+	log                *slog.Logger
 	redisCC            redis.UniversalClient
 	authCacheKeyPrefix *AuthCacheKeyPrefix
 	locker             lockerpkg.Locker
@@ -96,13 +98,13 @@ type tokenManger struct {
 
 // NewTokenManager 创建令牌管理器
 func NewTokenManager(
-	logger log.Logger,
+	logger logpkg.Logger,
 	redisCC redis.UniversalClient,
 	authCacheKeyPrefix *AuthCacheKeyPrefix,
 ) TokenManager {
 	authCacheKeyPrefix = CheckAuthCacheKeyPrefix(authCacheKeyPrefix)
 	return &tokenManger{
-		log:                log.NewHelper(log.With(logger, "module", "kit.auth.token.manger")),
+		log:                logpkg.ToSlog(logger).With("module", "kit.auth.token.manger"),
 		redisCC:            redisCC,
 		authCacheKeyPrefix: authCacheKeyPrefix,
 		locker:             redispkg.NewLocker(redisCC),
@@ -383,7 +385,7 @@ func (s *tokenManger) IsExistToken(ctx context.Context, userIdentifier string, t
 			// ctx many be cancel
 			deleteErr := s.DeleteTokens(context.Background(), userIdentifier, []*TokenItem{tokenItem})
 			if deleteErr != nil {
-				s.log.WithContext(ctx).Warnw("msg", "DeleteTokens failed", "tokenItem", tokenItem)
+				s.log.WarnContext(ctx, "DeleteTokens failed", "tokenItem", tokenItem)
 			}
 		})
 		return false, nil

@@ -3,7 +3,7 @@ package middlewarepkg
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/go-kratos/kratos/v3/middleware"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 
@@ -18,7 +18,7 @@ func Validator() middleware.Middleware {
 		return func(ctx context.Context, req any) (reply any, err error) {
 			if v, ok := req.(validator); ok {
 				if err := v.Validate(); err != nil {
-					e := errorpkg.ErrorInvalidParameter(err.Error())
+					e := errorpkg.ErrorInvalidParameter("%s", err.Error())
 					return reply, errorpkg.Wrap(e, err)
 				}
 			}

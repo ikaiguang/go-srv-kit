@@ -23,7 +23,7 @@ func IsDefaultValue(i any) bool {
 		return value.Complex() == 0
 	case reflect.String:
 		return value.Len() == 0
-	case reflect.Map, reflect.Ptr, reflect.Slice:
+	case reflect.Map, reflect.Pointer, reflect.Slice:
 		return value.IsNil()
 	default:
 		return false
@@ -45,7 +45,7 @@ func IsEmpty(object any) bool {
 	case reflect.Chan, reflect.Map, reflect.Slice:
 		return objValue.Len() == 0
 	// pointers are empty if nil or if the value they point to is empty
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if objValue.IsNil() {
 			return true
 		}
@@ -66,18 +66,18 @@ func SwapObject(dst, src any) bool {
 		return false
 	}
 	dstType := reflect.TypeOf(dst)
-	if dstType.Kind() != reflect.Ptr {
+	if dstType.Kind() != reflect.Pointer {
 		return false
 	}
 	srcType := reflect.TypeOf(src)
-	if srcType.Kind() != reflect.Ptr {
+	if srcType.Kind() != reflect.Pointer {
 		srcType = reflect.PointerTo(srcType)
 	}
 	if dstType.String() != srcType.String() {
 		return false
 	}
 	dstValue := reflect.ValueOf(dst)
-	if dstValue.Kind() == reflect.Ptr {
+	if dstValue.Kind() == reflect.Pointer {
 		dstValue = dstValue.Elem()
 	}
 	if !dstValue.IsValid() {
@@ -87,7 +87,7 @@ func SwapObject(dst, src any) bool {
 		return false
 	}
 	srcValue := reflect.ValueOf(src)
-	if srcValue.Kind() == reflect.Ptr {
+	if srcValue.Kind() == reflect.Pointer {
 		srcValue = srcValue.Elem()
 	}
 	if !srcValue.IsValid() {
@@ -104,7 +104,7 @@ func NewObject(dst any) any {
 		return nil
 	}
 	typ := reflect.TypeOf(dst)
-	if typ.Kind() == reflect.Ptr {
+	if typ.Kind() == reflect.Pointer {
 		typ = typ.Elem()
 	}
 	return reflect.New(typ).Interface()

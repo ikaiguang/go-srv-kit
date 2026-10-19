@@ -5,7 +5,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/go-kratos/kratos/v3/transport/http"
 	ippkg "github.com/ikaiguang/go-srv-kit/kit/v3/ip"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"

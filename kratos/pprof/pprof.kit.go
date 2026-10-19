@@ -3,7 +3,7 @@ package pprofpkg
 import (
 	"net/http/pprof"
 
-	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/go-kratos/kratos/v3/transport/http"
 )
 
 func RegisterPprof(s *http.Server) {

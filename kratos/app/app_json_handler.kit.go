@@ -4,7 +4,6 @@ import (
 	stdjson "encoding/json"
 	"reflect"
 
-	"github.com/go-kratos/kratos/v2/encoding/json"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -24,12 +23,12 @@ var (
 
 // SetJSONMarshalOptions 设置json编码选项
 func SetJSONMarshalOptions(opt *protojson.MarshalOptions) {
-	json.MarshalOptions = *opt
+	MarshalOptions = *opt
 }
 
 // SetJSONUnmarshalOptions 设置json编码选项
 func SetJSONUnmarshalOptions(opt *protojson.UnmarshalOptions) {
-	json.UnmarshalOptions = *opt
+	UnmarshalOptions = *opt
 }
 
 // MarshalJSON 编码json
@@ -53,7 +52,7 @@ func UnmarshalJSON(data []byte, v any) error {
 		return UnmarshalOptions.Unmarshal(data, m)
 	default:
 		rv := reflect.ValueOf(v)
-		for rv := rv; rv.Kind() == reflect.Ptr; {
+		for rv := rv; rv.Kind() == reflect.Pointer; {
 			if rv.IsNil() {
 				rv.Set(reflect.New(rv.Type().Elem()))
 			}

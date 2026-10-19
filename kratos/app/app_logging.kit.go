@@ -3,17 +3,18 @@ package apppkg
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	stdhttp "net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware"
-	"github.com/go-kratos/kratos/v2/middleware/logging"
-	"github.com/go-kratos/kratos/v2/transport"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/go-kratos/kratos/v3/middleware"
+	"github.com/go-kratos/kratos/v3/middleware/logging"
+	"github.com/go-kratos/kratos/v3/transport"
+	"github.com/go-kratos/kratos/v3/transport/grpc"
+	"github.com/go-kratos/kratos/v3/transport/http"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/header"
 	ippkg "github.com/ikaiguang/go-srv-kit/kit/v3/ip"
 	contextpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/context"
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
@@ -157,7 +158,7 @@ func ServerLoggingKvs(requestInfo *RequestInfoForServer, operationInfo *Operatio
 
 // ServerLog 中间件日志
 // 参考 logging.Server(logger)
-func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
+func ServerLog(logger *slog.Logger, opts ...Option) middleware.Middleware {
 	opt := &options{}
 	for i := range opts {
 		opts[i](opt)
@@ -166,7 +167,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 		return func(ctx context.Context, req any) (reply any, err error) {
 			var (
 				isWebsocket  = false
-				loggingLevel = log.LevelInfo
+				loggingLevel = slog.LevelInfo
 				requestInfo  = &RequestInfoForServer{
 					Kind: "server",
 				}
@@ -213,7 +214,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			if isWebsocket {
 				var kv = operationInfo.Kvs()
 				kv = append(kv, requestInfo.Kvs()...)
-				logHelper.WithContext(ctx).Log(loggingLevel, kv...)
+				logger.Log(ctx, loggingLevel, "server request", kv...)
 				return
 			}
 
@@ -230,7 +231,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 
 			// 有错误的
 			if err != nil {
-				loggingLevel = log.LevelError
+				loggingLevel = slog.LevelError
 				// 错误信息
 				errMessage.Message = err.Error()
 				se := errorpkg.FromError(err)
@@ -239,7 +240,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 					errMessage.Reason = se.Reason
 				}
 				if se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode {
-					loggingLevel = log.LevelInfo
+					loggingLevel = slog.LevelInfo
 				}
 				// 错误调用
 				var stackMessage string
@@ -254,7 +255,7 @@ func ServerLog(logHelper *log.Helper, opts ...Option) middleware.Middleware {
 			}
 
 			// 输出日志
-			logHelper.WithContext(ctx).Log(loggingLevel, kv...)
+			logger.Log(ctx, loggingLevel, "server request", kv...)
 			return
 		}
 
@@ -302,12 +303,12 @@ func ClientLoggingKvs(requestInfo *RequestInfoForClient, operationInfo *Operatio
 
 // ClientLog is an client logging middleware.
 // logging.Client(logger)
-func ClientLog(logHelper *log.Helper) middleware.Middleware {
+func ClientLog(logger *slog.Logger) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req any) (reply any, err error) {
 			var (
 				startTime = time.Now()
-				level     = log.LevelInfo
+				level     = slog.LevelInfo
 				code      int32
 				reason    string
 				kind      string
@@ -362,10 +363,10 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 				var stack string
 				level, stack = extractError(err)
 				if se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode {
-					level = log.LevelInfo
+					level = slog.LevelInfo
 				}
-				if level == log.LevelError {
-					level = log.LevelWarn // no error level in client
+				if level == slog.LevelError {
+					level = slog.LevelWarn // no error level in client
 				}
 				errMessage := &ErrMessage{
 					Code:   code,
@@ -376,7 +377,7 @@ func ClientLog(logHelper *log.Helper) middleware.Middleware {
 					"stack", stack,
 				)
 			}
-			logHelper.WithContext(ctx).Log(level, kv...)
+			logger.Log(ctx, level, "client request", kv...)
 			return
 		}
 	}
@@ -394,9 +395,9 @@ func extractArgs(req any) string {
 }
 
 // extractError returns the string of the error
-func extractError(err error) (log.Level, string) {
+func extractError(err error) (slog.Level, string) {
 	if err != nil {
-		return log.LevelError, fmt.Sprintf("%+v", err)
+		return slog.LevelError, fmt.Sprintf("%+v", err)
 	}
-	return log.LevelInfo, ""
+	return slog.LevelInfo, ""
 }

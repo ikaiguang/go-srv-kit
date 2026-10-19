@@ -3,8 +3,9 @@ package middlewarepkg
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/middleware"
-	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/go-kratos/kratos/v3/middleware"
+	"github.com/go-kratos/kratos/v3/transport"
+	headerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/header"
 	"go.opentelemetry.io/otel/trace"
 
 	uuidpkg "github.com/ikaiguang/go-srv-kit/kit/v3/uuid"

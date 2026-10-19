@@ -1,6 +1,6 @@
 # log
 
-`log` 包的包名为 `logpkg`，提供 Kratos `log.Logger` 实现和全局日志 helper，包括控制台日志、文件轮转日志、多路日志、no-op logger、异步 writer 和带 context 的日志方法。适合服务启动时构建统一 logger，并在中间件和业务代码中复用。
+`log` 包的包名为 `logpkg`，提供 `log/slog` 兼容的 logger，包括控制台日志、文件轮转日志、多路日志、no-op logger、异步 writer 和带 context 的日志方法。适合服务启动时构建统一 logger，并在中间件和业务代码中复用。
 
 ## 安装
 
@@ -16,9 +16,10 @@ import logpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/log"
 
 - `NewStdLogger`：创建输出到 stderr 的 zap logger，支持 console/json encoder。
 - `NewFileLogger`：创建 JSON 文件日志，支持按时间、大小和保留策略轮转。
-- `NewMultiLogger`：将多路 `log.Logger` 组合为一个 logger。
+- `NewMultiLogger`：将多路 `slog.Logger` 或本包 logger 组合为一个 logger。
 - `NewDummyLogger`、`NewNopLogger`：创建 no-op logger。
-- `Setup`、`Debug`、`Infow`、`Errorw` 等：设置和使用全局 `log.Helper`。
+- `Setup`、`Debug`、`Infow`、`Errorw` 等：设置和使用全局 `slog.Logger`。
+- `ToSlog`：将本包 logger 转为 Kratos v3 使用的 `*slog.Logger`。
 - `LogWithContext`、`InfowWithContext`、`ErrorwWithContext` 等：带 context 输出日志。
 - `NewAsyncWriter`：将 `io.Writer` 包装为异步写入器。
 - `WithWriter`、`WithLoggerKey`、`WithFilenameSuffix`、`WithTimeFormat`：定制 writer、日志字段名、文件名后缀和时间格式。
@@ -27,7 +28,7 @@ import logpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/log"
 
 ```go
 stdLogger, err := logpkg.NewStdLogger(&logpkg.ConfigStd{
-    Level:      log.LevelInfo,
+    Level:      slog.LevelInfo,
     CallerSkip: logpkg.DefaultCallerSkip,
 })
 if err != nil {
@@ -41,7 +42,7 @@ logpkg.Infow("event", "startup")
 
 ```go
 fileLogger, err := logpkg.NewFileLogger(&logpkg.ConfigFile{
-    Level:          log.LevelInfo,
+    Level:          slog.LevelInfo,
     Dir:            "./bin",
     Filename:       "app",
     RotateSize:     50 << 20,

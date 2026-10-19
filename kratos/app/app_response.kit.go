@@ -4,9 +4,9 @@ import (
 	stdhttp "net/http"
 	"strings"
 
-	"github.com/go-kratos/kratos/v2/encoding"
-	"github.com/go-kratos/kratos/v2/encoding/json"
-	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-kratos/kratos/v3/encoding"
+	"github.com/go-kratos/kratos/v3/encoding/json"
+	"github.com/go-kratos/kratos/v3/errors"
 	headerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/header"
 	"google.golang.org/grpc/codes"
 )
@@ -24,6 +24,20 @@ func SetResponseContentType(w stdhttp.ResponseWriter, codec encoding.Codec) {
 	default:
 		w.Header().Set(headerpkg.ContentType, ContentType(codec.Name()))
 	}
+}
+
+type jsonCodec struct{}
+
+func (jsonCodec) Marshal(v any) ([]byte, error) {
+	return MarshalJSON(v)
+}
+
+func (jsonCodec) Unmarshal(data []byte, v any) error {
+	return UnmarshalJSON(data, v)
+}
+
+func (jsonCodec) Name() string {
+	return json.Name
 }
 
 // HTTPResponseInterface .

@@ -1,11 +1,11 @@
 package logpkg
 
 import (
-	"fmt"
 	"io"
+	"log/slog"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v3/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
@@ -19,7 +19,7 @@ const (
 	_defaultRotationFilenameSuffix = "_app.%Y%m%d%H%M%S.log" // 文件名后缀
 )
 
-var _ log.Logger = &File{}
+var _ Logger = (*File)(nil)
 
 // ConfigFile 输出到文件
 type ConfigFile struct {
@@ -49,6 +49,7 @@ type ConfigFile struct {
 
 // File 输出到文件
 type File struct {
+	*slog.Logger
 	loggerHandler *zap.Logger
 }
 
@@ -69,39 +70,6 @@ func (s *File) sync() error {
 // Close zap.Logger.Sync
 func (s *File) Close() error {
 	return s.sync()
-}
-
-// Log .
-func (s *File) Log(level log.Level, keyvals ...any) (err error) {
-	if len(keyvals) == 0 {
-		return err
-	}
-	if len(keyvals)%2 != 0 {
-		keyvals = append(keyvals, "KEYVALS UNPAIRED")
-	}
-
-	// field
-	var (
-		msg  = "\n"
-		data []zap.Field
-	)
-	for i := 0; i < len(keyvals); i += 2 {
-		data = append(data, zap.Any(fmt.Sprint(keyvals[i]), fmt.Sprint(keyvals[i+1])))
-	}
-
-	switch level {
-	case log.LevelDebug:
-		s.loggerHandler.Debug(msg, data...)
-	case log.LevelInfo:
-		s.loggerHandler.Info(msg, data...)
-	case log.LevelWarn:
-		s.loggerHandler.Warn(msg, data...)
-	case log.LevelError:
-		s.loggerHandler.Error(msg, data...)
-	case log.LevelFatal:
-		s.loggerHandler.Fatal(msg, data...)
-	}
-	return err
 }
 
 // initLogger .
@@ -163,6 +131,7 @@ func (s *File) initLogger(conf *ConfigFile, opts ...Option) (err error) {
 		zap.AddCallerSkip(callerSkip),
 		zap.AddStacktrace(stacktraceLevel),
 	)
+	s.Logger = slog.New(&zapHandler{logger: s.loggerHandler})
 	return err
 }
 

@@ -52,6 +52,14 @@ _ = wrapped
 go test ./error
 ```
 
+修改 `auth.kit.proto`、`error.kit.proto` 或 `third_party/errors/errors.proto` 后，从仓库根目录重新生成：
+
+```bash
+./kratos/generate-errors.sh
+```
+
+脚本会临时构建支持 Kratos v3 import path 的自定义 errors generator，并保留现有 `HTTPCode` 和 `DefaultError*` 扩展。
+
 ## 注意事项
 
 - `error.kit.pb.go`、`error.kit_errors.pb.go`、`error.kit_errors_custom.pb.go`、`error.kit_message.pb.go` 由 proto 或生成流程产生，不要手工修改。

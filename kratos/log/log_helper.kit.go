@@ -1,7 +1,12 @@
 package logpkg
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
+	"context"
+	"fmt"
+	"log/slog"
+	"os"
+
+	"github.com/go-kratos/kratos/v3/log"
 )
 
 // debug
@@ -15,113 +20,121 @@ var (
 // @Param loggers 请注意 ConfigFile.CallerSkip 的值
 //
 // 此处 CallerSkip = logutil.DefaultCallerSkip + 2
-func Setup(logger log.Logger) {
-	helper = log.NewHelper(logger)
+func Setup(logger Logger) {
+	helper = ToSlog(logger)
 }
 
 // defaultHandler .
-func defaultHandler() *log.Helper {
-	logger, _ := NewDummyLogger()
-
-	return log.NewHelper(logger)
+func defaultHandler() *slog.Logger {
+	return NewNopLogger()
 }
 
 // Log Print log by level and keyvals.
 func Log(level log.Level, keyvals ...any) {
-	helper.Log(level, keyvals...)
+	helper.Log(context.Background(), level, "", normalizeKeyValues(keyvals)...)
 }
 
 // Print logs a message at info level.
 func Print(a ...any) {
-	helper.Info(a...)
+	helper.Info(fmt.Sprint(a...))
 }
 
 // Println logs a message at info level.
 func Println(a ...any) {
-	helper.Info(a...)
+	helper.Info(fmt.Sprintln(a...))
 }
 
 // Printf logs a message at info level.
 func Printf(format string, a ...any) {
-	helper.Infof(format, a...)
+	helper.Info(fmt.Sprintf(format, a...))
 }
 
 // Printw logs a message at info level.
 func Printw(keyvals ...any) {
-	helper.Infow(keyvals...)
+	helper.Info("", normalizeKeyValues(keyvals)...)
 }
 
 // Debug logs a message at debug level.
 func Debug(a ...any) {
-	helper.Debug(a...)
+	helper.Debug(fmt.Sprint(a...))
 }
 
 // Debugf logs a message at debug level.
 func Debugf(format string, a ...any) {
-	helper.Debugf(format, a...)
+	helper.Debug(fmt.Sprintf(format, a...))
 }
 
 // Debugw logs a message at debug level.
 func Debugw(keyvals ...any) {
-	helper.Debugw(keyvals...)
+	helper.Debug("", normalizeKeyValues(keyvals)...)
 }
 
 // Info logs a message at info level.
 func Info(a ...any) {
-	helper.Info(a...)
+	helper.Info(fmt.Sprint(a...))
 }
 
 // Infof logs a message at info level.
 func Infof(format string, a ...any) {
-	helper.Infof(format, a...)
+	helper.Info(fmt.Sprintf(format, a...))
 }
 
 // Infow logs a message at info level.
 func Infow(keyvals ...any) {
-	helper.Infow(keyvals...)
+	helper.Info("", normalizeKeyValues(keyvals)...)
 }
 
 // Warn logs a message at warn level.
 func Warn(a ...any) {
-	helper.Warn(a...)
+	helper.Warn(fmt.Sprint(a...))
 }
 
 // Warnf logs a message at warnf level.
 func Warnf(format string, a ...any) {
-	helper.Warnf(format, a...)
+	helper.Warn(fmt.Sprintf(format, a...))
 }
 
 // Warnw logs a message at warnf level.
 func Warnw(keyvals ...any) {
-	helper.Warnw(keyvals...)
+	helper.Warn("", normalizeKeyValues(keyvals)...)
 }
 
 // Error logs a message at error level.
 func Error(a ...any) {
-	helper.Error(a...)
+	helper.Error(fmt.Sprint(a...))
 }
 
 // Errorf logs a message at error level.
 func Errorf(format string, a ...any) {
-	helper.Errorf(format, a...)
+	helper.Error(fmt.Sprintf(format, a...))
 }
 
 // Errorw logs a message at error level.
 func Errorw(keyvals ...any) {
-	helper.Errorw(keyvals...)
+	helper.Error("", normalizeKeyValues(keyvals)...)
 }
 
 // Fatal logs a message at fatal level.
 func Fatal(a ...any) {
-	helper.Fatal(a...)
+	helper.Log(context.Background(), log.LevelFatal, fmt.Sprint(a...))
+	os.Exit(1)
 }
 
 // Fatalf logs a message at fatal level.
 func Fatalf(format string, a ...any) {
-	helper.Fatalf(format, a...)
+	helper.Log(context.Background(), log.LevelFatal, fmt.Sprintf(format, a...))
+	os.Exit(1)
 }
 
 // Fatalw logs a message at fatal level.
 func Fatalw(keyvals ...any) {
-	helper.Fatalw(keyvals...)
+	helper.Log(context.Background(), log.LevelFatal, "", normalizeKeyValues(keyvals)...)
+	os.Exit(1)
+}
+
+func normalizeKeyValues(keyvals []any) []any {
+	if len(keyvals)%2 != 0 {
+		keyvals = append(append([]any(nil), keyvals...), "KEYVALS UNPAIRED")
+	}
+	return keyvals
 }

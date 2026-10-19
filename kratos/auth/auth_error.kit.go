@@ -1,8 +1,8 @@
 package authpkg
 
 import (
-	"github.com/go-kratos/kratos/v2/errors"
-	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	"github.com/go-kratos/kratos/v3/errors"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 
 // Is ...

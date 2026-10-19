@@ -1,15 +1,15 @@
 # auth
 
-`auth` 是 `github.com/ikaiguang/go-srv-kit/auth/auth` 包，包名为 `authpkg`。它适合在 Go / Kratos 服务中处理 JWT 访问令牌、刷新令牌、认证中间件和 Redis 令牌状态管理。
+`auth` 是 `github.com/ikaiguang/go-srv-kit/kratos/v3/auth` 包，包名为 `authpkg`。它适合在 Go / Kratos 服务中处理 JWT 访问令牌、刷新令牌、认证中间件和 Redis 令牌状态管理。
 
 ## 安装
 
 ```bash
-go get github.com/ikaiguang/go-srv-kit/auth
+go get github.com/ikaiguang/go-srv-kit/kratos/v3
 ```
 
 ```go
-import auth "github.com/ikaiguang/go-srv-kit/auth/auth"
+import auth "github.com/ikaiguang/go-srv-kit/kratos/v3/auth"
 ```
 
 ## 核心能力
@@ -35,7 +35,7 @@ ctx := context.Background()
 repo, err := auth.NewAuthRepo(auth.Config{
 	SignCrypto:    auth.NewSignEncryptor("access-token-sign-key"),
 	RefreshCrypto: auth.NewCBCCipher("0123456789abcdef0123456789abcdef"),
-}, log.DefaultLogger, nil)
+}, slog.Default(), nil)
 if err != nil {
 	return err
 }
@@ -84,11 +84,11 @@ _ = serverAuth
 启用 Redis 令牌管理：
 
 ```go
-tokenManager := auth.NewTokenManager(log.DefaultLogger, redisClient, nil)
+tokenManager := auth.NewTokenManager(slog.Default(), redisClient, nil)
 repo, err := auth.NewAuthRepo(auth.Config{
 	SignCrypto:    auth.NewSignEncryptor("access-token-sign-key"),
 	RefreshCrypto: auth.NewCBCCipher("0123456789abcdef0123456789abcdef"),
-}, log.DefaultLogger, tokenManager)
+}, slog.Default(), tokenManager)
 ```
 
 ## API 说明

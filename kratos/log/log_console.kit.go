@@ -1,15 +1,15 @@
 package logpkg
 
 import (
-	"fmt"
+	"log/slog"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v3/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-var _ log.Logger = &Std{}
+var _ Logger = (*Std)(nil)
 
 // ConfigStd 标准输出
 type ConfigStd struct {
@@ -22,6 +22,7 @@ type ConfigStd struct {
 
 // Std 标准输出
 type Std struct {
+	*slog.Logger
 	conf          *ConfigStd
 	loggerHandler *zap.Logger
 }
@@ -45,45 +46,6 @@ func (s *Std) sync() error {
 // Close zap.Logger.Sync
 func (s *Std) Close() error {
 	return s.sync()
-}
-
-// Log .
-func (s *Std) Log(level log.Level, keyvals ...any) (err error) {
-	if len(keyvals) == 0 {
-		return err
-	}
-	if len(keyvals)%2 != 0 {
-		keyvals = append(keyvals, "KEYVALS UNPAIRED")
-	}
-
-	// field
-	var (
-		msg  = "\n"
-		data []zap.Field
-	)
-	if s.conf.UseJSONEncoder {
-		for i := 0; i < len(keyvals); i += 2 {
-			data = append(data, zap.Any(fmt.Sprint(keyvals[i]), fmt.Sprint(keyvals[i+1])))
-		}
-	} else {
-		for i := 0; i < len(keyvals); i += 2 {
-			msg += "*** ｜ " + fmt.Sprint(keyvals[i]) + " : " + fmt.Sprint(keyvals[i+1]) + "\n"
-		}
-	}
-
-	switch level {
-	case log.LevelDebug:
-		s.loggerHandler.Debug(msg, data...)
-	case log.LevelInfo:
-		s.loggerHandler.Info(msg, data...)
-	case log.LevelWarn:
-		s.loggerHandler.Warn(msg, data...)
-	case log.LevelError:
-		s.loggerHandler.Error(msg, data...)
-	case log.LevelFatal:
-		s.loggerHandler.Fatal(msg, data...)
-	}
-	return err
 }
 
 // InitLogger .
@@ -154,5 +116,6 @@ func (s *Std) InitLogger(conf *ConfigStd, opts ...Option) (err error) {
 	if err != nil {
 		return
 	}
+	s.Logger = slog.New(&zapHandler{logger: s.loggerHandler})
 	return err
 }

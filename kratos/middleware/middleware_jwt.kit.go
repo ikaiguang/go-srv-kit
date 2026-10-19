@@ -3,7 +3,7 @@ package middlewarepkg
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/middleware/selector"
+	"github.com/go-kratos/kratos/v3/middleware/selector"
 )
 
 // NewWhiteListMatcher 路由白名单

@@ -3,7 +3,7 @@ package logpkg
 import (
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v3/log"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,18 +17,18 @@ func TestNewStdLogger(t *testing.T) {
 	require.Nil(t, err)
 	defer func() { _ = logImpl.Close() }()
 
-	logHandler := log.NewHelper(logImpl)
-	logHandler.Error("log level error")
-	logHandler.Debug("log level debug")
-	logHandler.Info("log level info")
-	logHandler.Error("log level error")
-	logHandler.Info("a", "b")
-	logHandler.Info("a", "b", "c")
-	logHandler.Infof("%s%s", "a", "b")
+	Setup(logImpl)
+	Error("log level error")
+	Debug("log level debug")
+	Info("log level info")
+	Error("log level error")
+	Info("a", "b")
+	Info("a", "b", "c")
+	Infof("%s%s", "a", "b")
 	// [build failed] Infof call needs 2 args but has 3 args
 	//Infof("%s%s", "a", "b", "c")
-	logHandler.Infow("key", "value")
-	logHandler.Infow("key", "value", "remain")
+	Infow("key", "value")
+	Infow("key", "value", "remain")
 	/*
 		2021-07-28T10:01:48.915 ERROR   log/log.toolkit_test.go:17      github.com/ikaiguang/go-srv-toolkit/log.TestNewStdLogger
 		        {"msg": "log level error"}
@@ -55,19 +55,19 @@ func TestNewStdLogger(t *testing.T) {
 //func TestKratos_NewStdLogger(t *testing.T) {
 //	logImpl := log.NewStdLogger(os.Stderr)
 //
-//	logHandler := log.NewHelper(logImpl)
+//	Setup(logImpl)
 //
-//	logHandler.Error("log level error")
-//	logHandler.Debug("log level debug")
-//	logHandler.Info("log level info")
-//	logHandler.Error("log level error")
-//	logHandler.Info("a", "b")
-//	logHandler.Info("a", "b", "c")
-//	logHandler.Infof("%s%s", "a", "b")
+//	Error("log level error")
+//	Debug("log level debug")
+//	Info("log level info")
+//	Error("log level error")
+//	Info("a", "b")
+//	Info("a", "b", "c")
+//	Infof("%s%s", "a", "b")
 //	// [build failed] Infof call needs 2 args but has 3 args
 //	//Infof("%s%s", "a", "b", "c")
-//	logHandler.Infow("key", "value")
-//	logHandler.Infow("key", "value", "remain")
+//	Infow("key", "value")
+//	Infow("key", "value", "remain")
 //	/*
 //		ERROR msg=log level error
 //		DEBUG msg=log level debug

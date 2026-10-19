@@ -27,13 +27,13 @@ import middlewarepkg "github.com/ikaiguang/go-srv-kit/kratos/v3/middleware"
 ## 快速使用
 
 ```go
-logger, err := logpkg.NewStdLogger(&logpkg.ConfigStd{Level: log.LevelInfo})
+logger, err := logpkg.NewStdLogger(&logpkg.ConfigStd{Level: slog.LevelInfo})
 if err != nil {
     return err
 }
 defer logger.Close()
 
-middlewares := middlewarepkg.DefaultServerMiddlewares(log.NewHelper(logger))
+middlewares := middlewarepkg.DefaultServerMiddlewares(logger)
 _ = middlewares
 ```
 

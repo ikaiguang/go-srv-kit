@@ -1,35 +1,37 @@
 package middlewarepkg
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware"
-	"github.com/go-kratos/kratos/v2/middleware/circuitbreaker"
-	"github.com/go-kratos/kratos/v2/middleware/metadata"
-	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/contrib/otel/v3/tracing"
+	"github.com/go-kratos/kratos/v3/middleware"
+	"github.com/go-kratos/kratos/v3/middleware/circuitbreaker"
+	"github.com/go-kratos/kratos/v3/middleware/metadata"
+	"github.com/go-kratos/kratos/v3/middleware/recovery"
 	apppkg "github.com/ikaiguang/go-srv-kit/kratos/v3/app"
+	logpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/log"
 )
 
 // DefaultServerMiddlewares 中间件
-func DefaultServerMiddlewares(logHelper *log.Helper) []middleware.Middleware {
+func DefaultServerMiddlewares(logger logpkg.Logger) []middleware.Middleware {
+	slogLogger := logpkg.ToSlog(logger)
 	return []middleware.Middleware{
 		recovery.Recovery(recovery.WithHandler(RecoveryHandler())),
 		tracing.Server(),
 		RateLimit(), // ratelimit.Server(),
 		metadata.Server(),
 		RequestAndResponseHeader(),
-		apppkg.ServerLog(logHelper, apppkg.WithDefaultDepth()),
+		apppkg.ServerLog(slogLogger, apppkg.WithDefaultDepth()),
 		Validator(), // validate.Validator(),
 	}
 }
 
 // DefaultClientMiddlewares 中间件
-func DefaultClientMiddlewares(logHelper *log.Helper) []middleware.Middleware {
+func DefaultClientMiddlewares(logger logpkg.Logger) []middleware.Middleware {
+	slogLogger := logpkg.ToSlog(logger)
 	return []middleware.Middleware{
 		recovery.Recovery(recovery.WithHandler(RecoveryHandler())),
 		tracing.Client(),
 		circuitbreaker.Client(), // error: circuitbreaker.ErrNotAllowed  reason=CIRCUITBREAKER
 		metadata.Client(),
-		apppkg.ClientLog(logHelper),
+		apppkg.ClientLog(slogLogger),
 	}
 }

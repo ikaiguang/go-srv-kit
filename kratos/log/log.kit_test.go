@@ -1,11 +1,38 @@
 package logpkg
 
 import (
+	"bytes"
+	"log/slog"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v3/log"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 )
+
+func TestNewMultiLoggerWritesToEveryHandler(t *testing.T) {
+	var first bytes.Buffer
+	var second bytes.Buffer
+	logger := NewMultiLogger(
+		slog.New(slog.NewJSONHandler(&first, nil)),
+		slog.New(slog.NewJSONHandler(&second, nil)),
+	)
+
+	logger.Info("ready", "module", "kratos")
+
+	require.Contains(t, first.String(), `"msg":"ready"`)
+	require.Contains(t, second.String(), `"module":"kratos"`)
+}
+
+func TestZapHandlerPreservesSlogGroups(t *testing.T) {
+	core, observed := observer.New(zap.DebugLevel)
+	logger := slog.New(&zapHandler{logger: zap.New(core)})
+
+	logger.WithGroup("request").Info("received", "id", 7)
+
+	require.Equal(t, int64(7), observed.All()[0].ContextMap()["request.id"])
+}
 
 // go test -v ./log/ -count=1 -run TestNewMultiLogger
 func TestNewMultiLogger(t *testing.T) {
@@ -38,18 +65,18 @@ func TestNewMultiLogger(t *testing.T) {
 
 	logger := NewMultiLogger(stdLogger, fileLogger)
 
-	logHandler := log.NewHelper(logger)
-	logHandler.Error("log level error")
-	logHandler.Debug("log level debug")
-	logHandler.Info("log level info")
-	logHandler.Error("log level error")
-	logHandler.Info("a", "b")
-	logHandler.Info("a", "b", "c")
-	logHandler.Infof("%s%s", "a", "b")
+	Setup(logger)
+	Error("log level error")
+	Debug("log level debug")
+	Info("log level info")
+	Error("log level error")
+	Info("a", "b")
+	Info("a", "b", "c")
+	Infof("%s%s", "a", "b")
 	// [build failed] Infof call needs 2 args but has 3 args
 	//Infof("%s%s", "a", "b", "c")
-	logHandler.Infow("key", "value")
-	logHandler.Infow("key", "value", "remain")
+	Infow("key", "value")
+	Infow("key", "value", "remain")
 }
 
 // go test -v ./log/ -count=1 -run TestParseLevel

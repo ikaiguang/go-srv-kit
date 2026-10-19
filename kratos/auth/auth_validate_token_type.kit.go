@@ -3,7 +3,7 @@ package authpkg
 import (
 	"context"
 
-	errorpkg "github.com/ikaiguang/go-kratos-kit/error"
+	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 
 var (

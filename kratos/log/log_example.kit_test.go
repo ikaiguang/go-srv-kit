@@ -1,7 +1,7 @@
 package logpkg
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v3/log"
 )
 
 func ExampleNewMultiLogger() {
@@ -29,8 +29,8 @@ func ExampleNewMultiLogger() {
 	defer func() { _ = fileLogger.Close() }()
 
 	logger := NewMultiLogger(stdLogger, fileLogger)
-	logHandler := log.NewHelper(logger)
-	logHandler.Error("error")
+	Setup(logger)
+	Error("error")
 }
 
 func ExampleNewFileLogger() {
@@ -56,8 +56,8 @@ func ExampleNewFileLogger() {
 	}
 	defer func() { _ = fileLogger.Close() }()
 
-	logHandler := log.NewHelper(fileLogger)
-	logHandler.Error("error")
+	Setup(fileLogger)
+	Error("error")
 }
 
 func ExampleNewStdLogger() {
@@ -74,6 +74,6 @@ func ExampleNewStdLogger() {
 	}
 	defer func() { _ = stdLogger.Close() }()
 
-	logHandler := log.NewHelper(stdLogger)
-	logHandler.Error("error")
+	Setup(stdLogger)
+	Error("error")
 }

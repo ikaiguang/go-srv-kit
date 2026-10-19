@@ -2,9 +2,10 @@ package logpkg
 
 import (
 	"io"
+	"log/slog"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v3/log"
 	"github.com/stretchr/testify/require"
 )
 
@@ -48,7 +49,7 @@ func TestSetup_Xxx(t *testing.T) {
 	}
 
 	var (
-		oneLoggerFn = func(addSkip int) (log.Logger, io.Closer, error) {
+		oneLoggerFn = func(addSkip int) (Logger, io.Closer, error) {
 			stdLoggerConfig := &ConfigStd{
 				Level:      log.LevelDebug,
 				CallerSkip: DefaultCallerSkip + addSkip,
@@ -60,7 +61,7 @@ func TestSetup_Xxx(t *testing.T) {
 			}
 			return logger, logger, err
 		}
-		multiLoggerFn = func(addSkip int) (log.Logger, []io.Closer, error) {
+		multiLoggerFn = func(addSkip int) (Logger, []io.Closer, error) {
 			var closeFnSlice []io.Closer
 			logger1, syncFn1, err := oneLoggerFn(addSkip)
 			if err != nil {
@@ -80,7 +81,7 @@ func TestSetup_Xxx(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var (
-				logger      log.Logger
+				logger      Logger
 				syncFn      io.Closer
 				syncFnSlice []io.Closer
 				err         error
@@ -94,7 +95,7 @@ func TestSetup_Xxx(t *testing.T) {
 			require.Nil(t, err)
 
 			if tt.hasWith {
-				logger = log.With(logger, "caller", log.Caller(DefaultCallerValuer+tt.callerSkip))
+				logger = slog.New(logger.Handler()).With("caller_skip", DefaultCallerValuer+tt.callerSkip)
 			}
 
 			Setup(logger)
@@ -137,8 +138,8 @@ func TestSetup_OneLogger_With(t *testing.T) {
 	defer func() { _ = stdLoggerHandler.Close() }()
 
 	// CallerSkip: DefaultCallerSkip + 2,
-	var stdLogger log.Logger = stdLoggerHandler
-	stdLogger = log.With(stdLogger, "caller", log.Caller(DefaultCallerValuer+2))
+	var stdLogger Logger = stdLoggerHandler
+	stdLogger = slog.New(stdLogger.Handler()).With("caller_skip", DefaultCallerValuer+2)
 
 	Setup(stdLogger)
 
@@ -165,7 +166,7 @@ func TestSetup_MultiLogger(t *testing.T) {
 	defer func() { _ = stdLogger2.Close() }()
 
 	multiLogger := NewMultiLogger(stdLogger, stdLogger2)
-	multiLogger = log.With(multiLogger, "caller", log.Caller(DefaultCallerValuer+2))
+	multiLogger = multiLogger.With("caller_skip", DefaultCallerValuer+2)
 
 	Setup(multiLogger)
 
