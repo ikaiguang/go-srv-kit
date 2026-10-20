@@ -136,6 +136,7 @@ go test ./...
 
 - `NewAuthRepo` 要求 `Config.SignCrypto` 和 `Config.RefreshCrypto` 非空；`RefreshTokenExpire` 必须大于或等于 `AccessTokenExpire`。
 - `NewCBCCipher` 的 key 需要满足底层 AES-CBC 实现对密钥长度的要求；示例字符串只用于说明调用方式。
+- `NewSignEncryptor` 的 HMAC key 不能为空，解码只接受该 encryptor 配置的签名算法。
 - 不传 `TokenManager` 时，`AuthRepo` 不会执行 Redis 白名单、黑名单和登录限制校验。
 - `WithClaims` 用在 `Server` 时需要每次返回新的 `jwt.Claims` 对象，避免并发写问题。
 - `Server` 从 Kratos server transport 上下文读取 `Authorization` 请求头；非 transport 上下文会返回 `ErrWrongContext`。

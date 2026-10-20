@@ -55,4 +55,5 @@ go test ./app
 - `RequestDecoder` 会读取并重置 `r.Body`，并限制请求体大小为 `DefaultUploadMaxSize`。
 - `multipart/form-data` 当前注册为跳过 body 自动反序列化，文件上传应在业务 handler 中按 Kratos/标准库方式处理。
 - `RegisterCodec` 会注册兼容旧行为的 `json` codec，使 protobuf message 继续使用本包的 `protojson` 配置。
+- 错误响应会移除内部 `error` / `error.*` metadata；请求日志只记录 URL path，不记录 query string。
 - `app_response_custom.kit.go` 中的旧自定义响应实现均处于注释状态，不应在文档和新代码中当作可用 API。

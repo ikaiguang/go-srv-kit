@@ -42,9 +42,17 @@ func RequestDecoder(r *http.Request, v any) error {
 	if codec.Name() == CodecNameMultipartForm {
 		return nil
 	}
+	if r.ContentLength > DefaultUploadMaxSize {
+		e := errorpkg.ErrorRequestEntityTooLarge("REQUEST_ENTITY_TOO_LARGE")
+		return errorpkg.WithStack(e)
+	}
 
 	// read data
-	data, err := io.ReadAll(r.Body)
+	data, err := io.ReadAll(io.LimitReader(r.Body, DefaultUploadMaxSize+1))
+	if err != nil {
+		e := errorpkg.ErrorInvalidParameter("[CODEC] invalid request body")
+		return errorpkg.Wrap(e, err)
+	}
 	if len(data) > DefaultUploadMaxSize {
 		e := errorpkg.ErrorRequestEntityTooLarge("REQUEST_ENTITY_TOO_LARGE")
 		return errorpkg.WithStack(e)
@@ -52,10 +60,6 @@ func RequestDecoder(r *http.Request, v any) error {
 
 	// reset body.
 	r.Body = io.NopCloser(bytes.NewBuffer(data))
-	if err != nil {
-		e := errorpkg.ErrorInvalidParameter("[CODEC] invalid request body")
-		return errorpkg.Wrap(e, err)
-	}
 	if len(data) == 0 {
 		return nil
 	}
@@ -93,10 +97,10 @@ func (f *multipartForm) Name() string {
 	return CodecNameMultipartForm
 }
 
-func (f *multipartForm) Marshal(v any) ([]byte, error) {
+func (f *multipartForm) Marshal(_ any) ([]byte, error) {
 	return nil, nil
 }
-func (f *multipartForm) Unmarshal(data []byte, v any) error {
+func (f *multipartForm) Unmarshal(_ []byte, _ any) error {
 	return nil
 }
 
@@ -105,9 +109,9 @@ type octetStream struct{}
 func (s *octetStream) Name() string {
 	return CodecNameOctetStream
 }
-func (s *octetStream) Marshal(v any) ([]byte, error) {
+func (s *octetStream) Marshal(_ any) ([]byte, error) {
 	return nil, nil
 }
-func (s *octetStream) Unmarshal(data []byte, v any) error {
+func (s *octetStream) Unmarshal(_ []byte, _ any) error {
 	return nil
 }

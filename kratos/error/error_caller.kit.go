@@ -77,13 +77,16 @@ func CallStackWithSkipAndDepth(err error, skip, depth int) (callers []string) {
 
 	// stack trace
 	st := trace.StackTrace()
+	// skip
+	if skip >= len(st) {
+		return nil
+	}
+	if skip > 0 {
+		st = st[skip:]
+	}
 	// depth
 	if depth > 0 && len(st) > depth {
 		st = st[:depth]
-	}
-	// skip
-	if skip > 0 && len(st) > skip {
-		st = st[skip:]
 	}
 	// make
 	callers = make([]string, len(st))
@@ -100,8 +103,6 @@ func CallerWithSkip(err error, skip int) (callers []string) {
 	switch callCounter {
 	case 0, 1:
 		return callers
-	default:
-
 	}
 	if skip >= callCounter {
 		return callers[callCounter-1:]

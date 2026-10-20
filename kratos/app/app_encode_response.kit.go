@@ -3,6 +3,7 @@ package apppkg
 import (
 	"context"
 	stdhttp "net/http"
+	"strings"
 
 	"github.com/go-kratos/kratos/v3/encoding"
 	"github.com/go-kratos/kratos/v3/encoding/json"
@@ -29,15 +30,13 @@ func SuccessResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v any)
 		return nil
 	}
 	codec, _ := http.CodecForRequest(r, "Accept")
-	// w.Header().Set(headerpkg.ContentType, ContentType(codec.Name()))
-	SetResponseContentType(w, codec)
-	w.WriteHeader(stdhttp.StatusOK)
-
 	data, err := codec.Marshal(v)
 	if err != nil {
 		e := errorpkg.ErrorInternalServer("marshal response failed")
 		return errorpkg.Wrap(e, err)
 	}
+	SetResponseContentType(w, codec)
+	w.WriteHeader(stdhttp.StatusOK)
 	_, err = w.Write(data)
 	if err != nil {
 		e := errorpkg.ErrorInternalServer("write response failed")
@@ -51,19 +50,44 @@ func ErrorResponseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err erro
 	codec, _ := http.CodecForRequest(r, "Accept")
 	SetResponseContentType(w, codec)
 
-	se := errorpkg.FromError(err)
+	se := sanitizeResponseError(errorpkg.FromError(err))
+	if se == nil {
+		se = errors.New(stdhttp.StatusInternalServerError, errors.UnknownReason, "internal server error")
+	}
 	body, err := codec.Marshal(se)
 	if err != nil {
 		w.WriteHeader(stdhttp.StatusInternalServerError)
-		_, _ = w.Write([]byte(err.Error()))
+		_, _ = w.Write([]byte("internal server error"))
 		return
 	}
-	if se.Code < _minInfoLevelCode {
-		w.WriteHeader(int(se.Code))
-	} else {
-		w.WriteHeader(stdhttp.StatusBadRequest)
-	}
+	w.WriteHeader(errorHTTPStatus(se.Code))
 	_, _ = w.Write(body)
+}
+
+func errorHTTPStatus(code int32) int {
+	if code >= _minInfoLevelCode {
+		return stdhttp.StatusBadRequest
+	}
+	if code < stdhttp.StatusContinue || code > 599 {
+		return stdhttp.StatusInternalServerError
+	}
+	return int(code)
+}
+
+func sanitizeResponseError(err *errors.Error) *errors.Error {
+	if err == nil {
+		return nil
+	}
+	err = errors.Clone(err)
+	if err.Code >= stdhttp.StatusInternalServerError && err.Reason == errors.UnknownReason {
+		err.Message = "internal server error"
+	}
+	for key := range err.Metadata {
+		if key == errorpkg.EnumMDErrorKey || strings.HasPrefix(key, errorpkg.EnumMDErrorKey+".") {
+			delete(err.Metadata, key)
+		}
+	}
+	return err
 }
 
 // SuccessResponseDecoder http.DefaultResponseDecoder

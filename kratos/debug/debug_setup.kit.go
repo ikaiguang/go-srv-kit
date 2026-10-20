@@ -2,6 +2,7 @@ package debugpkg
 
 import (
 	"log/slog"
+	"sync/atomic"
 
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/log"
 )
@@ -22,22 +23,27 @@ func WithUseJSONFormat() Option {
 }
 
 // debug
-var (
-	// handler log handler
-	handler = defaultHandler()
-)
+var handler atomic.Pointer[slog.Logger]
+
+func init() {
+	handler.Store(defaultHandler())
+}
 
 // Setup 启动
 func Setup(logger logpkg.Logger) {
-	handler = logpkg.ToSlog(logger)
+	handler.Store(logpkg.ToSlog(logger))
 }
 
 // CloseDebug ...
 func CloseDebug() {
-	handler = defaultHandler()
+	handler.Store(defaultHandler())
 }
 
 // defaultHandler .
 func defaultHandler() *slog.Logger {
 	return logpkg.NewNopLogger()
+}
+
+func currentHandler() *slog.Logger {
+	return handler.Load()
 }

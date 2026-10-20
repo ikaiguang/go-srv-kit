@@ -23,7 +23,9 @@ type Option func(*options)
 // default is bbr limiter
 func WithLimiter(limiter ratelimitpkg.Limiter) Option {
 	return func(o *options) {
-		o.limiter = limiter
+		if limiter != nil {
+			o.limiter = limiter
+		}
 	}
 }
 
@@ -37,7 +39,9 @@ func RateLimit(opts ...Option) middleware.Middleware {
 		limiter: bbr.NewLimiter(),
 	}
 	for _, o := range opts {
-		o(options)
+		if o != nil {
+			o(options)
+		}
 	}
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req any) (reply any, err error) {
@@ -47,8 +51,12 @@ func RateLimit(opts ...Option) middleware.Middleware {
 				return reply, errorpkg.Wrap(rateLimitErr, e)
 			}
 			// allowed
+			if done != nil {
+				defer func() {
+					done(ratelimitpkg.DoneInfo{Err: err})
+				}()
+			}
 			reply, err = handler(ctx, req)
-			done(ratelimitpkg.DoneInfo{Err: err})
 			return
 		}
 	}

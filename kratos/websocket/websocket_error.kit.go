@@ -21,7 +21,7 @@ func IsCloseError(wsErr error) bool {
 		return isClose
 	}
 
-	if connectionpkg.IsConnCloseErr(wsErr) {
+	if connectionpkg.IsConnectionClosedError(wsErr) {
 		return true
 	}
 	return false

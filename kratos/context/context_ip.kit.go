@@ -23,11 +23,15 @@ func ClientIP(ctx context.Context) string {
 }
 
 // ClientIPFromHTTP ...
-func ClientIPFromHTTP(ctx context.Context, r *http.Request) (clientIP string) {
+func ClientIPFromHTTP(_ context.Context, r *http.Request) (clientIP string) {
+	if r == nil {
+		return ""
+	}
 	// Check if we're running on a trusted platform, continue running backwards if error
-	if defaultTrustedPlatform != "" {
+	if platformHeader := trustedPlatform(); platformHeader != "" {
 		// Developers can define their own header of Trusted Platform or use predefined constants
-		if clientIP = r.Header.Get(defaultTrustedPlatform); clientIP != "" {
+		clientIP = strings.TrimSpace(r.Header.Get(platformHeader))
+		if ippkg.IsValidIP(clientIP) {
 			return clientIP
 		}
 	}
@@ -60,11 +64,13 @@ func ClientIPFromHTTP(ctx context.Context, r *http.Request) (clientIP string) {
 func ClientIPFromGRPC(ctx context.Context) (clientIP string) {
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		// Check if we're running on a trusted platform, continue running backwards if error
-		if defaultTrustedPlatform != "" {
+		if platformHeader := trustedPlatform(); platformHeader != "" {
 			// Developers can define their own header of Trusted Platform or use predefined constants
-			if addrSlice := md.Get(strings.ToLower(defaultTrustedPlatform)); len(addrSlice) > 0 {
-				clientIP = addrSlice[0]
-				return clientIP
+			if addrSlice := md.Get(strings.ToLower(platformHeader)); len(addrSlice) > 0 {
+				clientIP = strings.TrimSpace(addrSlice[0])
+				if ippkg.IsValidIP(clientIP) {
+					return clientIP
+				}
 			}
 		}
 
@@ -83,7 +89,7 @@ func ClientIPFromGRPC(ctx context.Context) (clientIP string) {
 		}
 	}
 
-	if pr, ok := peer.FromContext(ctx); ok {
+	if pr, ok := peer.FromContext(ctx); ok && pr.Addr != nil {
 		if tcpAddr, ok := pr.Addr.(*net.TCPAddr); ok {
 			clientIP = tcpAddr.IP.String()
 			return clientIP
@@ -97,13 +103,27 @@ func ClientIPFromGRPC(ctx context.Context) (clientIP string) {
 // clientIPKey ...
 type clientIPKey struct{}
 
-// SetClientIpToContext put client ip into context
-func SetClientIpToContext(ctx context.Context, clientIp string) context.Context {
-	return context.WithValue(ctx, clientIPKey{}, clientIp)
+// SetClientIPToContext puts a client IP into context.
+func SetClientIPToContext(ctx context.Context, clientIP string) context.Context {
+	return context.WithValue(ctx, clientIPKey{}, clientIP)
 }
 
-// GetClientIpFromContext extract client ip from context
-func GetClientIpFromContext(ctx context.Context) (clientIp string, ok bool) {
-	clientIp, ok = ctx.Value(clientIPKey{}).(string)
+// GetClientIPFromContext extracts a client IP from context.
+func GetClientIPFromContext(ctx context.Context) (clientIP string, ok bool) {
+	clientIP, ok = ctx.Value(clientIPKey{}).(string)
 	return
+}
+
+// Deprecated: use SetClientIPToContext instead.
+//
+//nolint:revive // compatibility alias
+func SetClientIpToContext(ctx context.Context, clientIP string) context.Context {
+	return SetClientIPToContext(ctx, clientIP)
+}
+
+// Deprecated: use GetClientIPFromContext instead.
+//
+//nolint:revive // compatibility alias
+func GetClientIpFromContext(ctx context.Context) (clientIP string, ok bool) {
+	return GetClientIPFromContext(ctx)
 }

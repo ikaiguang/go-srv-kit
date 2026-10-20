@@ -139,14 +139,13 @@ func (s *tokenManger) SaveAccessTokens(ctx context.Context, userIdentifier strin
 	}
 
 	key := s.genTokensKey(userIdentifier)
-	if err := s.redisCC.HSet(ctx, key, kvs...).Err(); err != nil {
+	pipe := s.redisCC.TxPipeline()
+	pipe.HSet(ctx, key, kvs...)
+	pipe.Expire(ctx, key, expire)
+	if _, err := pipe.Exec(ctx); err != nil {
 		e := errorpkg.ErrorInternalServer("")
 		return errorpkg.Wrap(e, err)
 	}
-	threadpkg.GoSafe(func() {
-		// ctx many be cancel
-		_ = s.redisCC.Expire(context.Background(), key, expire)
-	})
 	return nil
 }
 
@@ -228,10 +227,7 @@ func (s *tokenManger) AddBlacklist(ctx context.Context, userIdentifier string, t
 
 // DeleteExpireTokens 删除过期的token
 func (s *tokenManger) DeleteExpireTokens(ctx context.Context, userIdentifier string) error {
-	var (
-		nowUnix    = time.Now().Unix()
-		expireList []*TokenItem
-	)
+	nowUnix := time.Now().Unix()
 
 	// 防止重复删除
 	unlocker, err := s.EasyLock(ctx, s.genClearTokenKey(userIdentifier))
@@ -244,6 +240,7 @@ func (s *tokenManger) DeleteExpireTokens(ctx context.Context, userIdentifier str
 	if err != nil {
 		return err
 	}
+	expireList := make([]*TokenItem, 0, len(allTokens))
 	for i := range allTokens {
 		if allTokens[i].ExpiredAt > nowUnix {
 			continue

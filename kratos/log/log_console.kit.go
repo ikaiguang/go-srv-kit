@@ -29,6 +29,9 @@ type Std struct {
 
 // NewStdLogger 输出到控制台
 func NewStdLogger(conf *ConfigStd) (*Std, error) {
+	if conf == nil {
+		return nil, errNilConfig
+	}
 	handler := &Std{
 		conf: conf,
 	}
@@ -57,7 +60,9 @@ func (s *Std) InitLogger(conf *ConfigStd, opts ...Option) (err error) {
 		timeFormat: DefaultTimeFormat,
 	}
 	for _, o := range opts {
-		o(&option)
+		if o != nil {
+			o(&option)
+		}
 	}
 
 	var (

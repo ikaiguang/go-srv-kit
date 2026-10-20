@@ -23,11 +23,17 @@ var (
 
 // SetJSONMarshalOptions 设置json编码选项
 func SetJSONMarshalOptions(opt *protojson.MarshalOptions) {
+	if opt == nil {
+		return
+	}
 	MarshalOptions = *opt
 }
 
 // SetJSONUnmarshalOptions 设置json编码选项
 func SetJSONUnmarshalOptions(opt *protojson.UnmarshalOptions) {
+	if opt == nil {
+		return
+	}
 	UnmarshalOptions = *opt
 }
 
@@ -45,21 +51,29 @@ func MarshalJSON(v any) ([]byte, error) {
 
 // UnmarshalJSON 解码json
 func UnmarshalJSON(data []byte, v any) error {
+	rv := reflect.ValueOf(v)
+	if !rv.IsValid() || (rv.Kind() == reflect.Pointer && rv.IsNil()) {
+		return stdjson.Unmarshal(data, v)
+	}
 	switch m := v.(type) {
 	case stdjson.Unmarshaler:
 		return m.UnmarshalJSON(data)
 	case proto.Message:
 		return UnmarshalOptions.Unmarshal(data, m)
 	default:
-		rv := reflect.ValueOf(v)
 		for rv := rv; rv.Kind() == reflect.Pointer; {
 			if rv.IsNil() {
+				if !rv.CanSet() {
+					return stdjson.Unmarshal(data, v)
+				}
 				rv.Set(reflect.New(rv.Type().Elem()))
 			}
+			if rv.CanInterface() {
+				if message, ok := rv.Interface().(proto.Message); ok {
+					return UnmarshalOptions.Unmarshal(data, message)
+				}
+			}
 			rv = rv.Elem()
-		}
-		if m, ok := reflect.Indirect(rv).Interface().(proto.Message); ok {
-			return UnmarshalOptions.Unmarshal(data, m)
 		}
 		return stdjson.Unmarshal(data, m)
 	}

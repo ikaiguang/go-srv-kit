@@ -1,11 +1,14 @@
 package errorpkg
 
 import (
+	"net/http"
 	"runtime"
 	"strconv"
 
 	"github.com/go-kratos/kratos/v3/errors"
 )
+
+const maxCauseDepth = 100
 
 // FromError try to convert an error to *errors.Error
 func FromError(err error) *errors.Error {
@@ -18,10 +21,13 @@ func Cause(err error) error {
 		Cause() error
 	}
 
-	for err != nil {
+	for range maxCauseDepth {
+		if err == nil {
+			return nil
+		}
 		cause, ok := err.(causer)
 		if !ok {
-			break
+			return err
 		}
 		err = cause.Cause()
 	}
@@ -71,7 +77,7 @@ func IsReason(err error, reason string) bool {
 // Code returns the http code for a error.
 func Code(err error) int {
 	if err == nil {
-		return 200
+		return http.StatusOK
 	}
 	if se := FromError(err); se != nil {
 		return int(se.Code)

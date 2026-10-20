@@ -21,6 +21,6 @@ func UpgradeConn(w http.ResponseWriter, r *http.Request, responseHeader http.Hea
 	if err != nil {
 		return nil, err
 	}
-	headerpkg.SetIsWebsocket(r.Header)
+	headerpkg.SetIsWebSocket(r.Header)
 	return cc, err
 }

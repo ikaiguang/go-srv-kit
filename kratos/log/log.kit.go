@@ -2,7 +2,9 @@ package logpkg
 
 import (
 	"context"
+	"errors"
 	"log/slog"
+	"reflect"
 	"runtime"
 	"strings"
 
@@ -11,6 +13,8 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+var errNilConfig = errors.New("log config is nil")
 
 // LoggerKey 日志消息key；例：time=2022-03-17T20:11:32.031, msg=testing
 type LoggerKey string
@@ -47,7 +51,14 @@ func ToSlog(logger Logger) *slog.Logger {
 		return NewNopLogger()
 	}
 	if slogLogger, ok := logger.(*slog.Logger); ok {
+		if slogLogger == nil {
+			return NewNopLogger()
+		}
 		return slogLogger
+	}
+	value := reflect.ValueOf(logger)
+	if value.Kind() == reflect.Pointer && value.IsNil() {
+		return NewNopLogger()
 	}
 	return slog.New(logger.Handler())
 }

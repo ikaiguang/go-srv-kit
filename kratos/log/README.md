@@ -64,5 +64,6 @@ go test ./log
 
 - `NewFileLogger` 会创建和写入本地日志文件，部署前确认目录权限、磁盘容量和保留策略。
 - `AsyncWriter` 在缓冲满时会主动丢弃日志并返回成功写入长度，适合可容忍丢日志的场景。
+- `AsyncWriter.Close` 会等待已经进入缓冲区的日志写完；关闭后继续写入会返回 `os.ErrClosed`。
 - key/value 日志参数数量为奇数时会追加 `KEYVALS UNPAIRED`，调用方应尽量保持成对传入。
 - 不要记录未脱敏的密码、Token、密钥、手机号或连接串。

@@ -2,6 +2,7 @@ package apppkg
 
 import (
 	"strings"
+	"sync/atomic"
 
 	"github.com/go-kratos/kratos/v3/transport/http"
 )
@@ -13,25 +14,28 @@ var (
 	_ = http.DefaultResponseDecoder
 )
 
-var (
-	appRuntimeEnv = RuntimeEnvEnum_PRODUCTION
-)
+var appRuntimeEnv atomic.Int32
+
+func init() {
+	appRuntimeEnv.Store(int32(RuntimeEnvEnum_PRODUCTION))
+}
 
 // SetRuntimeEnv ...
 func SetRuntimeEnv(env RuntimeEnvEnum_RuntimeEnv) {
-	appRuntimeEnv = env
+	appRuntimeEnv.Store(int32(env))
 }
 
 // GetRuntimeEnv ...
 func GetRuntimeEnv() RuntimeEnvEnum_RuntimeEnv {
-	return appRuntimeEnv
+	return RuntimeEnvEnum_RuntimeEnv(appRuntimeEnv.Load())
 }
 
 // IsDebugMode ...
 func IsDebugMode() bool {
-	return appRuntimeEnv == RuntimeEnvEnum_LOCAL ||
-		appRuntimeEnv == RuntimeEnvEnum_DEVELOP ||
-		appRuntimeEnv == RuntimeEnvEnum_TESTING
+	env := GetRuntimeEnv()
+	return env == RuntimeEnvEnum_LOCAL ||
+		env == RuntimeEnvEnum_DEVELOP ||
+		env == RuntimeEnvEnum_TESTING
 }
 
 // IsLocalMode ...

@@ -7,6 +7,7 @@ import (
 	stdhttp "net/http"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/go-kratos/kratos/v3/middleware"
@@ -20,15 +21,20 @@ import (
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 )
 
-var (
-	// _maxRequestArgs 设置最大请求参数
-	_maxRequestArgs   uint  = 1024 * 1024
-	_minInfoLevelCode int32 = 1000
+const (
+	defaultMaxRequestArgs = 1024 * 1024
+	_minInfoLevelCode     = 1000
 )
+
+var maxRequestArgs atomic.Uint64
+
+func init() {
+	maxRequestArgs.Store(defaultMaxRequestArgs)
+}
 
 // SetMaxRequestArgSize 设置最大请求参数
 func SetMaxRequestArgSize(size uint) {
-	_maxRequestArgs = size
+	maxRequestArgs.Store(uint64(size))
 }
 
 type RequestInfoForServer struct {
@@ -159,6 +165,9 @@ func ServerLoggingKvs(requestInfo *RequestInfoForServer, operationInfo *Operatio
 // ServerLog 中间件日志
 // 参考 logging.Server(logger)
 func ServerLog(logger *slog.Logger, opts ...Option) middleware.Middleware {
+	if logger == nil {
+		logger = slog.Default()
+	}
 	opt := &options{}
 	for i := range opts {
 		opts[i](opt)
@@ -198,13 +207,18 @@ func ServerLog(logger *slog.Logger, opts ...Option) middleware.Middleware {
 
 			// request
 			if httpTr, isHTTP := tr.(http.Transporter); isHTTP {
-				operationInfo.Method = httpTr.Request().Method
-				operationInfo.Operation = httpTr.Request().URL.String()
-				if headerpkg.GetIsWebsocket(httpTr.Request().Header) {
-					isWebsocket = true
-					operationInfo.Method = "WS"
+				request := httpTr.Request()
+				if request != nil {
+					operationInfo.Method = request.Method
+					if request.URL != nil {
+						operationInfo.Operation = request.URL.Path
+					}
+					if headerpkg.GetIsWebSocket(request.Header) {
+						isWebsocket = true
+						operationInfo.Method = "WS"
+					}
+					requestInfo.ClientIP = contextpkg.ClientIPFromHTTP(ctx, request)
 				}
-				requestInfo.ClientIP = contextpkg.ClientIPFromHTTP(ctx, httpTr.Request())
 			} else if _, isGRPC := tr.(*grpc.Transport); isGRPC {
 				operationInfo.Method = "GRPC"
 				requestInfo.ClientIP = contextpkg.ClientIPFromGRPC(ctx)
@@ -219,11 +233,7 @@ func ServerLog(logger *slog.Logger, opts ...Option) middleware.Middleware {
 			}
 
 			// 请求参数
-			args := extractArgs(req)
-			if len(args) > int(_maxRequestArgs) {
-				args = args[:_maxRequestArgs]
-			}
-			operationInfo.Args = args
+			operationInfo.Args = truncateRequestArgs(extractArgs(req))
 
 			// 打印日志
 			var kv = operationInfo.Kvs()
@@ -239,7 +249,7 @@ func ServerLog(logger *slog.Logger, opts ...Option) middleware.Middleware {
 					errMessage.Code = se.Code
 					errMessage.Reason = se.Reason
 				}
-				if se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode {
+				if se != nil && (se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode) {
 					loggingLevel = slog.LevelInfo
 				}
 				// 错误调用
@@ -258,7 +268,6 @@ func ServerLog(logger *slog.Logger, opts ...Option) middleware.Middleware {
 			logger.Log(ctx, loggingLevel, "server request", kv...)
 			return
 		}
-
 	}
 }
 
@@ -304,6 +313,9 @@ func ClientLoggingKvs(requestInfo *RequestInfoForClient, operationInfo *Operatio
 // ClientLog is an client logging middleware.
 // logging.Client(logger)
 func ClientLog(logger *slog.Logger) middleware.Middleware {
+	if logger == nil {
+		logger = slog.Default()
+	}
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req any) (reply any, err error) {
 			var (
@@ -324,36 +336,36 @@ func ClientLog(logger *slog.Logger) middleware.Middleware {
 			}
 
 			// 请求参数
-			args := extractArgs(req)
-			if len(args) > int(_maxRequestArgs) {
-				args = args[:_maxRequestArgs]
-			}
-			operationInfo.Args = args
+			operationInfo.Args = truncateRequestArgs(extractArgs(req))
 
 			// 请求信息
 			requestInfo := &RequestInfoForClient{
 				Kind:      "client",
 				Component: kind,
-				Latency:   time.Since(startTime),
 				ClientIP:  ippkg.LocalIP(),
 			}
 
 			// request
 			if httpTr, isHTTP := tr.(http.Transporter); isHTTP {
-				operationInfo.Method = httpTr.Request().Method
-				operationInfo.Operation = httpTr.Request().URL.String()
-				if headerpkg.GetIsWebsocket(httpTr.Request().Header) {
-					operationInfo.Method = "WS"
+				request := httpTr.Request()
+				if request != nil {
+					operationInfo.Method = request.Method
+					if request.URL != nil {
+						operationInfo.Operation = request.URL.Path
+					}
+					if headerpkg.GetIsWebSocket(request.Header) {
+						operationInfo.Method = "WS"
+					}
 				}
 			} else if _, isGRPC := tr.(*grpc.Transport); isGRPC {
 				operationInfo.Method = "GRPC"
 			}
 
-			// log
+			reply, err = handler(ctx, req)
+			requestInfo.Latency = time.Since(startTime)
+
 			var kv = operationInfo.Kvs()
 			kv = append(kv, requestInfo.Kvs()...)
-
-			reply, err = handler(ctx, req)
 			if err != nil {
 				se := errorpkg.FromError(err)
 				if se != nil {
@@ -362,7 +374,7 @@ func ClientLog(logger *slog.Logger) middleware.Middleware {
 				}
 				var stack string
 				level, stack = extractError(err)
-				if se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode {
+				if se != nil && (se.GetCode() < stdhttp.StatusInternalServerError || se.GetCode() >= _minInfoLevelCode) {
 					level = slog.LevelInfo
 				}
 				if level == slog.LevelError {
@@ -392,6 +404,14 @@ func extractArgs(req any) string {
 		return stringer.String()
 	}
 	return fmt.Sprintf("%+v", req)
+}
+
+func truncateRequestArgs(args string) string {
+	limit := maxRequestArgs.Load()
+	if uint64(len(args)) > limit {
+		return args[:int(limit)]
+	}
+	return args
 }
 
 // extractError returns the string of the error

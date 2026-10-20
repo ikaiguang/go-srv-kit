@@ -18,6 +18,5 @@ func NewCORS() func(stdhttp.Handler) stdhttp.Handler {
 		handlers.AllowedOrigins([]string{"*"}),
 		handlers.MaxAge(int(10*time.Minute/time.Second)),
 		handlers.OptionStatusCode(stdhttp.StatusOK),
-		handlers.AllowCredentials(),
 	)
 }

@@ -64,4 +64,5 @@ go test ./error
 
 - `error.kit.pb.go`、`error.kit_errors.pb.go`、`error.kit_errors_custom.pb.go`、`error.kit_message.pb.go` 由 proto 或生成流程产生，不要手工修改。
 - metadata 会进入响应和日志，避免写入未脱敏的密码、Token、手机号、连接串等敏感信息。
+- `Wrap` 使用标准 error cause chain 保存底层错误，不会把 cause 文本写入公开 metadata。
 - 使用 `%+v` 格式化 `*errorpkg.Error` 会输出堆栈，生产日志中注意体积和敏感路径暴露风险。

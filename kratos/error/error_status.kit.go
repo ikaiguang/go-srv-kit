@@ -2,8 +2,9 @@ package errorpkg
 
 import (
 	"fmt"
-	"github.com/go-kratos/kratos/v3/errors"
 	"io"
+
+	"github.com/go-kratos/kratos/v3/errors"
 )
 
 type status struct {
@@ -28,7 +29,15 @@ func (e *Error) Message() string {
 }
 
 func (e *Error) Cause() error {
+	if e == nil || e.status == nil {
+		return nil
+	}
 	return e.status.Error
+}
+
+// Unwrap exposes the Kratos error to the standard errors chain.
+func (e *Error) Unwrap() error {
+	return e.Cause()
 }
 
 func (e *Error) GetCode() int32 {

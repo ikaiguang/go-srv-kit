@@ -24,6 +24,7 @@ const (
 	AuthorizationKey = "Authorization"
 	BearerWord       = "Bearer"
 	BearerFormat     = "Bearer %s"
+	bearerTokenParts = 2
 
 	PayloadIdentifierPrefixDefault  = "default_"
 	PayloadIdentifierPrefixUser     = "user_"
@@ -38,7 +39,7 @@ type Payload struct {
 	// uid 用户唯一id
 	UserID uint64 `json:"uid,omitempty"`
 	// UserUuid 用户唯一id
-	UserUuid string `json:"uuid,omitempty"`
+	UserUuid string `json:"uuid,omitempty"` //nolint:revive // public API compatibility
 	// LoginPlatform 登录平台信息
 	LoginPlatform LoginPlatformEnum_LoginPlatform `json:"lp,omitempty"`
 	// LoginType 登录类型
@@ -113,8 +114,11 @@ func GenExpireAt(duration time.Duration) *jwt.NumericDate {
 
 // GenAuthClaimsByAuthPayload ...
 func GenAuthClaimsByAuthPayload(payload *Payload, accessTokenExpire time.Duration) *Claims {
+	if payload == nil {
+		return nil
+	}
 	if payload.TokenID == "" {
-		payload.TokenID = uuidpkg.NewUUID()
+		payload.TokenID = uuidpkg.NewXID()
 	}
 	authClaims := &Claims{Payload: payload}
 	authClaims.ID = payload.TokenID
@@ -127,8 +131,11 @@ func GenAuthClaimsByAuthPayload(payload *Payload, accessTokenExpire time.Duratio
 
 // GenAuthClaimsByAuthClaims ...
 func GenAuthClaimsByAuthClaims(authClaims *Claims, accessTokenExpire time.Duration) *Claims {
+	if authClaims == nil || authClaims.Payload == nil {
+		return nil
+	}
 	payload := *authClaims.Payload
-	payload.TokenID = uuidpkg.NewUUID()
+	payload.TokenID = uuidpkg.NewXID()
 	regClaims := authClaims.RegisteredClaims
 	regClaims.ID = payload.TokenID
 	regClaims.ExpiresAt = GenExpireAt(AccessTokenExpire)
@@ -143,8 +150,11 @@ func GenAuthClaimsByAuthClaims(authClaims *Claims, accessTokenExpire time.Durati
 
 // GenRefreshClaimsByAuthClaims ...
 func GenRefreshClaimsByAuthClaims(authClaims *Claims, refreshTokenExpire time.Duration) *Claims {
+	if authClaims == nil || authClaims.Payload == nil {
+		return nil
+	}
 	payload := *authClaims.Payload
-	payload.TokenID = uuidpkg.NewUUID()
+	payload.TokenID = uuidpkg.NewXID()
 	regClaims := authClaims.RegisteredClaims
 	regClaims.ID = payload.TokenID
 	regClaims.ExpiresAt = GenExpireAt(RefreshTokenExpire)
@@ -159,8 +169,11 @@ func GenRefreshClaimsByAuthClaims(authClaims *Claims, refreshTokenExpire time.Du
 
 // CheckAndCorrectAuthClaims ...
 func CheckAndCorrectAuthClaims(authClaims *Claims) {
+	if authClaims == nil || authClaims.Payload == nil {
+		return
+	}
 	if authClaims.Payload.TokenID == "" {
-		authClaims.Payload.TokenID = uuidpkg.NewUUID()
+		authClaims.Payload.TokenID = uuidpkg.NewXID()
 	}
 	authClaims.ID = authClaims.Payload.TokenID
 	if authClaims.ExpiresAt == nil {
@@ -231,7 +244,9 @@ func Server(signKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 		signingMethod: jwt.SigningMethodHS256,
 	}
 	for _, opt := range opts {
-		opt(o)
+		if opt != nil {
+			opt(o)
+		}
 	}
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
@@ -268,7 +283,7 @@ func validateAuthorizationToken(
 		e := ErrMissingSignKeyFunc()
 		return nil, errorpkg.WithStack(e)
 	}
-	if auths := strings.SplitN(tokenStr, " ", 2); len(auths) == 2 && strings.EqualFold(auths[0], BearerWord) {
+	if auths := strings.SplitN(tokenStr, " ", bearerTokenParts); len(auths) == bearerTokenParts && strings.EqualFold(auths[0], BearerWord) {
 		tokenStr = auths[1]
 	}
 	if tokenStr == "" {
@@ -279,10 +294,18 @@ func validateAuthorizationToken(
 		tokenInfo *jwt.Token
 		err       error
 	)
+	parserOptions := []jwt.ParserOption{
+		jwt.WithValidMethods([]string{o.signingMethod.Alg()}),
+	}
 	if o.claims != nil {
-		tokenInfo, err = jwt.ParseWithClaims(tokenStr, o.claims(), keyFunc)
+		claims := o.claims()
+		if claims == nil {
+			e := ErrInvalidClaims()
+			return nil, errorpkg.WithStack(e)
+		}
+		tokenInfo, err = jwt.ParseWithClaims(tokenStr, claims, keyFunc, parserOptions...)
 	} else {
-		tokenInfo, err = jwt.Parse(tokenStr, keyFunc)
+		tokenInfo, err = jwt.Parse(tokenStr, keyFunc, parserOptions...)
 	}
 	if err != nil {
 		if stderrors.Is(err, jwt.ErrTokenMalformed) || stderrors.Is(err, jwt.ErrTokenUnverifiable) {
@@ -294,7 +317,6 @@ func validateAuthorizationToken(
 			return nil, errorpkg.WithStack(e)
 		}
 		e := ErrInvalidAuthToken()
-		e.Metadata = map[string]string{"error": err.Error()}
 		return nil, errorpkg.WithStack(e)
 	}
 	if !tokenInfo.Valid {
@@ -328,7 +350,9 @@ func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 		claims:        func() jwt.Claims { return claims },
 	}
 	for _, opt := range opts {
-		opt(o)
+		if opt != nil {
+			opt(o)
+		}
 	}
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
@@ -342,7 +366,12 @@ func Client(customKeyFunc KeyFunc, opts ...Option) middleware.Middleware {
 				e := ErrMissingSignKeyFunc()
 				return nil, errorpkg.WithStack(e)
 			}
-			token := jwt.NewWithClaims(o.signingMethod, o.claims())
+			claims := o.claims()
+			if claims == nil {
+				e := ErrInvalidClaims()
+				return nil, errorpkg.WithStack(e)
+			}
+			token := jwt.NewWithClaims(o.signingMethod, claims)
 			if o.accessTokenHeader != nil {
 				for k, v := range o.accessTokenHeader {
 					token.Header[k] = v

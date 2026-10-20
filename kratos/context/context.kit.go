@@ -2,6 +2,7 @@ package contextpkg
 
 import (
 	"context"
+
 	"github.com/go-kratos/kratos/v3/transport"
 	"github.com/go-kratos/kratos/v3/transport/grpc"
 	"github.com/go-kratos/kratos/v3/transport/http"
@@ -46,7 +47,7 @@ func MatchGRPCServerContext(ctx context.Context) (tr *grpc.Transport, ok bool) {
 
 // MatchHTTPClientContext ...
 func MatchHTTPClientContext(ctx context.Context) (tr http.Transporter, ok bool) {
-	kratosTr, ok := transport.FromServerContext(ctx)
+	kratosTr, ok := transport.FromClientContext(ctx)
 	if !ok {
 		return tr, ok
 	}
@@ -55,7 +56,7 @@ func MatchHTTPClientContext(ctx context.Context) (tr http.Transporter, ok bool) 
 
 // MatchGRPCClientContext ...
 func MatchGRPCClientContext(ctx context.Context) (tr *grpc.Transport, ok bool) {
-	kratosTr, ok := transport.FromServerContext(ctx)
+	kratosTr, ok := transport.FromClientContext(ctx)
 	if !ok {
 		return tr, ok
 	}

@@ -34,6 +34,23 @@ func TestZapHandlerPreservesSlogGroups(t *testing.T) {
 	require.Equal(t, int64(7), observed.All()[0].ContextMap()["request.id"])
 }
 
+func TestLoggerConstructorsRejectNilConfig(t *testing.T) {
+	stdLogger, err := NewStdLogger(nil)
+	require.Nil(t, stdLogger)
+	require.ErrorIs(t, err, errNilConfig)
+
+	fileLogger, err := NewFileLogger(nil)
+	require.Nil(t, fileLogger)
+	require.ErrorIs(t, err, errNilConfig)
+}
+
+func TestToSlogAcceptsTypedNilLogger(t *testing.T) {
+	var logger *slog.Logger
+	require.NotNil(t, ToSlog(logger))
+	var stdLogger *Std
+	require.NotNil(t, ToSlog(stdLogger))
+}
+
 // go test -v ./log/ -count=1 -run TestNewMultiLogger
 func TestNewMultiLogger(t *testing.T) {
 	// std logger

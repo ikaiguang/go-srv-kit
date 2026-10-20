@@ -14,7 +14,10 @@ import (
 func DefaultServerMiddlewares(logger logpkg.Logger) []middleware.Middleware {
 	slogLogger := logpkg.ToSlog(logger)
 	return []middleware.Middleware{
-		recovery.Recovery(recovery.WithHandler(RecoveryHandler())),
+		recovery.Recovery(
+			recovery.WithHandler(RecoveryHandler()),
+			recovery.WithLogger(slogLogger),
+		),
 		tracing.Server(),
 		RateLimit(), // ratelimit.Server(),
 		metadata.Server(),
@@ -28,7 +31,10 @@ func DefaultServerMiddlewares(logger logpkg.Logger) []middleware.Middleware {
 func DefaultClientMiddlewares(logger logpkg.Logger) []middleware.Middleware {
 	slogLogger := logpkg.ToSlog(logger)
 	return []middleware.Middleware{
-		recovery.Recovery(recovery.WithHandler(RecoveryHandler())),
+		recovery.Recovery(
+			recovery.WithHandler(RecoveryHandler()),
+			recovery.WithLogger(slogLogger),
+		),
 		tracing.Client(),
 		circuitbreaker.Client(), // error: circuitbreaker.ErrNotAllowed  reason=CIRCUITBREAKER
 		metadata.Client(),

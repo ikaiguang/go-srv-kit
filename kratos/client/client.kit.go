@@ -4,8 +4,11 @@ import (
 	"context"
 	"crypto/tls"
 	stdjson "encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	stdhttp "net/http"
+	"reflect"
 
 	"github.com/go-kratos/kratos/v3/middleware/recovery"
 	"github.com/go-kratos/kratos/v3/transport/grpc"
@@ -14,6 +17,11 @@ import (
 	stdgrpc "google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 )
+
+const DefaultResponseMaxSize = 20 << 20
+
+var errNilHTTPResponse = errors.New("HTTP response or body is nil")
+var errNilResponseTarget = errors.New("response target is nil")
 
 // NewHTTPClient ...
 func NewHTTPClient(ctx context.Context, opts ...http.ClientOption) (*http.Client, error) {
@@ -47,11 +55,17 @@ func NewSampleHTTPClient(ctx context.Context, endpoint string, opts ...http.Clie
 }
 
 // ResponseDecoder http.DefaultResponseDecoder
-func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v any) error {
+func ResponseDecoder(_ context.Context, res *stdhttp.Response, v any) error {
+	if res == nil || res.Body == nil {
+		return errNilHTTPResponse
+	}
 	defer func() { _ = res.Body.Close() }()
-	bodyBytes, err := io.ReadAll(res.Body)
+	bodyBytes, err := io.ReadAll(io.LimitReader(res.Body, DefaultResponseMaxSize+1))
 	if err != nil {
 		return err
+	}
+	if len(bodyBytes) > DefaultResponseMaxSize {
+		return fmt.Errorf("response body exceeds %d bytes", DefaultResponseMaxSize)
 	}
 
 	// 解析数据
@@ -66,6 +80,10 @@ func ResponseDecoder(ctx context.Context, res *stdhttp.Response, v any) error {
 	}
 	switch m := v.(type) {
 	case proto.Message:
+		value := reflect.ValueOf(m)
+		if value.Kind() == reflect.Pointer && value.IsNil() {
+			return errNilResponseTarget
+		}
 		return data.Data.UnmarshalTo(m)
 	default:
 		unknownData := &apppkg.ResponseData{}

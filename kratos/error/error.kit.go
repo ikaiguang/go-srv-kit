@@ -1,8 +1,8 @@
 package errorpkg
 
 import (
+	stderrors "errors"
 	"fmt"
-	"strconv"
 
 	"github.com/go-kratos/kratos/v3/errors"
 )
@@ -37,7 +37,7 @@ func Wrap(e *errors.Error, eSlice ...error) *Error {
 	if e == nil {
 		return nil
 	}
-	e.Metadata = errorMetadata(e.Metadata, eSlice)
+	e = e.WithCause(stderrors.Join(eSlice...))
 	return &Error{
 		status: &status{Error: e},
 		stack:  callers(),
@@ -48,7 +48,7 @@ func WrapKvs(e *errors.Error, kvs ...string) *Error {
 	if e == nil {
 		return nil
 	}
-	WithKvs(e)
+	WithKvs(e, kvs...)
 	return &Error{
 		status: &status{Error: e},
 		stack:  callers(),
@@ -134,27 +134,4 @@ func newError(code int, reason, message string) *errors.Error {
 	e := errors.New(code, reason, message)
 	e.Metadata = map[string]string{}
 	return e
-}
-
-// errorMetadata .
-func errorMetadata(metadata map[string]string, eSlice []error) map[string]string {
-	if metadata == nil {
-		metadata = make(map[string]string)
-	}
-	if len(eSlice) == 0 {
-		return metadata
-	}
-
-	var (
-		errorKey = EnumMDErrorKey
-	)
-	for i := range eSlice {
-		key := errorKey + "." + strconv.Itoa(i)
-		if eSlice[i] == nil {
-			metadata[key] = "nil"
-		} else {
-			metadata[key] = eSlice[i].Error()
-		}
-	}
-	return metadata
 }

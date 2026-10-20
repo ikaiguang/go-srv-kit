@@ -48,5 +48,6 @@ go test ./client
 ## 注意事项
 
 - `ResponseDecoder` 会关闭 `res.Body`。
+- `ResponseDecoder` 最多读取 `DefaultResponseMaxSize`（默认 20 MiB），超限返回错误。
 - 普通结构体解码依赖 `apppkg.ResponseData.Data` 中保存的 JSON 字符串。
 - gRPC 使用安全连接还是非安全连接由调用方通过 `insecure` 参数明确选择。

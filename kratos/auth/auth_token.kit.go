@@ -2,6 +2,7 @@ package authpkg
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 
@@ -11,6 +12,8 @@ import (
 	errorpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/error"
 	logpkg "github.com/ikaiguang/go-srv-kit/kratos/v3/log"
 )
+
+var errEmptySigningKey = errors.New("signing key is empty")
 
 // Config ...
 type Config struct {
@@ -55,8 +58,11 @@ func NewSignEncryptor(key string) SignEncryptor {
 }
 
 // JWTSigningKeyFunc 密钥 jwt.Keyfunc
-func (s *signEncryptor) JWTSigningKeyFunc(ctx context.Context) jwt.Keyfunc {
-	return func(token *jwt.Token) (interface{}, error) {
+func (s *signEncryptor) JWTSigningKeyFunc(_ context.Context) jwt.Keyfunc {
+	return func(_ *jwt.Token) (interface{}, error) {
+		if len(s.key) == 0 {
+			return nil, errEmptySigningKey
+		}
 		return s.key, nil
 	}
 }
@@ -71,7 +77,15 @@ func (s *signEncryptor) JWTSigningClaims() jwt.Claims {
 	return &Claims{}
 }
 
-func (s *signEncryptor) EncryptToken(ctx context.Context, authClaims *Claims) (string, error) {
+func (s *signEncryptor) EncryptToken(_ context.Context, authClaims *Claims) (string, error) {
+	if len(s.key) == 0 {
+		e := errorpkg.ErrorBadRequest("signing key is empty")
+		return "", errorpkg.Wrap(e, errEmptySigningKey)
+	}
+	if authClaims == nil {
+		e := errorpkg.ErrorInvalidParameter("invalid auth claims")
+		return "", errorpkg.WithStack(e)
+	}
 	token, err := jwt.NewWithClaims(s.signingMethod, authClaims).SignedString(s.key)
 	if err != nil {
 		e := errorpkg.ErrorBadRequest("sign token failed")
@@ -83,8 +97,17 @@ func (s *signEncryptor) EncryptToken(ctx context.Context, authClaims *Claims) (s
 
 func (s *signEncryptor) DecryptToken(ctx context.Context, accessToken string) (*Claims, error) {
 	claims := &Claims{}
-	_, err := jwt.ParseWithClaims(accessToken, claims, s.JWTSigningKeyFunc(ctx))
+	_, err := jwt.ParseWithClaims(
+		accessToken,
+		claims,
+		s.JWTSigningKeyFunc(ctx),
+		jwt.WithValidMethods([]string{s.signingMethod.Alg()}),
+	)
 	if err != nil {
+		if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {
+			e := ErrorTokenExpired("access token expired")
+			return nil, errorpkg.Wrap(e, err)
+		}
 		e := errorpkg.ErrorBadRequest("decrypt token failed")
 		err = errorpkg.Wrap(e, err)
 		return nil, err
@@ -106,7 +129,11 @@ func NewCBCCipher(key string) RefreshEncryptor {
 	return &cbcEncryptor{key: []byte(key)}
 }
 
-func (s *cbcEncryptor) EncryptToken(ctx context.Context, refreshClaims *Claims) (string, error) {
+func (s *cbcEncryptor) EncryptToken(_ context.Context, refreshClaims *Claims) (string, error) {
+	if refreshClaims == nil {
+		e := errorpkg.ErrorInvalidParameter("invalid refresh claims")
+		return "", errorpkg.WithStack(e)
+	}
 	refreshClaimsStr, err := refreshClaims.EncodeToString()
 	if err != nil {
 		return "", err
@@ -120,7 +147,7 @@ func (s *cbcEncryptor) EncryptToken(ctx context.Context, refreshClaims *Claims) 
 	return token, nil
 }
 
-func (s *cbcEncryptor) DecryptToken(ctx context.Context, refreshToken string) (*Claims, error) {
+func (s *cbcEncryptor) DecryptToken(_ context.Context, refreshToken string) (*Claims, error) {
 	plaintext, err := aespkg.DecryptCBC(refreshToken, s.key)
 	if err != nil {
 		e := errorpkg.ErrorBadRequest("decode refresh token claims failed")
@@ -228,8 +255,10 @@ func (s *authRepo) JWTSigningClaims() jwt.Claims {
 // SignToken ...
 // Note: CheckAndCorrectAuthClaims
 func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenResponse, error) {
-	// check CheckAndCorrectAuthClaims
-	// authClaims.ID = authClaims.Payload.TokenID
+	if err := validateAuthClaims(authClaims); err != nil {
+		return nil, err
+	}
+	CheckAndCorrectAuthClaims(authClaims)
 	authClaims.ExpiresAt = GenExpireAt(s.accessTokenExpire)
 
 	// token
@@ -278,6 +307,9 @@ func (s *authRepo) SignToken(ctx context.Context, authClaims *Claims) (*TokenRes
 // RefreshToken ...
 // Note: authClaims = refreshToken.authClaims
 func (s *authRepo) RefreshToken(ctx context.Context, originRefreshClaims *Claims) (*TokenResponse, error) {
+	if err := validateAuthClaims(originRefreshClaims); err != nil {
+		return nil, err
+	}
 	// token
 	authClaims := GenAuthClaimsByAuthClaims(originRefreshClaims, s.accessTokenExpire)
 	tokenString, err := s.signEncryptor.EncryptToken(ctx, authClaims)
@@ -371,11 +403,11 @@ func (s *authRepo) setPreviousTokenExpireTime(ctx context.Context, originRefresh
 	}
 	var (
 		userIdentifier   = originRefreshClaims.Payload.UserIdentifier()
-		refreshTokenId   = originRefreshClaims.Payload.TokenID
+		refreshTokenID   = originRefreshClaims.Payload.TokenID
 		previousExpireAt = time.Now().Add(s.previousTokenExpire).Unix()
 		tokenItems       []*TokenItem
 	)
-	refreshTokenItem, isNotFound, err := s.tokenManger.GetToken(ctx, userIdentifier, refreshTokenId)
+	refreshTokenItem, isNotFound, err := s.tokenManger.GetToken(ctx, userIdentifier, refreshTokenID)
 	if err != nil {
 		return err
 	}
@@ -387,8 +419,8 @@ func (s *authRepo) setPreviousTokenExpireTime(ctx context.Context, originRefresh
 		refreshTokenItem.ExpiredAt = previousExpireAt
 	}
 
-	var accessTokenId = refreshTokenItem.TokenID
-	accessTokenItem, isNotFound, err := s.tokenManger.GetToken(ctx, userIdentifier, accessTokenId)
+	var accessTokenID = refreshTokenItem.TokenID
+	accessTokenItem, isNotFound, err := s.tokenManger.GetToken(ctx, userIdentifier, accessTokenID)
 	if err != nil {
 		return err
 	}
@@ -501,6 +533,9 @@ func (s *authRepo) DecodeRefreshToken(ctx context.Context, refreshToken string) 
 
 // VerifyAccessToken 验证令牌
 func (s *authRepo) VerifyAccessToken(ctx context.Context, authClaims *Claims) error {
+	if err := validateAuthClaims(authClaims); err != nil {
+		return err
+	}
 	if s.tokenManger == nil {
 		return nil
 	}
@@ -513,12 +548,23 @@ func (s *authRepo) VerifyAccessToken(ctx context.Context, authClaims *Claims) er
 
 // VerifyRefreshToken 验证令牌
 func (s *authRepo) VerifyRefreshToken(ctx context.Context, authClaims *Claims) error {
+	if err := validateAuthClaims(authClaims); err != nil {
+		return err
+	}
 	if s.tokenManger == nil {
 		return nil
 	}
 	// 检查 黑名单 & 白名单
 	if err := s.checkTokenBlackAndWhite(ctx, authClaims); err != nil {
 		return err
+	}
+	return nil
+}
+
+func validateAuthClaims(authClaims *Claims) error {
+	if authClaims == nil || authClaims.Payload == nil {
+		e := errorpkg.ErrorInvalidParameter("invalid auth claims")
+		return errorpkg.WithStack(e)
 	}
 	return nil
 }

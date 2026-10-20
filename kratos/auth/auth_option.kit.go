@@ -23,7 +23,9 @@ type options struct {
 // WithSigningMethod with signing method option.
 func WithSigningMethod(method jwt.SigningMethod) Option {
 	return func(o *options) {
-		o.signingMethod = method
+		if method != nil {
+			o.signingMethod = method
+		}
 	}
 }
 
@@ -32,7 +34,9 @@ func WithSigningMethod(method jwt.SigningMethod) Option {
 // If you use it in Client, f only needs to return a single object to provide performance
 func WithClaims(f func() jwt.Claims) Option {
 	return func(o *options) {
-		o.claims = f
+		if f != nil {
+			o.claims = f
+		}
 	}
 }
 
@@ -46,6 +50,10 @@ func WithAccessTokenHeader(header map[string]any) Option {
 // WithAccessTokenValidator token验证
 func WithAccessTokenValidator(tokenValidators ...AccessTokenValidate) Option {
 	return func(o *options) {
-		o.accessTokenValidators = append(o.accessTokenValidators, tokenValidators...)
+		for _, validator := range tokenValidators {
+			if validator != nil {
+				o.accessTokenValidators = append(o.accessTokenValidators, validator)
+			}
+		}
 	}
 }

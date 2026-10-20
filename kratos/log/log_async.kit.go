@@ -4,9 +4,9 @@ import (
 	"io"
 	"os"
 	"runtime"
+	"sync"
 
 	"github.com/valyala/bytebufferpool"
-	"go.uber.org/atomic"
 )
 
 const defaultCachePoolSize = 4096
@@ -17,8 +17,9 @@ var _ io.Writer = (*AsyncWriter)(nil)
 type AsyncWriter struct {
 	w          io.Writer
 	c          chan *bytebufferpool.ByteBuffer
-	size       int
-	closed     *atomic.Bool
+	mu         sync.RWMutex
+	closed     bool
+	done       sync.WaitGroup
 	bufferPool bytebufferpool.Pool
 }
 
@@ -27,39 +28,44 @@ func NewAsyncWriter(writer io.Writer, size int) *AsyncWriter {
 	if size <= 0 {
 		size = defaultCachePoolSize
 	}
-	w := &AsyncWriter{
-		w:      writer,
-		c:      make(chan *bytebufferpool.ByteBuffer, size),
-		size:   size,
-		closed: atomic.NewBool(false),
+	if writer == nil {
+		writer = io.Discard
 	}
+	w := &AsyncWriter{
+		w: writer,
+		c: make(chan *bytebufferpool.ByteBuffer, size),
+	}
+	w.done.Add(1)
 	go w.loop()
 	return w
 }
 
 // Write ...
 func (w *AsyncWriter) Write(p []byte) (n int, err error) {
-	if w.closed.Load() {
+	w.mu.RLock()
+	defer w.mu.RUnlock()
+	if w.closed {
 		return 0, os.ErrClosed
-	}
-
-	// 缓冲池已满，主动丢弃
-	if len(w.c) >= w.size {
-		return len(p), nil
 	}
 
 	// 异步情况下，不能直接使用传入的切片，需要拷贝，防止被篡改
 	buf := w.bufferPool.Get()
 	n, err = buf.Write(p)
 	if err != nil {
+		w.bufferPool.Put(buf)
 		return 0, err
 	}
 
-	w.c <- buf
+	select {
+	case w.c <- buf:
+	default:
+		w.bufferPool.Put(buf)
+	}
 	return n, nil
 }
 
 func (w *AsyncWriter) loop() {
+	defer w.done.Done()
 	defer Recover()
 	for buf := range w.c {
 		_, _ = w.w.Write(buf.Bytes())
@@ -68,9 +74,13 @@ func (w *AsyncWriter) loop() {
 }
 
 func (w *AsyncWriter) Close() {
-	if w.closed.CompareAndSwap(false, true) {
+	w.mu.Lock()
+	if !w.closed {
+		w.closed = true
 		close(w.c)
 	}
+	w.mu.Unlock()
+	w.done.Wait()
 }
 
 // Recover is used with defer to do cleanup on panics.

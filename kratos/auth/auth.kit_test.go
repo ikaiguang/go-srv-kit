@@ -26,7 +26,7 @@ func ExampleServer() {
 
 	// ExampleWhiteListMatcher 路由白名单
 	var ExampleWhiteListMatcher = func(whiteList map[string]struct{}) selector.MatchFunc {
-		return func(ctx context.Context, operation string) bool {
+		return func(_ context.Context, operation string) bool {
 			//if tr, ok := contextutil.MatchHTTPServerContext(ctx); ok {
 			//	if _, ok := whiteList[tr.Request().URL.Path]; ok {
 			//		return false

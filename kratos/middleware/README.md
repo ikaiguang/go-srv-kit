@@ -53,7 +53,7 @@ go test ./middleware
 
 ## 注意事项
 
-- `NewCORS` 当前允许所有 origin 且启用 credentials，公开服务上线前应按实际域名收敛。
+- `NewCORS` 当前允许所有 origin，但不允许跨域 credentials；需要 Cookie credentials 的服务应使用明确的 origin 白名单。
 - `RateLimit` 默认使用 BBR limiter；如果服务需要固定速率或分租户限流，应传入自定义 limiter。
 - `RecoveryHandler` 不暴露 panic 详情，排查需要结合日志和 trace。
 - `Validator` 只处理实现了 `Validate() error` 的请求对象。

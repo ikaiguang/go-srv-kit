@@ -55,6 +55,9 @@ type File struct {
 
 // NewFileLogger 输出到文件
 func NewFileLogger(conf *ConfigFile, opts ...Option) (*File, error) {
+	if conf == nil {
+		return nil, errNilConfig
+	}
 	handler := &File{}
 	if err := handler.initLogger(conf, opts...); err != nil {
 		return handler, err
@@ -81,7 +84,9 @@ func (s *File) initLogger(conf *ConfigFile, opts ...Option) (err error) {
 		timeFormat: DefaultTimeFormat,
 	}
 	for _, o := range opts {
-		o(&option)
+		if o != nil {
+			o(&option)
+		}
 	}
 
 	// 参考 zap.NewProductionEncoderConfig()

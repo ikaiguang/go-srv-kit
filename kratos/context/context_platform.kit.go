@@ -1,13 +1,23 @@
 package contextpkg
 
-import headerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/header"
+import (
+	"sync/atomic"
+
+	headerpkg "github.com/ikaiguang/go-srv-kit/kit/v3/header"
+)
 
 // TrustedPlatform 信任的平台
-var (
-	defaultTrustedPlatform = headerpkg.RemoteAddr
-)
+var defaultTrustedPlatform atomic.Value
+
+func init() {
+	defaultTrustedPlatform.Store(headerpkg.RemoteAddr)
+}
 
 // SetTrustedPlatform 设置信任的平台
 func SetTrustedPlatform(platformHeader string) {
-	defaultTrustedPlatform = platformHeader
+	defaultTrustedPlatform.Store(platformHeader)
+}
+
+func trustedPlatform() string {
+	return defaultTrustedPlatform.Load().(string)
 }

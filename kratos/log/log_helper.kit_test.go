@@ -3,11 +3,32 @@ package logpkg
 import (
 	"io"
 	"log/slog"
+	"sync"
 	"testing"
 
 	"github.com/go-kratos/kratos/v3/log"
 	"github.com/stretchr/testify/require"
 )
+
+func TestSetupConcurrentLogging(_ *testing.T) {
+	var wg sync.WaitGroup
+	for range 8 {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			for range 100 {
+				Setup(NewNopLogger())
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			for range 100 {
+				Info("concurrent")
+			}
+		}()
+	}
+	wg.Wait()
+}
 
 // go test -v -count 1 ./log/helper/ -run TestSetup_Xxx
 func TestSetup_Xxx(t *testing.T) {
