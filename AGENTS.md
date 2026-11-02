@@ -42,6 +42,7 @@
 
 - Use `.agents/skills/my-project` for repository-specific Go, module, Proto, generation, dependency, test, debugging, and review context.
 - Use `.agents/skills/code-audit-repair` only when the user explicitly requests a whole-repository or multi-module audit.
+- Load `.agents/skills/golang-*` only through `code-audit-repair` as needed, or when the user explicitly invokes one; do not auto-load them for ordinary Go coding.
 - Repo-local skills add project facts; they must not duplicate this file or invent workflows and architecture that are absent from the repository.
 
 ## Context7
