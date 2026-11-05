@@ -3,10 +3,23 @@ package authpkg
 import (
 	"context"
 	"log/slog"
+	"testing"
 
 	"github.com/go-kratos/kratos/v3/middleware/selector"
 	"github.com/redis/go-redis/v9"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
+
+func TestAuthDescriptorGoPackage(t *testing.T) {
+	const want = "github.com/ikaiguang/go-srv-kit/kratos/v3/auth;authpkg"
+	options, ok := File_auth_kit_proto.Options().(*descriptorpb.FileOptions)
+	if !ok {
+		t.Fatal("auth descriptor has no file options")
+	}
+	if got := options.GetGoPackage(); got != want {
+		t.Fatalf("auth descriptor go_package = %q, want %q", got, want)
+	}
+}
 
 func ExampleServer() {
 	var (
